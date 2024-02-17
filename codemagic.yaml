@@ -1,0 +1,29 @@
+# codemagic.yaml
+# Test codemagic yaml template for Flutter iOS project
+# Define workflows
+workflows:
+  flutter_ios_test:
+    name: PZ Deals iOS Test
+    environment:
+      flutter: stable
+    scripts:
+      # Setup script, executed before the build
+      - name: Setup
+        script: flutter pub get
+
+      # Build script, executed during the build phase
+      - name: Build
+        script: flutter build ios --release --no-codesign
+
+      # Test script, executed after the build
+      - name: Test
+        script: flutter test
+
+      # Post-build scripts, executed after the build and test phases
+      - name: Deploy
+        script: echo "Deployment scripts can go here if needed"
+
+# Configure notifications
+notifications:
+  email:
+    - carlo@kodecraft.dev
