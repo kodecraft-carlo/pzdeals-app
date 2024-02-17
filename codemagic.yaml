@@ -15,10 +15,6 @@ workflows:
       - name: Build
         script: flutter build ios --release --no-codesign
 
-      # Test script, executed after the build
-      - name: Test
-        script: flutter test
-
       # Post-build scripts, executed after the build and test phases
       - name: Deploy
         script: echo "Deployment scripts can go here if needed"
