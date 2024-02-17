@@ -1,5 +1,6 @@
 # codemagic.yaml
 # Test codemagic yaml template for Flutter iOS project
+
 # Define workflows
 workflows:
   flutter_ios_test:
@@ -17,7 +18,10 @@ workflows:
 
       # Post-build scripts, executed after the build and test phases
       - name: Deploy
-        script: echo "Deployment scripts can go here if needed"
+        script: 
+          - echo "Deployment scripts can go here if needed"
+          - mkdir -p $CM_BUILD_OUTPUT_DIR/ios
+          - cp -R build/ios/Runner.app $CM_BUILD_OUTPUT_DIR/ios
 
 # Configure notifications
 notifications:
