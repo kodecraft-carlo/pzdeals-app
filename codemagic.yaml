@@ -19,9 +19,9 @@ workflows:
       # Post-build scripts, executed after the build and test phases
       - name: Deploy
         script: |
-          - echo "Deployment scripts can go here if needed"
-          - mkdir -p $CM_BUILD_OUTPUT_DIR/ios
-          - cp -R /Users/builder/clone/build/ios/iphoneos/Runner.app $CM_BUILD_OUTPUT_DIR/ios
+          echo "Deployment scripts can go here if needed"
+          mkdir -p $CM_BUILD_OUTPUT_DIR/ios
+          cp -R /Users/builder/clone/build/ios/iphoneos/Runner.app $CM_BUILD_OUTPUT_DIR/ios
 
 # Configure notifications
 notifications:
