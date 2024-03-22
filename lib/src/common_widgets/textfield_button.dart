@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
-class TextFieldButton extends StatelessWidget {
+class TextFieldButton extends StatefulWidget {
   const TextFieldButton(
       {super.key,
       required this.onButtonPressed,
@@ -9,7 +9,8 @@ class TextFieldButton extends StatelessWidget {
       required this.textFieldHint,
       this.textfieldIcon = Icons.search,
       this.hasIcon = true,
-      this.isAutoFocus = false});
+      this.isAutoFocus = false,
+      required this.textController});
 
   final VoidCallback onButtonPressed;
   final String buttonLabel;
@@ -17,7 +18,14 @@ class TextFieldButton extends StatelessWidget {
   final IconData textfieldIcon;
   final bool hasIcon;
   final bool isAutoFocus;
+  final TextEditingController textController;
 
+  @override
+  _TextFieldButtonState createState() => _TextFieldButtonState();
+}
+
+class _TextFieldButtonState extends State<TextFieldButton> {
+  bool isActionEnabled = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,17 +38,23 @@ class TextFieldButton extends StatelessWidget {
           color: PZColors.pzLightGrey),
       child: Row(
         children: [
-          if (hasIcon)
+          if (widget.hasIcon)
             Icon(
-              textfieldIcon,
+              widget.textfieldIcon,
               color: PZColors.pzOrange,
               size: Sizes.textFieldIconSize,
             ),
           Expanded(
             child: TextField(
-              autofocus: isAutoFocus,
+              autofocus: widget.isAutoFocus,
+              controller: widget.textController,
+              onChanged: (value) {
+                setState(() {
+                  isActionEnabled = value.isNotEmpty;
+                });
+              },
               decoration: InputDecoration(
-                hintText: textFieldHint,
+                hintText: widget.textFieldHint,
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(
@@ -52,8 +66,9 @@ class TextFieldButton extends StatelessWidget {
           ),
           TextButton(
             style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(PZColors.pzOrange),
+              backgroundColor: !isActionEnabled
+                  ? MaterialStateProperty.all<Color>(PZColors.pzGrey)
+                  : MaterialStateProperty.all<Color>(PZColors.pzOrange),
               padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                   const EdgeInsets.symmetric(horizontal: Sizes.paddingAll)),
               shape: MaterialStateProperty.all<OutlinedBorder>(
@@ -63,9 +78,9 @@ class TextFieldButton extends StatelessWidget {
                     bottomRight: Radius.circular(Sizes.textFieldCornerRadius)),
               )),
             ),
-            onPressed: onButtonPressed,
+            onPressed: !isActionEnabled ? null : widget.onButtonPressed,
             child: Text(
-              buttonLabel,
+              widget.buttonLabel,
               style: const TextStyle(color: PZColors.pzWhite),
             ),
           ),

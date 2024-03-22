@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
@@ -53,48 +54,60 @@ class SquareLabeledIcon extends StatelessWidget {
 
   Widget storeIcon() {
     ImageProvider imageProvider;
+    double width = 80;
+    double height = 80;
 
     if (iconAssetType == 'asset') {
       imageProvider = AssetImage(iconImage);
-      return Image(
-        image: imageProvider,
-        width: 80,
-        height: 80,
-        fit: BoxFit.cover,
-      );
     } else if (iconAssetType == 'network') {
       imageProvider = NetworkImage(iconImage);
-      return Image.network(
-        iconImage,
-        width: 80,
-        height: 80,
-        fit: BoxFit.cover,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          } else {
-            return Center(
-              child: CircularProgressIndicator.adaptive(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        (loadingProgress.expectedTotalBytes ?? 1)
-                    : null,
-                valueColor:
-                    const AlwaysStoppedAnimation<Color>(PZColors.pzOrange),
-              ),
-            );
-          }
-        },
-      );
     } else {
       imageProvider = const AssetImage('assets/pzdeals.png');
-      return Image(
-        image: imageProvider,
-        width: 100,
-        height: 100,
+    }
+
+    Widget imageWidget = Image(
+      image: imageProvider,
+      width: width,
+      height: height,
+      fit: BoxFit.cover,
+    );
+
+    // Apply opaque effect if expired
+    // if (isExpired) {
+    //   imageWidget = ColorFiltered(
+    //     colorFilter: ColorFilter.mode(
+    //       Colors.white.withOpacity(0.5), // Adjust opacity as needed
+    //       BlendMode.srcOver,
+    //     ),
+    //     child: imageWidget,
+    //   );
+    // }
+
+    // Apply loading and error builders for network images
+    if (iconAssetType == 'network') {
+      imageWidget = CachedNetworkImage(
+        imageUrl: iconImage,
+        width: width,
+        height: height,
         fit: BoxFit.cover,
+        // placeholder: (context, url) => const Center(
+        //   child: CircularProgressIndicator(
+        //     valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
+        //     backgroundColor: PZColors.pzLightGrey,
+        //     strokeWidth: 3,
+        //   ),
+        // ),
+        errorWidget: (context, url, error) {
+          debugPrint('Error loading image: $error');
+          return Image.asset(
+            'assets/images/pzdeals.png',
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          );
+        },
       );
     }
+    return imageWidget;
   }
 }

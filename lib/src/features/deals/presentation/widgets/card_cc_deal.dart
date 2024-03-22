@@ -1,33 +1,23 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:pzdeals/src/actions/navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/creditcard_image.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_cc_deal_description.dart';
 
 class CreditCardItem extends StatelessWidget {
-  final String imageAsset;
-  final String description;
-  final String title;
-  final String sourceType;
   final String displayType;
+  final CreditCardDealData creditCardDealData;
 
   const CreditCardItem(
-      {super.key,
-      required this.imageAsset,
-      required this.description,
-      required this.title,
-      required this.sourceType,
-      required this.displayType});
+      {super.key, required this.displayType, required this.creditCardDealData});
 
   @override
   Widget build(BuildContext context) {
     return NavigateScreenWidget(
         destinationWidget: CreditCardDealDescription(
-          title: title,
-          description: description,
-          imageAsset: imageAsset,
-          sourceType: sourceType,
+          creditCardDealData: creditCardDealData,
         ),
         childWidget: displayType == "listView"
             ? Container(
@@ -39,13 +29,14 @@ class CreditCardItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      imageAsset,
-                      fit: BoxFit.fitWidth,
-                      height: 65.0, // Set the height of the image box
-                    ),
-                    Text(title,
-                        maxLines: 1,
+                    creditcardImage(creditCardDealData.imageAsset,
+                        creditCardDealData.sourceType),
+                    Text(
+                        creditCardDealData.isDealExpired != null &&
+                                creditCardDealData.isDealExpired == true
+                            ? 'EXPIRED: ${creditCardDealData.title}'
+                            : creditCardDealData.title,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: Sizes.bodySmallSize,
@@ -67,15 +58,19 @@ class CreditCardItem extends StatelessWidget {
                     children: [
                       // Left side - Image
                       CreditCardImageWidget(
-                          imageAsset: imageAsset, sourceType: sourceType),
+                          imageAsset: creditCardDealData.imageAsset,
+                          sourceType: creditCardDealData.sourceType),
                       // Right side - Description
                       const SizedBox(
                         width: Sizes.paddingAll,
                       ),
                       Expanded(
                         child: Text(
-                          title,
-                          style: const TextStyle(fontSize: Sizes.bodySmallSize),
+                          creditCardDealData.isDealExpired != null &&
+                                  creditCardDealData.isDealExpired == true
+                              ? 'EXPIRED: ${creditCardDealData.title}'
+                              : creditCardDealData.title,
+                          style: const TextStyle(fontSize: Sizes.fontSizeSmall),
                         ),
                       ),
                     ],
@@ -83,5 +78,38 @@ class CreditCardItem extends StatelessWidget {
                 ),
               ),
         animationDirection: 'bottomToTop');
+  }
+
+  Widget creditcardImage(String imageAsset, String sourceType) {
+    Widget imageWidget;
+    if (sourceType == 'network') {
+      imageWidget = CachedNetworkImage(
+        imageUrl: imageAsset,
+        height: 65,
+        fit: BoxFit.fitWidth,
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
+            backgroundColor: PZColors.pzLightGrey,
+            strokeWidth: 3,
+          ),
+        ),
+        errorWidget: (context, url, error) {
+          debugPrint('Error loading image: $error');
+          return Image.asset(
+            'assets/images/pzdeals.png',
+            height: 65,
+            fit: BoxFit.fitWidth,
+          );
+        },
+      );
+    } else {
+      imageWidget = Image.asset(
+        imageAsset,
+        fit: BoxFit.fitWidth,
+        height: 65.0,
+      );
+    }
+    return imageWidget;
   }
 }

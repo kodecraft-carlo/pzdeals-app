@@ -3,12 +3,12 @@ import 'package:pzdeals/src/actions/navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/screen_collections_display.dart';
 import 'package:pzdeals/src/common_widgets/square_labeled_icons.dart';
 import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/features/more/models/index.dart';
+import 'package:pzdeals/src/features/deals/models/collection_data.dart';
 
 class ShopCategory extends StatelessWidget {
   const ShopCategory({super.key, required this.categoryData});
 
-  final List<CategoryData> categoryData;
+  final List<CollectionData> categoryData;
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -26,11 +26,13 @@ class ShopCategory extends StatelessWidget {
       itemBuilder: (context, index) {
         final category = categoryData[index];
         return NavigateScreenWidget(
-          destinationWidget:
-              CollectionDisplayScreenWidget(collectionTitle: category.category),
+          destinationWidget: CollectionDisplayScreenWidget(
+            collectionTitle: category.title,
+            collectionId: category.id,
+          ),
           childWidget: SquareLabeledIcon(
-              iconTitle: category.category,
-              iconImage: category.categoryAssetImage,
+              iconTitle: category.title,
+              iconImage: category.imageAsset,
               iconAssetType: category.assetSourceType),
           animationDirection: 'leftToRight',
         );

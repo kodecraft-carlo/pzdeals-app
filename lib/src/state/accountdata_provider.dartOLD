@@ -1,0 +1,54 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pzdeals/src/models/index.dart';
+import 'package:pzdeals/src/state/auth_provider.dart';
+import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
+
+final accountDataProvider = StreamProvider.autoDispose<UserData?>((ref) async* {
+  final accountDataStream = FirebaseAuth.instance.authStateChanges();
+
+  ref.keepAlive();
+
+  await for (final user in accountDataStream) {
+    if (user != null) {
+      try {
+        final userData = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user.uid)
+            .get();
+        if (userData.exists) {
+          final data = userData.data() as Map<String, dynamic>;
+          final userDataObject = UserData(
+            uid: user.uid,
+            emailAddress: user.email,
+            firstName: data['firstName'],
+            lastName: data['lastName'] ?? "",
+            phoneNumber: data['phoneNumber'] ?? "",
+            birthDate: formatDateToDateTime(data['birthDate']),
+            gender: data['gender'] ?? "",
+            dateRegistered: user.metadata.creationTime,
+          );
+
+          ref.read(authProvider).setIsUserAuthenticated(true);
+          ref.read(authProvider).setUserUID(user.uid);
+
+          yield userDataObject;
+        } else {
+          await FirebaseAuth.instance.signOut();
+          ref.read(authProvider).signOutGoogle();
+          yield null;
+        }
+      } catch (e) {
+        debugPrint("Error fetching user data: $e");
+        await FirebaseAuth.instance.signOut();
+        ref.read(authProvider).signOutGoogle();
+
+        yield null;
+      }
+    } else {
+      yield null;
+    }
+  }
+});

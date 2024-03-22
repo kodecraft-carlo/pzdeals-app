@@ -7,13 +7,14 @@ import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/for_you_collection_deal_card.dart';
 
 class ForYouCollectionList extends StatelessWidget {
-  const ForYouCollectionList({
-    super.key,
-    required this.title,
-    required this.productData,
-  });
+  const ForYouCollectionList(
+      {super.key,
+      required this.title,
+      required this.productData,
+      required this.collectionId});
 
   final String title;
+  final int collectionId;
   final List<ProductDealcardData> productData;
 
   @override
@@ -31,26 +32,22 @@ class ForYouCollectionList extends StatelessWidget {
           Flexible(
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
               itemCount: productData.length + 1,
               itemBuilder: (BuildContext context, int index) {
                 if (index < productData.length) {
                   final product = productData[index];
                   return AspectRatio(
-                    aspectRatio: .64,
+                    aspectRatio: 2 / 3.75,
                     child: StaticProductDealCardWidget(
-                      productName: product.productName,
-                      price: product.price,
-                      storeAssetImage: product.storeAssetImage,
-                      oldPrice: product.oldPrice,
-                      imageAsset: product.imageAsset,
-                      discountPercentage: product.discountPercentage,
-                      assetSourceType: product.assetSourceType,
+                      productData: product,
                     ),
                   );
                 } else {
                   return NavigateScreenWidget(
                     destinationWidget: CollectionDisplayScreenWidget(
                       collectionTitle: title,
+                      collectionId: collectionId,
                     ),
                     childWidget: Container(
                       width: 150,

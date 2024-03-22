@@ -6,7 +6,7 @@ import 'package:pzdeals/src/common_widgets/slider.dart';
 import 'package:pzdeals/src/common_widgets/text_field.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/account/presentation/widgets/index.dart';
-import 'package:pzdeals/src/state/authentication_provider.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -23,6 +23,7 @@ class NotificationScreen extends StatelessWidget {
       'JBL Speaker',
     ];
 
+    TextEditingController textEditingController = TextEditingController();
     return SingleChildScrollView(
         child: Padding(
             padding: const EdgeInsets.all(Sizes.paddingAll),
@@ -61,11 +62,17 @@ class NotificationScreen extends StatelessWidget {
                       'Get notified about significant drops in the price of a product',
                   value: true,
                 ),
-                const TextFieldWidget(),
+                TextFieldWidget(
+                  hintText: 'Set % Off Threshold',
+                  obscureText: false,
+                  controller: textEditingController,
+                  keyboardType: TextInputType.text,
+                  isDense: true,
+                ),
                 const SizedBox(height: Sizes.spaceBetweenSectionsXL),
                 Consumer(builder: (context, ref, child) {
-                  final authentication = ref.watch(authenticationProvider);
-                  if (authentication == true) {
+                  final authUserState = ref.watch(authUserDataProvider);
+                  if (authUserState.isAuthenticated == true) {
                     return Column(
                       children: [
                         KeywordAlertsSection(savedKeywords: pills),

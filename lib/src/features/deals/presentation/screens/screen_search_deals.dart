@@ -7,10 +7,24 @@ import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_result.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/search_discovery.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/search_keywords.dart';
-import 'package:pzdeals/src/state/authentication_provider.dart';
+import 'package:pzdeals/src/features/deals/state/provider_search.dart';
 
-class SearchDealScreen extends StatelessWidget {
+import 'package:pzdeals/src/state/auth_user_data.dart';
+
+class SearchDealScreen extends ConsumerStatefulWidget {
   const SearchDealScreen({super.key});
+  @override
+  SearchDealScreenState createState() => SearchDealScreenState();
+}
+
+class SearchDealScreenState extends ConsumerState<SearchDealScreen> {
+  void searchfieldSubmit(String value) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return SearchResultScreen(
+        searchKey: value,
+      );
+    }));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +33,24 @@ class SearchDealScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         backgroundColor: PZColors.pzWhite,
         surfaceTintColor: PZColors.pzWhite,
-        title: const Row(
-          children: [
-            Expanded(
-              child: SearchFieldWidget(
-                hintText: "Search deals",
-                destinationScreen: SearchResultScreen(),
-                autoFocus: true,
+        title: Consumer(builder: (context, ref, child) {
+          final searchState = ref.watch(searchproductProvider);
+          return Row(
+            children: [
+              Expanded(
+                child: SearchFieldWidget(
+                  hintText: "Search deals",
+                  destinationScreen: const SearchResultScreen(),
+                  autoFocus: true,
+                  textValue: searchState.searchKey,
+                  onSubmitted: () {
+                    searchfieldSubmit(searchState.searchKey);
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        }),
         actions: const [
           Padding(
               padding: EdgeInsets.only(right: Sizes.paddingRight),
@@ -46,8 +67,8 @@ class SearchDealScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Consumer(builder: (context, ref, child) {
-                final authentication = ref.watch(authenticationProvider);
-                if (authentication == true) {
+                final authUserDataState = ref.watch(authUserDataProvider);
+                if (authUserDataState.isAuthenticated == true) {
                   return SearchKeyWords();
                 } else {
                   return const SizedBox();

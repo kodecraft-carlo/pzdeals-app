@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/src/common_widgets/screen_login_required.dart';
+import 'package:pzdeals/src/features/authentication/presentation/screens/screen_login_required.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
 import 'package:pzdeals/src/features/alerts/presentation/screens/screen_alerts_management.dart';
-import 'package:pzdeals/src/state/authentication_provider.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class DealAlertsScreen extends StatelessWidget {
   DealAlertsScreen({super.key});
@@ -13,10 +13,19 @@ class DealAlertsScreen extends StatelessWidget {
     'Airpods',
     'iPhone',
     'Nike Panda',
+    'Macbook Air M3 15 inch',
     'Apple Watch series 9',
     'New Balance 550',
     'Veja CWL V-10',
     'JBL Speaker',
+    'JBL',
+    'Case',
+    'iPad',
+    'Pixel',
+    'JBL Airpods',
+    'Case Airpods',
+    'iPad Mini',
+    'Pixel 6a',
   ];
 
   final List<PopularKeywordData> popularKeywords = [
@@ -54,15 +63,17 @@ class DealAlertsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, ref, child) {
-      final authentication = ref.watch(authenticationProvider);
-      return authentication == true
-          ? AlertsManagementScreen(
-              savedKeywords: savedKeywords,
-              popularKeywords: popularKeywords,
-            )
-          : const LoginRequiredScreen(
-              hasCloseButton: false,
-            );
+      final authUserState = ref.watch(authUserDataProvider);
+      if (authUserState.isAuthenticated == true) {
+        return AlertsManagementScreen(
+          savedKeywords: savedKeywords,
+          popularKeywords: popularKeywords,
+        );
+      } else {
+        return const LoginRequiredScreen(
+          hasCloseButton: false,
+        );
+      }
     });
   }
 }

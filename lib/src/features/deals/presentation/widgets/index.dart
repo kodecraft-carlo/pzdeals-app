@@ -6,5 +6,5 @@ export 'for_you_collection_deal_card.dart';
 export 'product_deal_card.dart';
 export 'search_field.dart';
 export 'search_discovery.dart';
-export 'product_deal_description.dart';
 export 'search_filter.dart';
+export 'product_deal_description.dart';

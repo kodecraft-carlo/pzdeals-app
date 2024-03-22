@@ -1,0 +1,25 @@
+import 'package:hive/hive.dart';
+
+part 'collection_data.g.dart';
+
+@HiveType(typeId: 2)
+class CollectionData {
+  @HiveField(0)
+  final String title;
+
+  @HiveField(1)
+  final String imageAsset;
+
+  @HiveField(2)
+  final String assetSourceType;
+
+  @HiveField(3)
+  final int id;
+
+  CollectionData({
+    required this.id,
+    required this.title,
+    required this.imageAsset,
+    required this.assetSourceType,
+  });
+}

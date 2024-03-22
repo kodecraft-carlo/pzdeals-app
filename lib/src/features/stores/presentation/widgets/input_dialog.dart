@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/actions/show_snackbar.dart';
+import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/common_widgets/textfield_button.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/services/email_service.dart';
 
-class StoreInputDialog extends StatelessWidget {
+class StoreInputDialog extends ConsumerStatefulWidget {
   const StoreInputDialog({super.key});
+
+  @override
+  _StoreInputDialogState createState() => _StoreInputDialogState();
+}
+
+class _StoreInputDialogState extends ConsumerState<StoreInputDialog> {
+  EmailService emailSvc = EmailService();
+  TextEditingController dialogFieldController = TextEditingController();
+
+  Future<bool> sendMail(String storeName) async {
+    return emailSvc.sendEmailStoreSubmission(storeName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +55,7 @@ class StoreInputDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Don't see your favorite store? Submit it herse!",
+            "Don't see your favorite store? Submit it here!",
             style: TextStyle(
               fontSize: Sizes.fontSizeMedium,
               fontWeight: FontWeight.bold,
@@ -47,9 +63,14 @@ class StoreInputDialog extends StatelessWidget {
           ),
           const SizedBox(height: Sizes.paddingBottomSmall),
           TextFieldButton(
-            onButtonPressed: () {
-              Navigator.of(context).pop();
-              debugPrint("submitted");
+            textController: dialogFieldController,
+            onButtonPressed: () async {
+              if (mounted) LoadingDialog.show(context);
+              if (await sendMail(dialogFieldController.text)) {
+                if (mounted) LoadingDialog.hide(context);
+                showSnackbarWithMessage(context, 'Store submitted. Thank you!');
+                Navigator.of(context).pop();
+              }
             },
             buttonLabel: 'Submit',
             textFieldHint: 'Store name or website..',

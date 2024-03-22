@@ -31,52 +31,48 @@ class ChipSavedKeywords extends StatelessWidget {
         spacing: 5.0,
         children: savedKeywordsData.map(
           (String pillText) {
-            if (editMode == EditMode.edit) {
-              return InputChip(
-                key: ValueKey('InputChip$pillText'),
-                label: Text(pillText),
-                padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                clipBehavior: Clip.hardEdge,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(Sizes.cardBorderRadius),
-                  ),
-                  side: BorderSide(
-                    color: PZColors.pzLightGrey,
-                    width: 1.0,
-                  ),
+            return InputChip(
+              key: ValueKey('InputChip$pillText'),
+              label: Text(
+                pillText,
+                textAlign: TextAlign.center,
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: editMode == EditMode.edit ? 0 : 5.0,
+              ),
+              clipBehavior: Clip.hardEdge,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(Sizes.cardBorderRadius),
                 ),
-                backgroundColor: PZColors.pzLightGrey,
-                labelStyle: const TextStyle(
-                    color: PZColors.pzBlack, fontSize: Sizes.bodyFontSize),
-                deleteIcon: const Icon(
-                  Icons.cancel,
-                  size: Sizes.regularIconSize,
-                  color: PZColors.pzGrey,
+                side: BorderSide(
+                  color: PZColors.pzLightGrey,
+                  width: 1.0,
                 ),
-                onDeleted: () {
-                  // Implement your delete action here
-                },
-              );
-            } else {
-              return Chip(
-                key: ValueKey('Chip$pillText'),
-                label: Text(pillText),
-                padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(Sizes.cardBorderRadius),
-                  ),
-                  side: BorderSide(
-                    color: PZColors.pzLightGrey,
-                    width: 1.0,
-                  ),
-                ),
-                backgroundColor: PZColors.pzLightGrey,
-                labelStyle: const TextStyle(
-                    color: PZColors.pzBlack, fontSize: Sizes.bodyFontSize),
-              );
-            }
+              ),
+              backgroundColor: PZColors.pzLightGrey,
+              disabledColor: PZColors.pzLightGrey,
+              labelStyle: const TextStyle(
+                  color: PZColors.pzBlack, fontSize: Sizes.bodyFontSize),
+              deleteIcon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(
+                      scale: animation,
+                      child: child,
+                    );
+                  },
+                  child: editMode == EditMode.edit
+                      ? const Icon(
+                          Icons.cancel,
+                          size: Sizes.regularIconSize,
+                          color: PZColors.pzGrey,
+                        )
+                      : null),
+              onDeleted: () {
+                // Implement your delete action here
+              },
+            );
           },
         ).toList(),
       ),

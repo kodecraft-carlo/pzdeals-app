@@ -1,72 +1,80 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/src/actions/show_dialog.dart';
 import 'package:pzdeals/src/common_widgets/badge.dart';
-import 'package:pzdeals/src/common_widgets/dialog.dart';
+import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
+import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
 import 'package:pzdeals/src/common_widgets/store_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
+import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
+import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/state/layout_type_provider.dart';
 
-class ProductDealcard extends ConsumerWidget {
-  const ProductDealcard(
-      {super.key,
-      required this.productName,
-      required this.price,
-      required this.imageAsset,
-      required this.discountPercentage,
-      required this.storeAssetImage,
-      required this.oldPrice,
-      required this.assetSourceType});
+class ProductDealcard extends ConsumerStatefulWidget {
+  const ProductDealcard({super.key, required this.productData});
 
-  final String productName;
-  final String price;
-  final String imageAsset;
-  final int discountPercentage;
-  final String oldPrice;
-  final String storeAssetImage;
-  final String assetSourceType;
-
+  final ProductDealcardData productData;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final layoutType = ref.watch(layoutTypeProvider);
-    return ShowDialogWidget(
-        content: ContentDialog(
-            content: ProductDealDescription(
-          productName: productName,
-          price: price,
-          storeAssetImage: storeAssetImage,
-          oldPrice: oldPrice,
-          imageAsset: imageAsset,
-          discountPercentage: discountPercentage.toString(),
-          assetSourceType: assetSourceType,
-          dealDescription:
-              'This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you! This is a great deal for you!',
-        )),
-        childWidget: layoutType == 'Grid'
-            ? gridProductCard(productName, price, imageAsset,
-                discountPercentage, oldPrice, storeAssetImage, assetSourceType)
-            : listProductCard(
-                productName,
-                price,
-                imageAsset,
-                discountPercentage,
-                oldPrice,
-                storeAssetImage,
-                assetSourceType));
+  ProductDealcardState createState() => ProductDealcardState();
+}
+
+class ProductDealcardState extends ConsumerState<ProductDealcard> {
+  FetchProductDealService productDealService = FetchProductDealService();
+
+  Future<ProductDealcardData> loadProduct(int productId) async {
+    final product = await productDealService.fetchProductInfo(productId);
+    return product;
   }
 
-  Widget gridProductCard(
-      String productName,
-      String price,
-      String imageAsset,
-      int discountPercentage,
-      String oldPrice,
-      String storeAssetImage,
-      String assetSourceType) {
+  @override
+  Widget build(BuildContext context) {
+    final layoutType = ref.watch(layoutTypeProvider);
+
+    return GestureDetector(
+      onTap: () async {
+        LoadingDialog.show(context);
+        if (mounted) {
+          final product = await loadProduct(widget.productData.productId);
+          LoadingDialog.hide(context);
+          if (mounted) {
+            showDialog(
+              context: context,
+              useRootNavigator: false,
+              barrierDismissible: true,
+              builder: (context) => ScaffoldMessenger(
+                child: Builder(
+                  builder: (context) => Scaffold(
+                    backgroundColor: Colors.transparent,
+                    body: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      behavior: HitTestBehavior.opaque,
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: ProductContentDialog(
+                          productData: widget.productData,
+                          content: ProductDealDescription(
+                            snackbarContext: context,
+                            productData: product,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+        }
+      },
+      child: layoutType == 'Grid'
+          ? gridProductCard(widget.productData)
+          : listProductCard(widget.productData),
+    );
+  }
+
+  Widget gridProductCard(ProductDealcardData productData) {
     return Card(
         margin: const EdgeInsets.only(
           top: Sizes.marginTopSmall,
@@ -88,10 +96,45 @@ class ProductDealcard extends ConsumerWidget {
             children: [
               Align(
                 alignment: Alignment.topCenter,
-                child: ProductImageWidget(
-                  imageAsset: imageAsset,
-                  sourceType: assetSourceType,
-                  size: 'large',
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    ProductImageWidget(
+                      imageAsset: productData.imageAsset,
+                      sourceType: productData.assetSourceType,
+                      size: 'large',
+                      isExpired: productData.isProductExpired != null &&
+                          productData.isProductExpired == true,
+                    ),
+                    productData.isProductExpired != null &&
+                            productData.isProductExpired == true
+                        ? Row(
+                            children: [
+                              Expanded(
+                                  child: Container(
+                                padding:
+                                    const EdgeInsets.all(Sizes.paddingAllSmall),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  border: Border.all(
+                                    color: PZColors.pzOrange,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: const Text(
+                                  'EXPIRED',
+                                  style: TextStyle(
+                                    color: PZColors.pzOrange,
+                                    fontSize: Sizes.bodyFontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ))
+                            ],
+                          )
+                        : const SizedBox(),
+                  ],
                 ),
               ),
               const SizedBox(
@@ -100,68 +143,78 @@ class ProductDealcard extends ConsumerWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  productName,
+                  productData.productName,
                   style: const TextStyle(
                     fontSize: Sizes.bodyFontSize,
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.start,
-                  maxLines: 2,
+                  maxLines: productData.isProductNoPrice != null &&
+                          productData.isProductNoPrice == true
+                      ? 3
+                      : 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(
                   height:
                       Sizes.spaceBetweenContent), // Add some spacing between
-              Row(
+              Flex(
+                direction: Axis.horizontal,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  StoreImageWidget(storeAssetImage: storeAssetImage),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      // Discount Badge
-                      BadgeWidget(discountPercentage: discountPercentage),
-                      const SizedBox(height: Sizes.spaceBetweenContentSmall),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: RichText(
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                          text: TextSpan(
-                            children: [
-                              // Current Price
-                              TextSpan(
-                                text: '\$$price',
-                                style: const TextStyle(
-                                    fontSize: Sizes.fontSizeLarge,
-                                    color: PZColors.pzGreen,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.bold),
-                              ),
-
-                              // Add some space between prices
-                              const TextSpan(
-                                text: '  ',
-                              ),
-
-                              // Old Price with Strikethrough
-                              TextSpan(
-                                text:
-                                    '\$$oldPrice', // Replace with your old price
-                                style: const TextStyle(
-                                    fontSize: Sizes.bodyFontSize,
-                                    color: Colors.red,
-                                    decoration: TextDecoration.lineThrough,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: StoreImageWidget(
+                        storeAssetImage: productData.storeAssetImage),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Discount Badge
+                        productData.discountPercentage > 0
+                            ? BadgeWidget(
+                                discountPercentage:
+                                    productData.discountPercentage)
+                            : const SizedBox(),
+                        const SizedBox(height: Sizes.spaceBetweenContentSmall),
+                        productData.isProductNoPrice != null &&
+                                productData.isProductNoPrice == false
+                            ? RichText(
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: '\$${productData.price}',
+                                      style: const TextStyle(
+                                          fontSize: Sizes.fontSizeLarge,
+                                          color: PZColors.pzGreen,
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const TextSpan(
+                                      text: ' ',
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          '\$${productData.oldPrice}', // Replace with your old price
+                                      style: const TextStyle(
+                                          fontSize: Sizes.bodyFontSize,
+                                          color: Colors.red,
+                                          decoration:
+                                              TextDecoration.lineThrough,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -170,14 +223,7 @@ class ProductDealcard extends ConsumerWidget {
         ));
   }
 
-  Widget listProductCard(
-      String productName,
-      String price,
-      String imageAsset,
-      int discountPercentage,
-      String oldPrice,
-      String storeAssetImage,
-      String assetSourceType) {
+  Widget listProductCard(ProductDealcardData productData) {
     return Card(
         margin: const EdgeInsets.only(
           top: Sizes.marginTopSmall,
@@ -197,11 +243,53 @@ class ProductDealcard extends ConsumerWidget {
           child: Row(
             children: [
               // Left side: Product Image Preview
-              ProductImageWidget(
-                imageAsset: imageAsset,
-                sourceType: assetSourceType,
-                size: 'medium',
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  ProductImageWidget(
+                    imageAsset: productData.imageAsset,
+                    sourceType: productData.assetSourceType,
+                    size: 'medium',
+                    isExpired: productData.isProductExpired != null &&
+                        productData.isProductExpired == true,
+                  ),
+                  productData.isProductExpired != null &&
+                          productData.isProductExpired == true
+                      ? Row(
+                          children: [
+                            Expanded(
+                                child: Container(
+                              padding:
+                                  const EdgeInsets.all(Sizes.paddingAllSmall),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                border: Border.all(
+                                  color: PZColors.pzOrange,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Text(
+                                'EXPIRED',
+                                style: TextStyle(
+                                  color: PZColors.pzOrange,
+                                  fontSize: Sizes.bodyFontSize,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ))
+                          ],
+                        )
+                      : const SizedBox(),
+                ],
               ),
+              // ProductImageWidget(
+              //   imageAsset: productData.imageAsset,
+              //   sourceType: productData.assetSourceType,
+              //   size: 'medium',
+              //   isExpired: productData.isProductExpired != null &&
+              //       productData.isProductExpired == true,
+              // ),
               // Right side: Product Name, Discount Badge, and Price
               Expanded(
                 child: Padding(
@@ -212,12 +300,15 @@ class ProductDealcard extends ConsumerWidget {
                     children: [
                       // Product Name
                       Text(
-                        productName,
+                        productData.productName,
                         style: const TextStyle(
                           fontSize: Sizes.bodyFontSize,
                           fontWeight: FontWeight.w500,
                         ),
-                        maxLines: 2,
+                        maxLines: productData.isProductNoPrice != null &&
+                                productData.isProductNoPrice == true
+                            ? 3
+                            : 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: Sizes.spaceBetweenSectionsXL),
@@ -232,7 +323,7 @@ class ProductDealcard extends ConsumerWidget {
                                 Padding(
                               padding: const EdgeInsets.all(0),
                               child: StoreImageWidget(
-                                  storeAssetImage: storeAssetImage),
+                                  storeAssetImage: productData.storeAssetImage),
                             ),
                           ),
                           Align(
@@ -241,44 +332,48 @@ class ProductDealcard extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 // Discount Badge
-                                BadgeWidget(
-                                    discountPercentage: discountPercentage),
+                                productData.discountPercentage > 0
+                                    ? BadgeWidget(
+                                        discountPercentage:
+                                            productData.discountPercentage)
+                                    : const SizedBox(),
 
                                 // Product Price
-                                FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          // Current Price
-                                          TextSpan(
-                                            text: '\$$price',
-                                            style: const TextStyle(
-                                                fontSize: Sizes.fontSizeLarge,
-                                                color: PZColors.pzGreen,
-                                                fontFamily: 'Poppins',
-                                                fontWeight: FontWeight.bold),
-                                          ),
+                                productData.isProductNoPrice != null &&
+                                        productData.isProductNoPrice == false
+                                    ? RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            // Current Price
+                                            TextSpan(
+                                              text: '\$${productData.price}',
+                                              style: const TextStyle(
+                                                  fontSize: Sizes.fontSizeLarge,
+                                                  color: PZColors.pzGreen,
+                                                  fontFamily: 'Poppins',
+                                                  fontWeight: FontWeight.bold),
+                                            ),
 
-                                          // Add some space between prices
-                                          const TextSpan(
-                                            text: '  ',
-                                          ),
+                                            // Add some space between prices
+                                            const TextSpan(
+                                              text: '  ',
+                                            ),
 
-                                          // Old Price with Strikethrough
-                                          TextSpan(
-                                            text:
-                                                '\$$oldPrice', // Replace with your old price
-                                            style: const TextStyle(
-                                                fontSize: Sizes.bodyFontSize,
-                                                color: Colors.red,
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                        ],
-                                      ),
-                                    )),
+                                            // Old Price with Strikethrough
+                                            TextSpan(
+                                              text:
+                                                  '\$${productData.oldPrice}', // Replace with your old price
+                                              style: const TextStyle(
+                                                  fontSize: Sizes.bodyFontSize,
+                                                  color: Colors.red,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                  fontWeight: FontWeight.w700),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : const SizedBox(),
                               ],
                             ),
                           ),

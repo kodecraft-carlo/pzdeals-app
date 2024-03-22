@@ -1,10 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/category_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
+import 'package:pzdeals/src/features/deals/deals.dart';
 
-class CollectionSelectionWidget extends StatefulWidget {
+class CollectionSelectionWidget extends ConsumerStatefulWidget {
   const CollectionSelectionWidget({super.key});
 
   @override
@@ -12,11 +15,89 @@ class CollectionSelectionWidget extends StatefulWidget {
       _CollectionSelectionWidgetState();
 }
 
-class _CollectionSelectionWidgetState extends State<CollectionSelectionWidget> {
-  Set<String> selectedCategories = Set<String>();
+class _CollectionSelectionWidgetState
+    extends ConsumerState<CollectionSelectionWidget>
+    with TickerProviderStateMixin {
+  late final AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final foryouState = ref.watch(tabForYouProvider);
+    double screenWidth = MediaQuery.of(context).size.width;
+    double itemWidth = screenWidth / 3;
+    Widget body;
+
+    if (foryouState.isLoading && foryouState.collections.isEmpty) {
+      body = const Center(
+          child: CircularProgressIndicator(color: PZColors.pzOrange));
+    } else if (foryouState.collections.isEmpty) {
+      body = Padding(
+          padding: const EdgeInsets.all(Sizes.paddingAll),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Lottie.asset(
+                'assets/images/lottie/empty.json',
+                height: 200,
+                fit: BoxFit.fitHeight,
+                frameRate: FrameRate.max,
+                controller: _animationController,
+                onLoaded: (composition) {
+                  _animationController
+                    ..duration = composition.duration
+                    ..forward();
+                },
+              ),
+              const SizedBox(height: Sizes.spaceBetweenSections),
+              const Text(
+                'There are no deal collections available at the moment. Please check back later.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+              ),
+            ],
+          ));
+    } else {
+      final collectionData = foryouState.collections;
+      body = GridView.builder(
+        primary: false,
+        padding: const EdgeInsets.all(Sizes.paddingAll),
+        itemCount: collectionData.length,
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: itemWidth,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+            childAspectRatio: 2 / 2.5),
+        itemBuilder: (BuildContext context, int index) {
+          final collection = collectionData[index];
+          return GridItemWidget(
+              containerChild: CategoryImageWidget(
+                imageAsset: collection.imageAsset,
+                sourceType: collection.assetSourceType,
+              ),
+              categoryLabel: collection.title,
+              isSelected: foryouState.isCollectionIdExisting(collection.id),
+              onTap: () {
+                foryouState.toggleCollectionMap(
+                    collection.id, collection.title);
+              });
+        },
+      );
+    }
+
     return SafeArea(
       top: false,
       child: Scaffold(
@@ -32,141 +113,23 @@ class _CollectionSelectionWidgetState extends State<CollectionSelectionWidget> {
             ),
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              iconSize: Sizes.screenCloseIconSize,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
+            foryouState.collections.isEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.close),
+                    iconSize: Sizes.screenCloseIconSize,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                : const SizedBox(),
           ],
         ),
-        body: GridView.count(
-          primary: false,
-          padding: const EdgeInsets.all(20),
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 20,
-          crossAxisCount: 3,
-          children: <Widget>[
-            GridItemWidget(
-                containerChild: SizedBox.square(
-                  child: Container(
-                    color: PZColors.pzOrange,
-                    child: const Icon(
-                      Icons.flash_on_rounded,
-                      color: PZColors.pzWhite,
-                      size: 70,
-                    ),
-                  ),
-                ),
-                categoryLabel: 'Flash Deals',
-                isSelected: selectedCategories.contains('Flash Deals'),
-                onTap: () {
-                  toggleCategorySelection('Flash Deals');
-                }),
-            GridItemWidget(
-                containerChild: const CategoryImageWidget(
-                  imageAsset:
-                      'https://m.media-amazon.com/images/I/81Xi2PJMuGS.__AC_SX300_SY300_QL70_FMwebp_.jpg',
-                  sourceType: 'network',
-                ),
-                categoryLabel: 'Home',
-                isSelected: selectedCategories.contains('Home'),
-                onTap: () {
-                  toggleCategorySelection('Home');
-                }),
-            GridItemWidget(
-                containerChild: const CategoryImageWidget(
-                  imageAsset:
-                      'https://m.media-amazon.com/images/I/71x5zjdEJrL._AC_UY218_.jpg',
-                  sourceType: 'network',
-                ),
-                categoryLabel: 'Computers',
-                isSelected: selectedCategories.contains('Computers'),
-                onTap: () {
-                  toggleCategorySelection('Computers');
-                }),
-            GridItemWidget(
-                containerChild: const CategoryImageWidget(
-                  imageAsset:
-                      'https://m.media-amazon.com/images/I/91FnWK7rDLL._AC_UL320_.jpg',
-                  sourceType: 'network',
-                ),
-                categoryLabel: 'Clothing',
-                isSelected: selectedCategories.contains('Clothing'),
-                onTap: () {
-                  toggleCategorySelection('Clothing');
-                }),
-            GridItemWidget(
-                containerChild: const CategoryImageWidget(
-                  imageAsset:
-                      'https://m.media-amazon.com/images/I/71qONUlf+ZL._AC_UL320_.jpg',
-                  sourceType: 'network',
-                ),
-                categoryLabel: 'Toys',
-                isSelected: selectedCategories.contains('Toys'),
-                onTap: () {
-                  toggleCategorySelection('Toys');
-                }),
-            GridItemWidget(
-                containerChild: const CategoryImageWidget(
-                  imageAsset:
-                      'https://5.imimg.com/data5/AU/DW/KG/SELLER-91627945/grocery-plain-paper-pouch.jpg',
-                  sourceType: 'network',
-                ),
-                categoryLabel: 'Grocery',
-                isSelected: selectedCategories.contains('Grocery'),
-                onTap: () {
-                  toggleCategorySelection('Grocery');
-                }),
-            GridItemWidget(
-                containerChild: const CategoryImageWidget(
-                  imageAsset:
-                      'https://m.media-amazon.com/images/I/71M6pSJZoLL._AC_UL320_.jpg',
-                  sourceType: 'network',
-                ),
-                categoryLabel: 'Kitchen',
-                isSelected: selectedCategories.contains('Kitchen'),
-                onTap: () {
-                  toggleCategorySelection('Kitchen');
-                }),
-            GridItemWidget(
-                containerChild: const CategoryImageWidget(
-                  imageAsset:
-                      'https://m.media-amazon.com/images/I/71URMW1xaBL._AC_UL320_.jpg',
-                  sourceType: 'network',
-                ),
-                categoryLabel: 'Shoes',
-                isSelected: selectedCategories.contains('Shoes'),
-                onTap: () {
-                  toggleCategorySelection('Shoes');
-                }),
-            GridItemWidget(
-                containerChild: const CategoryImageWidget(
-                  imageAsset:
-                      'https://m.media-amazon.com/images/I/71FuI8YvCNL._AC_SX522_.jpg',
-                  sourceType: 'network',
-                ),
-                categoryLabel: 'Mobile',
-                isSelected: selectedCategories.contains('Mobile'),
-                onTap: () {
-                  toggleCategorySelection('Mobile');
-                }),
-          ],
-        ),
-        bottomNavigationBar: const BottomSheetWidget(),
+        body: body,
+        bottomNavigationBar: foryouState.collections.isNotEmpty
+            ? const BottomSheetWidget()
+            : const SizedBox(),
       ),
     );
-  }
-
-  void toggleCategorySelection(String category) {
-    setState(() {
-      if (selectedCategories.contains(category)) {
-        selectedCategories.remove(category);
-      } else {
-        selectedCategories.add(category);
-      }
-    });
   }
 }
 
@@ -181,27 +144,32 @@ class BottomSheetWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(Sizes.buttonBorderRadius),
-                  ),
-                  backgroundColor: PZColors.pzOrange,
-                  minimumSize: const Size(150, 40),
-                  elevation: Sizes.buttonElevation),
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Handle button action
-                debugPrint('Apply Selection pressed');
-              },
-              child: const Text(
-                'Apply Selection',
-                style: TextStyle(color: PZColors.pzWhite),
+          Consumer(builder: (context, ref, child) {
+            final foryouState = ref.watch(tabForYouProvider);
+            return Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(Sizes.buttonBorderRadius),
+                    ),
+                    backgroundColor: PZColors.pzOrange,
+                    minimumSize: const Size(150, 40),
+                    elevation: Sizes.buttonElevation),
+                onPressed: foryouState.collectionsMap.isNotEmpty
+                    ? () {
+                        Navigator.of(context).pop();
+                        foryouState.applySelectedCollections();
+                        debugPrint('Apply Selection pressed');
+                      }
+                    : null,
+                child: const Text(
+                  'Apply Selection',
+                  style: TextStyle(color: PZColors.pzWhite),
+                ),
               ),
-            ),
-          ),
+            );
+          })
         ],
       ),
     );
@@ -312,6 +280,7 @@ class _GridItemWidgetState extends State<GridItemWidget>
                   fontWeight: FontWeight.w600,
                   color: widget.isSelected ? Colors.black : PZColors.pzBlack,
                 ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),

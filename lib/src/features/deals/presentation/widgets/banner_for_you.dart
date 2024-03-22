@@ -32,7 +32,7 @@ class ForYouBannerWidget extends StatelessWidget {
                   bottom: 0,
                   child: SvgPicture.asset(
                     'assets/images/for_you_banner_left.svg',
-                    height: 90, // Set the desired height for the SVG
+                    height: 90,
                   ),
                 ),
                 Positioned(
@@ -40,7 +40,7 @@ class ForYouBannerWidget extends StatelessWidget {
                   bottom: 0,
                   child: SvgPicture.asset(
                     'assets/images/for_you_banner_bg.svg',
-                    height: 110, // Set the desired height for the SVG
+                    height: 110,
                   ),
                 ),
                 Positioned(
@@ -48,7 +48,7 @@ class ForYouBannerWidget extends StatelessWidget {
                   bottom: 0,
                   child: SvgPicture.asset(
                     'assets/images/for_you_banner_right.svg',
-                    height: 95, // Set the desired height for the SVG
+                    height: 95,
                   ),
                 ),
                 const Center(

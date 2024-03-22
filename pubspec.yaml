@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.19.0
+  animations: ^2.0.0
   flutter_riverpod: ^2.4.9
   riverpod_annotation: ^2.3.3
   flutter_svg: ^2.0.9
@@ -40,6 +42,30 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  dio: ^5.4.1
+  lottie: ^3.0.0
+  firebase_auth: ^4.17.4
+  firebase_core: ^2.25.4
+  intl_phone_field: ^3.2.0
+  cloud_firestore: ^4.15.5
+  google_sign_in: ^6.2.1
+  google_sign_in_ios: ^5.7.4
+  googleapis: ^13.0.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.12
+  hive: ^2.2.3
+  path_provider: ^2.1.2
+  hive_generator: ^2.0.1
+  flutter_cache_manager: ^3.3.1
+  cached_network_image: ^3.3.1
+  flutter_inappwebview: ^6.0.0
+  firebase_messaging: ^14.7.18
+  firebase_in_app_messaging: ^0.7.4+16
+  firebase_analytics: ^10.8.9
+  mailer: ^6.1.0
+  flutter_local_notifications: ^17.0.0
+  html: ^0.15.4
+  timeago: ^3.6.1
+  dotted_border: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +98,8 @@ flutter:
     - assets/images/
     - assets/images/shortcuts/
     - assets/images/logins/
+    - assets/images/lottie/
+    - assets/images/stores/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

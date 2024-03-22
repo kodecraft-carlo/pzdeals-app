@@ -1,23 +1,123 @@
 import 'package:flutter/material.dart';
-import 'package:pzdeals/src/actions/slide_up_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/common_widgets/search_field.dart';
 import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_deals.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
+import 'package:pzdeals/src/features/deals/state/provider_filters.dart';
+import 'package:pzdeals/src/features/deals/state/provider_search.dart';
 
-class SearchResultScreen extends StatelessWidget {
+final searchFilterProvider = ChangeNotifierProvider<SearchFilterNotifier>(
+    (ref) => SearchFilterNotifier());
+
+class SearchResultScreen extends ConsumerStatefulWidget {
   const SearchResultScreen({
     super.key,
     this.searchKey = '',
   });
 
   final String searchKey;
+  @override
+  SearchResultScreenState createState() => SearchResultScreenState();
+}
+
+class SearchResultScreenState extends ConsumerState<SearchResultScreen>
+    with TickerProviderStateMixin {
+  late final AnimationController _animationController;
+  final _scrollController = ScrollController(keepScrollOffset: false);
+  late String? textFieldValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this);
+    _scrollController.addListener(_onScroll);
+    Future(() {
+      ref.read(searchproductProvider).setFilters('');
+      ref.read(searchproductProvider).setSearchKey(widget.searchKey);
+      ref.read(searchFilterProvider).resetFilter();
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      ref.read(searchproductProvider).loadMoreProducts();
+    }
+  }
+
+  void scrollToTop() {
+    _scrollController.animateTo(
+      0.0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final String? textFieldValue =
-        ModalRoute.of(context)?.settings.arguments as String?;
+    Widget searchResultWidget;
+
+    final searchState = ref.watch(searchproductProvider);
+    final searchFilterState = ref.watch(searchFilterProvider);
+    debugPrint('searchState: ${searchState.searchKey} ~ ${widget.searchKey}');
+    final searchValue =
+        searchState.searchKey != '' ? searchState.searchKey : widget.searchKey;
+
+    if (searchState.isLoading && searchState.products.isEmpty) {
+      searchResultWidget = const Center(
+          child: CircularProgressIndicator(color: PZColors.pzOrange));
+    } else if (searchState.products.isEmpty) {
+      searchResultWidget = Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Lottie.asset(
+                'assets/images/lottie/empty.json',
+                height: 200,
+                fit: BoxFit.fitHeight,
+                frameRate: FrameRate.max,
+                controller: _animationController,
+                onLoaded: (composition) {
+                  _animationController
+                    ..duration = composition.duration
+                    ..forward();
+                },
+              ),
+              const SizedBox(height: Sizes.spaceBetweenSections),
+              const Text(
+                'There are no deals available for this search. Please try again.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      final productData = searchState.products;
+      searchResultWidget = Flexible(
+        child: ProductsDisplay(
+          productData: productData,
+          layoutType: 'grid',
+          scrollKey: 'searchResult',
+          scrollController: _scrollController,
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -34,41 +134,57 @@ class SearchResultScreen extends StatelessWidget {
             Expanded(
               child: SearchFieldWidget(
                 hintText: "Search deals",
-                textValue: textFieldValue ?? searchKey,
+                textValue: searchValue,
                 autoFocus: false,
-                destinationScreen: const SearchResultScreen(),
               ),
             ),
           ],
         ),
-        actions: const [
+        actions: [
           Padding(
-              padding: EdgeInsets.only(right: Sizes.paddingRight),
-              child: SlideUpDialog(
-                  childWidget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.filter_alt_outlined, color: PZColors.pzOrange),
-                      Text(
-                        "Filter",
-                        style: TextStyle(
+              padding: const EdgeInsets.only(right: Sizes.paddingRight),
+              child: GestureDetector(
+                onTap: () {
+                  if (!searchFilterState.isFilterApplied) {
+                    ref.read(searchFilterProvider).resetFilter();
+                  }
+                  showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      enableDrag: true,
+                      showDragHandle: true,
+                      useSafeArea: true,
+                      builder: (context) => buildSheet(context));
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    searchFilterState.isFilterApplied
+                        ? const Icon(
+                            Icons.filter_alt,
                             color: PZColors.pzOrange,
-                            fontSize: Sizes.fontSizeXSmall,
-                            fontWeight: FontWeight.w400),
-                      )
-                    ],
-                  ),
-                  slideUpDialog: SearchFilter()))
+                          )
+                        : const Icon(
+                            Icons.filter_alt_outlined,
+                            color: PZColors.pzOrange,
+                          ),
+                    const Text(
+                      "Filter",
+                      style: TextStyle(
+                          color: PZColors.pzOrange,
+                          fontSize: Sizes.fontSizeXSmall,
+                          fontWeight: FontWeight.w400),
+                    )
+                  ],
+                ),
+              )),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(
-          left: Sizes.paddingLeft,
-          right: Sizes.paddingRight,
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text.rich(
+      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+          child: Text.rich(
             TextSpan(
               text: "Search result for '",
               style: const TextStyle(
@@ -77,7 +193,7 @@ class SearchResultScreen extends StatelessWidget {
               ),
               children: <TextSpan>[
                 TextSpan(
-                  text: textFieldValue ?? searchKey,
+                  text: searchValue,
                   style: const TextStyle(
                       fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                 ),
@@ -90,93 +206,68 @@ class SearchResultScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: Sizes.spaceBetweenSections),
-          Expanded(
-            child: buildGridView(),
+        ),
+        const SizedBox(height: Sizes.spaceBetweenContent),
+        if (searchFilterState.isFilterApplied)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  searchFilterState.selectedStoreIds.isNotEmpty
+                      ? const Text(
+                          "Store: ",
+                          style: TextStyle(
+                            fontSize: Sizes.bodyFontSize,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
+                      : const SizedBox(),
+                  searchFilterState.selectedStoreIds.isNotEmpty
+                      ? Text(
+                          searchFilterState.selectedStoreIds
+                              .map((map) => map['store_name'] as String)
+                              .join(', '),
+                          style: const TextStyle(
+                            fontSize: Sizes.bodyFontSize,
+                          ),
+                        )
+                      : const SizedBox(),
+                  searchFilterState.selectedCollectionIds.isNotEmpty &&
+                          searchFilterState.selectedStoreIds.isNotEmpty
+                      ? const Text(" & ",
+                          style: TextStyle(
+                            fontSize: Sizes.bodyFontSize,
+                            fontWeight: FontWeight.w500,
+                          ))
+                      : const SizedBox(),
+                  searchFilterState.selectedCollectionIds.isNotEmpty
+                      ? const Text(
+                          "Collection: ",
+                          style: TextStyle(
+                            fontSize: Sizes.bodyFontSize,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
+                      : const SizedBox(),
+                  searchFilterState.selectedCollectionIds.isNotEmpty
+                      ? Text(
+                          searchFilterState.selectedCollectionIds
+                              .map((map) => map['collection_name'] as String)
+                              .join(', '),
+                          style: const TextStyle(
+                            fontSize: Sizes.bodyFontSize,
+                          ),
+                        )
+                      : const SizedBox(),
+                ],
+              ),
+            ),
           ),
-        ]),
-      ),
-    );
-  }
-
-  Widget buildGridView() {
-    final List<ProductDealcardData> productData = [
-      ProductDealcardData(
-        productName: "Apple airpods pro 2nd generation usb-c",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset: "assets/images/product.png",
-        discountPercentage: 50,
-        assetSourceType: 'asset',
-      ),
-      ProductDealcardData(
-        productName: "Laptop 15.6 inch 8GB RAM 512GB SSD",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset:
-            "https://images-na.ssl-images-amazon.com/images/I/71qKfFqgEiL.jpg",
-        discountPercentage: 50,
-        assetSourceType: 'network',
-      ),
-      ProductDealcardData(
-        productName: "Nike Dunk High Retro Shoes",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset:
-            "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/cec5acec-f53e-40a1-80b5-a21ddb4267dc/dunk-high-retro-shoes-Cg1ncq.png",
-        discountPercentage: 50,
-        assetSourceType: 'network',
-      ),
-      ProductDealcardData(
-        productName: "Apple Watch Series 7 45mm",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset:
-            "https://files.refurbed.com/ii/apple-watch-series-7-edst-45mm-1643193412.jpg",
-        discountPercentage: 50,
-        assetSourceType: 'network',
-      ),
-      ProductDealcardData(
-        productName: "Apple Watch Series 7 45mm",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset:
-            "https://files.refurbed.com/ii/apple-watch-series-7-edst-45mm-1643193412.jpg",
-        discountPercentage: 50,
-        assetSourceType: 'network',
-      ),
-      ProductDealcardData(
-        productName: "Apple Watch Series 7 45mm",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset:
-            "https://files.refurbed.com/ii/apple-watch-series-7-edst-45mm-1643193412.jpg",
-        discountPercentage: 50,
-        assetSourceType: 'network',
-      )
-    ];
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, crossAxisSpacing: 15, childAspectRatio: .62),
-      itemCount: productData.length,
-      itemBuilder: (BuildContext context, int index) {
-        final product = productData[index];
-        return ProductDealcard(
-          productName: product.productName,
-          price: product.price,
-          storeAssetImage: product.storeAssetImage,
-          oldPrice: product.oldPrice,
-          imageAsset: product.imageAsset,
-          discountPercentage: product.discountPercentage,
-          assetSourceType: product.assetSourceType,
-        );
-      },
+        const SizedBox(height: Sizes.spaceBetweenSections),
+        searchResultWidget,
+      ]),
     );
   }
 }

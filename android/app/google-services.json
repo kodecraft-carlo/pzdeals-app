@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "629344566477",
+    "project_id": "pzdeals-b9228",
+    "storage_bucket": "pzdeals-b9228.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629344566477:android:67e75202a7dc4fc4ecbd84",
+        "android_client_info": {
+          "package_name": "com.kodecraft.pzdeals"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "629344566477-2731av9mf7j5pti8damtohc0k4vohg27.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kodecraft.pzdeals",
+            "certificate_hash": "30d6631b98c2716d2d38b56e65fd81c241a2b30b"
+          }
+        },
+        {
+          "client_id": "629344566477-f565h31c1l9odgjbg1ifhfog2opd9uhp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtXwlpIZXQ_ez8LqGdJBFOT_TqKrTDjWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "629344566477-f565h31c1l9odgjbg1ifhfog2opd9uhp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "629344566477-7m6sds16skaa309s7v0qgm5dcdqbk0ur.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.pzdeals"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

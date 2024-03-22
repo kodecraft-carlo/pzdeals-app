@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:pzdeals/src/actions/show_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/features/stores/models/index.dart';
 import 'package:pzdeals/src/features/stores/presentation/widgets/index.dart';
+import 'package:pzdeals/src/models/index.dart';
 
 class DisplayStores extends StatelessWidget {
-  DisplayStores({super.key, required this.storedata});
+  DisplayStores({super.key, required this.storedata, this.scrollController});
 
   final List<StoreData> storedata;
   final StoreData pzDeals = StoreData(
+      id: 0,
+      handle: 'pzdeals',
       storeName: 'PZ Deals',
       storeAssetImage: 'assets/images/pzdeals_store.png',
       assetSourceType: 'asset');
+
+  final ScrollController? scrollController;
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double itemWidth = screenWidth / 4;
-
     return GridView.builder(
+      controller: scrollController,
       padding: const EdgeInsets.all(Sizes.paddingAll),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: itemWidth,
@@ -27,27 +30,10 @@ class DisplayStores extends StatelessWidget {
       itemCount: storedata.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
-          // return GestureDetector(
-          //   onTap: () {
-          //     showDialog(
-          //       context: context,
-          //       builder: (BuildContext context) {
-          //         return const CustomInputDialog();
-          //       },
-          //     );
-          //   },
-          //   child: StoreCardWidget(storeDetails: pzDeals),
-          // );
-          return ShowDialogWidget(
-            content: const StoreInputDialog(),
-            childWidget: StoreCardWidget(storeDetails: pzDeals),
-          );
+          return StoreCardWidget(storeData: pzDeals);
         } else {
           final store = storedata[index - 1];
-          return ShowDialogWidget(
-            content: const StoreDialog(),
-            childWidget: StoreCardWidget(storeDetails: store),
-          );
+          return StoreCardWidget(storeData: store);
         }
       },
     );

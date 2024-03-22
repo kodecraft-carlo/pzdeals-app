@@ -10,8 +10,12 @@ class AppbarIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const MainApp()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const NavigationWidget(
+                        initialPageIndex: 0,
+                      )));
         },
         child: Image.asset(
           'assets/images/pzdeals.png',

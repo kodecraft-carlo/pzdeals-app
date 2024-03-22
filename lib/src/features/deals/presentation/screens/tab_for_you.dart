@@ -1,55 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/common_widgets/text_widget.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
+import 'package:pzdeals/src/features/deals/services/fetch_foryou.dart';
 
-class ForYouWidget extends StatelessWidget {
+class ForYouWidget extends ConsumerStatefulWidget {
   const ForYouWidget({super.key});
+  @override
+  ForYouWidgetState createState() => ForYouWidgetState();
+}
+
+class ForYouWidgetState extends ConsumerState<ForYouWidget>
+    with TickerProviderStateMixin {
+  late final AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<ProductDealcardData> productDeals = [
-      ProductDealcardData(
-        productName: "Apple airpods pro 2nd generation usb-c",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset: "assets/images/product.png",
-        discountPercentage: 50,
-        assetSourceType: 'asset',
-      ),
-      ProductDealcardData(
-        productName: "Laptop 15.6 inch 8GB RAM 512GB SSD",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset:
-            "https://images-na.ssl-images-amazon.com/images/I/71qKfFqgEiL.jpg",
-        discountPercentage: 50,
-        assetSourceType: 'network',
-      ),
-      ProductDealcardData(
-        productName: "Nike Dunk High Retro Shoes",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset:
-            "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/cec5acec-f53e-40a1-80b5-a21ddb4267dc/dunk-high-retro-shoes-Cg1ncq.png",
-        discountPercentage: 50,
-        assetSourceType: 'network',
-      ),
-      ProductDealcardData(
-        productName: "Apple Watch Series 7 45mm",
-        price: "199.99",
-        storeAssetImage: "assets/images/store.png",
-        oldPrice: "399.99",
-        imageAsset:
-            "https://files.refurbed.com/ii/apple-watch-series-7-edst-45mm-1643193412.jpg",
-        discountPercentage: 50,
-        assetSourceType: 'network',
-      )
-    ];
+    final foryouState = ref.watch(tabForYouProvider);
+    final FetchForYouService fetchForYouService = FetchForYouService();
+    final List<Map<String, dynamic>> dataMap =
+        foryouState.collectionsMap.isNotEmpty &&
+                foryouState.isSelectionApplied == true
+            ? foryouState.collectionsMap
+            : foryouState.defaultCollections;
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -59,15 +48,105 @@ class ForYouWidget extends StatelessWidget {
           Padding(
               padding: const EdgeInsets.all(Sizes.paddingAll),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ForYouCollectionList(
-                    title: 'Home Deals',
-                    productData: productDeals,
-                  ),
-                  ForYouCollectionList(
-                    title: 'Tech Deals',
-                    productData: productDeals,
-                  ),
+                  for (Map<String, dynamic> map in dataMap)
+                    FutureBuilder(
+                        future: fetchForYouService.fetchForYouDeals(
+                            map['collection_id'], 4, map['collection_name']),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SizedBox.shrink();
+                          } else if (snapshot.hasError) {
+                            return Container(
+                                margin: const EdgeInsets.only(
+                                  bottom: Sizes.marginBottom,
+                                ),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TextWidget(
+                                          text:
+                                              '${map['collection_name']} Deals',
+                                          textDisplayType:
+                                              TextDisplayType.sectionTitle),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Card(
+                                              margin: const EdgeInsets.only(
+                                                top: Sizes.marginTopSmall,
+                                                bottom: Sizes.marginBottomSmall,
+                                              ),
+                                              color: PZColors.pzWhite,
+                                              surfaceTintColor:
+                                                  PZColors.pzWhite,
+                                              elevation: 0,
+                                              shape: RoundedRectangleBorder(
+                                                side: const BorderSide(
+                                                    color: PZColors.pzLightGrey,
+                                                    width: 1.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        Sizes.cardBorderRadius),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                    Sizes.paddingAllSmall),
+                                                child: Column(
+                                                  children: [
+                                                    Lottie.asset(
+                                                      'assets/images/lottie/empty.json',
+                                                      height: 120,
+                                                      fit: BoxFit.fitHeight,
+                                                      frameRate: FrameRate.max,
+                                                      controller:
+                                                          _animationController,
+                                                      onLoaded: (composition) {
+                                                        _animationController
+                                                          ..duration =
+                                                              composition
+                                                                  .duration
+                                                          ..forward();
+                                                      },
+                                                    ),
+                                                    const SizedBox(
+                                                        height: Sizes
+                                                            .spaceBetweenContentSmall),
+                                                    Text(
+                                                      "There are no ${map['collection_name']} Deals available at the moment. Please check back later.",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: const TextStyle(
+                                                          fontSize: Sizes
+                                                              .fontSizeMedium,
+                                                          color:
+                                                              PZColors.pzGrey),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ]));
+                          } else {
+                            final List? productData = snapshot.data;
+                            if (productData != null) {
+                              return ForYouCollectionList(
+                                title: '${map['collection_name']} Deals',
+                                collectionId: map['collection_id'],
+                                productData:
+                                    productData as List<ProductDealcardData>,
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }
+                        })
                 ],
               )),
         ],

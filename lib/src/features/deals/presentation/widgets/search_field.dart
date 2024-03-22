@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_deals.dart';
+import 'package:pzdeals/src/features/deals/state/provider_search.dart';
 
-class HomescreenSearchFieldWidget extends StatelessWidget {
+class HomescreenSearchFieldWidget extends ConsumerWidget {
   const HomescreenSearchFieldWidget({super.key, required this.hintText});
 
   final String hintText;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return TextField(
       readOnly: true,
       decoration: InputDecoration(
@@ -32,6 +33,7 @@ class HomescreenSearchFieldWidget extends StatelessWidget {
       style: const TextStyle(
           fontSize: Sizes.textFieldFontSize, color: PZColors.pzBlack),
       onTap: () => {
+        ref.read(searchproductProvider).setSearchKey(''),
         Navigator.push(
           context,
           PageRouteBuilder(

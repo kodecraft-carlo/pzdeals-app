@@ -1,88 +1,130 @@
-import 'package:flutter/material.dart';
-import 'package:pzdeals/src/actions/navigate_screen.dart';
-import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/features/account/presentation/screens/index.dart';
-import 'package:pzdeals/src/features/notifications/models/notification_data.dart';
-import 'package:pzdeals/src/features/notifications/presentation/screens/screen_notification_details.dart';
+import 'dart:convert';
 
-class NotificationCardWidget extends StatelessWidget {
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
+import 'package:pzdeals/src/models/index.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
+class NotificationCardWidget extends ConsumerWidget {
   const NotificationCardWidget({super.key, required this.notificationData});
 
   final NotificationData notificationData;
 
   @override
-  Widget build(BuildContext context) {
-    return NavigateScreenWidget(
-      destinationWidget: NotificationDetails(title: notificationData.title),
-      childWidget: Card(
-        surfaceTintColor: PZColors.pzLightGrey,
-        elevation: 0,
-        color: PZColors.pzLightGrey.withOpacity(.6),
-        margin: const EdgeInsets.only(bottom: Sizes.marginBottom),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
-          side: BorderSide(color: PZColors.pzGrey.withOpacity(.2), width: 1),
-        ),
-        child: ListTile(
-          isThreeLine: true,
-          leading: CircleAvatar(
-              backgroundColor: PZColors.pzOrange,
-              child: Transform.rotate(
-                angle: -7,
-                child: const Icon(
-                  Icons.campaign_rounded,
-                  color: PZColors.pzWhite,
-                ),
-              )),
-          title: Text(
-            notificationData.title,
-            style: const TextStyle(
-                color: PZColors.pzBlack,
-                fontWeight: FontWeight.w700,
-                fontSize: Sizes.fontSizeSmall),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Dismissible(
+      key: Key(notificationData.id),
+      onDismissed: (direction) {
+        ref.read(notificationsProvider).removeNotification(notificationData.id);
+      },
+      background: Container(
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          decoration: BoxDecoration(
+            color: PZColors.pzOrange,
+            borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
           ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.only(right: Sizes.paddingAll),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(notificationData.description,
-                  style: const TextStyle(
-                      color: PZColors.pzBlack, fontSize: Sizes.fontSizeSmall)),
-              const SizedBox(height: Sizes.spaceBetweenContentSmall),
-              notificationData.imageUrl != ''
-                  ? Image.network(
-                      notificationData.imageUrl,
-                      width: MediaQuery.of(context).size.width / 2,
-                      fit: BoxFit.fitWidth,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        } else {
-                          return SizedBox(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                  PZColors.pzOrange),
-                              backgroundColor: PZColors.pzLightGrey,
-                              strokeWidth: 3,
-                            ),
-                          );
-                        }
-                      },
-                    )
-                  : const SizedBox.shrink(),
-              const SizedBox(height: Sizes.spaceBetweenSections),
-              Text(notificationData.timeStamp,
-                  style: const TextStyle(
-                      color: PZColors.pzGrey, fontSize: Sizes.fontSizeXSmall)),
+              SizedBox(),
+              Text('Notification Cleared',
+                  style: TextStyle(
+                      color: PZColors.pzWhite,
+                      fontSize: Sizes.fontSizeSmall,
+                      fontWeight: FontWeight.w600)),
+              Icon(Icons.delete_forever_rounded,
+                  color: PZColors.pzWhite, size: 25)
             ],
+          )),
+      direction: DismissDirection.endToStart,
+      child: GestureDetector(
+        onTap: () {
+          ref.read(notificationsProvider).markAsRead(notificationData.id);
+          if (notificationData.data != null || notificationData.data != {}) {
+            final data = notificationData.data;
+            debugPrint('data: ${data['value']}');
+            if (data['alert_type'] == 'keyword') {
+              Navigator.of(context).pushNamed('/keyword-deals', arguments: {
+                'title': notificationData.title,
+                'keyword': data['value']
+              });
+            }
+            if (data['alert_type'] == 'percentage') {
+              Navigator.of(context).pushNamed('/percentage-deals', arguments: {
+                'title': notificationData.title,
+                'value': data['value']
+              });
+            }
+          }
+        },
+        child: Card(
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          color: notificationData.isRead
+              ? PZColors.pzLightGrey.withOpacity(.6)
+              : PZColors.pzOrange.withOpacity(.1),
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          clipBehavior: Clip.hardEdge,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
+            side: BorderSide(
+                color: notificationData.isRead
+                    ? PZColors.pzGrey.withOpacity(.2)
+                    : PZColors.pzOrange.withOpacity(.2),
+                width: 1),
+          ),
+          child: ListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
+            ),
+            isThreeLine: true,
+            leading: CircleAvatar(
+                backgroundColor: PZColors.pzOrange,
+                child: Transform.rotate(
+                  angle: notificationData.imageUrl != '' ? 0 : -7,
+                  child: notificationData.imageUrl != ''
+                      ? CachedNetworkImage(imageUrl: notificationData.imageUrl)
+                      : const Icon(
+                          Icons.campaign_rounded,
+                          color: PZColors.pzWhite,
+                        ),
+                )),
+            title: Text(
+              notificationData.title,
+              style: const TextStyle(
+                  color: PZColors.pzBlack,
+                  fontWeight: FontWeight.w700,
+                  fontSize: Sizes.fontSizeSmall),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(notificationData.body,
+                    style: const TextStyle(
+                        color: PZColors.pzBlack,
+                        fontSize: Sizes.fontSizeSmall)),
+                const SizedBox(height: Sizes.spaceBetweenContentSmall),
+                notificationData.imageUrl != ''
+                    ? CachedNetworkImage(
+                        imageUrl: notificationData.imageUrl,
+                        width: MediaQuery.of(context).size.width / 2,
+                        fit: BoxFit.fitWidth,
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(height: Sizes.spaceBetweenSections),
+                Text(timeago.format(notificationData.timestamp),
+                    style: const TextStyle(
+                        color: PZColors.pzGrey,
+                        fontSize: Sizes.fontSizeXSmall)),
+              ],
+            ),
           ),
         ),
       ),
-      animationDirection: 'leftToRight',
     );
   }
 }

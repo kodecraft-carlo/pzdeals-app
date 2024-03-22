@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/actions/navigate_screen.dart';
+import 'package:pzdeals/src/actions/show_dialog_from_gesture.dart';
 import 'package:pzdeals/src/common_widgets/square_labeled_icons.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_cc_deals.dart';
@@ -36,16 +37,16 @@ class MoreShortcutsWidget extends StatelessWidget {
         NavigateScreenWidget(
           destinationWidget: BlogScreenWidget(),
           childWidget: SquareLabeledIcon(
-            iconTitle: 'Blogs',
+            iconTitle: 'Blog',
             iconImage: 'assets/images/shortcuts/blogs.png',
             iconAssetType: 'asset',
             borderColor: Colors.blue.shade900,
           ),
           animationDirection: 'leftToRight',
         ),
-        NavigateScreenWidget(
+        const NavigateScreenWidget(
           destinationWidget: BookmarkedScreenWidget(),
-          childWidget: const SquareLabeledIcon(
+          childWidget: SquareLabeledIcon(
             iconTitle: 'Bookmark',
             iconImage: 'assets/images/shortcuts/bookmark.png',
             iconAssetType: 'asset',
@@ -53,12 +54,24 @@ class MoreShortcutsWidget extends StatelessWidget {
           ),
           animationDirection: 'leftToRight',
         ),
-        SquareLabeledIcon(
-          iconTitle: 'Wish List',
-          iconImage: 'assets/images/shortcuts/wishlist.png',
-          iconAssetType: 'asset',
-          borderColor: Colors.red.shade600,
-        ),
+        ShowDialogWidgetFromGesture(
+            content: Dialog(
+              backgroundColor: PZColors.pzWhite,
+              surfaceTintColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Sizes.dialogBorderRadius),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(Sizes.paddingAll),
+                child: Text('Stay tuned! This feature is Coming Soon.'),
+              ),
+            ),
+            childWidget: SquareLabeledIcon(
+              iconTitle: 'Wish List',
+              iconImage: 'assets/images/shortcuts/wishlist.png',
+              iconAssetType: 'asset',
+              borderColor: Colors.red.shade600,
+            )),
       ],
     );
   }

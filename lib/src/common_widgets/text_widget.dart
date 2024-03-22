@@ -27,6 +27,7 @@ class TextWidget extends StatelessWidget {
   final TextDisplayType textDisplayType;
   final Color textColor;
   final TextAlign textAlign;
+  final FontWeight fontWeight;
 
   const TextWidget({
     super.key,
@@ -34,6 +35,7 @@ class TextWidget extends StatelessWidget {
     required this.textDisplayType,
     this.textColor = PZColors.pzBlack,
     this.textAlign = TextAlign.left,
+    this.fontWeight = FontWeight.normal,
   });
 
   @override
@@ -49,7 +51,6 @@ class TextWidget extends StatelessWidget {
         fontSize = Sizes.sectionHeaderFontSize;
         fontWeight = FontWeight.bold;
         break;
-
       case TextDisplayType.bodyText:
         fontSize = 16.0;
         fontWeight = FontWeight.normal;
@@ -57,6 +58,18 @@ class TextWidget extends StatelessWidget {
       case TextDisplayType.sectionSubTitle:
         fontSize = 14.0;
         fontWeight = FontWeight.normal;
+        break;
+      case TextDisplayType.smallText:
+        fontSize = 12.0;
+        fontWeight = FontWeight.normal;
+      case TextDisplayType.normalText:
+        fontSize = 14.0;
+        fontWeight = FontWeight.normal;
+
+        break;
+      case TextDisplayType.xLargeText:
+        fontSize = 22.0;
+        fontWeight = FontWeight.w700;
         break;
       default:
         fontSize = 16.0;

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:pzdeals/src/actions/navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/appbar_icon.dart';
 import 'package:pzdeals/src/features/account/account.dart';
@@ -29,13 +28,13 @@ class SliverAppBarWidget extends StatelessWidget {
           ),
         ],
       ),
-      actions: [
+      actions: const [
         Padding(
-          padding: const EdgeInsets.only(right: Sizes.paddingRight),
+          padding: EdgeInsets.only(right: Sizes.paddingRight),
           child: NavigateScreenWidget(
               destinationWidget: AccountWidget(),
               animationDirection: 'bottomToTop',
-              childWidget: const Icon(
+              childWidget: Icon(
                 Icons.account_circle_outlined,
                 color: PZColors.pzOrange,
               )),

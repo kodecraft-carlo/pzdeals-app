@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/features/account/models/index.dart';
+import 'package:pzdeals/src/models/user_data.dart';
+import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
 
 class AccountCard extends StatelessWidget {
   const AccountCard({super.key, required this.accountData});
 
-  final AccountData accountData;
+  final UserData accountData;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -18,16 +19,28 @@ class AccountCard extends StatelessWidget {
               color: Colors.amber,
             ),
             title: Text(
-              accountData.email,
+              'Welcome, ${accountData.firstName} ${accountData.lastName}!',
               style: const TextStyle(
                   color: PZColors.pzOrange,
                   fontWeight: FontWeight.w700,
                   fontSize: Sizes.listTitleFontSize),
             ),
-            subtitle: Text(
-              accountData.registeredDate,
-              style: const TextStyle(
-                  color: Colors.black54, fontSize: Sizes.bodySmallSize),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  accountData.emailAddress!,
+                  style: const TextStyle(
+                      color: Colors.black54,
+                      fontSize: Sizes.bodySmallSize,
+                      fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  'Registered: ${formatDateToDisplay(accountData.dateRegistered!, 'MMM dd, yyyy').toString()}',
+                  style: const TextStyle(
+                      color: Colors.black54, fontSize: Sizes.bodySmallSize),
+                )
+              ],
             )));
   }
 }

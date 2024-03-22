@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
@@ -48,48 +49,47 @@ class CategoryImageWidget extends StatelessWidget {
 
     if (sourceType == 'asset') {
       imageProvider = AssetImage(imageAsset);
-      return Image(
-        image: imageProvider,
-        width: width,
-        height: height,
-        fit: BoxFit.cover,
-      );
     } else if (sourceType == 'network') {
       imageProvider = NetworkImage(imageAsset);
-      return Image.network(
-        imageAsset,
+    } else {
+      imageProvider = const AssetImage('assets/pzdeals.png');
+    }
+
+    Widget imageWidget = Image(
+      image: imageProvider,
+      width: width,
+      height: height,
+      fit: BoxFit.cover,
+    );
+
+    // Apply loading and error builders for network images
+    if (sourceType == 'network') {
+      imageWidget = CachedNetworkImage(
+        imageUrl: imageAsset,
         width: width,
         height: height,
         fit: BoxFit.cover,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          } else {
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        (loadingProgress.expectedTotalBytes ?? 1)
-                    : null,
-                valueColor:
-                    const AlwaysStoppedAnimation<Color>(PZColors.pzOrange),
-              ),
-            );
-          }
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
+            backgroundColor: PZColors.pzLightGrey,
+            strokeWidth: 3,
+          ),
+        ),
+        errorWidget: (context, url, error) {
+          debugPrint('Error loading image: $error');
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(Sizes.containerBorderRadius),
+            child: Image.asset(
+              'assets/images/pzdeals.png',
+              width: width,
+              height: height,
+              fit: BoxFit.cover,
+            ),
+          );
         },
       );
-    } else {
-      imageProvider = const AssetImage('assets/pzdeals.png');
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(Sizes.containerBorderRadius),
-        child: Image(
-          image: imageProvider,
-          width: width,
-          height: height,
-          fit: BoxFit.cover,
-        ),
-      );
     }
+    return imageWidget;
   }
 }

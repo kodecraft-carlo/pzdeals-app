@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:pzdeals/src/common_widgets/button_browser.dart';
+import 'package:pzdeals/src/common_widgets/expired_deal_banner.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
+import 'package:pzdeals/src/common_widgets/scrollbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/deals/models/index.dart';
 
 class CreditCardDealDescription extends StatelessWidget {
   const CreditCardDealDescription(
-      {super.key,
-      required this.title,
-      required this.description,
-      required this.imageAsset,
-      required this.sourceType});
-  final String title;
-  final String description;
-  final String imageAsset;
-  final String sourceType;
+      {super.key, required this.creditCardDealData});
+  final CreditCardDealData creditCardDealData;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +28,9 @@ class CreditCardDealDescription extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: ScrollbarWidget(
+          child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.only(
             left: Sizes.paddingLeft,
@@ -42,39 +41,36 @@ class CreditCardDealDescription extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ProductImageWidget(
-                imageAsset: imageAsset,
-                sourceType: sourceType,
+                imageAsset: creditCardDealData.imageAsset,
+                sourceType: creditCardDealData.sourceType,
                 size: 'xlarge',
               ),
-              Text(
-                title,
-                style: const TextStyle(
-                    fontSize: Sizes.fontSizeMedium,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      creditCardDealData.title,
+                      style: const TextStyle(
+                          fontSize: Sizes.fontSizeMedium,
+                          fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                ],
               ),
               const SizedBox(height: Sizes.spaceBetweenSections),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(Sizes
-                          .buttonBorderRadius), // Adjust the radius as needed
-                    ),
-                    backgroundColor: PZColors.pzGreen,
-                    minimumSize: const Size(150, 40),
-                    elevation: Sizes.buttonElevation),
-                onPressed: () {
-                  // Handle button action
-                  debugPrint('Credit Card Deal presssed');
-                },
-                child: const Text(
-                  'Apply now',
-                  style: TextStyle(color: PZColors.pzWhite),
-                ),
-              ),
+              if (creditCardDealData.isDealExpired != null &&
+                  creditCardDealData.isDealExpired == true)
+                const ExpiredDealBannerWidget(
+                    message: 'Sorry, this deal has expired')
+              else if (creditCardDealData.barCodeLink != null &&
+                  creditCardDealData.barCodeLink != "")
+                OpenBrowserButton(
+                    url: creditCardDealData.barCodeLink ?? '',
+                    buttonLabel: 'Apply Now'),
               const SizedBox(height: Sizes.spaceBetweenSections),
               Html(
-                data: description,
+                data: creditCardDealData.description,
                 style: {
                   "body": Style(
                     padding: HtmlPaddings.zero,
@@ -85,7 +81,7 @@ class CreditCardDealDescription extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      )),
     );
   }
 }

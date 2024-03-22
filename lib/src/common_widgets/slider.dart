@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 
 class SliderWidget extends StatefulWidget {

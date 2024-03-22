@@ -1,78 +1,178 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/common_widgets/search_field.dart';
 import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/features/more/models/index.dart';
+import 'package:pzdeals/src/features/more/presentation/widgets/blogs_search_field.dart';
 import 'package:pzdeals/src/features/more/presentation/widgets/card_blogpost.dart';
+import 'package:pzdeals/src/features/more/state/blogs_provider.dart';
+import 'package:pzdeals/src/utils/helpers/debouncer.dart';
 
-class BlogScreenWidget extends StatelessWidget {
-  BlogScreenWidget({super.key});
+final blogsProvider =
+    ChangeNotifierProvider<BlogsNotifier>((ref) => BlogsNotifier());
 
-  List<BlogData> blogData = [
-    BlogData(
-      blogTitle:
-          "Throw The Best Super Bowl VLIII Party Of Your Life With These Ideas",
-      blogImage:
-          "https://www.pzdeals.com/cdn/shop/files/superbowl_150x.jpg?v=1707246031",
-    ),
-    BlogData(
-      blogTitle:
-          "20 Office And Desk Products To Level Up Your Productivity Right Now",
-      blogImage:
-          "https://www.pzdeals.com/cdn/shop/files/815FK_LVa-L._AC_SL1500_150x.jpg?v=1706731314",
-    ),
-    BlogData(
-      blogTitle:
-          "22 Must-Have Travel Items To Keep You Sane While Flying Or Driving",
-      blogImage:
-          "https://www.pzdeals.com/cdn/shop/files/gobe_150x.png?v=1705951881",
-    ),
-    BlogData(
-      blogTitle: "Celebrate Tu B'Shvat At Home With These Cute Ideas!",
-      blogImage:
-          "https://www.pzdeals.com/cdn/shop/files/81-E4vKjqlL._AC_SL1500_150x.jpg?v=1705604873",
-    ),
-    BlogData(
-      blogTitle: "Upgrade Your Playroom With These 22 Products",
-      blogImage:
-          "https://www.pzdeals.com/cdn/shop/files/playroomimage_150x.jpg?v=1705337877",
-    ),
-  ];
+class BlogScreenWidget extends ConsumerStatefulWidget {
+  const BlogScreenWidget({super.key});
+
+  BlogScreenWidgetState createState() => BlogScreenWidgetState();
+}
+
+class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
+    with TickerProviderStateMixin {
+  late final AnimationController _animationController;
+  final _scrollController = ScrollController(keepScrollOffset: true);
+  final GlobalKey<NestedScrollViewState> globalKey = GlobalKey();
+  final _debouncer = Debouncer(delay: const Duration(milliseconds: 300));
+  late TextEditingController searchController;
+
+  void _onTextChanged(String text) {
+    _debouncer.run(() {
+      filterBlogs(text);
+    });
+  }
+
+  void filterBlogs(String query) {
+    ref.read(blogsProvider).filterBlogs(query);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this);
+    searchController = TextEditingController();
+    _scrollController.addListener(_onScroll);
+    Future(() => ref.read(blogsProvider).loadBlogs());
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      ref.read(blogsProvider).loadMoreBlogs();
+    }
+  }
+
+  void scrollToTop() {
+    _scrollController.animateTo(
+      0.0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final blogState = ref.watch(blogsProvider);
+    Widget body;
+    if (blogState.isLoading && blogState.blogs.isEmpty) {
+      body = const Center(
+          child: CircularProgressIndicator(color: PZColors.pzOrange));
+    } else if (blogState.blogs.isEmpty) {
+      body = Padding(
+          padding: const EdgeInsets.all(Sizes.paddingAll),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Lottie.asset(
+                'assets/images/lottie/empty.json',
+                height: 200,
+                fit: BoxFit.fitHeight,
+                frameRate: FrameRate.max,
+                controller: _animationController,
+                onLoaded: (composition) {
+                  _animationController
+                    ..duration = composition.duration
+                    ..forward();
+                },
+              ),
+              const SizedBox(height: Sizes.spaceBetweenSections),
+              const Text(
+                'There\'s no blog available at the moment. Please check back later.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+              ),
+            ],
+          ));
+    } else {
+      final blogData = blogState.filteredBlogs.isNotEmpty
+          ? blogState.filteredBlogs
+          : blogState.blogs;
+      body = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+        child: Column(
+          children: [
+            Expanded(
+                child: ListView.builder(
+              // controller: _scrollController,
+              shrinkWrap: true,
+              itemCount: blogData.length,
+              itemBuilder: (BuildContext context, int index) {
+                final blog = blogData[index];
+                return BlogpostCardWidget(
+                  blogTitle: blog.blogTitle,
+                  blogImage: blog.blogImage,
+                  blogId: blog.id,
+                );
+              },
+            )),
+            // if (blogState.isLoading)
+            //   const Padding(
+            //     padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+            //     child: Center(
+            //         child: CircularProgressIndicator(color: PZColors.pzOrange)),
+            //   ),
+          ],
+        ),
+      );
+    }
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Blogs',
-          style: TextStyle(
-            color: PZColors.pzBlack,
-            fontWeight: FontWeight.w700,
-            fontSize: Sizes.appBarFontSize,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        centerTitle: true,
-        surfaceTintColor: PZColors.pzWhite,
-        backgroundColor: PZColors.pzWhite,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
-      body: ListView.builder(
-        shrinkWrap: true,
-        itemCount: blogData.length,
-        padding: const EdgeInsets.only(
-            top: Sizes.paddingTopSmall,
-            left: Sizes.paddingLeft,
-            right: Sizes.paddingRight),
-        itemBuilder: (BuildContext context, int index) {
-          final blog = blogData[index];
-          return BlogpostCardWidget(
-              blogTitle: blog.blogTitle, blogImage: blog.blogImage);
+      body: NestedScrollView(
+        controller: _scrollController,
+        key: globalKey,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              pinned: true,
+              title: const Text(
+                'Blogs',
+                style: TextStyle(
+                  color: PZColors.pzBlack,
+                  fontWeight: FontWeight.w700,
+                  fontSize: Sizes.appBarFontSize,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              centerTitle: true,
+              surfaceTintColor: PZColors.pzWhite,
+              backgroundColor: PZColors.pzWhite,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+                child: BlogSearchFieldWidget(
+                    hintText: 'Search blogs',
+                    searchController: searchController,
+                    filterData: _onTextChanged),
+              ),
+            ),
+          ];
         },
+        body: body,
       ),
     );
   }

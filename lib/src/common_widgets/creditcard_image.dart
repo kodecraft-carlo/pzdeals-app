@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 
@@ -17,48 +18,45 @@ class CreditCardImageWidget extends StatelessWidget {
 
     if (sourceType == 'asset') {
       imageProvider = AssetImage(imageAsset);
-      return Image(
-        image: imageProvider,
-        width: 100.0,
-        height: 80.0,
-        fit: BoxFit.fitWidth,
-      );
     } else if (sourceType == 'network') {
       imageProvider = NetworkImage(imageAsset);
-      return Image.network(
-        imageAsset,
+    } else {
+      imageProvider = const AssetImage('assets/pzdeals.png');
+    }
+
+    Widget imageWidget = Image(
+      image: imageProvider,
+      width: 100.0,
+      height: 80.0,
+      fit: BoxFit.fitWidth,
+    );
+
+    // Apply loading and error builders for network images
+    if (sourceType == 'network') {
+      imageWidget = CachedNetworkImage(
+        imageUrl: imageAsset,
         width: 100.0,
         height: 80.0,
         fit: BoxFit.fitWidth,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) {
-            // If there's no progress, return the child (loaded image)
-            return child;
-          } else {
-            // If the image is still loading, return a loading indicator
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        (loadingProgress.expectedTotalBytes ?? 1)
-                    : null,
-                valueColor:
-                    const AlwaysStoppedAnimation<Color>(PZColors.pzOrange),
-              ),
-            );
-          }
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
+            backgroundColor: PZColors.pzLightGrey,
+            strokeWidth: 3,
+          ),
+        ),
+        errorWidget: (context, url, error) {
+          debugPrint('Error loading image: $error');
+          return Image.asset(
+            'assets/images/pzdeals.png',
+            width: 100.0,
+            height: 80.0,
+            fit: BoxFit.fitWidth,
+          );
         },
       );
-    } else {
-      // Handle other source types or provide a default image
-      imageProvider = const AssetImage('assets/pzdeals.png');
-      return Image(
-        image: imageProvider,
-        width: 100.0,
-        height: 80.0,
-        fit: BoxFit.fitHeight,
-      );
     }
+
+    return imageWidget;
   }
 }

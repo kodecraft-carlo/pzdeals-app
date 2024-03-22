@@ -1,4 +1,4 @@
-package com.example.pzdeals
+package com.kodecraft.pzdeals
 
 import io.flutter.embedding.android.FlutterActivity
 

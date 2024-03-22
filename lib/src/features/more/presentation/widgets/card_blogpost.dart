@@ -1,23 +1,48 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pzdeals/src/actions/navigate_screen.dart';
+import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/more/models/index.dart';
 import 'package:pzdeals/src/features/more/presentation/screens/screen_blogpost.dart';
+import 'package:pzdeals/src/features/more/services/blogs_service.dart';
 
-class BlogpostCardWidget extends StatelessWidget {
+class BlogpostCardWidget extends StatefulWidget {
   const BlogpostCardWidget(
-      {super.key, required this.blogTitle, required this.blogImage});
+      {super.key,
+      required this.blogTitle,
+      required this.blogImage,
+      required this.blogId});
 
   final String blogImage;
   final String blogTitle;
+  final int blogId;
+  BlogpostCardWidgetState createState() => BlogpostCardWidgetState();
+}
+
+class BlogpostCardWidgetState extends State<BlogpostCardWidget> {
+  BlogsService blogService = BlogsService();
+
+  Future<BlogData> fetchBlogData() async {
+    return blogService.fetchBlogInfo(widget.blogId);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return NavigateScreenWidget(
-      destinationWidget: BlogpostScreenWidget(
-        title: blogTitle,
-        imageAsset: blogImage,
-      ),
-      childWidget: Card(
+    return GestureDetector(
+      onTap: () async {
+        LoadingDialog.show(context);
+        await fetchBlogData().then((value) {
+          if (mounted) {
+            LoadingDialog.hide(context);
+          }
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return BlogpostScreenWidget(
+              blogData: value,
+            );
+          }));
+        });
+      },
+      child: Card(
           surfaceTintColor: PZColors.pzLightGrey,
           elevation: 2,
           color: PZColors.pzWhite,
@@ -34,28 +59,25 @@ class BlogpostCardWidget extends StatelessWidget {
               children: [
                 AspectRatio(
                   aspectRatio: 1.0,
-                  child: Image.network(
-                    blogImage,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.blogImage,
                     width: MediaQuery.of(context).size.width / 2,
                     fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      } else {
-                        return SizedBox(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    (loadingProgress.expectedTotalBytes ?? 1)
-                                : null,
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                                PZColors.pzOrange),
-                            backgroundColor: PZColors.pzLightGrey,
-                            strokeWidth: 3,
-                          ),
-                        );
-                      }
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
+                        backgroundColor: PZColors.pzLightGrey,
+                        strokeWidth: 3,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) {
+                      debugPrint('Error loading image: $error');
+                      return Image.asset(
+                        'assets/images/pzdeals.png',
+                        width: MediaQuery.of(context).size.width / 2,
+                        fit: BoxFit.cover,
+                      );
                     },
                   ),
                 ),
@@ -65,7 +87,7 @@ class BlogpostCardWidget extends StatelessWidget {
                         vertical: Sizes.paddingAll,
                         horizontal: Sizes.paddingAllSmall),
                     child: Text(
-                      blogTitle,
+                      widget.blogTitle,
                       maxLines: 3,
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
@@ -78,7 +100,6 @@ class BlogpostCardWidget extends StatelessWidget {
               ],
             ),
           )),
-      animationDirection: 'leftToRight',
     );
   }
 }

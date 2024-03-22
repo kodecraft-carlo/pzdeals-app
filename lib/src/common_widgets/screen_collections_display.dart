@@ -1,62 +1,125 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/src/common_widgets/products_dispay.dart';
+import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/features/deals/models/index.dart';
+import 'package:pzdeals/src/features/deals/state/provider_collections.dart';
 import 'package:pzdeals/src/state/layout_type_provider.dart';
 
-class CollectionDisplayScreenWidget extends StatelessWidget {
-  CollectionDisplayScreenWidget({super.key, required this.collectionTitle});
+final productCollectionProvider =
+    ChangeNotifierProvider<ProductCollectionNotifier>(
+        (ref) => ProductCollectionNotifier());
+
+class CollectionDisplayScreenWidget extends ConsumerStatefulWidget {
+  const CollectionDisplayScreenWidget(
+      {super.key, required this.collectionTitle, required this.collectionId});
 
   final String collectionTitle;
-  final List<ProductDealcardData> productData = [
-    ProductDealcardData(
-      productName: "Apple airpods pro 2nd generation usb-c",
-      price: "199.99",
-      storeAssetImage: "assets/images/store.png",
-      oldPrice: "399.99",
-      imageAsset: "assets/images/product.png",
-      discountPercentage: 50,
-      assetSourceType: 'asset',
-    ),
-    ProductDealcardData(
-      productName: "Laptop 15.6 inch 8GB RAM 512GB SSD",
-      price: "199.99",
-      storeAssetImage: "assets/images/store.png",
-      oldPrice: "399.99",
-      imageAsset:
-          "https://images-na.ssl-images-amazon.com/images/I/71qKfFqgEiL.jpg",
-      discountPercentage: 50,
-      assetSourceType: 'network',
-    ),
-    ProductDealcardData(
-      productName: "Nike Dunk High Retro Shoes",
-      price: "199.99",
-      storeAssetImage: "assets/images/store.png",
-      oldPrice: "399.99",
-      imageAsset:
-          "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/cec5acec-f53e-40a1-80b5-a21ddb4267dc/dunk-high-retro-shoes-Cg1ncq.png",
-      discountPercentage: 50,
-      assetSourceType: 'network',
-    ),
-    ProductDealcardData(
-      productName: "Apple Watch Series 7 45mm",
-      price: "199.99",
-      storeAssetImage: "assets/images/store.png",
-      oldPrice: "399.99",
-      imageAsset:
-          "https://files.refurbed.com/ii/apple-watch-series-7-edst-45mm-1643193412.jpg",
-      discountPercentage: 50,
-      assetSourceType: 'network',
-    )
-  ];
+  final int collectionId;
+
+  @override
+  CollectionDisplayScreenWidgetState createState() =>
+      CollectionDisplayScreenWidgetState();
+}
+
+class CollectionDisplayScreenWidgetState
+    extends ConsumerState<CollectionDisplayScreenWidget>
+    with TickerProviderStateMixin {
+  late final AnimationController _animationController;
+  final _scrollController = ScrollController(keepScrollOffset: true);
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this);
+    _scrollController.addListener(_onScroll);
+    Future(() => ref.watch(productCollectionProvider).setBoxCollectionName(
+        widget.collectionTitle,
+        '${widget.collectionTitle.trim()}_${widget.collectionId}'));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      ref.read(productCollectionProvider).loadMoreProducts();
+    }
+  }
+
+  void scrollToTop() {
+    _scrollController.animateTo(
+      0.0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final layoutType = ref.watch(layoutTypeProvider);
+    final productCollectionState = ref.watch(productCollectionProvider);
+    Widget body;
+    if (productCollectionState.isLoading &&
+        productCollectionState.products.isEmpty) {
+      body = const Center(
+          child: CircularProgressIndicator(color: PZColors.pzOrange));
+    } else if (productCollectionState.products.isEmpty) {
+      body = Padding(
+          padding: const EdgeInsets.all(Sizes.paddingAll),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Lottie.asset(
+                'assets/images/lottie/empty.json',
+                height: 200,
+                fit: BoxFit.fitHeight,
+                frameRate: FrameRate.max,
+                controller: _animationController,
+                onLoaded: (composition) {
+                  _animationController
+                    ..duration = composition.duration
+                    ..forward();
+                },
+              ),
+              const SizedBox(height: Sizes.spaceBetweenSections),
+              Text(
+                'There are no ${widget.collectionTitle} available at the moment. Please check back later.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+              ),
+            ],
+          ));
+    } else {
+      final productData = productCollectionState.products;
+      body = Column(
+        children: [
+          Expanded(
+              child: ProductsDisplay(
+            scrollController: _scrollController,
+            productData: productData,
+            layoutType: layoutType,
+          )),
+          if (productCollectionState.isLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+              child: Center(
+                  child: CircularProgressIndicator(color: PZColors.pzOrange)),
+            ),
+        ],
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          collectionTitle,
+          widget.collectionTitle,
           style: const TextStyle(
             color: PZColors.pzBlack,
             fontWeight: FontWeight.w700,
@@ -74,13 +137,7 @@ class CollectionDisplayScreenWidget extends StatelessWidget {
           },
         ),
       ),
-      body: Consumer(
-        builder: (context, ref, child) {
-          final layoutType = ref.watch(layoutTypeProvider);
-          return ProductsDisplay(
-              productData: productData, layoutType: layoutType);
-        },
-      ),
+      body: body,
     );
   }
 }

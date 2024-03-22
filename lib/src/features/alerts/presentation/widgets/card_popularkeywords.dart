@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
@@ -43,37 +44,44 @@ class PopularKeywordsCard extends StatelessWidget {
           ),
           Expanded(
               child: ClipRRect(
-            borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
-            child: Image.network(
-              imagePath,
-              fit: BoxFit.contain,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent? loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                } else {
-                  return SizedBox.square(
-                    child: Padding(
-                      padding: const EdgeInsets.all(Sizes.paddingAll),
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: CircularProgressIndicator.adaptive(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  (loadingProgress.expectedTotalBytes ?? 1)
-                              : null,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                              PZColors.pzOrange),
-                          backgroundColor: PZColors.pzLightGrey,
-                          strokeWidth: 3,
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              },
-            ),
-          )),
+                  borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
+                  child: CachedNetworkImage(
+                    imageUrl: imagePath,
+                    fit: BoxFit.contain,
+                    errorWidget: (context, url, error) {
+                      debugPrint('Error loading image: $error');
+                      return Image.asset(
+                        'assets/images/pzdeals.png',
+                        fit: BoxFit.fitWidth,
+                      );
+                    },
+                  )
+                  // Image.network(
+                  //         imagePath,
+                  //         fit: BoxFit.contain,
+                  //         loadingBuilder: (BuildContext context, Widget child,
+                  //             ImageChunkEvent? loadingProgress) {
+                  //           if (loadingProgress == null) {
+                  //             return child;
+                  //           } else {
+                  //             return const SizedBox.square(
+                  //               child: Padding(
+                  //                 padding: EdgeInsets.all(Sizes.paddingAll),
+                  //                 child: AspectRatio(
+                  //                   aspectRatio: 1,
+                  //                   child: CircularProgressIndicator.adaptive(
+                  //                     valueColor:
+                  //                         AlwaysStoppedAnimation<Color>(PZColors.pzOrange),
+                  //                     backgroundColor: PZColors.pzLightGrey,
+                  //                     strokeWidth: 3,
+                  //                   ),
+                  //                 ),
+                  //               ),
+                  //             );
+                  //           }
+                  //         },
+                  //       ),
+                  )),
           Padding(
             padding:
                 const EdgeInsets.symmetric(vertical: Sizes.paddingAllSmall),

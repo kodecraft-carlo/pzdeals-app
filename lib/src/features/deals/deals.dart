@@ -1,12 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/common_widgets/sliver_appbar.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
+import 'package:pzdeals/src/features/deals/state/provider_creditcards.dart';
+import 'package:pzdeals/src/features/deals/state/provider_foryou.dart';
+import 'package:pzdeals/src/features/deals/state/provider_frontpage.dart';
+import 'package:pzdeals/src/features/deals/state/provider_pzpicks.dart';
 
-class DealsTabControllerWidget extends StatelessWidget {
+final tabFrontPageProvider = ChangeNotifierProvider<TabFrontPageNotifier>(
+    (ref) => TabFrontPageNotifier());
+final tabPzPicksProvider =
+    ChangeNotifierProvider<TabPzPicksNotifier>((ref) => TabPzPicksNotifier());
+final creditcardsProvider =
+    ChangeNotifierProvider<CreditCardsNotifier>((ref) => CreditCardsNotifier());
+final tabForYouProvider =
+    ChangeNotifierProvider<TabForYouNotifier>((ref) => TabForYouNotifier());
+
+class DealsTabControllerWidget extends ConsumerStatefulWidget {
   const DealsTabControllerWidget({super.key});
+  @override
+  DealsTabControllerWidgetState createState() =>
+      DealsTabControllerWidgetState();
+}
+
+class DealsTabControllerWidgetState
+    extends ConsumerState<DealsTabControllerWidget>
+    with SingleTickerProviderStateMixin {
+  final GlobalKey<NestedScrollViewState> globalKey = GlobalKey();
+  final GlobalKey<FrontPageDealsWidgetState> _frontpageKey = GlobalKey();
+  final GlobalKey<PZPicksScreenWidgetState> _pzpicksKey = GlobalKey();
+
+  final _scrollController = ScrollController(keepScrollOffset: true);
+  late TabController tabController;
+  bool _isAtBottomPzPicks = false;
+  bool _isAtBottomFrontPage = false;
+  bool _isAtBottomForYou = false;
+
+  @override
+  void initState() {
+    super.initState();
+    globalKey.currentState?.innerController.addListener(_onScroll);
+    _scrollController.addListener(_onScroll);
+    tabController = TabController(
+      length: 3,
+      initialIndex: 1,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (tabController.index == 0) {
+      _isAtBottomForYou = false;
+    }
+    if (tabController.index == 1) {
+      _isAtBottomFrontPage = false;
+    }
+    if (tabController.index == 2) {
+      _isAtBottomPzPicks = false;
+    }
+  }
+
+  void scrollToTop() {
+    globalKey.currentState?.innerController.animateTo(
+      0.0, // Scroll to the top of the list
+      duration:
+          const Duration(milliseconds: 300), // Adjust the duration as needed
+      curve: Curves.easeInOut, // Adjust the curve as needed
+    );
+    globalKey.currentState?.outerController.animateTo(
+      0.0, // Scroll to the top of the list
+      duration:
+          const Duration(milliseconds: 300), // Adjust the duration as needed
+      curve: Curves.easeInOut, // Adjust the curve as needed
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,77 +92,138 @@ class DealsTabControllerWidget extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverAppBarWidget(
-                  innerBoxIsScrolled: innerBoxIsScrolled,
-                  searchFieldWidget: const HomescreenSearchFieldWidget(
-                    hintText: "Search deals",
-                  )),
-              const SliverToBoxAdapter(
-                child: CreditCardDealsWidget(),
-              ),
-              SliverAppBar(
-                elevation: 3.0,
-                backgroundColor: PZColors.pzWhite,
-                automaticallyImplyLeading: false,
-                floating: false,
-                pinned: true,
-                forceElevated: innerBoxIsScrolled,
-                primary: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Container(
-                    color:
-                        PZColors.pzWhite, // Set background color to transparent
-                  ),
-                  collapseMode: CollapseMode.pin,
-                ),
-                bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(0),
-                    child: TabBar(
-                      indicatorWeight: 4,
-                      indicatorColor: PZColors.pzOrange,
-                      dividerColor: PZColors.pzOrange,
-                      overlayColor:
-                          MaterialStateProperty.all(Colors.transparent),
-                      labelStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: PZColors.pzBlack,
-                          fontFamily: 'Poppins'),
-                      unselectedLabelStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: PZColors.pzGrey,
-                          fontFamily: 'Poppins'),
-                      tabs: const <Widget>[
-                        Tab(
-                          text: 'For You',
-                        ),
-                        Tab(
-                          text: 'Front Page',
-                        ),
-                        Tab(
-                          text: 'PZ Picks',
-                        ),
-                      ],
+            key: globalKey,
+            scrollBehavior: const CupertinoScrollBehavior(),
+            controller: _scrollController,
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverAppBarWidget(
+                    innerBoxIsScrolled: innerBoxIsScrolled,
+                    searchFieldWidget: const HomescreenSearchFieldWidget(
+                      hintText: "Search deals",
                     )),
-                titleSpacing: 0,
-              ),
-            ];
-          },
-          body: Column(
-            children: [
-              Expanded(
-                child: TabBarView(
-                  children: <Widget>[
-                    const ForYouWidget(),
-                    FrontPageDealsWidget(),
-                    PZPicksScreenWidget()
-                  ],
+                const SliverToBoxAdapter(
+                  child: CreditCardDealsWidget(),
                 ),
-              ),
-            ],
-          ),
-        ),
+                SliverAppBar(
+                  elevation: 3.0,
+                  backgroundColor: PZColors.pzWhite,
+                  automaticallyImplyLeading: false,
+                  floating: false,
+                  pinned: true,
+                  forceElevated: innerBoxIsScrolled,
+                  primary: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Container(
+                      color: PZColors
+                          .pzWhite, // Set background color to transparent
+                    ),
+                    collapseMode: CollapseMode.pin,
+                  ),
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(0),
+                    child: Builder(builder: (BuildContext context) {
+                      return TabBar(
+                        controller: tabController,
+                        indicatorWeight: 4,
+                        indicatorColor: PZColors.pzOrange,
+                        dividerColor: PZColors.pzOrange,
+                        overlayColor:
+                            MaterialStateProperty.all(Colors.transparent),
+                        labelStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: PZColors.pzBlack,
+                            fontFamily: 'Poppins'),
+                        unselectedLabelStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: PZColors.pzGrey,
+                            fontFamily: 'Poppins'),
+                        tabs: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              debugPrint('for you tapped');
+                              tabController.animateTo(0);
+                            },
+                            child: const Tab(
+                              text: 'For You',
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => {
+                              debugPrint('front page tapped'),
+                              tabController.animateTo(1),
+                              if (_frontpageKey.currentState != null)
+                                {
+                                  scrollToTop(),
+                                }
+                            },
+                            child: const Tab(
+                              text: 'Front Page',
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => {
+                              debugPrint('pz picks tapped'),
+                              tabController.animateTo(2),
+                              if (_pzpicksKey.currentState != null)
+                                {
+                                  scrollToTop(),
+                                }
+                            },
+                            child: const Tab(
+                              text: 'PZ Picks',
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
+                  titleSpacing: 0,
+                ),
+              ];
+            },
+            body: TabBarView(
+              controller: tabController,
+              children: <Widget>[
+                const ForYouWidget(),
+                NotificationListener<OverscrollNotification>(
+                  child: FrontPageDealsWidget(key: _frontpageKey),
+                  onNotification: (OverscrollNotification scrollInfo) {
+                    if (scrollInfo.metrics.pixels ==
+                        scrollInfo.metrics.maxScrollExtent) {
+                      if (!_isAtBottomFrontPage) {
+                        _isAtBottomFrontPage = true;
+                        ref.read(tabFrontPageProvider).loadMoreProducts();
+                      }
+                      if (!ref.watch(tabFrontPageProvider).isLoading) {
+                        _isAtBottomFrontPage = false;
+                      }
+                    } else {
+                      _isAtBottomFrontPage = false;
+                    }
+                    return false;
+                  },
+                ),
+                NotificationListener<OverscrollNotification>(
+                  child: PZPicksScreenWidget(key: _pzpicksKey),
+                  onNotification: (OverscrollNotification scrollInfo) {
+                    if (scrollInfo.metrics.pixels ==
+                        scrollInfo.metrics.maxScrollExtent) {
+                      if (!_isAtBottomPzPicks) {
+                        _isAtBottomPzPicks = true;
+                        ref.read(tabPzPicksProvider).loadMoreProducts();
+                      }
+                      if (!ref.watch(tabPzPicksProvider).isLoading) {
+                        _isAtBottomPzPicks = false;
+                      }
+                    } else {
+                      _isAtBottomPzPicks = false;
+                    }
+                    return false;
+                  },
+                ),
+              ],
+            )),
       ),
     );
   }

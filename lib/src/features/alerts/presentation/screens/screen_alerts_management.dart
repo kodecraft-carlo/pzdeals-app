@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
+import 'package:pzdeals/src/common_widgets/bouncing_arrow_down.dart';
 import 'package:pzdeals/src/common_widgets/textfield_button.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
@@ -19,13 +21,21 @@ class AlertsManagementScreen extends StatefulWidget {
 }
 
 class _AlertsManagementScreenState extends State<AlertsManagementScreen> {
+  TextEditingController textController = TextEditingController();
+  ScrollController scrollController = ScrollController(keepScrollOffset: true);
   bool isEditMode = false;
+  bool _showMore = false;
 
   get savedKeywords => widget.savedKeywords;
   get popularKeywords => widget.popularKeywords;
 
   @override
   Widget build(BuildContext context) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _showMore = scrollController.position.maxScrollExtent > 0;
+      });
+    });
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(
@@ -79,18 +89,24 @@ class _AlertsManagementScreenState extends State<AlertsManagementScreen> {
                     ],
                   ),
                   const SizedBox(height: Sizes.spaceBetweenContentSmall),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ChipSavedKeywords(
-                          savedKeywordsData: savedKeywords,
-                          editMode: isEditMode ? EditMode.edit : EditMode.view,
-                        ),
-                      )
-                    ],
+                  Container(
+                    height: 3 * 50,
+                    child: RawScrollbar(
+                        controller: scrollController,
+                        thumbVisibility: true,
+                        radius: const Radius.circular(10),
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: ChipSavedKeywords(
+                            savedKeywordsData: savedKeywords,
+                            editMode:
+                                isEditMode ? EditMode.edit : EditMode.view,
+                          ),
+                        )),
                   ),
                   const SizedBox(height: Sizes.spaceBetweenSectionsXL),
                   TextFieldButton(
+                    textController: textController,
                     onButtonPressed: onButtonPressed,
                     buttonLabel: 'Create',
                     textFieldHint: 'Enter Keyword',

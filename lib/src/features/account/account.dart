@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
-import 'package:pzdeals/src/features/account/models/account_data.dart';
 import 'package:pzdeals/src/features/account/presentation/screens/index.dart';
 import 'package:pzdeals/src/features/account/presentation/widgets/account_card.dart';
 import 'package:pzdeals/src/features/account/presentation/widgets/login_card.dart';
-import 'package:pzdeals/src/state/authentication_provider.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class AccountWidget extends StatelessWidget {
-  AccountWidget({super.key});
-  final AccountData accountData = AccountData(
-      email: "pzdealuser@mail.com", registeredDate: "January 01, 2024");
+  const AccountWidget({super.key});
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -64,10 +60,11 @@ class AccountWidget extends StatelessWidget {
                           right: Sizes.paddingRightSmall),
                       child: SizedBox(child: Consumer(
                         builder: (context, ref, child) {
-                          final authentication =
-                              ref.watch(authenticationProvider);
-                          if (authentication == true) {
-                            return AccountCard(accountData: accountData);
+                          final authUserState = ref.watch(authUserDataProvider);
+
+                          if (authUserState.isAuthenticated == true) {
+                            return AccountCard(
+                                accountData: authUserState.userData!);
                           } else {
                             return const LoginCard();
                           }

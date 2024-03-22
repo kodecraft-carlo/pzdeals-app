@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/actions/material_navigate_screen.dart';
-import 'package:pzdeals/src/common_widgets/screen_login_required.dart';
+import 'package:pzdeals/src/features/authentication/presentation/screens/screen_login_required.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
 class LoginCard extends StatelessWidget {
