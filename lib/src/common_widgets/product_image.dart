@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductImageWidget extends StatelessWidget {
@@ -81,13 +80,13 @@ class ProductImageWidget extends StatelessWidget {
         width: width,
         height: height,
         fit: BoxFit.fitWidth,
-        placeholder: (context, url) => const Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
-            backgroundColor: PZColors.pzLightGrey,
-            strokeWidth: 3,
-          ),
-        ),
+        // placeholder: (context, url) => const Center(
+        //   child: CircularProgressIndicator(
+        //     valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
+        //     backgroundColor: PZColors.pzLightGrey,
+        //     strokeWidth: 3,
+        //   ),
+        // ),
         errorWidget: (context, url, error) {
           debugPrint('Error loading image: $error');
           return Image.asset(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pzdeals/src/common_widgets/scrollbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/stores/presentation/widgets/index.dart';
 import 'package:pzdeals/src/models/index.dart';
@@ -19,23 +20,25 @@ class DisplayStores extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double itemWidth = screenWidth / 4;
-    return GridView.builder(
-      controller: scrollController,
-      padding: const EdgeInsets.all(Sizes.paddingAll),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: itemWidth,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 15,
-          childAspectRatio: 2 / 3),
-      itemCount: storedata.length + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return StoreCardWidget(storeData: pzDeals);
-        } else {
-          final store = storedata[index - 1];
-          return StoreCardWidget(storeData: store);
-        }
-      },
-    );
+    return ScrollbarWidget(
+        scrollController: scrollController,
+        child: GridView.builder(
+          controller: scrollController,
+          padding: const EdgeInsets.all(Sizes.paddingAll),
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: itemWidth,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 15,
+              childAspectRatio: 2 / 3),
+          itemCount: storedata.length + 1,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return StoreCardWidget(storeData: pzDeals);
+            } else {
+              final store = storedata[index - 1];
+              return StoreCardWidget(storeData: store);
+            }
+          },
+        ));
   }
 }

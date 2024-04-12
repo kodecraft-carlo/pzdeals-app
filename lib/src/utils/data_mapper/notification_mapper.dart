@@ -13,8 +13,8 @@ class NotificationMapper {
       }
       return NotificationData(
         id: json.messageId,
-        title: json.notification.title,
-        body: json.notification.body,
+        title: json.notification.title ?? 'Notification',
+        body: json.notification.body ?? '',
         imageUrl: imageSrc,
         timestamp: json.sentTime,
         isRead: false,

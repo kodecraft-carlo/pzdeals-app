@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 class BouncingArrowIcon extends StatefulWidget {
   final double height;
   final Duration duration;
+  final Widget icon;
+  final MaterialColor color;
 
   const BouncingArrowIcon({
     super.key,
     this.height = 30.0,
     this.duration = const Duration(milliseconds: 500),
+    this.icon = const Icon(Icons.keyboard_arrow_down),
+    this.color = Colors.grey,
   });
 
   @override
@@ -45,11 +49,7 @@ class _BouncingArrowIconState extends State<BouncingArrowIcon>
       },
       child: SizedBox(
         height: widget.height,
-        child: Icon(
-          Icons.keyboard_arrow_down,
-          size: widget.height,
-          color: Colors.grey,
-        ),
+        child: widget.icon,
       ),
     );
   }

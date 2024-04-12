@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/features/notifications/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 
@@ -102,6 +103,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
+              // physics: const BouncingScrollPhysics(),
               shrinkWrap: true,
               itemCount: notifData.length,
               itemBuilder: (BuildContext context, int index) {
@@ -112,9 +114,11 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
             ),
           ),
           notificationState.isLoading
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                  child: Center(
+              ? Container(
+                  color: Colors.transparent,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+                  child: const Center(
                       child:
                           CircularProgressIndicator(color: PZColors.pzOrange)),
                 )
@@ -123,89 +127,99 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
       ));
     }
 
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(
-            top: Sizes.paddingTopSmall,
-            left: Sizes.paddingLeft,
-            right: Sizes.paddingRight),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              children: <Widget>[
-                const Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Notification",
-                      style: TextStyle(
-                          fontSize: Sizes.headerFontSize,
-                          fontWeight: FontWeight.w600,
-                          color: PZColors.pzBlack),
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const NavigationWidget(
+                        initialPageIndex: 0,
+                      )));
+        },
+        child: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.only(
+                top: Sizes.paddingTopSmall,
+                left: Sizes.paddingLeft,
+                right: Sizes.paddingRight),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: <Widget>[
+                    const Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Notification",
+                          style: TextStyle(
+                              fontSize: Sizes.headerFontSize,
+                              fontWeight: FontWeight.w600,
+                              color: PZColors.pzBlack),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                notificationState.notifications.isNotEmpty
-                    ? Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog.adaptive(
-                                  title: const Text('Clear Notifications'),
-                                  content: const Text(
-                                      'Are you sure you want to clear all notifications?'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text(
-                                        'Cancel',
-                                        style:
-                                            TextStyle(color: PZColors.pzBlack),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        ref
-                                            .read(notificationsProvider)
-                                            .removeAllNotification();
-                                        Navigator.of(context).pop();
-                                        showSnackbarWithMessage(
-                                            context, 'Notifications cleared');
-                                      },
-                                      child: const Text(
-                                        'Clear',
-                                        style:
-                                            TextStyle(color: PZColors.pzOrange),
-                                      ),
-                                    ),
-                                  ],
+                    notificationState.notifications.isNotEmpty
+                        ? Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog.adaptive(
+                                      title: const Text('Clear Notifications'),
+                                      content: const Text(
+                                          'Are you sure you want to clear all notifications?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text(
+                                            'Cancel',
+                                            style: TextStyle(
+                                                color: PZColors.pzBlack),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            ref
+                                                .read(notificationsProvider)
+                                                .removeAllNotification();
+                                            Navigator.of(context).pop();
+                                            showSnackbarWithMessage(context,
+                                                'Notifications cleared');
+                                          },
+                                          child: const Text(
+                                            'Clear',
+                                            style: TextStyle(
+                                                color: PZColors.pzOrange),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                          child: const Text('Clear',
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                  fontSize: Sizes.bodyFontSize,
-                                  color: PZColors.pzOrange,
-                                  fontWeight: FontWeight.w600)),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+                              child: const Text('Clear',
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                      fontSize: Sizes.bodyFontSize,
+                                      color: PZColors.pzOrange,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                ),
+                const SizedBox(height: Sizes.spaceBetweenSections),
+                notificationWidget,
+                const SizedBox(height: Sizes.paddingBottomSmall)
               ],
             ),
-            const SizedBox(height: Sizes.spaceBetweenSections),
-            notificationWidget,
-            const SizedBox(height: Sizes.paddingBottomSmall)
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

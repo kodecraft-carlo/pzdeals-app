@@ -24,13 +24,14 @@ class StoreDataAdapter extends TypeAdapter<StoreData> {
       handle: fields[4] as String,
       storeBody: fields[5] as String?,
       tagName: fields[6] as String?,
+      appStoreImg: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, StoreData obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class StoreDataAdapter extends TypeAdapter<StoreData> {
       ..writeByte(5)
       ..write(obj.storeBody)
       ..writeByte(6)
-      ..write(obj.tagName);
+      ..write(obj.tagName)
+      ..writeByte(7)
+      ..write(obj.appStoreImg);
   }
 
   @override

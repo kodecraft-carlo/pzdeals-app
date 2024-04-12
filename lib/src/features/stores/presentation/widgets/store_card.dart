@@ -64,10 +64,7 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
                   ),
                 ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: storeIcon(),
-              ),
+              child: storeIcon(),
             ),
           ),
           const SizedBox(height: Sizes.spaceBetweenContentSmall),
@@ -109,14 +106,15 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
 
     if (widget.storeData.assetSourceType == 'network') {
       imageWidget = CachedNetworkImage(
-        imageUrl: widget.storeData.storeAssetImage,
+        imageUrl:
+            widget.storeData.appStoreImg ?? widget.storeData.storeAssetImage,
         width: width,
         height: height,
         fit: BoxFit.fitWidth,
         errorWidget: (context, url, error) {
           debugPrint('Error loading image: $error');
-          return Image.asset(
-            'assets/images/pzdeals.png',
+          return CachedNetworkImage(
+            imageUrl: widget.storeData.storeAssetImage,
             width: width,
             height: height,
             fit: BoxFit.fitWidth,

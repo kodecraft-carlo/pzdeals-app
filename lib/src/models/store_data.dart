@@ -25,6 +25,9 @@ class StoreData {
   @HiveField(6)
   final String? tagName;
 
+  @HiveField(7)
+  final String? appStoreImg;
+
   StoreData(
       {required this.storeName,
       required this.storeAssetImage,
@@ -32,5 +35,6 @@ class StoreData {
       required this.id,
       required this.handle,
       this.storeBody,
-      this.tagName});
+      this.tagName,
+      this.appStoreImg});
 }

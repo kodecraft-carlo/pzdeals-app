@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as htmlParser;
@@ -81,6 +82,14 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
     super.initState();
     _data = extractDataFromHtml(widget.htmlData);
     _coupons = extractCouponsFromHtml(widget.htmlData);
+    if (_coupons.isNotEmpty) {
+      _data.insert(
+          0,
+          Item(
+            headerValue: 'Coupons',
+            expandedValue: _coupons,
+          ));
+    }
     _expandedIndex = -1; // Initially no item is expanded
   }
 
@@ -91,50 +100,6 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
         : SingleChildScrollView(
             child: Column(
               children: [
-                if (_coupons.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        physics: const ScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: _coupons.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final coupon = _coupons[index];
-                          List<String> parts =
-                              coupon.description.split(coupon.code);
-                          return Container(
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            child: RichText(
-                              text: TextSpan(children: [
-                                TextSpan(
-                                  text: parts[0],
-                                  style: const TextStyle(
-                                    color: PZColors.pzBlack,
-                                    fontFamily: 'Poppins',
-                                  ),
-                                ),
-                                WidgetSpan(
-                                    alignment: PlaceholderAlignment.middle,
-                                    child: CouponCodeWidget(
-                                      buildcontext: context,
-                                      text: coupon.code,
-                                      url: coupon.url,
-                                    )),
-                                TextSpan(
-                                  text: parts[1],
-                                  style: const TextStyle(
-                                      color: PZColors.pzBlack,
-                                      fontFamily: 'Poppins'),
-                                ),
-                              ]),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
                 ExpansionPanelList(
                   expansionCallback: (int index, bool isExpanded) {
                     setState(() {
@@ -147,82 +112,139 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                   children: _data.asMap().entries.map<ExpansionPanel>((entry) {
                     final int index = entry.key;
                     final Item item = entry.value;
-                    return ExpansionPanel(
-                      canTapOnHeader: true,
-                      backgroundColor: PZColors.pzWhite,
-                      headerBuilder: (BuildContext context, bool isExpanded) {
-                        return GestureDetector(
-                          onTap: item.expandedValue.length > 0
-                              ? () {
-                                  setState(() {
-                                    _expandedIndex = isExpanded ? -1 : index;
-                                  });
-                                }
-                              : null,
-                          child: ListTile(
-                            title: Text(item.headerValue,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600)),
-                            dense: false,
-                            focusColor: PZColors.pzOrange,
-                            contentPadding: EdgeInsets.zero,
-                            splashColor: Colors.transparent,
-                            enableFeedback: false,
-                          ),
-                        );
-                      },
-                      body: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          physics: const ScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: item.expandedValue.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final collection = item.expandedValue[index];
-                            return Container(
-                                margin: const EdgeInsets.symmetric(vertical: 4),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    openBrowser(collection['link'] ?? '');
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: PZColors.pzLightGrey,
-                                    ),
-                                    child: Text(
-                                      collection['list_name'] ?? '',
+                    return item.headerValue == 'Coupons'
+                        ? ExpansionPanel(
+                            canTapOnHeader: true,
+                            backgroundColor: PZColors.pzWhite,
+                            headerBuilder:
+                                (BuildContext context, bool isExpanded) {
+                              return GestureDetector(
+                                onTap: item.expandedValue.length > 0
+                                    ? () {
+                                        setState(() {
+                                          _expandedIndex =
+                                              isExpanded ? -1 : index;
+                                        });
+                                      }
+                                    : null,
+                                child: ListTile(
+                                  title: Text(item.headerValue,
                                       style: const TextStyle(
-                                          color: PZColors.pzOrange,
-                                          fontSize: Sizes.fontSizeSmall),
-                                    ),
-                                  ),
-                                )
+                                          fontWeight: FontWeight.w600)),
+                                  dense: false,
+                                  focusColor: PZColors.pzOrange,
+                                  contentPadding: EdgeInsets.zero,
+                                  splashColor: Colors.transparent,
+                                  enableFeedback: false,
+                                ),
+                              );
+                            },
+                            body: ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              physics: const ScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: item.expandedValue.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final coupon = item.expandedValue[index];
 
-                                // TextButton(
-                                //   style: TextButton.styleFrom(
-                                //     shape: RoundedRectangleBorder(
-                                //       borderRadius:
-                                //           BorderRadius.circular(Sizes.buttonBorderRadius),
-                                //     ),
-                                //     textStyle: const TextStyle(
-                                //         fontSize: Sizes.fontSizeMedium,
-                                //         fontWeight: FontWeight.normal,
-                                //         color: PZColors.pzBlack),
-                                //     backgroundColor: PZColors.pzLightGrey,
-                                //     foregroundColor: PZColors.pzOrange,
-                                //     surfaceTintColor: Colors.transparent,
-                                //     alignment: Alignment.centerLeft,
-                                //   ),
-                                //   onPressed: () {
-                                //     openBrowser(collection['link'] ?? '');
-                                //   },
-                                //   child: Text(collection['list_name'] ?? ''),
-                                // ),
+                                List<String> parts =
+                                    coupon.description.split(coupon.code);
+                                return Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 4),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: PZColors.pzLightGrey,
+                                  ),
+                                  child: RichText(
+                                    text: TextSpan(children: [
+                                      TextSpan(
+                                        text: parts[0],
+                                        style: const TextStyle(
+                                          color: PZColors.pzBlack,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                      WidgetSpan(
+                                          alignment:
+                                              PlaceholderAlignment.middle,
+                                          child: CouponCodeWidget(
+                                            buildcontext: context,
+                                            text: coupon.code,
+                                            url: coupon.url,
+                                          )),
+                                      TextSpan(
+                                        text: parts[1],
+                                        style: const TextStyle(
+                                            color: PZColors.pzBlack,
+                                            fontFamily: 'Poppins'),
+                                      ),
+                                    ]),
+                                  ),
                                 );
-                          }),
-                      isExpanded: _expandedIndex == index,
-                    );
+                              },
+                            ),
+                            isExpanded: _expandedIndex == index,
+                          )
+                        : ExpansionPanel(
+                            canTapOnHeader: true,
+                            backgroundColor: PZColors.pzWhite,
+                            headerBuilder:
+                                (BuildContext context, bool isExpanded) {
+                              return GestureDetector(
+                                onTap: item.expandedValue.length > 0
+                                    ? () {
+                                        setState(() {
+                                          _expandedIndex =
+                                              isExpanded ? -1 : index;
+                                        });
+                                      }
+                                    : null,
+                                child: ListTile(
+                                  title: Text(item.headerValue,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600)),
+                                  dense: false,
+                                  focusColor: PZColors.pzOrange,
+                                  contentPadding: EdgeInsets.zero,
+                                  splashColor: Colors.transparent,
+                                  enableFeedback: false,
+                                ),
+                              );
+                            },
+                            body: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                physics: const ScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: item.expandedValue.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final collection = item.expandedValue[index];
+                                  return Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 4),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          openBrowser(collection['link'] ?? '');
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            color: PZColors.pzLightGrey,
+                                          ),
+                                          child: Text(
+                                            collection['list_name'] ?? '',
+                                            style: const TextStyle(
+                                                color: PZColors.pzOrange,
+                                                fontSize: Sizes.fontSizeSmall),
+                                          ),
+                                        ),
+                                      ));
+                                }),
+                            isExpanded: _expandedIndex == index,
+                          );
                   }).toList(),
                 )
               ],
@@ -361,8 +383,6 @@ List<Coupon> extractCouponsFromHtml(String htmlString) {
           couponUrl = link;
         }
 
-        debugPrint(
-            'couponCode: $couponCode, couponDescription: $couponDescription ~ couponUrl: $couponUrl');
         // Create a Coupon object and add it to the list
         coupons.add(Coupon(
             code: couponCode, description: couponDescription, url: couponUrl));

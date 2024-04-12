@@ -16,7 +16,7 @@ class ScrollbarWidget extends StatelessWidget {
       minThumbLength: 50,
       thickness: 5,
       minOverscrollLength: 50,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(5),
       child: child,
     );
   }

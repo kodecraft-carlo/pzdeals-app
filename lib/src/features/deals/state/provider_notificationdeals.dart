@@ -33,7 +33,8 @@ class NotificationDealsNotifier extends ChangeNotifier {
           '${searchPercentageProductQuery(pageNumber)}&price_percentage_gt=$searchKey';
     } else if (_dealType == 'keyword') {
       query =
-          '${searchProductQuery(_searchKey, pageNumber)}&filter={"title": { "_icontains": "$_searchKey" }}';
+          // '${searchProductQuery(_searchKey, pageNumber)}&filter={"title": { "_icontains": "$_searchKey" }}';
+          query = searchProductQuery(_searchKey, pageNumber);
     }
     if (searchKey.isNotEmpty) {
       loadProducts();
@@ -46,7 +47,7 @@ class NotificationDealsNotifier extends ChangeNotifier {
     notifyListeners();
     _products.clear();
     try {
-      debugPrint('searchProductWithCustomQuery query: $query');
+      // debugPrint('searchProductWithCustomQuery query: $query');
       final serverProducts =
           await _searchproductService.searchProductWithCustomQuery(query);
       _products = serverProducts;

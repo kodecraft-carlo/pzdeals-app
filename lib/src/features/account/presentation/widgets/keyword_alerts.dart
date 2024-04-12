@@ -1,39 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/actions/material_navigate_screen.dart';
-import 'package:pzdeals/src/common_widgets/chips.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/alerts/presentation/widgets/chips_saved_keywords.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 
 class KeywordAlertsSection extends StatelessWidget {
-  const KeywordAlertsSection({super.key, required this.savedKeywords});
+  const KeywordAlertsSection({super.key});
 
-  final List<String> savedKeywords;
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "Keyword Alerts",
           style: TextStyle(
               fontSize: Sizes.sectionHeaderFontSize,
               fontWeight: FontWeight.w600,
               color: PZColors.pzBlack),
         ),
-        const Text(
+        Text(
             "You will receive notification when there are deals that match these keywords",
             style: TextStyle(
                 fontSize: Sizes.listSubtitleFontSize, color: PZColors.pzBlack)),
-        Wrap(
-          spacing: 8.0,
-          runSpacing: 1.0,
-          children: savedKeywords.map((String pillText) {
-            return ChipsWidget(pillText: pillText);
-          }).toList(),
+        ChipSavedKeywords(
+          editMode: EditMode.view,
         ),
-        const SizedBox(height: Sizes.spaceBetweenContent),
-        const MaterialNavigateScreen(
+        SizedBox(height: Sizes.spaceBetweenContent),
+        MaterialNavigateScreen(
             childWidget: Text('Manage Keywords',
                 textAlign: TextAlign.start,
                 style: TextStyle(

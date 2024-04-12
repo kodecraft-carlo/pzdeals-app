@@ -1,9 +1,9 @@
-import 'dart:convert';
-
+import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/notifications/presentation/widgets/notification_dialog.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -46,18 +46,43 @@ class NotificationCardWidget extends ConsumerWidget {
           ref.read(notificationsProvider).markAsRead(notificationData.id);
           if (notificationData.data != null || notificationData.data != {}) {
             final data = notificationData.data;
-            debugPrint('data: ${data['value']}');
             if (data['alert_type'] == 'keyword') {
               Navigator.of(context).pushNamed('/keyword-deals', arguments: {
                 'title': notificationData.title,
-                'keyword': data['value']
+                'keyword': data['value'],
+                'product_id': data['item_id'] ?? ''
               });
-            }
-            if (data['alert_type'] == 'percentage') {
+            } else if (data['alert_type'] == 'percentage') {
               Navigator.of(context).pushNamed('/percentage-deals', arguments: {
                 'title': notificationData.title,
-                'value': data['value']
+                'value': data['value'],
+                'product_id': data['item_id'] ?? ''
               });
+            } else {
+              showDialog(
+                context: context,
+                useRootNavigator: false,
+                barrierDismissible: true,
+                builder: (context) => ScaffoldMessenger(
+                  child: Builder(
+                    builder: (context) => Scaffold(
+                      backgroundColor: Colors.transparent,
+                      body: GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        behavior: HitTestBehavior.opaque,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                            child: NotificationDialog(
+                                notificationData: notificationData),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
             }
           }
         },

@@ -3,6 +3,7 @@ String getStoreCollectionQuery(int pageNumber) {
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=image_src'
+      '&fields[]=app_store_img'
       '&fields[]=body'
       '&fields[]=tags.tags_id.tag_name'
       '&fields[]=handle'
@@ -19,6 +20,7 @@ String getStoreSpecificDetailsQuery(int storeId) {
       '&fields[]=title'
       '&fields[]=body'
       '&fields[]=image_src'
+      '&fields[]=app_store_img'
       '&fields[]=tags.tags_id.tag_name'
       '&fields[]=handle';
   return query;

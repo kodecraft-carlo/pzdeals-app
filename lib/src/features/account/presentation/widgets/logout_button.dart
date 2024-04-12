@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
 
 class LogoutButton extends ConsumerWidget {

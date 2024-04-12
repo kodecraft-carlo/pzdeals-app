@@ -5,6 +5,7 @@ import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/screens/screen_login_required.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/layout_type_provider.dart';
 

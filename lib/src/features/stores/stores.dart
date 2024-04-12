@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/sliver_appbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/features/stores/presentation/screens/stores_display.dart';
 import 'package:pzdeals/src/features/stores/presentation/widgets/index.dart';
-import 'package:pzdeals/src/features/stores/state/provider_stores.dart';
+import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/utils/helpers/debouncer.dart';
 
 class StoresWidget extends ConsumerStatefulWidget {
@@ -116,22 +117,32 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
         storedata: displayStores,
       );
     }
-    return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBarWidget(
-                innerBoxIsScrolled: innerBoxIsScrolled,
-                searchFieldWidget: StoreSearchFieldWidget(
-                  hintText: "Search store",
-                  filterStores: _onTextChanged,
-                  storeNames: storescreenState.storeNames,
-                  searchController: searchController,
-                )),
-          ];
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const NavigationWidget(
+                        initialPageIndex: 0,
+                      )));
         },
-        body: body,
-      ),
-    );
+        child: Scaffold(
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverAppBarWidget(
+                    innerBoxIsScrolled: innerBoxIsScrolled,
+                    searchFieldWidget: StoreSearchFieldWidget(
+                      hintText: "Search store",
+                      filterStores: _onTextChanged,
+                      storeNames: storescreenState.storeNames,
+                      searchController: searchController,
+                    )),
+              ];
+            },
+            body: body,
+          ),
+        ));
   }
 }

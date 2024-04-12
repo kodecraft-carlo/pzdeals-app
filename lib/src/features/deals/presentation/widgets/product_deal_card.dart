@@ -54,6 +54,9 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                         onTap: () {},
                         child: ProductContentDialog(
                           productData: widget.productData,
+                          hasDescription:
+                              product.productDealDescription != null &&
+                                  product.productDealDescription != '',
                           content: ProductDealDescription(
                             snackbarContext: context,
                             productData: product,

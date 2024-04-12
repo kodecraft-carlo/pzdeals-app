@@ -45,8 +45,7 @@ class SearchProductService {
       String query) async {
     ApiClient apiClient = ApiClient();
     // final authService = ref.watch(directusAuthServiceProvider);
-    debugPrint("searchProductWithCustomQuery Deals called");
-
+    // debugPrint("searchProductWithCustomQuery Deals called");
     try {
       Response response = await apiClient.dio.get(query
           // options: Options(

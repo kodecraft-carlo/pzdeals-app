@@ -8,10 +8,12 @@ class ListTileWithSwitchWidget extends StatefulWidget {
     required this.title,
     required this.subtitle,
     required this.value,
+    required this.onChanged,
   });
 
   final String title, subtitle;
   final bool value;
+  final void Function(bool) onChanged;
 
   @override
   State<ListTileWithSwitchWidget> createState() =>
@@ -19,15 +21,6 @@ class ListTileWithSwitchWidget extends StatefulWidget {
 }
 
 class _ListTileWithSwitchWidgetState extends State<ListTileWithSwitchWidget> {
-  late bool switchValue1; // Declare but don't initialize here
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize switchValue1 in the initState method
-    switchValue1 = widget.value;
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -37,11 +30,9 @@ class _ListTileWithSwitchWidgetState extends State<ListTileWithSwitchWidget> {
       subtitle: Text(widget.subtitle,
           style: const TextStyle(fontSize: Sizes.listSubtitleFontSize)),
       trailing: Switch(
-        value: switchValue1,
+        value: widget.value,
         onChanged: (bool? value) {
-          setState(() {
-            switchValue1 = value!;
-          });
+          widget.onChanged(value!);
         },
         activeColor: PZColors.pzWhite,
         activeTrackColor: PZColors.pzOrange,

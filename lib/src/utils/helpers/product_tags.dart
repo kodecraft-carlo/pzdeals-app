@@ -1,4 +1,3 @@
-
 String getStoreImageUrlFromTags(List<dynamic> tagIds) {
   final Map<String, String> storeImageUrls = {
     'woot': 'assets/images/stores/woot.png',
@@ -36,4 +35,14 @@ bool isProductNoPrice(List<dynamic> tagIds) {
     }
   }
   return false;
+}
+
+bool isProductPriceValid(dynamic productPrice) {
+  if (productPrice == null) {
+    return false;
+  }
+  if (productPrice is String) {
+    return double.tryParse(productPrice) != null;
+  }
+  return productPrice is num;
 }

@@ -59,6 +59,20 @@ class _TextFieldButtonState extends State<TextFieldButton> {
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: Sizes.paddingAllSmall),
+                suffixIcon: widget.textController.text.isNotEmpty
+                    ? GestureDetector(
+                        child: const Icon(Icons.cancel, color: PZColors.pzGrey),
+                        onTap: () {
+                          widget.textController.clear();
+                          setState(() {
+                            isActionEnabled = false;
+                          });
+                        },
+                      )
+                    : null,
+                suffixIconConstraints: const BoxConstraints(
+                  minWidth: 40,
+                ),
               ),
               style: const TextStyle(
                   fontSize: Sizes.textFieldFontSize, color: PZColors.pzBlack),
@@ -78,7 +92,9 @@ class _TextFieldButtonState extends State<TextFieldButton> {
                     bottomRight: Radius.circular(Sizes.textFieldCornerRadius)),
               )),
             ),
-            onPressed: !isActionEnabled ? null : widget.onButtonPressed,
+            onPressed: !isActionEnabled || widget.textController.text.isEmpty
+                ? null
+                : widget.onButtonPressed,
             child: Text(
               widget.buttonLabel,
               style: const TextStyle(color: PZColors.pzWhite),

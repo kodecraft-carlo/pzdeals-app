@@ -38,6 +38,7 @@ class DealsTabControllerWidgetState
   bool _isAtBottomPzPicks = false;
   bool _isAtBottomFrontPage = false;
   bool _isAtBottomForYou = false;
+  String id = '';
 
   @override
   void initState() {

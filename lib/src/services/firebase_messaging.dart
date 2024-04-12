@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pzdeals/main.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -23,7 +24,7 @@ class FirebaseMessagingApi {
 
   void handleMessage(RemoteMessage? message) {
     if (message == null) return;
-    storeNotification(message);
+    // storeNotification(message);
     final dynamic notifdata = message.toMap();
     navigateToScreens(notifdata);
   }
@@ -33,7 +34,8 @@ class FirebaseMessagingApi {
       required String title,
       required String body,
       required String payload}) async {
-    debugPrint('showNotification data: ${payload.toString()}');
+    // debugPrint('showNotification data: ${payload.toString()}');
+
     NotificationDetails notificationDetails = NotificationDetails(
       android: AndroidNotificationDetails(
           _androidChannel.id, _androidChannel.name,
@@ -54,17 +56,19 @@ class FirebaseMessagingApi {
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
         alert: true, badge: true, sound: true);
     _firebaseMessaging.subscribeToTopic('manual_alerts');
+    _firebaseMessaging.subscribeToTopic('price_mistake');
     _firebaseMessaging.getInitialMessage().then(handleMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
       if (notification == null) return;
-      storeNotification(message);
+      debugPrint('notification data: ${message.toMap()}');
       showNotification(
           notificationId: notification.hashCode,
           title: notification.title ?? '',
           body: notification.body ?? '',
           payload: jsonEncode(message.toMap()));
+      storeNotification(message);
     });
   }
 
@@ -106,23 +110,28 @@ class FirebaseMessagingApi {
     NotificationService notifService = NotificationService();
     notifService.addNotification(
         NotificationMapper.mapToNotificationData(message), 'notifications');
+    debugPrint('Notification added');
   }
 
   void navigateToScreens(dynamic message) {
     final data = message["data"];
     if (navigatorKey.currentState != null) {
       if (data['alert_type'] == 'keyword') {
-        navigatorKey.currentState!.pushNamed('/keyword-deals', arguments: {
+        navigatorKey.currentState!
+            .pushReplacementNamed('/keyword-deals', arguments: {
           'title': message["notification"]["title"],
-          'keyword': data['value']
+          'keyword': data['value'],
+          'product_id': data['item_id'] ?? ''
         });
       } else if (data['alert_type'] == 'percentage') {
-        navigatorKey.currentState!.pushNamed('/percentage-deals', arguments: {
+        navigatorKey.currentState!
+            .pushReplacementNamed('/percentage-deals', arguments: {
           'title': message["notification"]["title"],
-          'value': data['value']
+          'value': data['value'],
+          'product_id': data['item_id'] ?? ''
         });
       } else {
-        navigatorKey.currentState!.push(
+        navigatorKey.currentState!.pushReplacement(
           MaterialPageRoute(
             builder: (context) => const NavigationWidget(
               initialPageIndex: 2,

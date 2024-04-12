@@ -24,21 +24,22 @@ class DropdownWidget extends StatefulWidget {
 }
 
 class _DropdownWidgetState extends State<DropdownWidget> {
-  String? _selectedGender;
+  String? _selectedValue;
 
   @override
   void initState() {
     super.initState();
-    _selectedGender = widget.initialValue;
+    _selectedValue = widget.initialValue;
   }
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: _selectedGender,
+      value: widget.initialValue,
+      isExpanded: false,
       onChanged: (value) {
         setState(() {
-          _selectedGender = value;
+          _selectedValue = value;
           widget.onChanged(value);
         });
       },

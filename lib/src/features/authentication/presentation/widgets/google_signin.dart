@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/actions/show_dialog.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
 
 class GoogleSignInButton extends ConsumerWidget {

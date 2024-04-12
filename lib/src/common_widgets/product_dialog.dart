@@ -14,9 +14,13 @@ import 'package:pzdeals/src/features/deals/models/index.dart';
 class ProductContentDialog extends StatefulWidget {
   final Widget content;
   final ProductDealcardData productData;
+  final bool? hasDescription;
 
   const ProductContentDialog(
-      {super.key, required this.content, required this.productData});
+      {super.key,
+      required this.content,
+      required this.productData,
+      this.hasDescription = true});
 
   @override
   _ProductContentDialogState createState() => _ProductContentDialogState();
@@ -63,6 +67,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
     });
     double screenHeight = MediaQuery.of(context).size.height;
     double dialogHeight = screenHeight / 1.5;
+
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
@@ -154,7 +159,9 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                       ),
                     ),
                   ),
-                  showMore == true && !_isScrollingDown
+                  showMore == true &&
+                          !_isScrollingDown &&
+                          widget.hasDescription == true
                       ? GestureDetector(
                           onTap: () {
                             scrollController.animateTo(

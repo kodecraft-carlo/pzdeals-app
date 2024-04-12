@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/state/provider_notificationdeals.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/layout_type_provider.dart';
 
 final notificationDealsProvider =

@@ -69,7 +69,6 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
 
     final searchState = ref.watch(searchproductProvider);
     final searchFilterState = ref.watch(searchFilterProvider);
-    debugPrint('searchState: ${searchState.searchKey} ~ ${widget.searchKey}');
     final searchValue =
         searchState.searchKey != '' ? searchState.searchKey : widget.searchKey;
 

@@ -19,16 +19,25 @@ class TabFrontPageNotifier extends ChangeNotifier {
   List<ProductDealcardData> get products => _products;
 
   TabFrontPageNotifier() {
-    _loadProducts();
+    loadProducts();
   }
 
-  Future<void> _loadProducts() async {
+  Future<void> refresh() async {
+    pageNumber = 1;
+    _products.clear();
+    // notifyListeners();
+    loadProducts();
+  }
+
+  Future<void> loadProducts() async {
     _isLoading = true;
     notifyListeners();
 
     try {
       _products = await _productService.getCachedProducts(_boxName);
       notifyListeners();
+
+      // if (_products.isNotEmpty) return;
 
       final serverProducts = await _productService.fetchProductDeals(
           _collectionName, _boxName, pageNumber);

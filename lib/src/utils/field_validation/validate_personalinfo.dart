@@ -44,3 +44,10 @@ String? dateOfBirthValidator(String? value) {
   }
   return null;
 }
+
+String? thresholdValidator(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Please select percentage off threshold';
+  }
+  return null;
+}

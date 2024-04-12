@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:pzdeals/src/common_widgets/search_field.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/more/presentation/widgets/blogs_search_field.dart';
 import 'package:pzdeals/src/features/more/presentation/widgets/card_blogpost.dart';
@@ -142,7 +141,7 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
             SliverAppBar(
               pinned: true,
               title: const Text(
-                'Blogs',
+                'Blog',
                 style: TextStyle(
                   color: PZColors.pzBlack,
                   fontWeight: FontWeight.w700,
@@ -165,7 +164,7 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
                 padding:
                     const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
                 child: BlogSearchFieldWidget(
-                    hintText: 'Search blogs',
+                    hintText: 'Search blog',
                     searchController: searchController,
                     filterData: _onTextChanged),
               ),

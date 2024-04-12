@@ -53,6 +53,9 @@ class StaticProductDealCardWidgetState
                         onTap: () {},
                         child: ProductContentDialog(
                           productData: widget.productData,
+                          hasDescription:
+                              product.productDealDescription != null &&
+                                  product.productDealDescription != '',
                           content: ProductDealDescription(
                             snackbarContext: context,
                             productData: product,

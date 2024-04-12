@@ -1,81 +1,100 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/alerts/models/index.dart';
+import 'package:pzdeals/src/features/alerts/state/keyword_provider.dart';
+import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_result.dart';
 
 enum EditMode { edit, view }
 
-class ChipSavedKeywords extends StatelessWidget {
+class ChipSavedKeywords extends ConsumerStatefulWidget {
   const ChipSavedKeywords({
     super.key,
-    required this.savedKeywordsData,
     this.editMode = EditMode.view,
+    this.enableSearch = false,
   });
-
-  final List<String> savedKeywordsData;
   final EditMode editMode;
+  final bool enableSearch;
+  @override
+  ChipSavedKeywordsState createState() => ChipSavedKeywordsState();
+}
+
+class ChipSavedKeywordsState extends ConsumerState<ChipSavedKeywords> {
+  @override
+  void initState() {
+    super.initState();
+    Future(() {
+      ref.read(keywordsProvider).loadSavedKeywords();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300), // Set your desired duration
-      transitionBuilder: (child, animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: SizeTransition(
-            sizeFactor: animation,
-            child: child,
-          ),
-        );
-      },
-      child: Wrap(
-        alignment: WrapAlignment.start,
-        spacing: 5.0,
-        children: savedKeywordsData.map(
-          (String pillText) {
-            return InputChip(
-              key: ValueKey('InputChip$pillText'),
-              label: Text(
-                pillText,
-                textAlign: TextAlign.center,
+    final keywordState = ref.watch(keywordsProvider);
+    return Wrap(
+      alignment: WrapAlignment.start,
+      spacing: 5.0,
+      children: keywordState.savedkeywords.map(
+        (KeywordData keyword) {
+          return InputChip(
+            key: ValueKey('InputChip${keyword.keyword}'),
+            label: Text(
+              keyword.keyword,
+              textAlign: TextAlign.center,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 2),
+            clipBehavior: Clip.hardEdge,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(Sizes.cardBorderRadius),
               ),
-              padding: EdgeInsets.symmetric(
-                horizontal: editMode == EditMode.edit ? 0 : 5.0,
+              side: BorderSide(
+                color: PZColors.pzLightGrey,
+                width: 1.0,
               ),
-              clipBehavior: Clip.hardEdge,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(Sizes.cardBorderRadius),
-                ),
-                side: BorderSide(
-                  color: PZColors.pzLightGrey,
-                  width: 1.0,
-                ),
-              ),
-              backgroundColor: PZColors.pzLightGrey,
-              disabledColor: PZColors.pzLightGrey,
-              labelStyle: const TextStyle(
-                  color: PZColors.pzBlack, fontSize: Sizes.bodyFontSize),
-              deleteIcon: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (child, animation) {
-                    return ScaleTransition(
-                      scale: animation,
-                      child: child,
+            ),
+            backgroundColor: PZColors.pzLightGrey,
+            disabledColor: PZColors.pzLightGrey,
+            onPressed: () => {
+              if (widget.enableSearch)
+                {
+                  debugPrint('Search for keyword: ${keyword.keyword}'),
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return SearchResultScreen(
+                      searchKey: keyword.keyword,
                     );
-                  },
-                  child: editMode == EditMode.edit
-                      ? const Icon(
-                          Icons.cancel,
-                          size: Sizes.regularIconSize,
-                          color: PZColors.pzGrey,
-                        )
-                      : null),
-              onDeleted: () {
-                // Implement your delete action here
-              },
-            );
-          },
-        ).toList(),
-      ),
+                  })),
+                }
+            },
+            labelStyle: const TextStyle(
+                color: PZColors.pzBlack, fontSize: Sizes.bodyFontSize),
+            deleteIcon: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  );
+                },
+                child: widget.editMode == EditMode.edit
+                    ? const Icon(
+                        Icons.cancel,
+                        size: Sizes.regularIconSize,
+                        color: PZColors.pzGrey,
+                      )
+                    : null),
+            onDeleted: widget.editMode == EditMode.edit
+                ? () {
+                    debugPrint(
+                        'Removing keyword: ${keyword.keyword} ~ ${keyword.id}');
+                    keywordState.removeKeywordLocally(keyword);
+                    showSnackbarWithMessage(context, 'Keyword removed');
+                  }
+                : null,
+          );
+        },
+      ).toList(),
     );
   }
 }

@@ -9,10 +9,14 @@ class ProductMapper {
       return List<ProductDealcardData>.from(responseData.map((json) {
         final double oldPrice = isProductNoPrice(json['tag_ids'])
             ? 0
-            : double.parse(json['variants'][0]['compare_at_price']);
+            : isProductPriceValid(json['variants'][0]['compare_at_price'])
+                ? double.parse(json['variants'][0]['compare_at_price'])
+                : 0;
         final double price = isProductNoPrice(json['tag_ids'])
             ? 0
-            : double.parse(json['variants'][0]['price']);
+            : isProductPriceValid(json['variants'][0]['price'])
+                ? double.parse(json['variants'][0]['price'])
+                : 0;
         return ProductDealcardData(
           productId: json['id'],
           productName: json['title'],
@@ -43,10 +47,14 @@ class ProductMapper {
       final json = responseData[0];
       final double oldPrice = isProductNoPrice(json['tag_ids'])
           ? 0
-          : double.parse(json['variants'][0]['compare_at_price']);
+          : isProductPriceValid(json['variants'][0]['compare_at_price'])
+              ? double.parse(json['variants'][0]['compare_at_price'])
+              : 0;
       final double price = isProductNoPrice(json['tag_ids'])
           ? 0
-          : double.parse(json['variants'][0]['price']);
+          : isProductPriceValid(json['variants'][0]['price'])
+              ? double.parse(json['variants'][0]['price'])
+              : 0;
       return ProductDealcardData(
         productId: json['id'],
         productName: json['title'],

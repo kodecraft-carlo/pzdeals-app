@@ -11,7 +11,7 @@ class NotificationService {
   Future<List<DocumentSnapshot>> getInitialNotifications(String boxName) async {
     try {
       if (user != null) {
-        debugPrint('getInitialNotifications: User is logged in');
+        debugPrint('getInitialNotifications: User is logged in ~ ${user?.uid}');
         final snapshot = await _firestoreDb
             .collection('notifications')
             .doc(user?.uid)
@@ -25,13 +25,13 @@ class NotificationService {
         }
         return [];
       } else {
-        debugPrint('getNotifications: User is not logged in');
+        debugPrint('getInitialNotifications: User is not logged in');
       }
       return [];
     } catch (e) {
       debugPrint("Error fetching notifications data: $e");
     }
-    throw Exception('getNotifications error');
+    throw Exception('getInitialNotifications error');
   }
 
   Future<List<DocumentSnapshot>> getMoreNotifications(
@@ -95,6 +95,7 @@ class NotificationService {
   Future addNotification(NotificationData notification, String boxName) async {
     try {
       if (user != null) {
+        debugPrint('addNotification: User is logged in ~ ${user?.uid}');
         await _firestoreDb
             .collection('notifications')
             .doc(user?.uid)

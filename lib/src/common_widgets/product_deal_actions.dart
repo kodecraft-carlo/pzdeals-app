@@ -7,9 +7,11 @@ import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/screens/screen_login_required.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/services/email_service.dart';
+import 'package:pzdeals/src/services/firebase_dynamiclink.dart';
 import 'package:pzdeals/src/services/products_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/productlikes_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProductDealActions extends ConsumerStatefulWidget {
   const ProductDealActions({super.key, required this.productData});
@@ -21,6 +23,7 @@ class ProductDealActions extends ConsumerStatefulWidget {
 class ProductDealActionsState extends ConsumerState<ProductDealActions> {
   EmailService emailSvc = EmailService();
   ProductService productSvc = ProductService();
+  FirebaseDynamicLinksApi dynamicLinkApi = FirebaseDynamicLinksApi();
   void gotoLoginScreen() {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return const LoginRequiredScreen(
@@ -38,11 +41,40 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
     return false;
   }
 
+  Future<void> _onShare(BuildContext context) async {
+    final box = context.findRenderObject() as RenderBox?;
+    String productDescription =
+        '\'${widget.productData.productName}\' for only USD${widget.productData.price}';
+    final dynamicLink = await dynamicLinkApi.generateDealDynamicLink(
+        widget.productData.productId.toString(),
+        widget.productData.productName,
+        productDescription,
+        widget.productData.imageAsset);
+    final result = await Share.shareWithResult(
+      'Check out this amazing deal from PZ Deals! \'${widget.productData.productName}\' for only USD${widget.productData.price} $dynamicLink',
+      subject: 'Product Deal from PZ Deals',
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
+    if (result.status == ShareResultStatus.success) {
+      showSnackbarWithMessage(context, 'Product deal shared!');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bookmarkState = ref.watch(bookmarkedproductsProvider);
     final productLikeState = ref.watch(likedproductsProvider);
     final authUserDataState = ref.watch(authUserDataProvider);
+
+    Widget shareAction = Builder(
+      builder: (BuildContext context) {
+        return IconButton(
+          icon: const Icon(Icons.ios_share_rounded),
+          iconSize: Sizes.screenCloseIconSize,
+          onPressed: () => _onShare(context),
+        );
+      },
+    );
     return widget.productData.isProductExpired != null &&
             widget.productData.isProductExpired == false
         ? Container(
@@ -144,6 +176,7 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                         }
                       },
                     ),
+                    shareAction
                   ],
                 ),
               ],

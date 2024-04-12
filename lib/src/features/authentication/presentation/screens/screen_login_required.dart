@@ -2,13 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/actions/material_navigate_screen.dart';
 import 'package:pzdeals/src/actions/show_dialog.dart';
 import 'package:pzdeals/src/common_widgets/button_login_with.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/screens/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/widgets/google_signin.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
 
 class LoginRequiredScreen extends StatelessWidget {
