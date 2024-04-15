@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:html/dom.dart' as htmlDom;
 import 'package:pzdeals/src/actions/show_browser.dart';
+import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/common_widgets/coupon_code_widget.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
@@ -83,6 +85,7 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
     _data = extractDataFromHtml(widget.htmlData);
     _coupons = extractCouponsFromHtml(widget.htmlData);
     if (_coupons.isNotEmpty) {
+      debugPrint('coupon code::: ${_coupons[0].code}');
       _data.insert(
           0,
           Item(
@@ -103,7 +106,7 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                 ExpansionPanelList(
                   expansionCallback: (int index, bool isExpanded) {
                     setState(() {
-                      _expandedIndex = isExpanded ? -1 : index;
+                      _expandedIndex = isExpanded ? index : -1;
                     });
                   },
                   elevation: 0,
@@ -118,25 +121,20 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                             backgroundColor: PZColors.pzWhite,
                             headerBuilder:
                                 (BuildContext context, bool isExpanded) {
-                              return GestureDetector(
-                                onTap: item.expandedValue.length > 0
-                                    ? () {
-                                        setState(() {
-                                          _expandedIndex =
-                                              isExpanded ? -1 : index;
-                                        });
-                                      }
-                                    : null,
-                                child: ListTile(
-                                  title: Text(item.headerValue,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w600)),
-                                  dense: false,
-                                  focusColor: PZColors.pzOrange,
-                                  contentPadding: EdgeInsets.zero,
-                                  splashColor: Colors.transparent,
-                                  enableFeedback: false,
-                                ),
+                              return ListTile(
+                                title: Text(item.headerValue,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600)),
+                                dense: false,
+                                focusColor: PZColors.pzOrange,
+                                contentPadding: EdgeInsets.zero,
+                                splashColor: Colors.transparent,
+                                enableFeedback: false,
+                                onTap: () {
+                                  setState(() {
+                                    _expandedIndex = isExpanded ? -1 : index;
+                                  });
+                                },
                               );
                             },
                             body: ListView.builder(
@@ -149,40 +147,53 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
 
                                 List<String> parts =
                                     coupon.description.split(coupon.code);
-                                return Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: PZColors.pzLightGrey,
-                                  ),
-                                  child: RichText(
-                                    text: TextSpan(children: [
-                                      TextSpan(
-                                        text: parts[0],
-                                        style: const TextStyle(
-                                          color: PZColors.pzBlack,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                      WidgetSpan(
-                                          alignment:
-                                              PlaceholderAlignment.middle,
-                                          child: CouponCodeWidget(
-                                            buildcontext: context,
-                                            text: coupon.code,
-                                            url: coupon.url,
-                                          )),
-                                      TextSpan(
-                                        text: parts[1],
-                                        style: const TextStyle(
+                                return GestureDetector(
+                                  onTap: () {
+                                    Clipboard.setData(
+                                        ClipboardData(text: coupon.code));
+                                    showSnackbarWithMessage(
+                                        context, 'Coupon code copied');
+                                    if (coupon.url != null &&
+                                        coupon.url != '') {
+                                      openBrowser(coupon.url!);
+                                    }
+                                  },
+                                  child: Container(
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 4),
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: PZColors.pzLightGrey,
+                                    ),
+                                    child: RichText(
+                                      text: TextSpan(children: [
+                                        TextSpan(
+                                          text: parts[0],
+                                          style: const TextStyle(
                                             color: PZColors.pzBlack,
-                                            fontFamily: 'Poppins'),
-                                      ),
-                                    ]),
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                        WidgetSpan(
+                                            alignment:
+                                                PlaceholderAlignment.middle,
+                                            child: CouponCodeWidget(
+                                              buildcontext: context,
+                                              text: coupon.code,
+                                              url: coupon.url,
+                                            )),
+                                        TextSpan(
+                                          text: parts[1],
+                                          style: const TextStyle(
+                                              color: PZColors.pzBlack,
+                                              fontFamily: 'Poppins'),
+                                        ),
+                                      ]),
+                                    ),
                                   ),
                                 );
+                                ;
                               },
                             ),
                             isExpanded: _expandedIndex == index,
@@ -192,7 +203,15 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                             backgroundColor: PZColors.pzWhite,
                             headerBuilder:
                                 (BuildContext context, bool isExpanded) {
-                              return GestureDetector(
+                              return ListTile(
+                                title: Text(item.headerValue,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600)),
+                                dense: false,
+                                focusColor: PZColors.pzOrange,
+                                contentPadding: EdgeInsets.zero,
+                                splashColor: Colors.transparent,
+                                enableFeedback: false,
                                 onTap: item.expandedValue.length > 0
                                     ? () {
                                         setState(() {
@@ -201,16 +220,6 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                                         });
                                       }
                                     : null,
-                                child: ListTile(
-                                  title: Text(item.headerValue,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w600)),
-                                  dense: false,
-                                  focusColor: PZColors.pzOrange,
-                                  contentPadding: EdgeInsets.zero,
-                                  splashColor: Colors.transparent,
-                                  enableFeedback: false,
-                                ),
                               );
                             },
                             body: ListView.builder(
@@ -293,10 +302,12 @@ List<Item> extractDataFromHtml(String htmlString) {
       htmlDom.Element? headerElement = ulElement.previousElementSibling;
       if (headerElement != null && headerElement.localName == 'h3') {
         String headerText = headerElement.text.trim();
-        result.add(Item(
-          headerValue: headerText,
-          expandedValue: listItems,
-        ));
+        if (!headerText.toLowerCase().contains('coupon')) {
+          result.add(Item(
+            headerValue: headerText,
+            expandedValue: listItems,
+          ));
+        }
       } else if (headerElement != null &&
           headerElement.localName == 'p' &&
           headerElement.text.trim() != '') {
@@ -376,13 +387,13 @@ List<Coupon> extractCouponsFromHtml(String htmlString) {
         String couponDescription = liElement.text.trim();
         String couponCode = _extractCouponCode(couponDescription);
         String couponUrl = '';
+
         htmlDom.Element? anchorElement = liElement.querySelector('a');
         if (anchorElement != null) {
           // If an anchor tag is present, treat it as a regular list item
           String link = anchorElement.attributes['href'] ?? '';
           couponUrl = link;
         }
-
         // Create a Coupon object and add it to the list
         coupons.add(Coupon(
             code: couponCode, description: couponDescription, url: couponUrl));
@@ -401,13 +412,27 @@ String _extractCouponCode(String text) {
     RegExp(
       r'(?<=\b[cC]oupon\s[cC]ode\s*[-:]*\s*)\b\w+\b',
       caseSensitive: false,
+    ),
+    RegExp(
+      r'(?<=\b[cC]oupon\s[cC]ode\s*)\b\w+\b',
+      caseSensitive: false,
+    ),
+    RegExp(
+      r'\b[Cc]oupon\s+([a-zA-Z0-9]+)\b',
+      caseSensitive: false,
     )
   ];
 
   for (RegExp pattern in regexPatterns) {
     Match? match = pattern.firstMatch(text);
     if (match != null) {
-      return match.group(0) ?? '';
+      try {
+        if ((match.group(1) != null || match.group(1)!.isNotEmpty)) {
+          return match.group(1) ?? '';
+        }
+      } catch (e) {
+        return match.group(0) ?? '';
+      }
     }
   }
   return '';

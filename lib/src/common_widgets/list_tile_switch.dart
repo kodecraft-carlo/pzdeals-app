@@ -6,12 +6,13 @@ class ListTileWithSwitchWidget extends StatefulWidget {
   const ListTileWithSwitchWidget({
     super.key,
     required this.title,
-    required this.subtitle,
+    this.subtitle = '',
     required this.value,
     required this.onChanged,
   });
 
-  final String title, subtitle;
+  final String title;
+  final String subtitle;
   final bool value;
   final void Function(bool) onChanged;
 

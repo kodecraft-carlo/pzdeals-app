@@ -70,6 +70,8 @@ class KeywordDealsScreenState extends ConsumerState<KeywordDealsScreen>
                 child: GestureDetector(
                   onTap: () {},
                   child: ProductContentDialog(
+                    hasDescription: product.productDealDescription != null &&
+                        product.productDealDescription != '',
                     productData: product,
                     content: ProductDealDescription(
                       snackbarContext: context,

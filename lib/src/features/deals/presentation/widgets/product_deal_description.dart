@@ -36,7 +36,8 @@ class ProductDealDescriptionState
             ProductImageWidget(
               imageAsset: widget.productData.imageAsset,
               sourceType: widget.productData.assetSourceType,
-              size: 'large',
+              size: 'container',
+              fit: BoxFit.contain,
               isExpired: widget.productData.isProductExpired != null &&
                   widget.productData.isProductExpired == true,
             ),
@@ -78,7 +79,7 @@ class ProductDealDescriptionState
         ),
         StoreImageWidget(
           storeAssetImage: widget.productData.storeAssetImage,
-          imageWidth: 37,
+          imageWidth: 40,
           hasLayoutType: false,
         ),
         const SizedBox(

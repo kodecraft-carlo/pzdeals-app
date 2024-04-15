@@ -7,15 +7,17 @@ class FirebaseDynamicLinksApi {
     final DynamicLinkParameters dynamicLinkParams = DynamicLinkParameters(
       uriPrefix: 'https://pzdealsapp.page.link',
       link: Uri.parse('https://pzdealsapp.page.link/deals?id=$productId'),
-      androidParameters: const AndroidParameters(
+      androidParameters: AndroidParameters(
         packageName: 'com.kodecraft.pzdeals',
         minimumVersion: 34,
+        fallbackUrl: Uri.parse(
+            'https://play.google.com/store/apps/details?id=com.facebook.katana'), // placeholder value only
       ),
-      // iosParameters: const IOSParameters(
-      //   bundleId: 'com.yourapp.bundle',
-      //   minimumVersion: '0',
-      //   appStoreId: '123456789', // Your App Store ID
-      // ),
+      iosParameters: const IOSParameters(
+        bundleId: 'com.kodecraft.pzdeals',
+        minimumVersion: '0',
+        appStoreId: 'id284882215', // Your App Store ID
+      ),
       socialMetaTagParameters: SocialMetaTagParameters(
         title: productName,
         description:

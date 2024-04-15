@@ -53,7 +53,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
                   for (Map<String, dynamic> map in dataMap)
                     FutureBuilder(
                         future: fetchForYouService.fetchForYouDeals(
-                            map['collection_id'], 4, map['collection_name']),
+                            map['collection_id'], 25, map['collection_name']),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {

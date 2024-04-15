@@ -158,7 +158,7 @@ class StaticProductDealCardWidgetState
                 Flex(
                   direction: Axis.horizontal,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     StoreImageWidget(
@@ -174,44 +174,45 @@ class StaticProductDealCardWidgetState
                               : const SizedBox(),
                           const SizedBox(
                               height: Sizes.spaceBetweenContentSmall),
-                          widget.productData.isProductNoPrice != null &&
-                                  widget.productData.isProductNoPrice == false
-                              ? RichText(
-                                  maxLines: 1,
-                                  softWrap: false,
-                                  textWidthBasis: TextWidthBasis.parent,
-                                  overflow: TextOverflow.ellipsis,
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: '\$${widget.productData.price}',
-                                        style: const TextStyle(
-                                            fontSize: Sizes.listTitleFontSize,
-                                            color: PZColors.pzGreen,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      const TextSpan(
-                                        text: ' ',
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            '\$${widget.productData.oldPrice}',
-                                        style: const TextStyle(
-                                            fontSize: Sizes.bodyFontSize,
-                                            color: Colors.red,
-                                            decoration:
-                                                TextDecoration.lineThrough,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
                         ],
                       ),
                     ),
                   ],
                 ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: widget.productData.isProductNoPrice != null &&
+                          widget.productData.isProductNoPrice == false
+                      ? RichText(
+                          maxLines: 1,
+                          softWrap: false,
+                          textWidthBasis: TextWidthBasis.parent,
+                          overflow: TextOverflow.ellipsis,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '\$${widget.productData.price}',
+                                style: const TextStyle(
+                                    fontSize: Sizes.listTitleFontSize,
+                                    color: PZColors.pzGreen,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const TextSpan(
+                                text: ' ',
+                              ),
+                              TextSpan(
+                                text: '\$${widget.productData.oldPrice}',
+                                style: const TextStyle(
+                                    fontSize: Sizes.bodyFontSize,
+                                    color: Colors.red,
+                                    decoration: TextDecoration.lineThrough,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            ],
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                )
               ],
             ),
           )),

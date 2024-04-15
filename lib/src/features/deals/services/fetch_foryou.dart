@@ -21,13 +21,13 @@ class FetchForYouService {
     final apiClient = ApiClient();
 
     try {
-      final box = await Hive.openBox<ProductDealcardData>(boxName);
+      // final box = await Hive.openBox<ProductDealcardData>(boxName);
 
-      if (Hive.isBoxOpen(boxName) && box.isNotEmpty) {
-        final products = box.values.toList();
-        await box.close();
-        return products;
-      }
+      // if (Hive.isBoxOpen(boxName) && box.isNotEmpty) {
+      //   final products = box.values.toList();
+      //   await box.close();
+      //   return products;
+      // }
 
       final response = await apiClient.dio.get(
         getProductsByCollectionIdQuery(collectionId, limit),

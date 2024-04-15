@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:hive/hive.dart';
 
 class ProductImageWidget extends StatelessWidget {
   const ProductImageWidget({
@@ -8,17 +9,22 @@ class ProductImageWidget extends StatelessWidget {
     required this.sourceType,
     this.size = 'medium',
     this.isExpired = false,
+    this.fit = BoxFit.fitWidth,
   });
 
   final String imageAsset;
   final String sourceType;
   final String size;
   final bool isExpired;
+  final BoxFit fit;
 
   @override
   Widget build(BuildContext context) {
     double width;
-    double height;
+    double? height;
+
+    //get container width;
+    final containerWidth = MediaQuery.of(context).size.width;
 
     // Set width and height based on the provided size parameter or use default values
     switch (size) {
@@ -37,6 +43,10 @@ class ProductImageWidget extends StatelessWidget {
       case 'xlarge':
         width = 180.0;
         height = 180.0;
+        break;
+      case 'container':
+        width = containerWidth / 1.75;
+        height = containerWidth / 1.75;
         break;
       default:
         // Set default size if the provided size is not recognized
@@ -59,7 +69,7 @@ class ProductImageWidget extends StatelessWidget {
       image: imageProvider,
       width: width,
       height: height,
-      fit: BoxFit.fitWidth,
+      fit: fit,
     );
 
     // Apply opaque effect if expired
@@ -79,7 +89,7 @@ class ProductImageWidget extends StatelessWidget {
         imageUrl: imageAsset,
         width: width,
         height: height,
-        fit: BoxFit.fitWidth,
+        fit: fit,
         // placeholder: (context, url) => const Center(
         //   child: CircularProgressIndicator(
         //     valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
@@ -97,53 +107,6 @@ class ProductImageWidget extends StatelessWidget {
           );
         },
       );
-      // imageWidget = Image.network(
-      //   imageAsset,
-      //   width: width,
-      //   height: height,
-      //   fit: BoxFit.fitWidth,
-      //   loadingBuilder: (BuildContext context, Widget child,
-      //       ImageChunkEvent? loadingProgress) {
-      //     if (loadingProgress == null) {
-      //       return child;
-      //     } else {
-      //       return SizedBox(
-      //         width: width,
-      //         height: height,
-      //         child: const Center(
-      //           child: CircularProgressIndicator.adaptive(
-      //             // value: loadingProgress.expectedTotalBytes != null
-      //             //     ? loadingProgress.cumulativeBytesLoaded /
-      //             //         (loadingProgress.expectedTotalBytes ?? 1)
-      //             //     : null,
-      //             valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
-      //             backgroundColor: PZColors.pzLightGrey,
-      //             strokeWidth: 3,
-      //           ),
-      //         ),
-      //       );
-      //       // return AnimatedOpacity(
-      //       //   opacity: loadingProgress.expectedTotalBytes != null
-      //       //       ? loadingProgress.cumulativeBytesLoaded /
-      //       //           loadingProgress.expectedTotalBytes!
-      //       //       : 1,
-      //       //   duration: const Duration(milliseconds: 200),
-      //       //   child: child,
-      //       // );
-      //     }
-      //   },
-      //   errorBuilder:
-      //       (BuildContext context, Object exception, StackTrace? stackTrace) {
-      //     // Handle image loading errors
-      //     debugPrint('Error loading image: $exception');
-      //     return Image.asset(
-      //       'assets/images/pzdeals.png',
-      //       width: width,
-      //       height: height,
-      //       fit: BoxFit.fitWidth,
-      //     );
-      //   },
-      // );
     }
 
     if (isExpired) {

@@ -199,7 +199,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                 authUserState.isAuthenticated == true
                     ? const Column(
                         children: [
-                          KeywordAlertsSection(),
+                          // KeywordAlertsSection(),
                           SizedBox(
                             height: Sizes.spaceBetweenSectionsXL,
                           ),

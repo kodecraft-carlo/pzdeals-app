@@ -56,7 +56,7 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
     if (result.status == ShareResultStatus.success) {
-      showSnackbarWithMessage(context, 'Product deal shared!');
+      // showSnackbarWithMessage(context, 'Product deal shared!');
     }
   }
 
@@ -99,8 +99,8 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                             widget.productData.productId, 'like');
                         if (productLikeState
                             .isLiked(widget.productData.productId)) {
-                          showSnackbarWithMessage(
-                              context, 'You like this deal!');
+                          // showSnackbarWithMessage(
+                          //     context, 'You like this deal!');
                         }
                       },
                     ),
@@ -118,8 +118,8 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                             widget.productData.productId, 'disliked');
                         if (productLikeState
                             .isDisliked(widget.productData.productId)) {
-                          showSnackbarWithMessage(
-                              context, 'You dislike this deal!');
+                          // showSnackbarWithMessage(
+                          //     context, 'You dislike this deal!');
                         }
                       },
                     ),
@@ -165,13 +165,13 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                               .isBookmarked(widget.productData.productId)) {
                             bookmarkState.removeBookmarkLocally(
                                 widget.productData.productId);
-                            showSnackbarWithMessage(
-                                context, 'Removed from bookmarks');
+                            // showSnackbarWithMessage(
+                            //     context, 'Removed from bookmarks');
                           } else {
                             bookmarkState.addBookmarkLocally(
                                 widget.productData.productId);
-                            showSnackbarWithMessage(
-                                context, 'Added to bookmarks');
+                            // showSnackbarWithMessage(
+                            //     context, 'Added to bookmarks');
                           }
                         }
                       },

@@ -61,7 +61,7 @@ class ProductsDisplay extends StatelessWidget {
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: itemWidth,
           crossAxisSpacing: 15,
-          childAspectRatio: 2 / 3.5),
+          childAspectRatio: 2 / 3.8),
       itemBuilder: (BuildContext context, int index) {
         final product = productData[index];
         return ProductDealcard(

@@ -98,7 +98,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                         physics: const BouncingScrollPhysics(),
                         child: Padding(
                           padding: const EdgeInsets.only(
-                            top: Sizes.paddingTop * 3,
+                            top: Sizes.paddingTop,
                             left: Sizes.paddingLeft,
                             right: Sizes.paddingRight,
                             bottom: Sizes.paddingBottom,
@@ -199,15 +199,17 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                     Icons.close,
                     size: Sizes.largeIconSize,
                   ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                    shape: MaterialStateProperty.all<OutlinedBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(Sizes.buttonBorderRadius),
-                      ),
-                    ),
-                  ),
+                  // style: ButtonStyle(
+                  //   shape: MaterialStateProperty.all<OutlinedBorder>(
+                  //     RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(
+                  //           50), // Set a large value for circular shape
+                  //       side: BorderSide(
+                  //           color: Colors.white,
+                  //           width: 2), // Add a white stroke
+                  //     ),
+                  //   ),
+                  // ),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },

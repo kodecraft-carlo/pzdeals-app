@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_collections.dart';
+import 'package:pzdeals/src/features/deals/services/fetch_foryou.dart';
 
 final tabForYouProvider =
     ChangeNotifierProvider<TabForYouNotifier>((ref) => TabForYouNotifier());
 
 class TabForYouNotifier extends ChangeNotifier {
   final FetchCollectionService _collectionService = FetchCollectionService();
+  final FetchForYouService _forYouService = FetchForYouService();
 
   final String _boxName = 'foryoucollections';
   bool _isLoading = false;
+  bool _isForYouLoading = false;
   List<CollectionData> _collections = [];
   final List<Map<String, dynamic>> _selectedCollectionIds = [];
   final List<Map<String, dynamic>> _collectionsMap = [];
@@ -20,17 +23,42 @@ class TabForYouNotifier extends ChangeNotifier {
     {'collection_id': 8, 'collection_name': 'Tech'},
     {'collection_id': 10, 'collection_name': 'Home'}
   ];
+  List<ProductDealcardData> _foryouProducts = [];
 
   bool get isLoading => _isLoading;
+  bool get isForYouLoading => _isForYouLoading;
   List<CollectionData> get collections => _collections;
   List<Map<String, dynamic>> get selectedCollectionIds =>
       _selectedCollectionIds;
   List<Map<String, dynamic>> get collectionsMap => _collectionsMap;
   bool get isSelectionApplied => _isSelectionApplied;
   List<Map<String, dynamic>> get defaultCollections => _defaultCollections;
+  List get foryouProducts => _foryouProducts;
 
   TabForYouNotifier() {
     _loadCollections();
+  }
+
+  Future<void> loadForYouProducts(
+      int collectionId, int limit, String boxName) async {
+    _isForYouLoading = true;
+    notifyListeners();
+
+    try {
+      _foryouProducts =
+          await _forYouService.getCachedProductCollections(boxName);
+      notifyListeners();
+
+      final serverProducts =
+          await _forYouService.fetchForYouDeals(collectionId, limit, boxName);
+      _foryouProducts = serverProducts;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("error loading loadForYouProducts: $e");
+    } finally {
+      _isForYouLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> _loadCollections() async {

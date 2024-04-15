@@ -76,83 +76,84 @@ class AccountWidget extends ConsumerWidget {
       );
     }
     return SafeArea(
-        top: false,
-        child: DefaultTabController(
-          length: authUserState.isAuthenticated ? 2 : 1,
-          child: Scaffold(
-            backgroundColor: Colors.white,
-            body: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return [
-                  SliverAppBar(
-                    elevation: 3.0,
-                    backgroundColor: PZColors.pzWhite,
-                    automaticallyImplyLeading: false,
-                    title: const Text(
-                      "Account",
-                      style: TextStyle(
-                          fontSize: Sizes.headerFontSize,
-                          fontWeight: FontWeight.w600,
-                          color: PZColors.pzBlack),
+      top: false,
+      child: DefaultTabController(
+        length: authUserState.isAuthenticated ? 2 : 1,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  elevation: 3.0,
+                  backgroundColor: PZColors.pzWhite,
+                  automaticallyImplyLeading: false,
+                  title: const Text(
+                    "Account",
+                    style: TextStyle(
+                        fontSize: Sizes.headerFontSize,
+                        fontWeight: FontWeight.w600,
+                        color: PZColors.pzBlack),
+                  ),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        size: 30,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                  floating: false,
+                  pinned: true,
+                  forceElevated: innerBoxIsScrolled,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Container(
+                      color: PZColors
+                          .pzWhite, // Set background color to transparent
                     ),
-                    actions: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.close,
-                          size: 30,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                    floating: false,
-                    pinned: true,
-                    forceElevated: innerBoxIsScrolled,
-                    flexibleSpace: FlexibleSpaceBar(
+                    collapseMode: CollapseMode.pin,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: Sizes.paddingLeftSmall,
+                          right: Sizes.paddingRightSmall),
+                      child: SizedBox(
+                          child: LayoutBuilder(builder: (context, constraints) {
+                        if (authUserState.isAuthenticated == true) {
+                          return AccountCard(
+                              accountData: authUserState.userData!);
+                        } else {
+                          return const LoginCard();
+                        }
+                      }))),
+                ),
+                SliverAppBar(
+                  backgroundColor: PZColors.pzWhite,
+                  floating: false,
+                  pinned: true,
+                  primary: false,
+                  forceElevated: innerBoxIsScrolled,
+                  automaticallyImplyLeading: false,
+                  flexibleSpace: FlexibleSpaceBar(
                       background: Container(
                         color: PZColors
                             .pzWhite, // Set background color to transparent
                       ),
-                      collapseMode: CollapseMode.pin,
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: Sizes.paddingLeftSmall,
-                            right: Sizes.paddingRightSmall),
-                        child: SizedBox(child:
-                            LayoutBuilder(builder: (context, constraints) {
-                          if (authUserState.isAuthenticated == true) {
-                            return AccountCard(
-                                accountData: authUserState.userData!);
-                          } else {
-                            return const LoginCard();
-                          }
-                        }))),
-                  ),
-                  SliverAppBar(
-                    backgroundColor: PZColors.pzWhite,
-                    floating: false,
-                    pinned: true,
-                    primary: false,
-                    forceElevated: innerBoxIsScrolled,
-                    automaticallyImplyLeading: false,
-                    flexibleSpace: FlexibleSpaceBar(
-                        background: Container(
-                          color: PZColors
-                              .pzWhite, // Set background color to transparent
-                        ),
-                        collapseMode: CollapseMode.pin),
-                    title: tabBars,
-                    titleSpacing: 0,
-                  ),
-                ];
-              },
-              body: tabBarView,
-            ),
+                      collapseMode: CollapseMode.pin),
+                  title: tabBars,
+                  titleSpacing: 0,
+                ),
+              ];
+            },
+            body: tabBarView,
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

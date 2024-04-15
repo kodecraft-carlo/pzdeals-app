@@ -105,7 +105,8 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                     ProductImageWidget(
                       imageAsset: productData.imageAsset,
                       sourceType: productData.assetSourceType,
-                      size: 'large',
+                      size: 'xlarge',
+                      fit: BoxFit.cover, //cover will expand but crop the image
                       isExpired: productData.isProductExpired != null &&
                           productData.isProductExpired == true,
                     ),
@@ -165,13 +166,10 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
               Flex(
                 direction: Axis.horizontal,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 2),
-                    child: StoreImageWidget(
-                        storeAssetImage: productData.storeAssetImage),
-                  ),
+                  StoreImageWidget(
+                      storeAssetImage: productData.storeAssetImage),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -183,44 +181,47 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                                     productData.discountPercentage)
                             : const SizedBox(),
                         const SizedBox(height: Sizes.spaceBetweenContentSmall),
-                        productData.isProductNoPrice != null &&
-                                productData.isProductNoPrice == false
-                            ? RichText(
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: false,
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: '\$${productData.price}',
-                                      style: const TextStyle(
-                                          fontSize: Sizes.fontSizeLarge,
-                                          color: PZColors.pzGreen,
-                                          fontFamily: 'Poppins',
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const TextSpan(
-                                      text: ' ',
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          '\$${productData.oldPrice}', // Replace with your old price
-                                      style: const TextStyle(
-                                          fontSize: Sizes.bodyFontSize,
-                                          color: Colors.red,
-                                          decoration:
-                                              TextDecoration.lineThrough,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : const SizedBox(),
                       ],
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: Sizes.spaceBetweenContentSmall),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: productData.isProductNoPrice != null &&
+                        productData.isProductNoPrice == false
+                    ? RichText(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '\$${productData.price}',
+                              style: const TextStyle(
+                                  fontSize: Sizes.fontSizeLarge,
+                                  color: PZColors.pzGreen,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            const TextSpan(
+                              text: ' ',
+                            ),
+                            TextSpan(
+                              text:
+                                  '\$${productData.oldPrice}', // Replace with your old price
+                              style: const TextStyle(
+                                  fontSize: Sizes.bodyFontSize,
+                                  color: Colors.red,
+                                  decoration: TextDecoration.lineThrough,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox(),
+              )
             ],
           ),
         ));
