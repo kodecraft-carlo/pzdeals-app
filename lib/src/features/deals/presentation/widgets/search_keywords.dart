@@ -4,6 +4,7 @@ import 'package:pzdeals/src/actions/material_navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/chips.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_result.dart';
+import 'package:pzdeals/src/features/navigationwidget.dart';
 
 class SearchKeyWords extends StatelessWidget {
   SearchKeyWords({super.key});
