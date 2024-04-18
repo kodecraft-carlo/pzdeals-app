@@ -67,10 +67,19 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
       final layoutType = ref.watch(layoutTypeProvider);
       return Column(
         children: [
+          const SizedBox(
+            height: Sizes.paddingAllSmall,
+          ),
+          const Text(
+            "This is a sample description of this tab",
+            style:
+                TextStyle(color: Colors.black54, fontSize: Sizes.bodyFontSize),
+          ),
           Expanded(
               child: ProductsDisplay(
             productData: productData,
             layoutType: layoutType,
+            onRefresh: () => frontpageState.refreshDeals(),
           )),
           if (frontpageState.isLoading)
             const Padding(

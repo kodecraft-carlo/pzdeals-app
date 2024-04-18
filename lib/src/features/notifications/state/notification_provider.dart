@@ -33,6 +33,32 @@ class NotificationListNotifier extends ChangeNotifier {
     // _loadBookmarks();
   }
 
+  Future<void> refreshNotification() async {
+    _notifications.clear();
+    _notifData.clear();
+    try {
+      _notifData = await _notifService.getInitialNotifications(_boxName);
+      _notifications = _notifData
+          .map((doc) => NotificationData(
+                id: doc["id"],
+                title: doc["title"],
+                body: doc["body"],
+                timestamp: timestampToDateTime(doc["timestamp"]),
+                isRead: doc["isRead"] as bool,
+                data: doc["data"],
+                imageUrl: doc["imageUrl"],
+              ))
+          .toList();
+      _unreadCount = await getUnreadNotificationsCount();
+      notifyListeners();
+    } catch (e) {
+      debugPrint("error loading notifications: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> loadNotifications() async {
     _isLoading = true;
     notifyListeners();

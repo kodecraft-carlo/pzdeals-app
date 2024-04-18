@@ -66,7 +66,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
       });
     });
     double screenHeight = MediaQuery.of(context).size.height;
-    double dialogHeight = screenHeight / 1.5;
+    double dialogHeight = screenHeight / 1.4;
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),

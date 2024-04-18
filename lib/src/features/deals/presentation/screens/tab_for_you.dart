@@ -44,16 +44,27 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(
+            height: Sizes.paddingAllSmall,
+          ),
+          const Align(
+            alignment: Alignment.center,
+            child: Text(
+              "This is a sample description of this tab",
+              style: TextStyle(
+                  color: Colors.black54, fontSize: Sizes.bodyFontSize),
+            ),
+          ),
           const ForYouBannerWidget(),
-          Padding(
-              padding: const EdgeInsets.all(Sizes.paddingAll),
+          Container(
+              margin: const EdgeInsets.all(Sizes.paddingAll),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   for (Map<String, dynamic> map in dataMap)
                     FutureBuilder(
                         future: fetchForYouService.fetchForYouDeals(
-                            map['collection_id'], 25, map['collection_name']),
+                            map['collection_id'], 20, map['collection_name']),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {

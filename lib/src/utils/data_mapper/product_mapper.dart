@@ -32,6 +32,7 @@ class ProductMapper {
           assetSourceType: 'network',
           isProductNoPrice: isProductNoPrice(json['tag_ids']),
           isProductExpired: isProductExpired(json['tag_ids']),
+          productDealDescription: json['body_html'] ?? '',
           barcodeLink: json['variants'][0]['barcode'] ?? '',
         );
       }));

@@ -40,7 +40,8 @@ class LoginCard extends StatelessWidget {
                                     color: PZColors.pzWhite,
                                     fontFamily: 'Poppins')),
                             TextSpan(
-                                text: ' to unlock all of PZ Deals features!',
+                                text:
+                                    ' to unlock all of ${Wordings.appName} features!',
                                 style: TextStyle(
                                     color: PZColors.pzWhite,
                                     fontFamily: 'Poppins')),
@@ -51,7 +52,8 @@ class LoginCard extends StatelessWidget {
                   ],
                 ),
                 destinationScreen: const LoginRequiredScreen(
-                  message: "Login to unlock amazing PZ Deals features!",
+                  message:
+                      "Login to unlock amazing ${Wordings.appName} features!",
                 ))));
   }
 }

@@ -46,4 +46,32 @@ class ProductService {
       throw Exception('Failed to update product soldout status');
     }
   }
+
+  Future<bool> addToReportedProducts(int productId, String status) async {
+    ApiClient apiClient = ApiClient();
+    debugPrint('addToReportedProducts called with $productId and $status');
+    try {
+      Response response = await apiClient.dio.post('/items/reported_products',
+          data: {
+            "product": productId,
+            "status": "unchecked",
+            "is_soldout": true
+          }
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+          );
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Unable to addToReportedProducts ${response.statusCode} ~ ${response.data}');
+      }
+      return true;
+    } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      throw Exception('Failed to addToReportedProducts');
+    } catch (e) {
+      debugPrint('Error addToReportedProducts: $e');
+      throw Exception('Failed to addToReportedProducts');
+    }
+  }
 }

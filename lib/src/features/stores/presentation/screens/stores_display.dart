@@ -11,7 +11,7 @@ class DisplayStores extends StatelessWidget {
   final StoreData pzDeals = StoreData(
       id: 0,
       handle: 'pzdeals',
-      storeName: 'PZ Deals',
+      storeName: Wordings.appName,
       storeAssetImage: 'assets/images/pzdeals_store.png',
       assetSourceType: 'asset');
 

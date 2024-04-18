@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
 import 'package:pzdeals/src/utils/http/http_client.dart';
+import 'package:pzdeals/src/utils/queries/deals_querybuilder.dart';
 import 'package:pzdeals/src/utils/queries/index.dart';
 
 class FetchProductDealService {
@@ -13,6 +14,41 @@ class FetchProductDealService {
     final products = box.values.toList();
     await box.close();
     return products;
+  }
+
+  Future<List<ProductDealcardData>> fetchProductDealsAll(
+      String boxName, int pageNumber) async {
+    ApiClient apiClient = ApiClient();
+    // final authService = ref.watch(directusAuthServiceProvider);
+    debugPrint("fetchProductDealsAll called");
+
+    try {
+      Response response = await apiClient.dio.get(getProductsAll(pageNumber)
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+          );
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        if (responseData == null || responseData.isEmpty) {
+          throw Exception('No Data Found');
+        }
+
+        final products =
+            ProductMapper.mapToProductDealcardDataList(responseData);
+        await _cacheProducts(products, boxName);
+        return products;
+      } else {
+        throw Exception(
+            'Failed to fetch directus product list ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioExceptionw: ${e.message}");
+      throw Exception('Failed to fetch directus product list');
+    } catch (e) {
+      debugPrint('Error fetching frontpage deals: $e');
+      throw Exception('Failed to fetch directus product list');
+    }
   }
 
   Future<List<ProductDealcardData>> fetchProductDeals(

@@ -110,7 +110,7 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                     });
                   },
                   elevation: 0,
-                  dividerColor: Colors.transparent,
+                  dividerColor: Colors.black.withOpacity(.1),
                   expandedHeaderPadding: EdgeInsets.zero,
                   children: _data.asMap().entries.map<ExpansionPanel>((entry) {
                     final int index = entry.key;

@@ -69,11 +69,20 @@ class PZPicksScreenWidgetState extends ConsumerState<PZPicksScreenWidget>
       final layoutType = ref.watch(layoutTypeProvider);
       return Column(
         children: [
+          const SizedBox(
+            height: Sizes.paddingAllSmall,
+          ),
+          const Text(
+            "This is a sample description of this tab",
+            style:
+                TextStyle(color: Colors.black54, fontSize: Sizes.bodyFontSize),
+          ),
           Expanded(
             child: ProductsDisplay(
               productData: productData,
               layoutType: layoutType,
               scrollKey: 'tabPzpicks',
+              onRefresh: () => pzpicksState.refreshDeals(),
             ),
           ),
           if (pzpicksState.isLoading)

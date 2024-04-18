@@ -74,13 +74,13 @@ class _SuccessfulRegistrationScreenState
             ]),
             const SizedBox(height: Sizes.spaceBetweenSectionsXL),
             TextWidget(
-              text: "Welcome to PZ Deals, ${widget.firstName}!",
+              text: "Welcome to ${Wordings.appName}, ${widget.firstName}!",
               textDisplayType: TextDisplayType.xLargeText,
             ),
             const SizedBox(height: Sizes.spaceBetweenSections),
             const TextWidget(
               text:
-                  "Thank you for registering with us! You can now start using your account to access all the features of PZ Deals.",
+                  "Thank you for registering with us! You can now start using your account to access all the features of ${Wordings.appName}.",
               textDisplayType: TextDisplayType.sectionSubTitle,
               textAlign: TextAlign.center,
             ),

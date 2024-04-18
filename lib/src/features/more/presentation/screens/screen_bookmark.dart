@@ -163,7 +163,7 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
             body: body,
           )
         : const LoginRequiredScreen(
-            message: "Login to unlock amazing PZ Deals features!",
+            message: "Login to unlock amazing ${Wordings.appName} features!",
           );
   }
 }

@@ -56,4 +56,32 @@ class FetchCollectionService {
       box.put(collection.id, collection);
     }
   }
+
+  Future<String> fetchCollectionIdAndName(String keyword) async {
+    ApiClient apiClient = ApiClient();
+    debugPrint("fetchCollectionIdAndName called for $keyword");
+    try {
+      Response response = await apiClient.dio.get('/items/collection'
+          '?filter[keywords][_eq]=$keyword'
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+          );
+      if (response.statusCode == 200) {
+        final responseData = response.data["data"];
+        if (responseData == null || responseData.isEmpty) {
+          throw Exception('No Data Found');
+        }
+        return '${responseData[0]["id"]}~${responseData[0]["collection_name"]}';
+      } else {
+        throw Exception('Failed to fetch directus fetchCollectionIdAndName');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioExceptionw: ${e.message}");
+      throw Exception('Failed to fetch directus fetchCollectionIdAndName');
+    } catch (e) {
+      debugPrint('Error fetching collection id and name: $e');
+      throw Exception('Failed to fetch directus fetchCollectionIdAndName');
+    }
+  }
 }

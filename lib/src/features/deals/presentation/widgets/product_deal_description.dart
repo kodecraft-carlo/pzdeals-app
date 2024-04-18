@@ -5,6 +5,7 @@ import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/badge.dart';
 import 'package:pzdeals/src/common_widgets/expired_deal_banner.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
+import 'package:pzdeals/src/common_widgets/product_image_detail.dart';
 import 'package:pzdeals/src/common_widgets/store_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
@@ -33,13 +34,30 @@ class ProductDealDescriptionState
         Stack(
           alignment: Alignment.center,
           children: [
-            ProductImageWidget(
-              imageAsset: widget.productData.imageAsset,
-              sourceType: widget.productData.assetSourceType,
-              size: 'container',
-              fit: BoxFit.contain,
-              isExpired: widget.productData.isProductExpired != null &&
-                  widget.productData.isProductExpired == true,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductImageDetailScreen(
+                      imageUrl: widget.productData.imageAsset,
+                      heroTag:
+                          'imageHero${widget.productData.productId}', // Unique tag for this image within the screen
+                    ),
+                  ),
+                );
+              },
+              child: Hero(
+                tag: 'imageHero${widget.productData.productId}',
+                child: ProductImageWidget(
+                  imageAsset: widget.productData.imageAsset,
+                  sourceType: widget.productData.assetSourceType,
+                  size: 'container',
+                  fit: BoxFit.contain,
+                  isExpired: widget.productData.isProductExpired != null &&
+                      widget.productData.isProductExpired == true,
+                ),
+              ),
             ),
             widget.productData.isProductExpired != null &&
                     widget.productData.isProductExpired == true
@@ -77,30 +95,35 @@ class ProductDealDescriptionState
         const SizedBox(
           height: Sizes.spaceBetweenContent,
         ),
-        StoreImageWidget(
-          storeAssetImage: widget.productData.storeAssetImage,
-          imageWidth: 40,
-          hasLayoutType: false,
-        ),
-        const SizedBox(
-          height: Sizes.spaceBetweenContent,
+        Align(
+          alignment: Alignment.center,
+          child: StoreImageWidget(
+            storeAssetImage: widget.productData.storeAssetImage,
+            imageWidth: 40,
+            imageHeight: 40,
+            hasLayoutType: false,
+          ),
         ),
         Text(
           widget.productData.productName,
           style: const TextStyle(
               fontSize: Sizes.fontSizeMedium, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         ),
         widget.productData.discountPercentage > 0
-            ? const SizedBox(height: Sizes.spaceBetweenSections)
+            ? const SizedBox(height: Sizes.spaceBetweenContentSmall)
             : const SizedBox.shrink(),
         widget.productData.discountPercentage > 0
             ? BadgeWidget(
                 discountPercentage: widget.productData.discountPercentage)
             : const SizedBox.shrink(),
-        const SizedBox(height: Sizes.spaceBetweenContent),
+        const SizedBox(height: Sizes.spaceBetweenContentSmall),
         widget.productData.isProductNoPrice != null &&
-                widget.productData.isProductNoPrice == false
+                widget.productData.isProductNoPrice == false &&
+                widget.productData.price != '' &&
+                widget.productData.price != '0.00'
             ? RichText(
                 text: TextSpan(
                   children: [

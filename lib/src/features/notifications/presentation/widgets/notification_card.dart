@@ -46,6 +46,7 @@ class NotificationCardWidget extends ConsumerWidget {
           ref.read(notificationsProvider).markAsRead(notificationData.id);
           if (notificationData.data != null || notificationData.data != {}) {
             final data = notificationData.data;
+            debugPrint('Notification Data: $data');
             if (data['alert_type'] == 'keyword') {
               Navigator.of(context).pushNamed('/keyword-deals', arguments: {
                 'title': notificationData.title,
@@ -57,6 +58,16 @@ class NotificationCardWidget extends ConsumerWidget {
                 'title': notificationData.title,
                 'value': data['value'],
                 'product_id': data['item_id'] ?? ''
+              });
+            } else if (data['alert_type'] == 'price_mistake') {
+              Navigator.of(context).pushNamed('/deals', arguments: {
+                'type': 'price_mistake',
+                'product_id': data['id'] ?? ''
+              });
+            } else if (data['alert_type'] == 'category') {
+              Navigator.of(context).pushNamed('/deal-collections', arguments: {
+                'value': data['value'],
+                'product_id': data['id'] ?? ''
               });
             } else {
               showDialog(

@@ -27,15 +27,20 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
   void gotoLoginScreen() {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return const LoginRequiredScreen(
-        message: "Login to unlock amazing PZ Deals features!",
+        message: "Login to unlock amazing ${Wordings.appName} features!",
       );
     }));
   }
 
   Future<bool> updateProductStatus(int productId, String status,
       String productName, String productLink) async {
+    //commented email sending: 04/15/2024
+    // if (await productSvc.updateProductSoldoutStatus(productId, status) &&
+    //     await emailSvc.sendEmailSoldOut(productName, productLink)) {
+    //   return true;
+    // }
     if (await productSvc.updateProductSoldoutStatus(productId, status) &&
-        await emailSvc.sendEmailSoldOut(productName, productLink)) {
+        await productSvc.addToReportedProducts(productId, status)) {
       return true;
     }
     return false;
@@ -44,15 +49,15 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
   Future<void> _onShare(BuildContext context) async {
     final box = context.findRenderObject() as RenderBox?;
     String productDescription =
-        '\'${widget.productData.productName}\' for only USD${widget.productData.price}';
+        '\'${widget.productData.productName}\' for only \$${widget.productData.price}';
     final dynamicLink = await dynamicLinkApi.generateDealDynamicLink(
         widget.productData.productId.toString(),
         widget.productData.productName,
         productDescription,
         widget.productData.imageAsset);
     final result = await Share.shareWithResult(
-      'Check out this amazing deal from PZ Deals! \'${widget.productData.productName}\' for only USD${widget.productData.price} $dynamicLink',
-      subject: 'Product Deal from PZ Deals',
+      'Check this \'${widget.productData.productName}\' for only \$${widget.productData.price} from ${Wordings.appName}! $dynamicLink',
+      subject: 'Product Deal from ${Wordings.appName}',
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
     if (result.status == ShareResultStatus.success) {

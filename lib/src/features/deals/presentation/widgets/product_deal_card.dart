@@ -21,54 +21,53 @@ class ProductDealcard extends ConsumerStatefulWidget {
 }
 
 class ProductDealcardState extends ConsumerState<ProductDealcard> {
-  FetchProductDealService productDealService = FetchProductDealService();
+  // FetchProductDealService productDealService = FetchProductDealService();
 
-  Future<ProductDealcardData> loadProduct(int productId) async {
-    final product = await productDealService.fetchProductInfo(productId);
-    return product;
-  }
+  // Future<ProductDealcardData> loadProduct(int productId) async {
+  //   final product = await productDealService.fetchProductInfo(productId);
+  //   return product;
+  // }
 
   @override
   Widget build(BuildContext context) {
     final layoutType = ref.watch(layoutTypeProvider);
 
     return GestureDetector(
-      onTap: () async {
-        LoadingDialog.show(context);
+      onTap: () {
+        // LoadingDialog.show(context);
         if (mounted) {
-          final product = await loadProduct(widget.productData.productId);
-          LoadingDialog.hide(context);
-          if (mounted) {
-            showDialog(
-              context: context,
-              useRootNavigator: false,
-              barrierDismissible: true,
-              builder: (context) => ScaffoldMessenger(
-                child: Builder(
-                  builder: (context) => Scaffold(
-                    backgroundColor: Colors.transparent,
-                    body: GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      behavior: HitTestBehavior.opaque,
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: ProductContentDialog(
+          showDialog(
+            context: context,
+            useRootNavigator: false,
+            barrierDismissible: true,
+            builder: (context) => ScaffoldMessenger(
+              child: Builder(
+                builder: (context) => Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    behavior: HitTestBehavior.opaque,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: ProductContentDialog(
+                        productData: widget.productData,
+                        hasDescription: widget
+                                    .productData.productDealDescription !=
+                                null &&
+                            widget.productData.productDealDescription != '' &&
+                            widget.productData.productDealDescription!.length >
+                                100,
+                        content: ProductDealDescription(
+                          snackbarContext: context,
                           productData: widget.productData,
-                          hasDescription:
-                              product.productDealDescription != null &&
-                                  product.productDealDescription != '',
-                          content: ProductDealDescription(
-                            snackbarContext: context,
-                            productData: product,
-                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            );
-          }
+            ),
+          );
         }
       },
       child: layoutType == 'Grid'
@@ -166,13 +165,14 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
               Flex(
                 direction: Axis.horizontal,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   StoreImageWidget(
                       storeAssetImage: productData.storeAssetImage),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Discount Badge
                         productData.discountPercentage > 0
@@ -180,7 +180,6 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                                 discountPercentage:
                                     productData.discountPercentage)
                             : const SizedBox(),
-                        const SizedBox(height: Sizes.spaceBetweenContentSmall),
                       ],
                     ),
                   ),
@@ -190,7 +189,9 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: productData.isProductNoPrice != null &&
-                        productData.isProductNoPrice == false
+                        productData.isProductNoPrice == false &&
+                        productData.price != '' &&
+                        productData.price != '0.00'
                     ? RichText(
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

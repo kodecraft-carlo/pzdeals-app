@@ -112,10 +112,13 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
       final displayStores = storescreenState.filteredStores.isNotEmpty
           ? storescreenState.filteredStores
           : storescreenState.stores;
-      body = DisplayStores(
-        scrollController: _scrollController,
-        storedata: displayStores,
-      );
+      body = RefreshIndicator.adaptive(
+          color: PZColors.pzOrange,
+          child: DisplayStores(
+            scrollController: _scrollController,
+            storedata: displayStores,
+          ),
+          onRefresh: () => storescreenState.refreshStores());
     }
     return PopScope(
         canPop: false,

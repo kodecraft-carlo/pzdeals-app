@@ -71,7 +71,7 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
     double itemWidth = screenWidth / 2.8;
     return Container(
       key: ValueKey('foryoucollection_${widget.collectionId}'),
-      height: 300,
+      height: 310,
       margin: const EdgeInsets.only(
         bottom: Sizes.marginBottom,
       ),

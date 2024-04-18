@@ -4,7 +4,7 @@
 # Define workflows
 workflows:
   flutter_ios_test:
-    name: PZ Deals iOS Test
+    name: PzDeals iOS Test
     environment:
       flutter: stable
     scripts:

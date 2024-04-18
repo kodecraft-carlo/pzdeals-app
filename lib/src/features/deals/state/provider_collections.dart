@@ -26,6 +26,22 @@ class ProductCollectionNotifier extends ChangeNotifier {
     _loadProducts();
   }
 
+  Future<void> refreshDeals() async {
+    pageNumber = 1;
+
+    try {
+      final serverProducts = await _productService.fetchProductDeals(
+          _collectionName, _boxName, pageNumber);
+      _products = serverProducts;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("error loading products: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> _loadProducts() async {
     _isLoading = true;
     notifyListeners();

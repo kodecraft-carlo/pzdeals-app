@@ -7,8 +7,8 @@ String getStoresQuery(int pageNumber) {
       '&fields[]=image_src'
       '&fields[]=tags.tags_id.tag_name'
       '&fields[]=handle'
-      '&sort[]=id'
-      '&limit=50'
+      '&sort[]=title'
+      '&limit=100'
       '&page=$pageNumber';
   debugPrint('getStoresQuery: $query');
   return query;

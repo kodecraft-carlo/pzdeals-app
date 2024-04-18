@@ -9,7 +9,8 @@ final tabFrontPageProvider = ChangeNotifierProvider<TabFrontPageNotifier>(
 class TabFrontPageNotifier extends ChangeNotifier {
   final FetchProductDealService _productService = FetchProductDealService();
   final String _collectionName = 'Front Page';
-  final String _boxName = 'frontpage';
+  final String _boxName = 'frontpage'; // collection: front page
+  // final String _boxName = 'alldeals';
   int pageNumber = 1;
   bool _isLoading = false;
 
@@ -29,6 +30,21 @@ class TabFrontPageNotifier extends ChangeNotifier {
     loadProducts();
   }
 
+  Future<void> refreshDeals() async {
+    pageNumber = 1;
+    try {
+      final serverProducts = await _productService.fetchProductDeals(
+          _collectionName, _boxName, pageNumber);
+      _products = serverProducts;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("error loading products: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> loadProducts() async {
     _isLoading = true;
     notifyListeners();
@@ -40,7 +56,9 @@ class TabFrontPageNotifier extends ChangeNotifier {
       // if (_products.isNotEmpty) return;
 
       final serverProducts = await _productService.fetchProductDeals(
-          _collectionName, _boxName, pageNumber);
+          _collectionName, _boxName, pageNumber); // collection: front page
+      // final serverProducts =
+      //     await _productService.fetchProductDealsAll(_boxName, pageNumber);
       _products = serverProducts;
       notifyListeners();
     } catch (e) {

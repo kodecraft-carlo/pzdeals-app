@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pzdeals/firebase_options.dart';
+import 'package:pzdeals/src/common_widgets/screen_collections_display.dart';
 import 'package:pzdeals/src/features/account/models/settings_data.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
@@ -128,6 +129,10 @@ class MainAppState extends ConsumerState<MainApp>
         '/percentage-deals': (context) => const PercentageDealsScreen(),
         '/notification-screen': (context) => const NotificationScreen(),
         '/deals': (context) => const NavigationWidget(),
+        '/deal-collections': (context) => const CollectionDisplayScreenWidget(
+              collectionTitle: '',
+              collectionId: 0,
+            ),
       },
       theme: ThemeData(
         fontFamily: 'Poppins',

@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pzdeals/main.dart';
+import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
@@ -14,9 +15,9 @@ class FirebaseMessagingApi {
 
   final _androidChannel = const AndroidNotificationChannel(
     'high_importance_channel',
-    'PzDeals Important Notifications',
+    '${Wordings.appName} Important Notifications',
     description:
-        'This channel is used for important notifications from PZ Deals',
+        'This channel is used for important notifications from ${Wordings.appName}',
     importance: Importance.max,
   );
 
@@ -129,6 +130,16 @@ class FirebaseMessagingApi {
           'title': message["notification"]["title"],
           'value': data['value'],
           'product_id': data['item_id'] ?? ''
+        });
+      } else if (data['alert_type'] == 'price_mistake') {
+        navigatorKey.currentState!.pushReplacementNamed('/deals', arguments: {
+          'type': 'price_mistake',
+          'product_id': data['id'] ?? ''
+        });
+      } else if (data['alert_type'] == 'category') {
+        navigatorKey.currentState!.pushNamed('/deal-collections', arguments: {
+          'value': data['value'],
+          'product_id': data['id'] ?? ''
         });
       } else {
         navigatorKey.currentState!.pushReplacement(

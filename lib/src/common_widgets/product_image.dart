@@ -48,6 +48,9 @@ class ProductImageWidget extends StatelessWidget {
         width = containerWidth / 1.75;
         height = containerWidth / 1.75;
         break;
+      case 'fullscreen':
+        width = containerWidth;
+        height = containerWidth;
       default:
         // Set default size if the provided size is not recognized
         width = 80.0;

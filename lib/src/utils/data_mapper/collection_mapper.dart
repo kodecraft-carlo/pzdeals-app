@@ -14,6 +14,7 @@ class CollectionDataMapper {
           title: collectionTitle.trim(),
           assetSourceType: json['image_src'] == null ? 'asset' : 'network',
           imageAsset: json['image_src'] ?? 'assets/images/pzdeals_store.png',
+          keyword: json['keywords'] ?? "",
         );
       }));
     } catch (e) {

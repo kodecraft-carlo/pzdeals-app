@@ -15,6 +15,7 @@ import 'package:pzdeals/src/features/deals/presentation/widgets/product_deal_des
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/more/more.dart';
 import 'package:pzdeals/src/features/notifications/notifications.dart';
+import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/features/stores/stores.dart';
 import 'package:pzdeals/src/models/index.dart';
@@ -35,6 +36,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   late AsyncValue<UserData?> userData;
   int unreadNotificationCount = 0;
   String id = '';
+  String dealType = '';
   FetchProductDealService productDealService = FetchProductDealService();
   @override
   void initState() {
@@ -57,9 +59,17 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
 
       if (arguments != null && arguments is Map<String, dynamic>) {
         id = arguments['product_id'] as String;
-        debugPrint('from deeplink id: $id');
-        if (id != '') {
-          showProductDeal(int.parse(id));
+        dealType = arguments['type'] as String;
+        if (dealType != '' && dealType == 'price_mistake') {
+          debugPrint('from price_mistake id: $id');
+          if (id != '') {
+            showProductDeal(int.parse(id));
+          }
+        } else {
+          debugPrint('from deeplink id: $id');
+          if (id != '') {
+            showProductDeal(int.parse(id));
+          }
         }
       }
     });
@@ -72,6 +82,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
           .collection('notification')
           .snapshots()
           .listen((QuerySnapshot snapshot) {
+        ref.read(notificationsProvider).refreshNotification();
         unreadNotificationCount = 0;
         snapshot.docs.forEach((doc) {
           if (doc.exists && doc['isRead'] == false) {

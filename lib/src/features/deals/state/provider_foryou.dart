@@ -36,7 +36,7 @@ class TabForYouNotifier extends ChangeNotifier {
   List get foryouProducts => _foryouProducts;
 
   TabForYouNotifier() {
-    _loadCollections();
+    loadCollections();
   }
 
   Future<void> loadForYouProducts(
@@ -61,13 +61,13 @@ class TabForYouNotifier extends ChangeNotifier {
     }
   }
 
-  Future<void> _loadCollections() async {
+  Future<void> loadCollections() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _collections = await _collectionService.getCachedCollection(_boxName);
-      notifyListeners();
+      // _collections = await _collectionService.getCachedCollection(_boxName);
+      // notifyListeners();
 
       final serverCollection =
           await _collectionService.fetchCollections(_boxName);

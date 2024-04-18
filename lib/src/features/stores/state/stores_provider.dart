@@ -24,6 +24,24 @@ class StoreScreenProvider extends ChangeNotifier {
     _loadStores();
   }
 
+  Future<void> refreshStores() async {
+    try {
+      // _stores = await _storeSvc.getCachedStores(_boxName);
+      // notifyListeners();
+
+      final serverStores =
+          await _storeSvc.fetchStoreCollection(_boxName, pageNumber);
+      _stores = serverStores;
+      setStoreNames();
+      notifyListeners();
+    } catch (e) {
+      debugPrint("error loading stores: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> _loadStores() async {
     _isLoading = true;
     notifyListeners();

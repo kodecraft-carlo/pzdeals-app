@@ -103,9 +103,9 @@ class DealsTabControllerWidgetState
                     searchFieldWidget: const HomescreenSearchFieldWidget(
                       hintText: "Search deals",
                     )),
-                const SliverToBoxAdapter(
-                  child: CreditCardDealsWidget(),
-                ),
+                // const SliverToBoxAdapter(
+                //   child: CreditCardDealsWidget(),
+                // ),
                 SliverAppBar(
                   elevation: 3.0,
                   backgroundColor: PZColors.pzWhite,
@@ -159,7 +159,7 @@ class DealsTabControllerWidgetState
                                 }
                             },
                             child: const Tab(
-                              text: 'Front Page',
+                              text: 'PzPicks',
                             ),
                           ),
                           GestureDetector(
@@ -172,7 +172,7 @@ class DealsTabControllerWidgetState
                                 }
                             },
                             child: const Tab(
-                              text: 'PZ Picks',
+                              text: 'Flash Deals',
                             ),
                           ),
                         ],

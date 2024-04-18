@@ -24,6 +24,9 @@ class _CollectionSelectionWidgetState
   void initState() {
     super.initState();
     _animationController = AnimationController(vsync: this);
+    Future(() {
+      ref.read(tabForYouProvider).loadCollections();
+    });
   }
 
   @override

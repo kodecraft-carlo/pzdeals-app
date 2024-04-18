@@ -16,10 +16,14 @@ class CollectionData {
   @HiveField(3)
   final int id;
 
+  @HiveField(4)
+  final String? keyword;
+
   CollectionData({
     required this.id,
     required this.title,
     required this.imageAsset,
     required this.assetSourceType,
+    this.keyword,
   });
 }

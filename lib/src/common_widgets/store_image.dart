@@ -8,51 +8,37 @@ class StoreImageWidget extends ConsumerWidget {
       {super.key,
       required this.storeAssetImage,
       this.imageWidth = 27,
+      this.imageHeight = 25,
       this.hasLayoutType = true});
 
   final String storeAssetImage;
   final int imageWidth;
+  final double imageHeight;
   final bool hasLayoutType;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final layoutType = ref.watch(layoutTypeProvider);
-    return Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          // border: Border.all(
-          //   color: Colors.grey[300]!,
-          //   width: 1,
-          // ),
-        ),
-        // Adjust the width as needed
-        width: hasLayoutType == true
-            ? layoutType == 'List'
-                ? 40
-                : 32
-            : imageWidth.toDouble(),
-        child: AspectRatio(
-          aspectRatio: 1 / .5,
-          child: storeAssetImage == 'assets/images/pzdeals_store.png'
-              ? Image.asset(
-                  'assets/images/pzdeals.png',
-                  width: 18,
-                  height: 18,
-                  fit: BoxFit.fitHeight,
-                )
-              : CachedNetworkImage(
-                  imageUrl: storeAssetImage,
-                  fit: BoxFit.fitWidth,
-                  errorWidget: (context, url, error) {
-                    debugPrint('Error loading image: $error');
-                    return Image.asset(
-                      'assets/images/pzdeals.png',
-                      width: 18,
-                      height: 18,
-                      fit: BoxFit.fitHeight,
-                    );
-                  },
-                ),
-        ));
+    return storeAssetImage == 'assets/images/pzdeals_store.png'
+        ? Image.asset(
+            'assets/images/pzdeals.png',
+            width: 18,
+            height: 18,
+            fit: BoxFit.fitHeight,
+          )
+        : CachedNetworkImage(
+            imageUrl: storeAssetImage,
+            height: imageHeight,
+            fit: BoxFit.fitHeight,
+            errorWidget: (context, url, error) {
+              debugPrint('Error loading image: $error');
+              return Image.asset(
+                'assets/images/pzdeals.png',
+                width: 18,
+                height: 18,
+                fit: BoxFit.fitHeight,
+              );
+            },
+          );
   }
 }

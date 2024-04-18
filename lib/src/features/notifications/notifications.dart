@@ -101,17 +101,25 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
           child: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              // physics: const BouncingScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: notifData.length,
-              itemBuilder: (BuildContext context, int index) {
-                return NotificationCardWidget(
-                  notificationData: notifData[index],
-                );
-              },
-            ),
+            child: RefreshIndicator.adaptive(
+                displacement: 20,
+                edgeOffset: 10,
+                color: PZColors.pzOrange,
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  controller: _scrollController,
+                  // physics: const BouncingScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: notifData.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return NotificationCardWidget(
+                      notificationData: notifData[index],
+                    );
+                  },
+                ),
+                onRefresh: () async {
+                  ref.read(notificationsProvider).refreshNotification();
+                }),
           ),
           notificationState.isLoading
               ? Container(
