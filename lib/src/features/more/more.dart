@@ -24,36 +24,38 @@ class MoreScreen extends StatelessWidget {
         },
         child: Scaffold(
             body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverAppBarWidget(
-                  innerBoxIsScrolled: innerBoxIsScrolled,
-                  searchFieldWidget: const MoreScreenSearchFieldWidget(
-                    hintText: "Search deals",
-                  )),
-            ];
-          },
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const MoreShortcutsWidget(),
-              const SizedBox(height: Sizes.spaceBetweenContentSmall),
-              const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-                  child: Text("Shop by Category",
-                      style: TextStyle(
-                          color: PZColors.pzBlack,
-                          fontSize: Sizes.sectionHeaderFontSize,
-                          fontWeight: FontWeight.w600))),
-              Consumer(builder: (context, ref, child) {
-                final collectionState = ref.watch(tabForYouProvider);
-                return Expanded(
-                  child:
-                      ShopCategory(categoryData: collectionState.collections),
-                );
-              }),
-            ],
-          ),
-        )));
+                physics: const NeverScrollableScrollPhysics(),
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    SliverAppBarWidget(
+                        innerBoxIsScrolled: innerBoxIsScrolled,
+                        searchFieldWidget: const MoreScreenSearchFieldWidget(
+                          hintText: "Search deals",
+                        )),
+                  ];
+                },
+                body: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const MoreShortcutsWidget(),
+                      const SizedBox(height: Sizes.spaceBetweenContentSmall),
+                      const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: Sizes.paddingAll),
+                          child: Text("Shop by Category",
+                              style: TextStyle(
+                                  color: PZColors.pzBlack,
+                                  fontSize: Sizes.sectionHeaderFontSize,
+                                  fontWeight: FontWeight.w600))),
+                      Consumer(builder: (context, ref, child) {
+                        final collectionState = ref.watch(tabForYouProvider);
+                        return ShopCategory(
+                            categoryData: collectionState.collections);
+                      }),
+                    ],
+                  ),
+                ))));
   }
 }

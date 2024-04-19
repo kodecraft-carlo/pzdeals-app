@@ -7,6 +7,7 @@ import 'package:pzdeals/src/features/notifications/presentation/widgets/notifica
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:badges/badges.dart' as badges;
 
 class NotificationCardWidget extends ConsumerWidget {
   const NotificationCardWidget({super.key, required this.notificationData});
@@ -15,6 +16,7 @@ class NotificationCardWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final data = notificationData.data;
     return Dismissible(
       key: Key(notificationData.id),
       onDismissed: (direction) {
@@ -45,7 +47,6 @@ class NotificationCardWidget extends ConsumerWidget {
         onTap: () {
           ref.read(notificationsProvider).markAsRead(notificationData.id);
           if (notificationData.data != null || notificationData.data != {}) {
-            final data = notificationData.data;
             debugPrint('Notification Data: $data');
             if (data['alert_type'] == 'keyword') {
               Navigator.of(context).pushNamed('/keyword-deals', arguments: {
@@ -123,7 +124,17 @@ class NotificationCardWidget extends ConsumerWidget {
                 child: Transform.rotate(
                   angle: notificationData.imageUrl != '' ? 0 : -7,
                   child: notificationData.imageUrl != ''
-                      ? CachedNetworkImage(imageUrl: notificationData.imageUrl)
+                      ? CachedNetworkImage(
+                          imageUrl: notificationData.imageUrl,
+                          errorWidget: (context, url, error) =>
+                              Transform.rotate(
+                            angle: -7,
+                            child: const Icon(
+                              Icons.campaign_rounded,
+                              color: PZColors.pzWhite,
+                            ),
+                          ),
+                        )
                       : const Icon(
                           Icons.campaign_rounded,
                           color: PZColors.pzWhite,
@@ -149,13 +160,19 @@ class NotificationCardWidget extends ConsumerWidget {
                         imageUrl: notificationData.imageUrl,
                         width: MediaQuery.of(context).size.width / 2,
                         fit: BoxFit.fitWidth,
+                        errorWidget: (context, url, error) =>
+                            const SizedBox.shrink(),
                       )
                     : const SizedBox.shrink(),
                 const SizedBox(height: Sizes.spaceBetweenSections),
-                Text(timeago.format(notificationData.timestamp),
-                    style: const TextStyle(
-                        color: PZColors.pzGrey,
-                        fontSize: Sizes.fontSizeXSmall)),
+                Row(
+                  children: [
+                    Text(timeago.format(notificationData.timestamp),
+                        style: const TextStyle(
+                            color: PZColors.pzGrey,
+                            fontSize: Sizes.fontSizeXSmall)),
+                  ],
+                )
               ],
             ),
           ),

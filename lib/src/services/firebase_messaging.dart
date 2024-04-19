@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:hive/hive.dart';
 import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
@@ -12,6 +13,35 @@ import 'package:timezone/timezone.dart' as tz;
 
 class FirebaseMessagingApi {
   final _firebaseMessaging = FirebaseMessaging.instance;
+
+  // // Define a Hive box for storing notification-related data
+  // late Box _notificationBox;
+
+  // // Notification limit and last reset timestamp
+  // late int _notificationLimit;
+  // late DateTime _lastResetTimestamp;
+
+  // // Notification counti
+  // late int _notificationCount;
+
+  // FirebaseMessagingApi() {
+  //   // Initialize Hive box for notification data
+  //   Hive.openBox('notificationBox').then((box) {
+  //     _notificationBox = box;
+  //     _initializeNotifications();
+  //   });
+  // }
+  // void _initializeNotifications() {
+  //   // Retrieve notification limit and last reset timestamp from the cache
+  //   _notificationLimit =
+  //       _notificationBox.get('notificationLimit', defaultValue: 10);
+  //   _lastResetTimestamp = _notificationBox.get('lastResetTimestamp',
+  //       defaultValue: DateTime.now());
+
+  //   // Retrieve notification count from the cache
+  //   _notificationCount =
+  //       _notificationBox.get('notificationCount', defaultValue: 0);
+  // }
 
   final _androidChannel = const AndroidNotificationChannel(
     'high_importance_channel',
@@ -26,6 +56,25 @@ class FirebaseMessagingApi {
   void handleMessage(RemoteMessage? message) {
     if (message == null) return;
     // storeNotification(message);
+    // Check if the current timestamp exceeds the last reset timestamp
+    // if (DateTime.now()
+    //     .isAfter(_lastResetTimestamp.add(const Duration(days: 1)))) {
+    //   // Reset the notification count and update the last reset timestamp
+    //   _notificationCount = 0;
+    //   _lastResetTimestamp = DateTime.now();
+    //   _notificationBox.put('notificationCount', _notificationCount);
+    //   _notificationBox.put('lastResetTimestamp', _lastResetTimestamp);
+    // }
+
+    // Increment the notification count
+    // _notificationCount++;
+    // _notificationBox.put('notificationCount', _notificationCount);
+
+    // Check if the notification count exceeds the limit
+    // if (_notificationCount > _notificationLimit) {
+    //   return;
+    // }
+
     final dynamic notifdata = message.toMap();
     navigateToScreens(notifdata);
   }
@@ -63,13 +112,18 @@ class FirebaseMessagingApi {
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
       if (notification == null) return;
-      debugPrint('notification data: ${message.toMap()}');
+      final newTitle = addNotificationTypeToTitle(
+          message.data['alert_type'] ?? '', notification.title ?? '');
+      // if (!notificationCountExceedsLimit(_notificationLimit)) {
       showNotification(
-          notificationId: notification.hashCode,
-          title: notification.title ?? '',
-          body: notification.body ?? '',
-          payload: jsonEncode(message.toMap()));
+        notificationId: notification.hashCode,
+        // title: addNotificationTypeToTitle(notification),
+        title: newTitle,
+        body: notification.body ?? '',
+        payload: jsonEncode(message.toMap()),
+      );
       storeNotification(message);
+      // }
     });
   }
 
@@ -114,6 +168,13 @@ class FirebaseMessagingApi {
     debugPrint('Notification added');
   }
 
+  // bool notificationCountExceedsLimit(int limit) {
+  //   // Implement your logic to check if the notification count exceeds the limit
+  //   // For example, you can retrieve the stored notification count from another Hive box
+  //   int storedNotificationCount = _notificationCount;
+  //   return storedNotificationCount >= limit;
+  // }
+
   void navigateToScreens(dynamic message) {
     final data = message["data"];
     if (navigatorKey.currentState != null) {
@@ -150,6 +211,20 @@ class FirebaseMessagingApi {
           ),
         );
       }
+    }
+  }
+
+  String addNotificationTypeToTitle(String type, String title) {
+    if (type == 'keyword') {
+      return 'Keyword Alert: $title';
+    } else if (type == 'percentage') {
+      return 'Percentage Off Alert: $title';
+    } else if (type == 'price_mistake') {
+      return 'Price Mistake Alert: $title';
+    } else if (type == 'category') {
+      return 'Category Alert: $title';
+    } else {
+      return title;
     }
   }
 }

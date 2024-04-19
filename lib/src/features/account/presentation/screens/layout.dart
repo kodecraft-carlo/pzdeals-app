@@ -14,6 +14,7 @@ class LayoutScreen extends StatelessWidget {
         padding: EdgeInsets.all(Sizes.paddingAll),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               "Layout Settings",

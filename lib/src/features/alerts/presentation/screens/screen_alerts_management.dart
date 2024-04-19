@@ -40,7 +40,7 @@ class _AlertsManagementScreenState
       if (ref.read(keywordsProvider).addKeywordLocally(
           KeywordData(id: 0, keyword: textController.text.trim().toLowerCase()),
           'input')) {
-        showSnackbarWithMessage(context, 'Keyword added');
+        // showSnackbarWithMessage(context, 'Keyword added');
         textController.clear();
       } else {
         showSnackbarWithMessage(context, 'Keyword already exists');
@@ -61,9 +61,9 @@ class _AlertsManagementScreenState
       length: 2,
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
+        body: CustomScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            slivers: [
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -162,7 +162,7 @@ class _AlertsManagementScreenState
                 floating: false,
                 pinned: true,
                 primary: false,
-                forceElevated: innerBoxIsScrolled,
+                forceElevated: true,
                 automaticallyImplyLeading: false,
                 flexibleSpace: FlexibleSpaceBar(
                     background: Container(
@@ -194,68 +194,76 @@ class _AlertsManagementScreenState
                 ),
                 titleSpacing: 0,
               ),
-            ];
-          },
-          body: TabBarView(
-            children: <Widget>[
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: Sizes.spaceBetweenSections),
-                      const Text("Popular Keywords",
-                          style: TextStyle(
-                              fontSize: Sizes.fontSizeMedium,
-                              fontWeight: FontWeight.w600,
-                              color: PZColors.pzBlack)),
-                      const Text(
-                        "Click on the plus sign to subscribe",
-                        style: TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                            fontWeight: FontWeight.w400,
-                            color: PZColors.pzBlack),
-                      ),
-                      const SizedBox(height: Sizes.spaceBetweenSections),
-                      PopularKeywordsGrid(
-                          keywordsdata: keywordState.popularKeywords)
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: Sizes.spaceBetweenSections),
-                    const Text("Category Alerts",
-                        style: TextStyle(
-                            fontSize: Sizes.fontSizeMedium,
-                            fontWeight: FontWeight.w600,
-                            color: PZColors.pzBlack)),
-                    const Text(
-                      "Toggle on category to get notified on new category deals",
-                      style: TextStyle(
-                          fontSize: Sizes.bodyFontSize,
-                          fontWeight: FontWeight.w400,
-                          color: PZColors.pzBlack),
-                    ),
-                    const SizedBox(height: Sizes.spaceBetweenSections),
-                    Expanded(
-                      child: CategoryNotificationToggleList(
-                        collections: foryouState.collections,
+              SliverFillRemaining(
+                child: TabBarView(
+                  children: <Widget>[
+                    Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: Sizes.paddingAll),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                  height: Sizes.spaceBetweenContentSmall),
+                              const Text(
+                                "Popular Keywords",
+                                style: TextStyle(
+                                  fontSize: Sizes.fontSizeMedium,
+                                  fontWeight: FontWeight.w600,
+                                  color: PZColors.pzBlack,
+                                ),
+                              ),
+                              const Text(
+                                "Click on the plus sign to subscribe",
+                                style: TextStyle(
+                                  fontSize: Sizes.bodyFontSize,
+                                  fontWeight: FontWeight.w400,
+                                  color: PZColors.pzBlack,
+                                ),
+                              ),
+                              const SizedBox(
+                                  height: Sizes.spaceBetweenSections),
+                              PopularKeywordsGrid(
+                                keywordsdata: keywordState.popularKeywords,
+                              ),
+                            ],
+                          ),
+                        )),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: Sizes.paddingAll),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(height: Sizes.spaceBetweenSections),
+                          const Text("Category Alerts",
+                              style: TextStyle(
+                                  fontSize: Sizes.fontSizeMedium,
+                                  fontWeight: FontWeight.w600,
+                                  color: PZColors.pzBlack)),
+                          const Text(
+                            "Toggle on category to get notified on new category deals",
+                            style: TextStyle(
+                                fontSize: Sizes.bodyFontSize,
+                                fontWeight: FontWeight.w400,
+                                color: PZColors.pzBlack),
+                          ),
+                          const SizedBox(height: Sizes.spaceBetweenSections),
+                          Expanded(
+                            child: CategoryNotificationToggleList(
+                              collections: foryouState.collections,
+                            ),
+                          )
+                        ],
                       ),
                     )
                   ],
                 ),
               )
-            ],
-          ),
-        ),
+            ]),
       ),
     );
   }

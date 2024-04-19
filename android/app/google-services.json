@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "629344566477-rouhr9f3jmanbrkkejlktnrufve5nk79.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kodecraft.pzdeals",
+            "certificate_hash": "1da9965d6758716e835d2f12e1894d537de519bb"
+          }
+        },
+        {
           "client_id": "629344566477-f565h31c1l9odgjbg1ifhfog2opd9uhp.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -31,7 +31,7 @@ class _ListTileWithSwitchWidgetState extends State<ListTileWithSwitchWidget> {
       subtitle: widget.subtitle != ''
           ? Text(widget.subtitle,
               style: const TextStyle(fontSize: Sizes.listSubtitleFontSize))
-          : const SizedBox(),
+          : null,
       trailing: Switch(
         value: widget.value,
         onChanged: (bool? value) {

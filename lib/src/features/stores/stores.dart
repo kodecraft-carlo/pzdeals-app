@@ -142,6 +142,16 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
                       storeNames: storescreenState.storeNames,
                       searchController: searchController,
                     )),
+                const SliverToBoxAdapter(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "This is a sample description of store page",
+                      style: TextStyle(
+                          color: Colors.black54, fontSize: Sizes.bodyFontSize),
+                    ),
+                  ),
+                )
               ];
             },
             body: body,

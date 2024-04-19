@@ -89,7 +89,7 @@ class ChipSavedKeywordsState extends ConsumerState<ChipSavedKeywords> {
                     debugPrint(
                         'Removing keyword: ${keyword.keyword} ~ ${keyword.id}');
                     keywordState.removeKeywordLocally(keyword);
-                    showSnackbarWithMessage(context, 'Keyword removed');
+                    // showSnackbarWithMessage(context, 'Keyword removed');
                   }
                 : null,
           );
