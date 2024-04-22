@@ -140,9 +140,7 @@ class StaticProductDealCardWidgetState
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const SizedBox(
-                            height: Sizes
-                                .spaceBetweenContent), // Add some spacing between
+                        const SizedBox(height: Sizes.spaceBetweenContent),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(

@@ -57,7 +57,7 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
                 maxCrossAxisExtent: itemWidth,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 2,
-                childAspectRatio: 2.1),
+                childAspectRatio: 1.9),
             itemCount: searchFilterState.stores.length > 9 && !isExpanded
                 ? 9
                 : searchFilterState.stores.length,

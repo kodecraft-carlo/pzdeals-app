@@ -20,7 +20,8 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
     with TickerProviderStateMixin {
   late final AnimationController _animationController;
   final _scrollController = ScrollController(keepScrollOffset: true);
-  final GlobalKey<NestedScrollViewState> globalKey = GlobalKey();
+  final GlobalKey<NestedScrollViewState> globalKey =
+      GlobalKey<NestedScrollViewState>();
   final _debouncer = Debouncer(delay: const Duration(milliseconds: 300));
   late TextEditingController searchController;
 

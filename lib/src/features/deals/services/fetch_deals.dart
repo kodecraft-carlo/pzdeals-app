@@ -91,9 +91,10 @@ class FetchProductDealService {
       List<ProductDealcardData> products, String boxName) async {
     debugPrint("Caching products for $boxName");
     final box = await Hive.openBox<ProductDealcardData>(boxName);
-    await box.clear(); // Clear existing cache
+    // await box.clear();
+    // box.addAll(products);
     for (final product in products) {
-      box.put(product.productId, product);
+      box.add(product);
     }
   }
 

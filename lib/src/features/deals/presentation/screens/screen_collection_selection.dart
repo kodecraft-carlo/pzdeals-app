@@ -279,6 +279,8 @@ class _GridItemWidgetState extends State<GridItemWidget>
               ),
               Text(
                 widget.categoryLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: widget.isSelected ? Colors.black : PZColors.pzBlack,

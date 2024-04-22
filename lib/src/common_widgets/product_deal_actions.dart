@@ -12,6 +12,7 @@ import 'package:pzdeals/src/services/products_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/productlikes_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class ProductDealActions extends ConsumerStatefulWidget {
   const ProductDealActions({super.key, required this.productData});

@@ -93,135 +93,149 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
         child: Padding(
           padding: const EdgeInsets.all(Sizes.paddingAllSmall),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ProductImageWidget(
-                      imageAsset: productData.imageAsset,
-                      sourceType: productData.assetSourceType,
-                      size: 'xlarge',
-                      fit: BoxFit.cover, //cover will expand but crop the image
-                      isExpired: productData.isProductExpired != null &&
-                          productData.isProductExpired == true,
-                    ),
-                    productData.isProductExpired != null &&
-                            productData.isProductExpired == true
-                        ? Row(
-                            children: [
-                              Expanded(
-                                  child: Container(
-                                padding:
-                                    const EdgeInsets.all(Sizes.paddingAllSmall),
-                                decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  border: Border.all(
-                                    color: PZColors.pzOrange,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: const Text(
-                                  'EXPIRED',
-                                  style: TextStyle(
-                                    color: PZColors.pzOrange,
-                                    fontSize: Sizes.bodyFontSize,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ))
-                            ],
-                          )
-                        : const SizedBox(),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                  height:
-                      Sizes.spaceBetweenContent), // Add some spacing between
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  productData.productName,
-                  style: const TextStyle(
-                    fontSize: Sizes.bodyFontSize,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.start,
-                  maxLines: productData.isProductNoPrice != null &&
-                          productData.isProductNoPrice == true
-                      ? 3
-                      : 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(
-                  height:
-                      Sizes.spaceBetweenContent), // Add some spacing between
-              Flex(
-                direction: Axis.horizontal,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  StoreImageWidget(
-                      storeAssetImage: productData.storeAssetImage),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Stack(
+                      alignment: Alignment.center,
                       children: [
-                        // Discount Badge
-                        productData.discountPercentage > 0
-                            ? BadgeWidget(
-                                discountPercentage:
-                                    productData.discountPercentage)
+                        ProductImageWidget(
+                          imageAsset: productData.imageAsset,
+                          sourceType: productData.assetSourceType,
+                          size: 'xlarge',
+                          fit: BoxFit
+                              .cover, //cover will expand but crop the image
+                          isExpired: productData.isProductExpired != null &&
+                              productData.isProductExpired == true,
+                        ),
+                        productData.isProductExpired != null &&
+                                productData.isProductExpired == true
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                      child: Container(
+                                    padding: const EdgeInsets.all(
+                                        Sizes.paddingAllSmall),
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      border: Border.all(
+                                        color: PZColors.pzOrange,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'EXPIRED',
+                                      style: TextStyle(
+                                        color: PZColors.pzOrange,
+                                        fontSize: Sizes.bodyFontSize,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ))
+                                ],
+                              )
                             : const SizedBox(),
                       ],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: Sizes.spaceBetweenContentSmall),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: productData.isProductNoPrice != null &&
-                        productData.isProductNoPrice == false &&
-                        productData.price != '' &&
-                        productData.price != '0.00'
-                    ? RichText(
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '\$${productData.price}',
-                              style: const TextStyle(
-                                  fontSize: Sizes.fontSizeLarge,
-                                  color: PZColors.pzGreen,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            const TextSpan(
-                              text: ' ',
-                            ),
-                            TextSpan(
-                              text:
-                                  '\$${productData.oldPrice}', // Replace with your old price
-                              style: const TextStyle(
-                                  fontSize: Sizes.bodyFontSize,
-                                  color: Colors.red,
-                                  decoration: TextDecoration.lineThrough,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                          ],
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                        height: Sizes
+                            .spaceBetweenContent), // Add some spacing between
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        productData.productName,
+                        style: const TextStyle(
+                          fontSize: Sizes.bodyFontSize,
+                          fontWeight: FontWeight.w500,
                         ),
-                      )
-                    : const SizedBox(),
+                        textAlign: TextAlign.start,
+                        maxLines: productData.isProductNoPrice != null &&
+                                productData.isProductNoPrice == true
+                            ? 3
+                            : 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(
+                        height: Sizes
+                            .spaceBetweenContent), // Add some spacing between
+                    Flex(
+                      direction: Axis.horizontal,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        StoreImageWidget(
+                            storeAssetImage: productData.storeAssetImage),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Discount Badge
+                              productData.discountPercentage > 0
+                                  ? BadgeWidget(
+                                      discountPercentage:
+                                          productData.discountPercentage)
+                                  : const SizedBox(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: Sizes.spaceBetweenContentSmall),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: productData.isProductNoPrice != null &&
+                              productData.isProductNoPrice == false &&
+                              productData.price != '' &&
+                              productData.price != '0.00'
+                          ? RichText(
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '\$${productData.price}',
+                                    style: const TextStyle(
+                                        fontSize: Sizes.fontSizeLarge,
+                                        color: PZColors.pzGreen,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const TextSpan(
+                                    text: ' ',
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '\$${productData.oldPrice}', // Replace with your old price
+                                    style: const TextStyle(
+                                        fontSize: Sizes.bodyFontSize,
+                                        color: Colors.red,
+                                        decoration: TextDecoration.lineThrough,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const SizedBox(),
+                    )
+                  ],
+                ),
               )
             ],
           ),

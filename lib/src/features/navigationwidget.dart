@@ -38,6 +38,9 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   String id = '';
   String dealType = '';
   FetchProductDealService productDealService = FetchProductDealService();
+  final GlobalKey<DealsTabControllerWidgetState> dealsKey =
+      GlobalKey<DealsTabControllerWidgetState>();
+
   @override
   void initState() {
     super.initState();
@@ -148,8 +151,8 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
       ref.read(storescreenProvider).clearFilter();
     }
     if (index == 0) {
-      debugPrint('deals');
       ref.read(tabFrontPageProvider).refresh();
+      dealsKey.currentState?.setTabIndex(1);
     }
     setState(() {
       currentPageIndex = index;
@@ -188,74 +191,160 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: SafeArea(
-          top: true,
-          child: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
+        top: true,
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Theme(
+            data: ThemeData(
+                fontFamily: 'Poppins',
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent),
+            child: SizedBox(
+              height: 65,
+              child: BottomNavigationBar(
+                currentIndex: currentPageIndex,
+                elevation: 0,
+                onTap: destinationSelected,
+                selectedItemColor: Colors.black87,
+                unselectedItemColor: Colors.black54,
+                selectedIconTheme:
+                    const IconThemeData(size: 25, color: Colors.black87),
+                unselectedIconTheme:
+                    const IconThemeData(size: 25, color: Colors.black54),
+                selectedLabelStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ),
-            child: NavigationBar(
-              onDestinationSelected: destinationSelected,
-              selectedIndex: currentPageIndex,
-              indicatorColor: Colors.transparent,
-              backgroundColor: Colors.white,
-              overlayColor: MaterialStateColor.resolveWith(
-                  (states) => Colors.transparent),
-              surfaceTintColor: Colors.white,
-              destinations: <Widget>[
-                const NavigationDestination(
-                  selectedIcon: Icon(Icons.local_offer_rounded),
-                  icon: Icon(Icons.local_offer_outlined),
-                  label: 'Deals',
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
-                const NavigationDestination(
-                  selectedIcon: Icon(Icons.store_rounded),
-                  icon: Icon(Icons.store_outlined),
-                  label: 'Stores',
-                ),
-                badges.Badge(
-                  showBadge: unreadNotificationCount > 0,
-                  badgeContent: Text(
-                    unreadNotificationCount.toString(),
-                    style: const TextStyle(color: Colors.white),
+                showSelectedLabels: true,
+                showUnselectedLabels: true,
+                enableFeedback: true,
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: currentPageIndex == 0
+                        ? const Icon(Icons.local_offer_rounded)
+                        : const Icon(Icons.local_offer_outlined),
+                    label: 'Deals',
                   ),
-                  position: badges.BadgePosition.topEnd(top: 5, end: 10),
-                  badgeStyle: const badges.BadgeStyle(
-                    badgeColor: PZColors.pzOrange,
-                    elevation: 0,
+                  BottomNavigationBarItem(
+                    icon: currentPageIndex == 1
+                        ? const Icon(Icons.store_rounded)
+                        : const Icon(Icons.store_outlined),
+                    label: 'Stores',
                   ),
-                  badgeAnimation: const badges.BadgeAnimation.fade(
-                    animationDuration: Duration(seconds: 1),
-                    colorChangeAnimationDuration: Duration(seconds: 1),
-                    loopAnimation: false,
-                    curve: Curves.fastOutSlowIn,
-                    colorChangeAnimationCurve: Curves.easeInCubic,
-                  ),
-                  child: const NavigationDestination(
-                    selectedIcon: Icon(Icons.notifications_active_rounded),
-                    icon: Icon(Icons.notifications_outlined),
+                  BottomNavigationBarItem(
+                    icon: badges.Badge(
+                      showBadge: unreadNotificationCount > 0,
+                      badgeContent: Text(
+                        unreadNotificationCount.toString(),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 10),
+                      ),
+                      position: badges.BadgePosition.topEnd(top: -9, end: -20),
+                      badgeStyle: const badges.BadgeStyle(
+                        badgeColor: PZColors.pzOrange,
+                        elevation: 0,
+                      ),
+                      badgeAnimation: const badges.BadgeAnimation.fade(
+                        animationDuration: Duration(seconds: 1),
+                        colorChangeAnimationDuration: Duration(seconds: 1),
+                        loopAnimation: false,
+                        curve: Curves.fastOutSlowIn,
+                        colorChangeAnimationCurve: Curves.easeInCubic,
+                      ),
+                      child: currentPageIndex == 2
+                          ? const Icon(Icons.notifications_active_rounded)
+                          : const Icon(Icons.notifications_outlined),
+                    ),
                     label: 'Notification',
                   ),
-                ),
-                const NavigationDestination(
-                  selectedIcon: Icon(Icons.campaign_rounded),
-                  icon: Icon(Icons.campaign_outlined),
-                  label: 'Deal Alert',
-                ),
-                const NavigationDestination(
-                  selectedIcon: Icon(Icons.more_horiz),
-                  icon: Icon(Icons.more_horiz),
-                  label: 'More',
-                ),
-              ],
+                  BottomNavigationBarItem(
+                    icon: currentPageIndex == 3
+                        ? const Icon(Icons.campaign_rounded)
+                        : const Icon(Icons.campaign_outlined),
+                    label: 'Deal Alert',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: currentPageIndex == 4
+                        ? const Icon(Icons.more_horiz)
+                        : const Icon(Icons.more_horiz),
+                    label: 'More',
+                  ),
+                ],
+              ),
             ),
-          )),
+          ),
+          // NavigationBar(
+          //   onDestinationSelected: destinationSelected,
+          //   selectedIndex: currentPageIndex,
+          //   indicatorColor: Colors.transparent,
+          //   backgroundColor: Colors.white,
+          //   overlayColor:
+          //       MaterialStateColor.resolveWith((states) => Colors.transparent),
+          //   surfaceTintColor: Colors.white,
+          //   destinations: <Widget>[
+          //     const NavigationDestination(
+          //       selectedIcon: Icon(Icons.local_offer_rounded),
+          //       icon: Icon(Icons.local_offer_outlined),
+          //       label: 'Deals',
+          //     ),
+          //     const NavigationDestination(
+          //       selectedIcon: Icon(Icons.store_rounded),
+          //       icon: Icon(Icons.store_outlined),
+          //       label: 'Stores',
+          //     ),
+          //     badges.Badge(
+          //       showBadge: unreadNotificationCount > 0,
+          //       badgeContent: Text(
+          //         unreadNotificationCount.toString(),
+          //         style: const TextStyle(color: Colors.white),
+          //       ),
+          //       position: badges.BadgePosition.topEnd(top: 5, end: 10),
+          //       badgeStyle: const badges.BadgeStyle(
+          //         badgeColor: PZColors.pzOrange,
+          //         elevation: 0,
+          //       ),
+          //       badgeAnimation: const badges.BadgeAnimation.fade(
+          //         animationDuration: Duration(seconds: 1),
+          //         colorChangeAnimationDuration: Duration(seconds: 1),
+          //         loopAnimation: false,
+          //         curve: Curves.fastOutSlowIn,
+          //         colorChangeAnimationCurve: Curves.easeInCubic,
+          //       ),
+          //       child: const NavigationDestination(
+          //         selectedIcon: Icon(Icons.notifications_active_rounded),
+          //         icon: Icon(Icons.notifications_outlined),
+          //         label: 'Notification',
+          //       ),
+          //     ),
+          //     const NavigationDestination(
+          //       selectedIcon: Icon(Icons.campaign_rounded),
+          //       icon: Icon(Icons.campaign_outlined),
+          //       label: 'Deal Alert',
+          //     ),
+          //     const NavigationDestination(
+          //       selectedIcon: Icon(Icons.more_horiz),
+          //       icon: Icon(Icons.more_horiz),
+          //       label: 'More',
+          //     ),
+          //   ],
+          // ),
+        ),
+      ),
       body: SafeArea(
           child: <Widget>[
         PopScope(
@@ -270,7 +359,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
                 SystemNavigator.pop();
               }
             },
-            child: const DealsTabControllerWidget()),
+            child: DealsTabControllerWidget(key: dealsKey)),
         const StoresWidget(),
         const NotificationScreen(),
         DealAlertsScreen(),

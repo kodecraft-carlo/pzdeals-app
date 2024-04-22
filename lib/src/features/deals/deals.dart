@@ -29,9 +29,12 @@ class DealsTabControllerWidget extends ConsumerStatefulWidget {
 class DealsTabControllerWidgetState
     extends ConsumerState<DealsTabControllerWidget>
     with SingleTickerProviderStateMixin {
-  final GlobalKey<NestedScrollViewState> globalKey = GlobalKey();
-  final GlobalKey<FrontPageDealsWidgetState> _frontpageKey = GlobalKey();
-  final GlobalKey<PZPicksScreenWidgetState> _pzpicksKey = GlobalKey();
+  final GlobalKey<NestedScrollViewState> globalKey =
+      GlobalKey<NestedScrollViewState>();
+  final GlobalKey<FrontPageDealsWidgetState> _frontpageKey =
+      GlobalKey<FrontPageDealsWidgetState>();
+  final GlobalKey<PZPicksScreenWidgetState> _pzpicksKey =
+      GlobalKey<PZPicksScreenWidgetState>();
 
   final _scrollController = ScrollController(keepScrollOffset: true);
   late TabController tabController;
@@ -83,6 +86,11 @@ class DealsTabControllerWidgetState
           const Duration(milliseconds: 300), // Adjust the duration as needed
       curve: Curves.easeInOut, // Adjust the curve as needed
     );
+  }
+
+  //set tab index
+  void setTabIndex(int index) {
+    tabController.animateTo(index);
   }
 
   @override

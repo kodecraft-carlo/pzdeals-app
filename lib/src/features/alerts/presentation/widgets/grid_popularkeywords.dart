@@ -26,7 +26,7 @@ class PopularKeywordsGrid extends StatelessWidget {
         mainAxisSpacing: 15,
         childAspectRatio: 2 / 2.6,
       ),
-      itemCount: keywordsdata.length > 9 ? 9 : keywordsdata.length,
+      itemCount: keywordsdata.length > 12 ? 12 : keywordsdata.length,
       itemBuilder: (context, index) {
         final keyword = keywordsdata[index];
         return PopularKeywordsCard(

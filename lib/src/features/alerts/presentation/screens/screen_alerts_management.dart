@@ -61,9 +61,9 @@ class _AlertsManagementScreenState
       length: 2,
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: CustomScrollView(
-            physics: const NeverScrollableScrollPhysics(),
-            slivers: [
+        body: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -162,7 +162,7 @@ class _AlertsManagementScreenState
                 floating: false,
                 pinned: true,
                 primary: false,
-                forceElevated: true,
+                forceElevated: innerBoxIsScrolled,
                 automaticallyImplyLeading: false,
                 flexibleSpace: FlexibleSpaceBar(
                     background: Container(
@@ -194,19 +194,25 @@ class _AlertsManagementScreenState
                 ),
                 titleSpacing: 0,
               ),
-              SliverFillRemaining(
-                child: TabBarView(
-                  children: <Widget>[
-                    Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: Sizes.paddingAll),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+            ];
+          },
+          body: TabBarView(
+            children: <Widget>[
+              Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+                  child: CustomScrollView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    slivers: <Widget>[
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: Sizes.spaceBetweenSections),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate(
+                            <Widget>[
                               const SizedBox(
-                                  height: Sizes.spaceBetweenContentSmall),
+                                  height: Sizes.spaceBetweenSections),
                               const Text(
                                 "Popular Keywords",
                                 style: TextStyle(
@@ -230,40 +236,42 @@ class _AlertsManagementScreenState
                               ),
                             ],
                           ),
-                        )),
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: Sizes.paddingAll),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(height: Sizes.spaceBetweenSections),
-                          const Text("Category Alerts",
-                              style: TextStyle(
-                                  fontSize: Sizes.fontSizeMedium,
-                                  fontWeight: FontWeight.w600,
-                                  color: PZColors.pzBlack)),
-                          const Text(
-                            "Toggle on category to get notified on new category deals",
-                            style: TextStyle(
-                                fontSize: Sizes.bodyFontSize,
-                                fontWeight: FontWeight.w400,
-                                color: PZColors.pzBlack),
-                          ),
-                          const SizedBox(height: Sizes.spaceBetweenSections),
-                          Expanded(
-                            child: CategoryNotificationToggleList(
-                              collections: foryouState.collections,
-                            ),
-                          )
-                        ],
+                        ),
+                      ),
+                    ],
+                  )),
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: Sizes.spaceBetweenSections),
+                    const Text("Category Alerts",
+                        style: TextStyle(
+                            fontSize: Sizes.fontSizeMedium,
+                            fontWeight: FontWeight.w600,
+                            color: PZColors.pzBlack)),
+                    const Text(
+                      "Toggle on category to get notified on new category deals",
+                      style: TextStyle(
+                          fontSize: Sizes.bodyFontSize,
+                          fontWeight: FontWeight.w400,
+                          color: PZColors.pzBlack),
+                    ),
+                    const SizedBox(height: Sizes.spaceBetweenSections),
+                    Expanded(
+                      child: CategoryNotificationToggleList(
+                        collections: foryouState.collections,
                       ),
                     )
                   ],
                 ),
               )
-            ]),
+            ],
+          ),
+        ),
       ),
     );
   }
