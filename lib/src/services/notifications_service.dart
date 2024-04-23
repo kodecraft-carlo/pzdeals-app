@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:pzdeals/src/models/index.dart';
+import 'package:pzdeals/src/utils/http/http_client.dart';
 
 class NotificationService {
   final _firestoreDb = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
+  final _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<List<DocumentSnapshot>> getInitialNotifications(String boxName) async {
     try {
@@ -101,12 +105,139 @@ class NotificationService {
             .doc(user?.uid)
             .collection('notification')
             .add(notification.toMap());
+
+        //update notification received info only when data['alert_type'] is 'front-page'
+        if (notification.data['alert_type'] == 'front_page') {
+          await updateFrontPageNotificationReceivedInfo(user?.uid);
+        }
       } else {
         debugPrint('addNotification: User is not logged in');
       }
     } catch (e) {
       debugPrint("Error adding notification data: $e");
       throw Exception('Error adding notification data');
+    }
+  }
+
+//update notificationreceivedcount and lastnotificationreceivedtimestamp
+  Future<void> updateFrontPageNotificationReceivedInfo(String? userId) async {
+    ApiClient apiClient = ApiClient();
+    try {
+      final int id = await getSettingsId(userId!);
+      if (id == 0) return;
+
+      //fetch notification count and notification received timestamp via userid
+      final Response notifInfoResponse = await apiClient.dio.get(
+        '/items/notification_settings/$id',
+        // options: Options(
+        //   headers: {'Authorization': 'Bearer $accessToken'},
+        // ),
+      );
+
+      if (notifInfoResponse.statusCode == 200) {
+        final notifInfoResponseData = notifInfoResponse.data["data"];
+        int notificationReceivedCount =
+            notifInfoResponseData['deliveredNotificationCount'] ?? 0;
+        int frontpageNotificationAlertsLimit =
+            notifInfoResponseData['alerts_count'] ?? 10;
+
+        notificationReceivedCount = notificationReceivedCount + 1;
+        //unsubscribe user if notification received count is greater than frontpageNotificationAlertsLimit
+        if (notificationReceivedCount >= frontpageNotificationAlertsLimit) {
+          _firebaseMessaging.unsubscribeFromTopic('front_page');
+          _firebaseMessaging.subscribeToTopic(
+              'scheduled_reminder'); //will run every 12 midnight to subscribe user to front_page topic
+        }
+        final Response response = await apiClient.dio.patch(
+          '/items/notification_settings/$id',
+          data: {
+            'deliveredNotificationCount': notificationReceivedCount,
+            'lastNotificationReceivedOn': DateTime.now().toIso8601String()
+          },
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception(
+              'Unable to update user settings ${response.statusCode} ~ ${response.data}');
+        }
+      }
+    } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      throw Exception('Failed to update user settings');
+    } catch (e) {
+      debugPrint('Error updating user settings: $e');
+      throw Exception('Failed to update user settings');
+    }
+  }
+
+  Future<void> resetNotificationReceivedInfo() async {
+    ApiClient apiClient = ApiClient();
+    try {
+      if (user != null) {
+        final userId = user?.uid;
+        final int id = await getSettingsId(userId!);
+        if (id == 0) return;
+
+        final Response response = await apiClient.dio.patch(
+          '/items/notification_settings/$id',
+          data: {
+            'deliveredNotificationCount': 0,
+            'lastNotificationReceivedOn': DateTime.now().toIso8601String()
+          },
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+        );
+        _firebaseMessaging.subscribeToTopic('front_page');
+        _firebaseMessaging.unsubscribeFromTopic('scheduled_reminder');
+
+        if (response.statusCode != 200) {
+          throw Exception(
+              'Unable to update user settings ${response.statusCode} ~ ${response.data}');
+        }
+      } else {
+        debugPrint('addNotification: User is not logged in');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      throw Exception('Failed to update user settings');
+    } catch (e) {
+      debugPrint('Error updating user settings: $e');
+      throw Exception('Failed to update user settings');
+    }
+  }
+
+  Future<int> getSettingsId(String userId) async {
+    ApiClient apiClient = ApiClient();
+    // final authService = ref.watch(directusAuthServiceProvider);
+    try {
+      Response response = await apiClient.dio
+          .get('/items/notification_settings/?filter[user_id]=$userId'
+              // options: Options(
+              //   headers: {'Authorization': 'Bearer $accessToken'},
+              // ),
+              );
+      if (response.statusCode == 200) {
+        final responseData = response.data["data"];
+        if (responseData == null ||
+            responseData.isEmpty ||
+            responseData.length <= 0) {
+          return 0;
+        }
+        return responseData[0]["id"];
+      } else {
+        throw Exception(
+            'Failed to fetch directus settings id ${response.statusCode} ~ ${response.data}');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioExceptionw: ${e.message}");
+      throw Exception('Failed to fetch directus settings id');
+    } catch (e) {
+      debugPrint('Error fetching directus settings id: $e');
+      throw Exception('Failed to fetch directus settings id');
     }
   }
 

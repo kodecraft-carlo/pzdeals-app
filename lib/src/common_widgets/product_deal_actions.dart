@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/main.dart';
@@ -40,11 +42,28 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
     //     await emailSvc.sendEmailSoldOut(productName, productLink)) {
     //   return true;
     // }
+    final deviceId = await getDeviceId();
     if (await productSvc.updateProductSoldoutStatus(productId, status) &&
-        await productSvc.addToReportedProducts(productId, status)) {
+        await productSvc.addToReportedProducts(productId, status, deviceId)) {
       return true;
     }
     return false;
+  }
+
+  Future<String> getDeviceId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    late String deviceId;
+
+    if (Platform.isIOS) {
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      deviceId = 'ios_${iosDeviceInfo.identifierForVendor!}';
+    } else if (Platform.isAndroid) {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      deviceId = 'android_${androidDeviceInfo.id}';
+    } else {
+      deviceId = 'null';
+    }
+    return deviceId;
   }
 
   Future<void> _onShare(BuildContext context) async {

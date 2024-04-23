@@ -13,35 +13,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 class FirebaseMessagingApi {
   final _firebaseMessaging = FirebaseMessaging.instance;
-
-  // // Define a Hive box for storing notification-related data
-  // late Box _notificationBox;
-
-  // // Notification limit and last reset timestamp
-  // late int _notificationLimit;
-  // late DateTime _lastResetTimestamp;
-
-  // // Notification counti
-  // late int _notificationCount;
-
-  // FirebaseMessagingApi() {
-  //   // Initialize Hive box for notification data
-  //   Hive.openBox('notificationBox').then((box) {
-  //     _notificationBox = box;
-  //     _initializeNotifications();
-  //   });
-  // }
-  // void _initializeNotifications() {
-  //   // Retrieve notification limit and last reset timestamp from the cache
-  //   _notificationLimit =
-  //       _notificationBox.get('notificationLimit', defaultValue: 10);
-  //   _lastResetTimestamp = _notificationBox.get('lastResetTimestamp',
-  //       defaultValue: DateTime.now());
-
-  //   // Retrieve notification count from the cache
-  //   _notificationCount =
-  //       _notificationBox.get('notificationCount', defaultValue: 0);
-  // }
+  NotificationService notifService = NotificationService();
 
   final _androidChannel = const AndroidNotificationChannel(
     'high_importance_channel',
@@ -54,26 +26,10 @@ class FirebaseMessagingApi {
   final _localNotifications = FlutterLocalNotificationsPlugin();
 
   void handleMessage(RemoteMessage? message) {
+    debugPrint('handleMessage called with message: $message');
     if (message == null) return;
-    // storeNotification(message);
-    // Check if the current timestamp exceeds the last reset timestamp
-    // if (DateTime.now()
-    //     .isAfter(_lastResetTimestamp.add(const Duration(days: 1)))) {
-    //   // Reset the notification count and update the last reset timestamp
-    //   _notificationCount = 0;
-    //   _lastResetTimestamp = DateTime.now();
-    //   _notificationBox.put('notificationCount', _notificationCount);
-    //   _notificationBox.put('lastResetTimestamp', _lastResetTimestamp);
-    // }
-
-    // Increment the notification count
-    // _notificationCount++;
-    // _notificationBox.put('notificationCount', _notificationCount);
-
-    // Check if the notification count exceeds the limit
-    // if (_notificationCount > _notificationLimit) {
-    //   return;
-    // }
+    debugPrint('handleMessage called with message: $message');
+    storeNotification(message);
 
     final dynamic notifdata = message.toMap();
     navigateToScreens(notifdata);
@@ -84,8 +40,6 @@ class FirebaseMessagingApi {
       required String title,
       required String body,
       required String payload}) async {
-    // debugPrint('showNotification data: ${payload.toString()}');
-
     NotificationDetails notificationDetails = NotificationDetails(
       android: AndroidNotificationDetails(
           _androidChannel.id, _androidChannel.name,
@@ -111,19 +65,26 @@ class FirebaseMessagingApi {
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
-      if (notification == null) return;
-      final newTitle = addNotificationTypeToTitle(
-          message.data['alert_type'] ?? '', notification.title ?? '');
-      // if (!notificationCountExceedsLimit(_notificationLimit)) {
-      showNotification(
-        notificationId: notification.hashCode,
-        // title: addNotificationTypeToTitle(notification),
-        title: newTitle,
-        body: notification.body ?? '',
-        payload: jsonEncode(message.toMap()),
-      );
-      storeNotification(message);
-      // }
+      if (notification == null) {
+        debugPrint('message: ${message.toMap()}');
+        if (message.data['alert_type'] == 'scheduled_reminder' &&
+            message.data['value'] == 'front_page') {
+          debugPrint('scheduled reminder received');
+          notifService.resetNotificationReceivedInfo();
+        }
+      } else {
+        final newTitle = addNotificationTypeToTitle(
+            message.data['alert_type'] ?? '', notification.title ?? '');
+
+        showNotification(
+          notificationId: notification.hashCode,
+          title: newTitle,
+          body: notification.body ?? '',
+          payload: jsonEncode(message.toMap()),
+        );
+        // }
+        storeNotification(message);
+      }
     });
   }
 
@@ -162,18 +123,10 @@ class FirebaseMessagingApi {
   }
 
   Future<void> storeNotification(dynamic message) async {
-    NotificationService notifService = NotificationService();
     notifService.addNotification(
         NotificationMapper.mapToNotificationData(message), 'notifications');
     debugPrint('Notification added');
   }
-
-  // bool notificationCountExceedsLimit(int limit) {
-  //   // Implement your logic to check if the notification count exceeds the limit
-  //   // For example, you can retrieve the stored notification count from another Hive box
-  //   int storedNotificationCount = _notificationCount;
-  //   return storedNotificationCount >= limit;
-  // }
 
   void navigateToScreens(dynamic message) {
     final data = message["data"];
@@ -192,9 +145,10 @@ class FirebaseMessagingApi {
           'value': data['value'],
           'product_id': data['item_id'] ?? ''
         });
-      } else if (data['alert_type'] == 'price_mistake') {
+      } else if (data['alert_type'] == 'price_mistake' ||
+          data['alert_type'] == 'front_page') {
         navigatorKey.currentState!.pushReplacementNamed('/deals', arguments: {
-          'type': 'price_mistake',
+          'type': data['alert_type'],
           'product_id': data['id'] ?? ''
         });
       } else if (data['alert_type'] == 'category') {

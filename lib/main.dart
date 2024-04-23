@@ -15,7 +15,6 @@ import 'package:pzdeals/src/features/deals/presentation/screens/screen_percentag
 import 'package:pzdeals/src/features/more/models/blogs_data.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/features/notifications/notifications.dart';
-import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/services/firebase_messaging.dart';
@@ -27,12 +26,22 @@ import 'package:pzdeals/src/utils/data_mapper/index.dart';
 final navigatorKey = GlobalKey<NavigatorState>();
 
 NotificationService notifService = NotificationService();
+FirebaseMessagingApi firebaseMessagingApi = FirebaseMessagingApi();
 @pragma('vm:entry-point')
 Future<void> _handleBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp();
   debugPrint('notification data: ${message.toMap()}');
-  notifService.addNotification(
-      NotificationMapper.mapToNotificationData(message), 'notifications');
+  final notification = message.notification;
+  if (notification == null) {
+    if (message.data['alert_type'] == 'scheduled_reminder' &&
+        message.data['value'] == 'front_page') {
+      debugPrint('scheduled reminder received');
+      notifService.resetNotificationReceivedInfo();
+    }
+  } else {
+    notifService.addNotification(
+        NotificationMapper.mapToNotificationData(message), 'notifications');
+  }
 }
 
 void main() async {
@@ -40,8 +49,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseMessagingApi().initNotifications();
-  FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
 
   final appDocumentDir = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
@@ -54,6 +61,10 @@ void main() async {
   Hive.registerAdapter(BlogDataAdapter());
   Hive.registerAdapter(KeywordDataAdapter());
   Hive.registerAdapter(SettingsDataAdapter());
+
+  await firebaseMessagingApi.initNotifications();
+  FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
+
   runApp(const ProviderScope(child: MainApp()));
 }
 

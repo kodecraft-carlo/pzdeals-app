@@ -88,28 +88,38 @@ class ProductImageWidget extends StatelessWidget {
 
     // Apply loading and error builders for network images
     if (sourceType == 'network') {
-      imageWidget = CachedNetworkImage(
-        imageUrl: imageAsset,
-        width: width,
-        height: height,
-        fit: fit,
-        // placeholder: (context, url) => const Center(
-        //   child: CircularProgressIndicator(
-        //     valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
-        //     backgroundColor: PZColors.pzLightGrey,
-        //     strokeWidth: 3,
-        //   ),
-        // ),
-        errorWidget: (context, url, error) {
-          debugPrint('Error loading image: $error');
-          return Image.asset(
-            'assets/images/pzdeals.png',
-            width: width,
-            height: height,
-            fit: BoxFit.fitWidth,
-          );
-        },
-      );
+      try {
+        imageWidget = CachedNetworkImage(
+          imageUrl: imageAsset,
+          width: width,
+          height: height,
+          fit: fit,
+          // placeholder: (context, url) => const Center(
+          //   child: CircularProgressIndicator(
+          //     valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
+          //     backgroundColor: PZColors.pzLightGrey,
+          //     strokeWidth: 3,
+          //   ),
+          // ),
+          errorWidget: (context, url, error) {
+            debugPrint('Error loading image: $error');
+            return Image.asset(
+              'assets/images/pzdeals.png',
+              width: width,
+              height: height,
+              fit: BoxFit.fitWidth,
+            );
+          },
+        );
+      } catch (e) {
+        debugPrint('Error loading image: $e');
+        imageWidget = Image.asset(
+          'assets/images/pzdeals.png',
+          width: width,
+          height: height,
+          fit: BoxFit.fitWidth,
+        );
+      }
     }
 
     if (isExpired) {

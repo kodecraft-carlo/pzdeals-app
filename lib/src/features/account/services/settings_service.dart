@@ -59,6 +59,7 @@ class UserSettingsService {
             'Unable to update user settings ${response.statusCode} ~ ${response.data}');
       }
       await _cacheSettings(settings, boxName, userId);
+      await _cacheNumberOfAlerts(settings.numberOfAlerts);
     } on DioException catch (e) {
       debugPrint("DioException: ${e.message}");
       throw Exception('Failed to update user settings');
@@ -115,6 +116,7 @@ class UserSettingsService {
             'Unable to add user settings ${response.statusCode} ~ ${response.data}');
       }
       await _cacheSettings(settings, boxName, userId);
+      await _cacheNumberOfAlerts(settings.numberOfAlerts);
     } on DioException catch (e) {
       debugPrint("DioException: ${e.message}");
       throw Exception('Failed to add user settings');
@@ -168,5 +170,12 @@ class UserSettingsService {
     final box = await Hive.openBox<SettingsData>(boxName);
     await box.clear();
     box.put('settings_$userId', userSetting);
+  }
+
+  Future<void> _cacheNumberOfAlerts(int numberOfAlerts) async {
+    Hive.openBox('notificationSettingsBox').then((box) {
+      box.clear();
+      box.put('numberOfAlerts', numberOfAlerts);
+    });
   }
 }
