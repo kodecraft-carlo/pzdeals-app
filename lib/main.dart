@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,6 @@ import 'package:pzdeals/src/features/deals/presentation/screens/screen_percentag
 import 'package:pzdeals/src/features/more/models/blogs_data.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/features/notifications/notifications.dart';
-import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/services/firebase_messaging.dart';
@@ -27,12 +28,22 @@ import 'package:pzdeals/src/utils/data_mapper/index.dart';
 final navigatorKey = GlobalKey<NavigatorState>();
 
 NotificationService notifService = NotificationService();
+FirebaseMessagingApi firebaseMessagingApi = FirebaseMessagingApi();
 @pragma('vm:entry-point')
 Future<void> _handleBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp();
   debugPrint('notification data: ${message.toMap()}');
-  notifService.addNotification(
-      NotificationMapper.mapToNotificationData(message), 'notifications');
+  final notification = message.notification;
+  if (notification == null) {
+    if (message.data['alert_type'] == 'scheduled_reminder' &&
+        message.data['value'] == 'front_page') {
+      debugPrint('scheduled reminder received');
+      notifService.resetNotificationReceivedInfo();
+    }
+  } else {
+    notifService.addNotification(
+        NotificationMapper.mapToNotificationData(message), 'notifications');
+  }
 }
 
 void main() async {
@@ -40,8 +51,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseMessagingApi().initNotifications();
-  FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
+
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   final appDocumentDir = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
@@ -54,6 +72,11 @@ void main() async {
   Hive.registerAdapter(BlogDataAdapter());
   Hive.registerAdapter(KeywordDataAdapter());
   Hive.registerAdapter(SettingsDataAdapter());
+  Hive.registerAdapter(SearchDiscoveryDataAdapter());
+
+  await firebaseMessagingApi.initNotifications();
+  FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
+
   runApp(const ProviderScope(child: MainApp()));
 }
 
@@ -114,7 +137,7 @@ class MainAppState extends ConsumerState<MainApp>
         final String? id = deepLink.queryParameters['id'];
         debugPrint('deeplink product id: $id');
         navigatorKey.currentState!.pushReplacementNamed('/deals',
-            arguments: {'product_id': id ?? ''});
+            arguments: {'product_id': id ?? '', 'type': 'deeplink'});
       }
     }
   }

@@ -110,6 +110,7 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
             widget.storeData.appStoreImg ?? widget.storeData.storeAssetImage,
         width: width,
         height: height,
+        fadeInDuration: const Duration(milliseconds: 100),
         fit: BoxFit.fitWidth,
         errorWidget: (context, url, error) {
           debugPrint('Error loading image: $error');

@@ -41,8 +41,8 @@ class TabPzPicksNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // _products = await _productService.getCachedProducts(_boxName);
-      // notifyListeners();
+      _products = await _productService.getCachedProducts(_boxName);
+      notifyListeners();
 
       // if (_products.isNotEmpty) return;
 

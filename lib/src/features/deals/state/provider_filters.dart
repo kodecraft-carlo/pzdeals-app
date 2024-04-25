@@ -13,6 +13,7 @@ class SearchFilterNotifier extends ChangeNotifier {
   final FetchCollectionService _collectionService = FetchCollectionService();
 
   bool _isFilterApplied = false;
+  bool _hasAnyFilterSelected = false;
   bool get isFilterApplied => _isFilterApplied;
   String _filters = '';
   String get filters => _filters;
@@ -45,6 +46,7 @@ class SearchFilterNotifier extends ChangeNotifier {
   List<Map<String, dynamic>> get collectionsMap => _collectionsMap;
   bool get isCollectionApplied => _isCollectionSelectionApplied;
   bool get isCollectionLoading => _isCollectionLoading;
+  bool get hasAnyFilterSelected => _hasAnyFilterSelected;
 
   //amount
   int _minAmount = 0;
@@ -128,6 +130,7 @@ class SearchFilterNotifier extends ChangeNotifier {
       _storesMap.add(
           {'store_id': storeId, 'tag_name': tagName, 'store_name': storeName});
     }
+    _hasAnyFilterSelected = isAnyFilterSelected() ? true : false;
     notifyListeners();
   }
 
@@ -144,6 +147,7 @@ class SearchFilterNotifier extends ChangeNotifier {
         'collection_name': collectionName,
       });
     }
+    _hasAnyFilterSelected = isAnyFilterSelected() ? true : false;
     notifyListeners();
   }
 
@@ -219,17 +223,27 @@ class SearchFilterNotifier extends ChangeNotifier {
     _maxAmount = 0;
 
     _isFilterApplied = false;
+    _hasAnyFilterSelected = false;
     _filters = '';
     notifyListeners();
   }
 
   void setMinAmount(int min) {
     _minAmount = min;
+    _hasAnyFilterSelected = isAnyFilterSelected() ? true : false;
     notifyListeners();
   }
 
   void setMaxAmount(dynamic max) {
     _maxAmount = max == '~' ? 100000000000 : max;
+    _hasAnyFilterSelected = isAnyFilterSelected() ? true : false;
     notifyListeners();
+  }
+
+  bool isAnyFilterSelected() {
+    return _storesMap.isNotEmpty ||
+        _collectionsMap.isNotEmpty ||
+        _minAmount != 0 ||
+        _maxAmount != 0;
   }
 }

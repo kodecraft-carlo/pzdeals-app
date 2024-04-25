@@ -60,7 +60,7 @@ dependencies:
   flutter_inappwebview: ^6.0.0
   firebase_messaging: ^14.7.18
   firebase_in_app_messaging: ^0.7.4+16
-  firebase_analytics: ^10.8.9
+  firebase_analytics: ^10.10.3
   mailer: ^6.1.0
   flutter_local_notifications: ^17.0.0
   html: ^0.15.4
@@ -71,6 +71,7 @@ dependencies:
   uni_links: ^0.5.1
   firebase_dynamic_links: ^5.5.0
   device_info_plus: ^10.1.0
+  firebase_crashlytics: ^3.5.3
 
 dev_dependencies:
   flutter_test:

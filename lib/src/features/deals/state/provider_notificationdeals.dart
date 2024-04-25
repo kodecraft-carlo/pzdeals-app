@@ -28,16 +28,26 @@ class NotificationDealsNotifier extends ChangeNotifier {
     _searchKey = searchValue;
     _dealType = dealType;
     _boxName = '${dealType}_deals';
-    if (_dealType == 'percentage') {
-      query =
-          '${searchPercentageProductQuery(pageNumber)}&price_percentage_gt=$searchKey';
-    } else if (_dealType == 'keyword') {
-      query =
-          // '${searchProductQuery(_searchKey, pageNumber)}&filter={"title": { "_icontains": "$_searchKey" }}';
-          query = searchProductQuery(_searchKey, pageNumber);
-    }
     if (searchKey.isNotEmpty) {
       loadProducts();
+    }
+  }
+
+  Future<void> refreshProducts() async {
+    pageNumber = 1;
+
+    _products.clear();
+    query = generateQuery();
+    try {
+      final serverProducts =
+          await _searchproductService.searchProductWithCustomQuery(query);
+      _products = serverProducts;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("error loading products: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -46,6 +56,7 @@ class NotificationDealsNotifier extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     _products.clear();
+    query = generateQuery();
     try {
       // debugPrint('searchProductWithCustomQuery query: $query');
       final serverProducts =
@@ -64,7 +75,7 @@ class NotificationDealsNotifier extends ChangeNotifier {
     pageNumber++;
     _isLoading = true;
     notifyListeners();
-
+    query = generateQuery();
     try {
       final serverProducts =
           await _searchproductService.searchProductWithCustomQuery(query);
@@ -77,5 +88,17 @@ class NotificationDealsNotifier extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  String generateQuery() {
+    String searchQuery = '';
+    if (_dealType == 'percentage') {
+      searchQuery =
+          '${searchPercentageProductQuery(pageNumber)}&price_percentage_gt=$searchKey';
+    } else if (_dealType == 'keyword') {
+      searchQuery = searchProductQuery(_searchKey, pageNumber);
+    }
+
+    return searchQuery;
   }
 }

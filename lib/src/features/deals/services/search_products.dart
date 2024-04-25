@@ -7,6 +7,39 @@ import 'package:pzdeals/src/utils/queries/deals_querybuilder.dart';
 import 'package:pzdeals/src/utils/queries/index.dart';
 
 class SearchProductService {
+  Future<List<SearchDiscoveryData>> fetchSearchDiscovery() async {
+    ApiClient apiClient = ApiClient();
+    // final authService = ref.watch(directusAuthServiceProvider);
+    debugPrint("fetchSearchDiscovery called");
+
+    try {
+      Response response = await apiClient.dio.get(getSearchDiscoveryQuery()
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+          );
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        if (responseData == null || responseData.isEmpty) {
+          throw Exception('No Data Found');
+        }
+
+        final searchDiscovery =
+            SearchDiscoveryMapper.mapToSearchDiscoveryDataList(
+                responseData['data']);
+        return searchDiscovery;
+      } else {
+        throw Exception('Failed to fetch directus searchDiscovery list');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioExceptionw: ${e.message}");
+      throw Exception('Failed to fetch directus searchDiscovery list');
+    } catch (e) {
+      debugPrint('Error fetching searchDiscovery deals: $e');
+      throw Exception('Failed to fetch directus searchDiscovery list');
+    }
+  }
+
   Future<List<ProductDealcardData>> searchProduct(
       String searchKey, int pageNumber, String filters) async {
     ApiClient apiClient = ApiClient();
@@ -14,6 +47,8 @@ class SearchProductService {
     debugPrint("searchProduct Deals called using $searchKey");
 
     try {
+      debugPrint(
+          'searchProductQuery w/ filters: ${searchProductQuery(searchKey, pageNumber)}$filters');
       Response response = await apiClient.dio
           .get(searchProductQuery(searchKey, pageNumber) + filters
               // options: Options(

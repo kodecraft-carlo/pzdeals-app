@@ -47,23 +47,30 @@ class ProductService {
     }
   }
 
-  Future<bool> addToReportedProducts(int productId, String status) async {
+  Future<bool> addToReportedProducts(
+      int productId, String status, String deviceId) async {
     ApiClient apiClient = ApiClient();
     debugPrint('addToReportedProducts called with $productId and $status');
     try {
-      Response response = await apiClient.dio.post('/items/reported_products',
-          data: {
-            "product": productId,
-            "status": "unchecked",
-            "is_soldout": true
-          }
-          // options: Options(
-          //   headers: {'Authorization': 'Bearer $accessToken'},
-          // ),
-          );
-      if (response.statusCode != 200) {
-        throw Exception(
-            'Unable to addToReportedProducts ${response.statusCode} ~ ${response.data}');
+      if (await isDeviceAlreadyReported(productId, deviceId) == false) {
+        Response response =
+            await apiClient.dio.post('/items/reported_products', data: {
+          "product": productId,
+          "status": "unchecked",
+          "is_soldout": true,
+          "device_id": deviceId
+        }
+                // options: Options(
+                //   headers: {'Authorization': 'Bearer $accessToken'},
+                // ),
+                );
+        if (response.statusCode != 200) {
+          throw Exception(
+              'Unable to addToReportedProducts ${response.statusCode} ~ ${response.data}');
+        }
+        return true;
+      } else {
+        debugPrint('Device already reported for this product');
       }
       return true;
     } on DioException catch (e) {
@@ -72,6 +79,32 @@ class ProductService {
     } catch (e) {
       debugPrint('Error addToReportedProducts: $e');
       throw Exception('Failed to addToReportedProducts');
+    }
+  }
+
+  Future<bool> isDeviceAlreadyReported(int productId, String deviceId) async {
+    ApiClient apiClient = ApiClient();
+    debugPrint('isDeviceAlreadyReported called with $productId and $deviceId');
+    try {
+      debugPrint(
+          'query: /items/reported_products?filter[device_id][_eq]=$deviceId&filter[product][_eq]=$productId');
+      Response response = await apiClient.dio.get(
+          '/items/reported_products?filter[device_id][_eq]=$deviceId&filter[product][_eq]=$productId'
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+          );
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Unable to isDeviceAlreadyReported ${response.statusCode} ~ ${response.data}');
+      }
+      return response.data["data"].length > 0;
+    } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      throw Exception('Failed to isDeviceAlreadyReported');
+    } catch (e) {
+      debugPrint('Error isDeviceAlreadyReported: $e');
+      throw Exception('Failed to isDeviceAlreadyReported');
     }
   }
 }

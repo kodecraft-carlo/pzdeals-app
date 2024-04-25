@@ -105,7 +105,7 @@ class FetchForYouService {
     final box = await Hive.openBox<ProductDealcardData>(boxName);
     await box.clear();
     for (final collection in collections) {
-      box.put(collection.productId, collection);
+      box.add(collection);
     }
   }
 }

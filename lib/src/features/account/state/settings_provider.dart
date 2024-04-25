@@ -18,11 +18,13 @@ class SettingsNotifier extends ChangeNotifier {
   String _boxName = '';
   bool _isLoading = false;
   String _userUID = '';
+  int _numberOfAlerts = 0;
 
   SettingsData? _settingsData;
 
   bool get isLoading => _isLoading;
   SettingsData? get settingsData => _settingsData;
+  int get numberOfAlerts => _numberOfAlerts;
 
   void setUserUID(String uid) {
     debugPrint('SettingsNotifier setUserUID called with $uid');
@@ -89,6 +91,7 @@ class SettingsNotifier extends ChangeNotifier {
             _settingsData?.setNumberOfAlerts = 0;
             _firebaseMessaging.unsubscribeFromTopic('front_page');
           }
+          _numberOfAlerts = _settingsData!.numberOfAlerts;
           _settingsData?.setFrontpageNotification = setting['frontPage'];
           break;
         case 'percentOff':

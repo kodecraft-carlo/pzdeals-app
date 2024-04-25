@@ -68,8 +68,13 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
           if (id != '') {
             showProductDeal(int.parse(id));
           }
-        } else {
+        } else if (dealType != '' && dealType == 'deeplink') {
           debugPrint('from deeplink id: $id');
+          if (id != '') {
+            showProductDeal(int.parse(id));
+          }
+        } else {
+          debugPrint('from others id: $id');
           if (id != '') {
             showProductDeal(int.parse(id));
           }

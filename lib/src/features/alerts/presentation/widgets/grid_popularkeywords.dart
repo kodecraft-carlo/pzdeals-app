@@ -114,6 +114,7 @@ class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
               child: CachedNetworkImage(
                 imageUrl: widget.keywordData.imageUrl,
                 fit: BoxFit.contain,
+                fadeInDuration: const Duration(milliseconds: 100),
                 errorWidget: (context, url, error) {
                   debugPrint('Error loading image: $error');
                   return Image.asset(

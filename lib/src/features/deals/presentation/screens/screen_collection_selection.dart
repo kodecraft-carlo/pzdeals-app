@@ -144,35 +144,49 @@ class BottomSheetWidget extends StatelessWidget {
     return Container(
       color: Colors.white,
       margin: const EdgeInsets.all(Sizes.paddingAll),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Consumer(builder: (context, ref, child) {
-            final foryouState = ref.watch(tabForYouProvider);
-            return Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(Sizes.buttonBorderRadius),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Consumer(builder: (context, ref, child) {
+                final foryouState = ref.watch(tabForYouProvider);
+                return Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(Sizes.buttonBorderRadius),
+                        ),
+                        backgroundColor: PZColors.pzOrange,
+                        minimumSize: const Size(150, 40),
+                        elevation: Sizes.buttonElevation),
+                    onPressed: foryouState.collectionsMap.isNotEmpty
+                        ? () {
+                            Navigator.of(context).pop();
+                            foryouState.applySelectedCollections();
+                            debugPrint('Apply Selection pressed');
+                          }
+                        : null,
+                    child: const Text(
+                      'Apply Selection',
+                      style: TextStyle(color: PZColors.pzWhite),
                     ),
-                    backgroundColor: PZColors.pzOrange,
-                    minimumSize: const Size(150, 40),
-                    elevation: Sizes.buttonElevation),
-                onPressed: foryouState.collectionsMap.isNotEmpty
-                    ? () {
-                        Navigator.of(context).pop();
-                        foryouState.applySelectedCollections();
-                        debugPrint('Apply Selection pressed');
-                      }
-                    : null,
-                child: const Text(
-                  'Apply Selection',
-                  style: TextStyle(color: PZColors.pzWhite),
-                ),
-              ),
-            );
-          })
+                  ),
+                );
+              }),
+            ],
+          ),
+          // TextButton(
+          //     onPressed: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //     child: const Text(
+          //       'Cancel',
+          //       style: TextStyle(
+          //           color: PZColors.pzBlack, fontWeight: FontWeight.w600),
+          //     ))
         ],
       ),
     );

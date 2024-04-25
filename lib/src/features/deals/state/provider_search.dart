@@ -14,15 +14,30 @@ class SearchProductNotifier extends ChangeNotifier {
   String _filters = '';
 
   List<ProductDealcardData> _products = [];
+  List<SearchDiscoveryData> _searchDiscovery = [];
 
   bool get isLoading => _isLoading;
   List<ProductDealcardData> get products => _products;
+  List<SearchDiscoveryData> get searchDiscovery => _searchDiscovery;
   String get searchKey => _searchKey;
 
   void setSearchKey(String searchKey) {
     _searchKey = searchKey;
     if (searchKey.isNotEmpty) {
       loadProducts();
+    }
+  }
+
+  SearchProductNotifier() {
+    loadSearchDiscovery();
+  }
+
+  Future<void> loadSearchDiscovery() async {
+    try {
+      _searchDiscovery = await _searchproductService.fetchSearchDiscovery();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('error loading search discovery: $e');
     }
   }
 

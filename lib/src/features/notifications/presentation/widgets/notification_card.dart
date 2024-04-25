@@ -60,7 +60,8 @@ class NotificationCardWidget extends ConsumerWidget {
                 'value': data['value'],
                 'product_id': data['item_id'] ?? ''
               });
-            } else if (data['alert_type'] == 'price_mistake') {
+            } else if (data['alert_type'] == 'price_mistake' ||
+                data['alert_type'] == 'front_page') {
               Navigator.of(context).pushNamed('/deals', arguments: {
                 'type': 'price_mistake',
                 'product_id': data['id'] ?? ''

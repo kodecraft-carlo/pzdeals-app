@@ -31,12 +31,14 @@ class FilterActionButtonsWidgetState
                   ),
                   backgroundColor: PZColors.pzOrange,
                   elevation: Sizes.buttonElevation),
-              onPressed: () {
-                searchFilterState.applyFilter();
-                searchState.setFilters(searchFilterState.filters);
-                searchState.loadProducts();
-                Navigator.of(context).pop();
-              },
+              onPressed: searchFilterState.hasAnyFilterSelected
+                  ? () {
+                      searchFilterState.applyFilter();
+                      searchState.setFilters(searchFilterState.filters);
+                      searchState.loadProducts();
+                      Navigator.of(context).pop();
+                    }
+                  : null,
               child: const Text(
                 'Apply Filter',
                 style: TextStyle(color: PZColors.pzWhite),
