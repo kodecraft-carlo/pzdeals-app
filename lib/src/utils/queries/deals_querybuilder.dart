@@ -169,6 +169,8 @@ String searchProductQuery(String keyword, int pageNumber) {
       '&fields[]=collection_ids.collection_id'
       '&fields[]=collection_ids.collection_id.collection_name'
       '&sort[]=-id'
+      '&limit=30'
+      '&page=$pageNumber'
       '&filter={"title": { "_icontains": "$keyword" }}'
       '&filter={"tag_ids":{"tags_id":{"tag_name":{"_neq":"price-mistake"}}}}';
   return query;
@@ -188,7 +190,14 @@ String searchPercentageProductQuery(int pageNumber) {
       '&fields[]=collection_ids.collection_id'
       '&fields[]=collection_ids.collection_id.collection_name'
       '&sort[]=-id'
+      '&limit=30'
+      '&page=$pageNumber'
       '&filter={"collection_ids":{"collection_id":{"collection_name":{"_nin":"Credit Cards,PzBlog,PzStyles,noprice,Unknown"}}}}'
       '&filter={"tag_ids":{"tags_id":{"tag_name":{"_neq":"price-mistake"}}}}';
+  return query;
+}
+
+String getSearchDiscoveryQuery() {
+  String query = '/items/search_discovery?fields[]=title&fields[]=image_src';
   return query;
 }

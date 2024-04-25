@@ -159,6 +159,9 @@ class KeywordDealsScreenState extends ConsumerState<KeywordDealsScreen>
       final layoutType = ref.watch(layoutTypeProvider);
       searchResultWidget = Flexible(
         child: ProductsDisplay(
+          onRefresh: () async {
+            // ref.read(notificationDealsProvider).refreshProducts();
+          },
           productData: productData,
           layoutType: layoutType,
           scrollKey: 'keywordDealsScreen',

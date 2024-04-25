@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAtXwlpIZXQ_ez8LqGdJBFOT_TqKrTDjWw',
-    appId: '1:629344566477:android:873377b2dd18ff79ecbd84',
+    appId: '1:629344566477:android:67e75202a7dc4fc4ecbd84',
     messagingSenderId: '629344566477',
     projectId: 'pzdeals-b9228',
     storageBucket: 'pzdeals-b9228.appspot.com',
@@ -59,11 +59,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCVM58K7j8-JsCFEzMnlvShtujaBeMHiTs',
-    appId: '1:629344566477:ios:cc7278fe2977d8e2ecbd84',
+    appId: '1:629344566477:ios:e5ab56422921f0fcecbd84',
     messagingSenderId: '629344566477',
     projectId: 'pzdeals-b9228',
     storageBucket: 'pzdeals-b9228.appspot.com',
-    iosClientId: '629344566477-7m6sds16skaa309s7v0qgm5dcdqbk0ur.apps.googleusercontent.com',
-    iosBundleId: 'com.example.pzdeals',
+    androidClientId: '629344566477-2731av9mf7j5pti8damtohc0k4vohg27.apps.googleusercontent.com',
+    iosClientId: '629344566477-uaqec3u8dn4slk9jchpp761h31rblpgl.apps.googleusercontent.com',
+    iosBundleId: 'com.kodecraft.pzdeals',
   );
+
 }

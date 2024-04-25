@@ -214,6 +214,7 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
+                  //Stores
                   searchFilterState.selectedStoreIds.isNotEmpty
                       ? const Text(
                           "Store: ",
@@ -233,6 +234,7 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
                           ),
                         )
                       : const SizedBox(),
+                  //Collections
                   searchFilterState.selectedCollectionIds.isNotEmpty &&
                           searchFilterState.selectedStoreIds.isNotEmpty
                       ? const Text(" & ",
@@ -255,6 +257,36 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
                           searchFilterState.selectedCollectionIds
                               .map((map) => map['collection_name'] as String)
                               .join(', '),
+                          style: const TextStyle(
+                            fontSize: Sizes.bodyFontSize,
+                          ),
+                        )
+                      : const SizedBox(),
+                  //Price Range
+                  (searchFilterState.selectedCollectionIds.isNotEmpty ||
+                              searchFilterState.selectedStoreIds.isNotEmpty) &&
+                          searchFilterState.minAmount > 0 &&
+                          searchFilterState.maxAmount > 0
+                      ? const Text(" & ",
+                          style: TextStyle(
+                            fontSize: Sizes.bodyFontSize,
+                            fontWeight: FontWeight.w500,
+                          ))
+                      : const SizedBox(),
+                  searchFilterState.minAmount > 0 &&
+                          searchFilterState.maxAmount > 0
+                      ? const Text(
+                          "Price Range: ",
+                          style: TextStyle(
+                            fontSize: Sizes.bodyFontSize,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
+                      : const SizedBox(),
+                  searchFilterState.minAmount > 0 &&
+                          searchFilterState.maxAmount > 0
+                      ? Text(
+                          '\$${searchFilterState.minAmount} ${searchFilterState.maxAmount == 100000000000 ? 'up' : '- \$${searchFilterState.maxAmount}'}',
                           style: const TextStyle(
                             fontSize: Sizes.bodyFontSize,
                           ),

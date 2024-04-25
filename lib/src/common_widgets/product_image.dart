@@ -93,6 +93,7 @@ class ProductImageWidget extends StatelessWidget {
           imageUrl: imageAsset,
           width: width,
           height: height,
+          fadeInDuration: const Duration(milliseconds: 100),
           fit: fit,
           // placeholder: (context, url) => const Center(
           //   child: CircularProgressIndicator(

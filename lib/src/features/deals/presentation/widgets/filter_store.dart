@@ -136,7 +136,9 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
   Widget storeFilterImage(String imageUrl) {
     return CachedNetworkImage(
       imageUrl: imageUrl,
-      fit: BoxFit.fitWidth,
+      fadeInDuration: const Duration(milliseconds: 100),
+      fit: BoxFit.contain,
+      cacheKey: Key(imageUrl.trim()).toString(),
       height: 30,
       errorWidget: (context, url, error) {
         debugPrint('Error loading image: $error');
@@ -144,7 +146,7 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
           borderRadius: BorderRadius.circular(Sizes.containerBorderRadius),
           child: Image.asset(
             'assets/images/pzdeals.png',
-            fit: BoxFit.fitWidth,
+            fit: BoxFit.fitHeight,
           ),
         );
       },

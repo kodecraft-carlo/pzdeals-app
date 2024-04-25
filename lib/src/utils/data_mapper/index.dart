@@ -4,3 +4,4 @@ export 'collection_mapper.dart';
 export 'notification_mapper.dart';
 export 'keyword_mapper.dart';
 export 'setting_mapper.dart';
+export 'search_discovery_mapper.dart';

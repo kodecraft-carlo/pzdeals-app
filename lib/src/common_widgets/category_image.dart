@@ -68,6 +68,7 @@ class CategoryImageWidget extends StatelessWidget {
         imageUrl: imageAsset,
         width: width,
         height: height,
+        fadeInDuration: const Duration(milliseconds: 100),
         fit: BoxFit.cover,
         // placeholder: (context, url) => const Center(
         //   child: CircularProgressIndicator(

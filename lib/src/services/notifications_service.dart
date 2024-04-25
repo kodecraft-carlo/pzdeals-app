@@ -143,10 +143,10 @@ class NotificationService {
 
         notificationReceivedCount = notificationReceivedCount + 1;
         //unsubscribe user if notification received count is greater than frontpageNotificationAlertsLimit
-        if (notificationReceivedCount >= frontpageNotificationAlertsLimit) {
-          _firebaseMessaging.unsubscribeFromTopic('front_page');
-          _firebaseMessaging.subscribeToTopic(
-              'scheduled_reminder'); //will run every 12 midnight to subscribe user to front_page topic
+        if (frontpageNotificationAlertsLimit < 30) {
+          if (notificationReceivedCount >= frontpageNotificationAlertsLimit) {
+            _firebaseMessaging.unsubscribeFromTopic('front_page');
+          }
         }
         final Response response = await apiClient.dio.patch(
           '/items/notification_settings/$id',
@@ -192,7 +192,6 @@ class NotificationService {
           // ),
         );
         _firebaseMessaging.subscribeToTopic('front_page');
-        _firebaseMessaging.unsubscribeFromTopic('scheduled_reminder');
 
         if (response.statusCode != 200) {
           throw Exception(

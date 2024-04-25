@@ -121,93 +121,94 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             ? settingsState.settingsData!.percentageThreshold.toString()
             : '10';
     return SingleChildScrollView(
-        child: Padding(
-            padding: const EdgeInsets.all(Sizes.paddingAll),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Notification Settings",
-                  style: TextStyle(
-                      fontSize: Sizes.sectionHeaderFontSize,
-                      fontWeight: FontWeight.w600,
-                      color: PZColors.pzBlack),
-                ),
-                const SizedBox(height: Sizes.spaceBetweenContent),
-                // 04/04/2024 demo: Price mistake alert (turned on by default and remove on settings)
-                // ListTileWithSwitchWidget(
-                //   title: 'Price Mistake',
-                //   subtitle:
-                //       'Get notified about significant drops in the price of a product',
-                //   value: !settingsState.isLoading &&
-                //           settingsState.settingsData != null
-                //       ? settingsState.settingsData!.priceMistake
-                //       : false,
-                //   onChanged: onPriceMistakeChanged,
-                // ),
-                ListTileWithSwitchWidget(
-                  title: 'Front Page Notifications',
-                  subtitle: 'Get notified about front page deals',
-                  value: !settingsState.isLoading &&
-                          settingsState.settingsData != null
+      child: Padding(
+        padding: const EdgeInsets.all(Sizes.paddingAll),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Notification Settings",
+              style: TextStyle(
+                  fontSize: Sizes.sectionHeaderFontSize,
+                  fontWeight: FontWeight.w600,
+                  color: PZColors.pzBlack),
+            ),
+            const SizedBox(height: Sizes.spaceBetweenContent),
+            // 04/04/2024 demo: Price mistake alert (turned on by default and remove on settings)
+            // ListTileWithSwitchWidget(
+            //   title: 'Price Mistake',
+            //   subtitle:
+            //       'Get notified about significant drops in the price of a product',
+            //   value: !settingsState.isLoading &&
+            //           settingsState.settingsData != null
+            //       ? settingsState.settingsData!.priceMistake
+            //       : false,
+            //   onChanged: onPriceMistakeChanged,
+            // ),
+            ListTileWithSwitchWidget(
+              title: 'Front Page Notifications',
+              subtitle: 'Get notified about front page deals',
+              value:
+                  !settingsState.isLoading && settingsState.settingsData != null
                       ? settingsState.settingsData!.frontpageNotification
                       : false,
-                  onChanged: onFrontPageChanged,
-                ),
-                AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: isFrontPage
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                  height: Sizes.spaceBetweenSections),
-                              const Text("Number of alerts to receive",
-                                  style: TextStyle(
-                                      fontSize: Sizes.listTitleFontSize,
-                                      fontWeight: FontWeight.w500)),
-                              SliderWidget(
-                                onChanged: alertsOnChanged,
-                                initialValue:
-                                    alertsCount.round() == 0 ? 10 : alertsCount,
-                              ),
-                            ],
-                          )
-                        : const SizedBox()),
-                ListTileWithSwitchWidget(
-                  title: '% Off Notifications',
-                  subtitle:
-                      'Get notified about significant drops in the price of a product',
-                  value: isPercentOff,
-                  onChanged: onPercentOffChanged,
-                ),
-                AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: isPercentOff
-                        ? DropdownWidget(
-                            onChanged: thresholdOnChanged,
-                            isDense: true,
-                            initialValue: _selectedThreshold == '0'
-                                ? '10'
-                                : _selectedThreshold,
-                            dropdownLabel: '% Off Threshold',
-                            dropdownItems: dropdownItems,
-                            validator: thresholdValidator,
-                          )
-                        : const SizedBox()),
-                const SizedBox(height: Sizes.spaceBetweenSectionsXL),
-                authUserState.isAuthenticated == true
-                    ? const Column(
+              onChanged: onFrontPageChanged,
+            ),
+            AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: isFrontPage
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // KeywordAlertsSection(),
-                          SizedBox(
-                            height: Sizes.spaceBetweenSectionsXL,
+                          const SizedBox(height: Sizes.spaceBetweenSections),
+                          const Text("Number of alerts to receive",
+                              style: TextStyle(
+                                  fontSize: Sizes.listTitleFontSize,
+                                  fontWeight: FontWeight.w500)),
+                          SliderWidget(
+                            onChanged: alertsOnChanged,
+                            initialValue:
+                                alertsCount.round() == 0 ? 10 : alertsCount,
                           ),
-                          LogoutButton()
                         ],
                       )
-                    : const SizedBox()
-              ],
-            )));
+                    : const SizedBox()),
+            ListTileWithSwitchWidget(
+              title: '% Off Notifications',
+              subtitle:
+                  'Get notified about significant drops in the price of a product',
+              value: isPercentOff,
+              onChanged: onPercentOffChanged,
+            ),
+            AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: isPercentOff
+                    ? DropdownWidget(
+                        onChanged: thresholdOnChanged,
+                        isDense: true,
+                        initialValue: _selectedThreshold == '0'
+                            ? '10'
+                            : _selectedThreshold,
+                        dropdownLabel: '% Off Threshold',
+                        dropdownItems: dropdownItems,
+                        validator: thresholdValidator,
+                      )
+                    : const SizedBox()),
+            const SizedBox(height: Sizes.spaceBetweenSectionsXL),
+            authUserState.isAuthenticated == true
+                ? const Column(
+                    children: [
+                      // KeywordAlertsSection(),
+                      SizedBox(
+                        height: Sizes.spaceBetweenSectionsXL,
+                      ),
+                      LogoutButton()
+                    ],
+                  )
+                : const SizedBox(),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -14,6 +14,7 @@ class TabForYouNotifier extends ChangeNotifier {
   final String _boxName = 'foryoucollections';
   bool _isLoading = false;
   bool _isForYouLoading = false;
+  bool _isForYouCollectionProductsLoading = false;
   List<CollectionData> _collections = [];
   final List<Map<String, dynamic>> _selectedCollectionIds = [];
   final List<Map<String, dynamic>> _collectionsMap = [];
@@ -25,6 +26,9 @@ class TabForYouNotifier extends ChangeNotifier {
   ];
   List<ProductDealcardData> _foryouProducts = [];
 
+  //List of collections with their respective products
+  final List<Map<String, dynamic>> _collectionProducts = [];
+
   bool get isLoading => _isLoading;
   bool get isForYouLoading => _isForYouLoading;
   List<CollectionData> get collections => _collections;
@@ -34,9 +38,13 @@ class TabForYouNotifier extends ChangeNotifier {
   bool get isSelectionApplied => _isSelectionApplied;
   List<Map<String, dynamic>> get defaultCollections => _defaultCollections;
   List get foryouProducts => _foryouProducts;
+  List<Map<String, dynamic>> get collectionProducts => _collectionProducts;
+  bool get isForYouCollectionProductsLoading =>
+      _isForYouCollectionProductsLoading;
 
   TabForYouNotifier() {
     loadCollections();
+    getProductsFromSelectedCollection();
   }
 
   Future<void> loadForYouProducts(
@@ -103,13 +111,53 @@ class TabForYouNotifier extends ChangeNotifier {
     return exists;
   }
 
-  void applySelectedCollections() {
+  void applySelectedCollections() async {
     _selectedCollectionIds.clear();
     _collectionsMap
         .sort((a, b) => a['collection_id'].compareTo(b['collection_id']));
 
     _selectedCollectionIds.addAll(_collectionsMap);
     _isSelectionApplied = true;
+    await getProductsFromSelectedCollection();
     notifyListeners();
+  }
+
+  Future<void> getProductsFromSelectedCollection() async {
+    _isForYouCollectionProductsLoading = true;
+    notifyListeners();
+
+    if (_selectedCollectionIds.isEmpty) {
+      _selectedCollectionIds.addAll(_defaultCollections);
+    }
+    try {
+      _collectionProducts.clear();
+      //check first if there are cached products
+      for (var collection in _selectedCollectionIds) {
+        final cachedProducts = _forYouService
+            .getCachedProductCollections(collection['collection_name']);
+        _collectionProducts.add({
+          'collection_name': collection['collection_name'],
+          'collection_id': collection['collection_id'],
+          'products': cachedProducts
+        });
+      }
+      notifyListeners();
+      _collectionProducts.clear();
+      for (var collection in _selectedCollectionIds) {
+        final serverProducts = _forYouService.fetchForYouDeals(
+            collection['collection_id'], 30, collection['collection_name']);
+        _collectionProducts.add({
+          'collection_name': collection['collection_name'],
+          'collection_id': collection['collection_id'],
+          'products': serverProducts
+        });
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint("error loading getProductsFromSelectedCollection: $e");
+    } finally {
+      _isForYouCollectionProductsLoading = false;
+      notifyListeners();
+    }
   }
 }
