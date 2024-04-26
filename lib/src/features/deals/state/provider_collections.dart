@@ -20,7 +20,7 @@ class ProductCollectionNotifier extends ChangeNotifier {
   List<ProductDealcardData> get products => _products;
 
   void setBoxCollectionName(String collectionName, String boxName) {
-    _collectionName = collectionName;
+    _collectionName = collectionName.replaceAll('&', '%26');
     _boxName = boxName;
 
     _loadProducts();
