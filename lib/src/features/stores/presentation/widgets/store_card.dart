@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/stores/presentation/widgets/index.dart';
 import 'package:pzdeals/src/models/index.dart';
@@ -94,7 +95,7 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
     } else if (widget.storeData.assetSourceType == 'network') {
       imageProvider = NetworkImage(widget.storeData.storeAssetImage);
     } else {
-      imageProvider = const AssetImage('assets/pzdeals.png');
+      imageProvider = const AssetImage('assets/images/pzdeals_store.png');
     }
 
     Widget imageWidget = Image(
@@ -105,25 +106,83 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
     );
 
     if (widget.storeData.assetSourceType == 'network') {
-      imageWidget = CachedNetworkImage(
-        imageUrl:
-            widget.storeData.appStoreImg ?? widget.storeData.storeAssetImage,
-        width: width,
-        height: height,
-        fadeInDuration: const Duration(milliseconds: 100),
-        fit: BoxFit.fitWidth,
-        errorWidget: (context, url, error) {
-          debugPrint('Error loading image: $error');
-          return CachedNetworkImage(
-            imageUrl: widget.storeData.storeAssetImage,
+      if (_isSvgImage(widget.storeData.storeAssetImage)) {
+        debugPrint('svg: ${widget.storeData.storeAssetImage}');
+        try {
+          imageWidget = SvgPicture.network(
+            widget.storeData.storeAssetImage,
+            width: width,
+            height: height,
+          );
+        } catch (e) {
+          debugPrint('Error loading image: $e');
+          imageWidget = Image.asset(
+            'assets/images/pzdeals_store.png',
             width: width,
             height: height,
             fit: BoxFit.fitWidth,
           );
-        },
-      );
-    }
+        }
+      } else {
+        try {
+          imageWidget = CachedNetworkImage(
+            imageUrl: widget.storeData.appStoreImg ??
+                widget.storeData.storeAssetImage,
+            width: width,
+            height: height,
+            fadeInDuration: const Duration(milliseconds: 100),
+            fit: BoxFit.fitWidth,
+            errorWidget: (context, url, error) {
+              if (widget.storeData.storeAssetImage.isNotEmpty) {
+                return CachedNetworkImage(
+                    imageUrl: widget.storeData
+                        .storeAssetImage, // Change to your default image
+                    fadeInDuration: const Duration(milliseconds: 100),
+                    width: width,
+                    height: height,
+                    fit: BoxFit.fitWidth,
+                    errorWidget: (context, url, error) {
+                      return Image.asset(
+                        'assets/images/pzdeals_store.png',
+                        width: width,
+                        height: height,
+                        fit: BoxFit.fitWidth,
+                      );
+                    });
+              }
+              return Image.asset(
+                'assets/images/pzdeals_store.png',
+                width: width,
+                height: height,
+                fit: BoxFit.fitWidth,
+              );
+            },
+          );
+        } catch (e) {
+          debugPrint('Error loading image: $e');
+          imageWidget = Image.asset(
+            'assets/images/pzdeals_store.png',
+            width: width,
+            height: height,
+            fit: BoxFit.fitWidth,
+          );
+        }
+      }
 
-    return imageWidget;
+      return imageWidget;
+    } else {
+      imageWidget = Image.asset(
+        'assets/images/pzdeals_store.png',
+        width: width,
+        height: height,
+        fit: BoxFit.fitWidth,
+      );
+      return imageWidget;
+    }
+  }
+
+  bool _isSvgImage(String imageUrl) {
+    final regex = RegExp(r'\.svg(\?|$)');
+    return regex.hasMatch(imageUrl.toLowerCase());
   }
 }

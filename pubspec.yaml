@@ -72,6 +72,7 @@ dependencies:
   firebase_dynamic_links: ^5.5.0
   device_info_plus: ^10.1.0
   firebase_crashlytics: ^3.5.3
+  skeletonizer: ^1.1.1
 
 dev_dependencies:
   flutter_test:

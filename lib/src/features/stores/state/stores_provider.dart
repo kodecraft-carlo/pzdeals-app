@@ -26,6 +26,7 @@ class StoreScreenProvider extends ChangeNotifier {
 
   Future<void> refreshStores() async {
     try {
+      _stores.clear();
       // _stores = await _storeSvc.getCachedStores(_boxName);
       // notifyListeners();
 
