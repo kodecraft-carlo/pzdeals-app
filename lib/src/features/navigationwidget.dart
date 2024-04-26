@@ -199,14 +199,20 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
         top: true,
         child: Container(
           decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.black.withOpacity(0.2),
+            //     spreadRadius: 2,
+            //     blurRadius: 5,
+            //     offset: const Offset(0, 3),
+            //   ),
+            // ],
+            border: Border(
+              top: BorderSide(
                 color: Colors.black.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
+                width: 2.0,
               ),
-            ],
+            ),
           ),
           child: Theme(
             data: ThemeData(
