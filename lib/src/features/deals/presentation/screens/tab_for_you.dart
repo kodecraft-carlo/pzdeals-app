@@ -140,7 +140,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
           ),
           const ForYouBannerWidget(),
           Skeletonizer(
-            enabled: foryouState.isForYouCollectionProductsLoading,
+            enabled: true,
             child: Container(
               margin: const EdgeInsets.all(Sizes.paddingAll),
               child: Column(

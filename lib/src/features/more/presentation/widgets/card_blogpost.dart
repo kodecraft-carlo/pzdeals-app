@@ -63,20 +63,13 @@ class BlogpostCardWidgetState extends State<BlogpostCardWidget> {
                     imageUrl: widget.blogImage,
                     width: MediaQuery.of(context).size.width / 2,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
-                        backgroundColor: PZColors.pzLightGrey,
-                        strokeWidth: 3,
-                      ),
-                    ),
+                    fadeInDuration: const Duration(milliseconds: 100),
                     errorWidget: (context, url, error) {
                       debugPrint('Error loading image: $error');
                       return Image.asset(
-                        'assets/images/pzdeals.png',
+                        'assets/images/shortcuts/blogs_placeholder.png',
                         width: MediaQuery.of(context).size.width / 2,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.fill,
                       );
                     },
                   ),

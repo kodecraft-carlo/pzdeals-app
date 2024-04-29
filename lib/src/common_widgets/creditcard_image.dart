@@ -38,6 +38,7 @@ class CreditCardImageWidget extends StatelessWidget {
         width: 100.0,
         height: 80.0,
         fit: BoxFit.fitWidth,
+        fadeInDuration: const Duration(milliseconds: 100),
         // placeholder: (context, url) => const Center(
         //   child: CircularProgressIndicator(
         //     valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),

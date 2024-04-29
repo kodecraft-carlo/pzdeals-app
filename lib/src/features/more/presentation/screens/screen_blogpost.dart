@@ -42,7 +42,9 @@ class BlogpostScreenWidget extends StatelessWidget {
                 ? CachedNetworkImage(
                     imageUrl: blogData.blogImage,
                     width: MediaQuery.of(context).size.width / 2,
-                    fit: BoxFit.fitWidth)
+                    fit: BoxFit.fitWidth,
+                    errorWidget: (context, url, error) => const SizedBox(),
+                  )
                 : const SizedBox(),
             const SizedBox(height: Sizes.spaceBetweenContent),
             Text(

@@ -110,19 +110,23 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
         child: Column(
           children: [
             Expanded(
-                child: ListView.builder(
-              // controller: _scrollController,
-              shrinkWrap: true,
-              itemCount: blogData.length,
-              itemBuilder: (BuildContext context, int index) {
-                final blog = blogData[index];
-                return BlogpostCardWidget(
-                  blogTitle: blog.blogTitle,
-                  blogImage: blog.blogImage,
-                  blogId: blog.id,
-                );
-              },
-            )),
+              child: RefreshIndicator.adaptive(
+                  color: PZColors.pzOrange,
+                  child: ListView.builder(
+                    // controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: blogData.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final blog = blogData[index];
+                      return BlogpostCardWidget(
+                        blogTitle: blog.blogTitle,
+                        blogImage: blog.blogImage,
+                        blogId: blog.id,
+                      );
+                    },
+                  ),
+                  onRefresh: () => blogState.refreshBlogs()),
+            ),
             // if (blogState.isLoading)
             //   const Padding(
             //     padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),

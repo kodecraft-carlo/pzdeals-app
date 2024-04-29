@@ -88,9 +88,11 @@ class AccountWidget extends ConsumerWidget {
                 SliverAppBar(
                   elevation: 3.0,
                   backgroundColor: PZColors.pzWhite,
+                  centerTitle: false,
                   automaticallyImplyLeading: false,
                   title: const Text(
                     "Account",
+                    textAlign: TextAlign.left,
                     style: TextStyle(
                         fontSize: Sizes.headerFontSize,
                         fontWeight: FontWeight.w600,
