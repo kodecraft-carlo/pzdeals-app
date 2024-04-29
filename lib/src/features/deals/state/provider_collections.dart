@@ -44,6 +44,7 @@ class ProductCollectionNotifier extends ChangeNotifier {
 
   Future<void> _loadProducts() async {
     _isLoading = true;
+    pageNumber = 1;
     notifyListeners();
     _products.clear();
     try {

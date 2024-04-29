@@ -32,10 +32,7 @@ class PZPicksScreenWidgetState extends ConsumerState<PZPicksScreenWidget>
   Widget build(BuildContext context) {
     final pzpicksState = ref.watch(tabPzPicksProvider);
     if (pzpicksState.isLoading && pzpicksState.products.isEmpty) {
-      return const Center(
-          child: CircularProgressIndicator(
-        color: PZColors.pzOrange,
-      ));
+      return const Center(child: CircularProgressIndicator.adaptive());
     } else if (pzpicksState.products.isEmpty) {
       return Padding(
           padding: const EdgeInsets.all(Sizes.paddingAll),
@@ -88,8 +85,7 @@ class PZPicksScreenWidgetState extends ConsumerState<PZPicksScreenWidget>
           if (pzpicksState.isLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Center(
-                  child: CircularProgressIndicator(color: PZColors.pzOrange)),
+              child: Center(child: CircularProgressIndicator.adaptive()),
             ),
         ],
       );

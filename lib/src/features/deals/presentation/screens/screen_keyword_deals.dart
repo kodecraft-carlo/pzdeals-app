@@ -121,8 +121,7 @@ class KeywordDealsScreenState extends ConsumerState<KeywordDealsScreen>
 
     if (keywordDealsState.isLoading && keywordDealsState.products.isEmpty) {
       searchResultWidget = const Expanded(
-          child: Center(
-              child: CircularProgressIndicator(color: PZColors.pzOrange)));
+          child: Center(child: CircularProgressIndicator.adaptive()));
     } else if (keywordDealsState.products.isEmpty) {
       searchResultWidget = Expanded(
         child: Padding(

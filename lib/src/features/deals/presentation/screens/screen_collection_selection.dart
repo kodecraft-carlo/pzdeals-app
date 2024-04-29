@@ -43,8 +43,7 @@ class _CollectionSelectionWidgetState
     Widget body;
 
     if (foryouState.isLoading && foryouState.collections.isEmpty) {
-      body = const Center(
-          child: CircularProgressIndicator(color: PZColors.pzOrange));
+      body = const Center(child: CircularProgressIndicator.adaptive());
     } else if (foryouState.collections.isEmpty) {
       body = Padding(
           padding: const EdgeInsets.all(Sizes.paddingAll),

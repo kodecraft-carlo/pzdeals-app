@@ -34,11 +34,18 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      debugPrint("reach the end of the list");
-      ref.read(creditcardsProvider).loadMoreCreditCards();
+  bool _isLoading = false;
+
+  void _onScroll() async {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_isLoading) {
+        return;
+      }
+
+      _isLoading = true;
+      await ref.read(creditcardsProvider).loadMoreCreditCards();
+      _isLoading = false;
     }
   }
 
@@ -84,9 +91,7 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
                   children: [
                     if (creditcardState.isLoading &&
                         creditcardState.creditcards.isEmpty)
-                      const Center(
-                          child: CircularProgressIndicator(
-                              color: PZColors.pzOrange))
+                      const Center(child: CircularProgressIndicator.adaptive())
                     else if (creditcardState.creditcards.isEmpty)
                       const Center(
                           child: Text(
@@ -110,9 +115,8 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
                       const Padding(
                         padding:
                             EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                        child: Center(
-                            child: CircularProgressIndicator(
-                                color: PZColors.pzOrange)),
+                        child:
+                            Center(child: CircularProgressIndicator.adaptive()),
                       )
                   ],
                 ),

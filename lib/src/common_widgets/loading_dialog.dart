@@ -18,9 +18,7 @@ class LoadingDialog {
                 height: 50,
                 width: 50,
                 child: Center(
-                  child: CircularProgressIndicator(
-                    color: PZColors.pzOrange,
-                  ),
+                  child: CircularProgressIndicator.adaptive(),
                 ),
               ),
             ));

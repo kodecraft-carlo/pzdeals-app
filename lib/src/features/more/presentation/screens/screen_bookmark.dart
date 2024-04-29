@@ -63,8 +63,7 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
     Widget body;
 
     if (bookmarkState.isProductLoading && bookmarkState.products.isEmpty) {
-      body = const Center(
-          child: CircularProgressIndicator(color: PZColors.pzOrange));
+      body = const Center(child: CircularProgressIndicator.adaptive());
     } else if (bookmarkState.booksmarks.isEmpty &&
         bookmarkState.products.isEmpty) {
       body = Padding(
@@ -131,8 +130,7 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
           if (bookmarkState.isProductLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Center(
-                  child: CircularProgressIndicator(color: PZColors.pzOrange)),
+              child: Center(child: CircularProgressIndicator.adaptive()),
             ),
         ],
       );

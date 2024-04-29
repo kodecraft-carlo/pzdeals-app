@@ -32,8 +32,7 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
   Widget build(BuildContext context) {
     final frontpageState = ref.watch(tabFrontPageProvider);
     if (frontpageState.isLoading && frontpageState.products.isEmpty) {
-      return const Center(
-          child: CircularProgressIndicator(color: PZColors.pzOrange));
+      return const Center(child: CircularProgressIndicator.adaptive());
     } else if (frontpageState.products.isEmpty) {
       return Padding(
           padding: const EdgeInsets.all(Sizes.paddingAll),
@@ -84,8 +83,7 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
           if (frontpageState.isLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Center(
-                  child: CircularProgressIndicator(color: PZColors.pzOrange)),
+              child: Center(child: CircularProgressIndicator.adaptive()),
             ),
         ],
       );

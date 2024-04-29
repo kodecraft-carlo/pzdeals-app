@@ -47,7 +47,7 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
       children: [
         if (searchFilterState.isStoreLoading &&
             searchFilterState.stores.isEmpty)
-          const Center(child: CircularProgressIndicator()),
+          const Center(child: CircularProgressIndicator.adaptive()),
         if (searchFilterState.stores.isEmpty)
           const Center(child: Text('No stores found')),
         if (searchFilterState.stores.isNotEmpty)
