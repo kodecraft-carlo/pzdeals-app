@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>629344566477-6enk327o2hopegbhspmqv2o32t5u78mq.apps.googleusercontent.com</string>
+	<string>629344566477-qt75pqk0jp7o2tr3ahjdhb8mhm8qvpic.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.629344566477-6enk327o2hopegbhspmqv2o32t5u78mq</string>
+	<string>com.googleusercontent.apps.629344566477-qt75pqk0jp7o2tr3ahjdhb8mhm8qvpic</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>629344566477-2731av9mf7j5pti8damtohc0k4vohg27.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.kodecraft.pzdeals</string>
+	<string>com.carlo.pzdeals</string>
 	<key>PROJECT_ID</key>
 	<string>pzdeals-b9228</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:629344566477:ios:e5ab56422921f0fcecbd84</string>
+	<string>1:629344566477:ios:d14dfb38d411371becbd84</string>
 </dict>
 </plist>
