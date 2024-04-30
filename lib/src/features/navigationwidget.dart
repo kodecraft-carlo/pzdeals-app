@@ -198,16 +198,16 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
       bottomNavigationBar: SafeArea(
         top: true,
         child: Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
+          // decoration: BoxDecoration(
+          //   boxShadow: [
+          //     BoxShadow(
+          //       color: Colors.black.withOpacity(0.2),
+          //       spreadRadius: 2,
+          //       blurRadius: 5,
+          //       offset: const Offset(0, 3),
+          //     ),
+          //   ],
+          // ),
           child: Theme(
             data: ThemeData(
                 fontFamily: 'Poppins',
