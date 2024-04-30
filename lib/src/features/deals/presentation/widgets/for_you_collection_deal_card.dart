@@ -7,7 +7,6 @@ import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
-import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 
 class StaticProductDealCardWidget extends StatefulWidget {
   const StaticProductDealCardWidget({super.key, required this.productData});

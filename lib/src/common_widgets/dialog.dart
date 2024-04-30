@@ -5,7 +5,7 @@ import 'package:pzdeals/src/constants/index.dart';
 class ContentDialog extends StatefulWidget {
   final Widget content;
 
-  const ContentDialog({Key? key, required this.content}) : super(key: key);
+  const ContentDialog({super.key, required this.content});
 
   @override
   _ContentDialogState createState() => _ContentDialogState();

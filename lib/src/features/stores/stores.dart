@@ -140,7 +140,7 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
                       storeNames: storescreenState.storeNames,
                       searchController: searchController,
                     )),
-                const SliverToBoxAdapter(
+                SliverToBoxAdapter(
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(

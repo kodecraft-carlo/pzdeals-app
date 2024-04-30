@@ -36,22 +36,79 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   @override
   Widget build(BuildContext context) {
     return isIOS()
-        ? CupertinoPicker(
-            itemExtent: 32.0,
-            onSelectedItemChanged: (int index) {
-              setState(() {
-                _selectedValue = widget.dropdownItems[index];
-                widget.onChanged(_selectedValue);
-              });
-            },
-            scrollController: FixedExtentScrollController(
-              initialItem: widget.dropdownItems.indexOf(_selectedValue ?? ''),
+        ? GestureDetector(
+            onTap: () => showCupertinoModalPopup(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) => Container(
+                height: 230,
+                padding: const EdgeInsets.only(top: 6.0),
+                margin: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                color: CupertinoColors.systemBackground.resolveFrom(context),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: CupertinoButton(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          onPressed: () {
+                            widget.onChanged(_selectedValue);
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Done',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: PZColors.pzOrange)),
+                        ),
+                      ),
+                      Expanded(
+                        child: CupertinoPicker(
+                          magnification: 1.22,
+                          squeeze: 1.2,
+                          useMagnifier: true,
+                          itemExtent: 32.0,
+                          selectionOverlay:
+                              CupertinoPickerDefaultSelectionOverlay(
+                            background: PZColors.pzOrange.withOpacity(0.1),
+                          ),
+                          onSelectedItemChanged: (int index) {
+                            setState(() {
+                              _selectedValue = widget.dropdownItems[index];
+                            });
+                          },
+                          scrollController: FixedExtentScrollController(
+                            initialItem: widget.dropdownItems
+                                .indexOf(_selectedValue ?? ''),
+                          ),
+                          children: widget.dropdownItems.map((String item) {
+                            return Center(
+                              child: Text(
+                                item,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ),
-            children: widget.dropdownItems.map((String item) {
-              return Center(
-                child: Text(item),
-              );
-            }).toList(),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: PZColors.pzGrey.withOpacity(0.125),
+                borderRadius:
+                    BorderRadius.circular(Sizes.textFieldCornerRadius),
+              ),
+              child: Text(_selectedValue ?? widget.dropdownLabel),
+            ),
           )
         : DropdownButtonFormField<String>(
             value: _selectedValue,

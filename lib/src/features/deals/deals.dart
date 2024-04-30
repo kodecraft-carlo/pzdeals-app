@@ -195,11 +195,11 @@ class DealsTabControllerWidgetState
               controller: tabController,
               children: <Widget>[
                 const ForYouWidget(),
-                NotificationListener<OverscrollNotification>(
+                NotificationListener<ScrollNotification>(
                   child: FrontPageDealsWidget(key: _frontpageKey),
-                  onNotification: (OverscrollNotification scrollInfo) {
-                    if (scrollInfo.metrics.pixels ==
-                        scrollInfo.metrics.maxScrollExtent) {
+                  onNotification: (ScrollNotification scrollInfo) {
+                    if (scrollInfo.metrics.pixels >=
+                        scrollInfo.metrics.maxScrollExtent - 200) {
                       if (!_isAtBottomFrontPage) {
                         _isAtBottomFrontPage = true;
                         ref.read(tabFrontPageProvider).loadMoreProducts();
@@ -213,11 +213,11 @@ class DealsTabControllerWidgetState
                     return false;
                   },
                 ),
-                NotificationListener<OverscrollNotification>(
+                NotificationListener<ScrollNotification>(
                   child: PZPicksScreenWidget(key: _pzpicksKey),
-                  onNotification: (OverscrollNotification scrollInfo) {
-                    if (scrollInfo.metrics.pixels ==
-                        scrollInfo.metrics.maxScrollExtent) {
+                  onNotification: (ScrollNotification scrollInfo) {
+                    if (scrollInfo.metrics.pixels >=
+                        scrollInfo.metrics.maxScrollExtent - 200) {
                       if (!_isAtBottomPzPicks) {
                         _isAtBottomPzPicks = true;
                         ref.read(tabPzPicksProvider).loadMoreProducts();

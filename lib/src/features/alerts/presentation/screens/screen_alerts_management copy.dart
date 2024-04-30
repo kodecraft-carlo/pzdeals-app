@@ -23,7 +23,7 @@ class _AlertsManagementScreenState
   TextEditingController textController = TextEditingController();
   ScrollController scrollController = ScrollController(keepScrollOffset: true);
   bool isEditMode = false;
-  bool _showMore = false;
+  // bool _showMore = false;
 
   @override
   void initState() {

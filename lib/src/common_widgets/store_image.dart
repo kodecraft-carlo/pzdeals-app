@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/src/state/layout_type_provider.dart';
 
 class StoreImageWidget extends ConsumerWidget {
   const StoreImageWidget(
@@ -18,7 +17,6 @@ class StoreImageWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final layoutType = ref.watch(layoutTypeProvider);
     return storeAssetImage == 'assets/images/pzdeals_store.png'
         ? Image.asset(
             'assets/images/pzdeals.png',

@@ -1,3 +1,5 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class Sizes {
   //divider height
   static const double spaceBetweenSections = 16.0;
@@ -56,6 +58,7 @@ class Sizes {
   static const double listSubtitleFontSize = 12.0;
   static const double listTitleFontSize = 14.0;
   static const double textFieldFontSize = 12.0;
+  // static double get bodyFontSize => 12.sp;
   static const double bodyFontSize = 12.0;
   static const double bodySmallSize = 10.0;
   static const double bodySmallestSize = 8.0;

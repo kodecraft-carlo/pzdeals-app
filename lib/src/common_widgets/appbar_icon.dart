@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 
 class AppbarIcon extends StatelessWidget {

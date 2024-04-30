@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:pzdeals/src/constants/index.dart';
 
 class LoadingDialog {
   static void show(BuildContext context, {String? message}) {

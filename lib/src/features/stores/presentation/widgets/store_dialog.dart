@@ -193,7 +193,6 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                                     ),
                                   ),
                                 );
-                                ;
                               },
                             ),
                             isExpanded: _expandedIndex == index,

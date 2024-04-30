@@ -168,6 +168,7 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new),
                 onPressed: () {
+                  blogState.clearFilter();
                   Navigator.of(context).pop();
                 },
               ),

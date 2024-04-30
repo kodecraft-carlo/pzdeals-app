@@ -12,7 +12,8 @@ class TextFieldWidget extends StatefulWidget {
       required this.isDense,
       this.validator,
       this.focusNode,
-      this.nextFocusNode});
+      this.nextFocusNode,
+      this.isReadonly = false});
 
   final String hintText;
   final bool obscureText;
@@ -22,6 +23,7 @@ class TextFieldWidget extends StatefulWidget {
   final FormFieldValidator<String>? validator;
   final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
+  final bool isReadonly;
 
   @override
   _TextFieldWidgetState createState() => _TextFieldWidgetState();

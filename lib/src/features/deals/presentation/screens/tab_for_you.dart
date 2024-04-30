@@ -6,7 +6,6 @@ import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
-import 'package:pzdeals/src/features/deals/services/fetch_foryou.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ForYouWidget extends ConsumerStatefulWidget {

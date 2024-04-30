@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/actions/material_navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/chips.dart';
 import 'package:pzdeals/src/constants/index.dart';
