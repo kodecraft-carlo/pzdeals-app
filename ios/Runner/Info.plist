@@ -32,7 +32,17 @@
 				<string>pzdealsapp</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.629344566477-qt75pqk0jp7o2tr3ahjdhb8mhm8qvpic</string>
+			</array>
+    	</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>629344566477-qt75pqk0jp7o2tr3ahjdhb8mhm8qvpic.apps.googleusercontent.com</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
