@@ -64,8 +64,7 @@ class CreditCardDealsWidget extends ConsumerWidget {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                        child:
-                            CircularProgressIndicator(color: PZColors.pzGrey));
+                        child: CircularProgressIndicator.adaptive());
                   } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                     return Padding(
                       padding: const EdgeInsets.only(

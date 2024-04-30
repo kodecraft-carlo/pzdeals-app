@@ -110,10 +110,18 @@ class CollectionDisplayScreenWidgetState
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      ref.read(productCollectionProvider).loadMoreProducts();
+  bool _isLoading = false;
+
+  void _onScroll() async {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_isLoading) {
+        return;
+      }
+
+      _isLoading = true;
+      await ref.read(productCollectionProvider).loadMoreProducts();
+      _isLoading = false;
     }
   }
 
@@ -148,8 +156,7 @@ class CollectionDisplayScreenWidgetState
     Widget body;
     if (productCollectionState.isLoading &&
         productCollectionState.products.isEmpty) {
-      body = const Center(
-          child: CircularProgressIndicator(color: PZColors.pzOrange));
+      body = const Center(child: CircularProgressIndicator.adaptive());
     } else if (productCollectionState.products.isEmpty) {
       body = Padding(
           padding: const EdgeInsets.all(Sizes.paddingAll),
@@ -192,8 +199,7 @@ class CollectionDisplayScreenWidgetState
           if (productCollectionState.isLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Center(
-                  child: CircularProgressIndicator(color: PZColors.pzOrange)),
+              child: Center(child: CircularProgressIndicator.adaptive()),
             ),
         ],
       );

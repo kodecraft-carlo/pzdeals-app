@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
 class DropdownWidget extends StatefulWidget {
@@ -34,47 +35,73 @@ class _DropdownWidgetState extends State<DropdownWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      value: widget.initialValue,
-      isExpanded: false,
-      onChanged: (value) {
-        setState(() {
-          _selectedValue = value;
-          widget.onChanged(value);
-        });
-      },
-      validator: widget.validator,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      icon: const Icon(Icons.keyboard_arrow_down),
-      decoration: InputDecoration(
-        hintText: widget.dropdownLabel,
-        hintStyle: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: widget.isDense ? Sizes.fontSizeSmall : Sizes.fontSizeMedium,
-          color: PZColors.pzGrey,
-        ),
-        fillColor: PZColors.pzGrey.withOpacity(0.125),
-        filled: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Sizes.textFieldCornerRadius),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: EdgeInsets.all(
-          widget.isDense ? Sizes.paddingAllSmall : Sizes.paddingAll,
-        ),
-        isDense: widget.isDense,
-      ),
-      style: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: widget.isDense ? Sizes.fontSizeSmall : Sizes.fontSizeMedium,
-        color: PZColors.pzBlack,
-      ),
-      items: widget.dropdownItems.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-    );
+    return isIOS()
+        ? CupertinoPicker(
+            itemExtent: 32.0,
+            onSelectedItemChanged: (int index) {
+              setState(() {
+                _selectedValue = widget.dropdownItems[index];
+                widget.onChanged(_selectedValue);
+              });
+            },
+            scrollController: FixedExtentScrollController(
+              initialItem: widget.dropdownItems.indexOf(_selectedValue ?? ''),
+            ),
+            children: widget.dropdownItems.map((String item) {
+              return Center(
+                child: Text(item),
+              );
+            }).toList(),
+          )
+        : DropdownButtonFormField<String>(
+            value: _selectedValue,
+            isExpanded: false,
+            onChanged: (value) {
+              setState(() {
+                _selectedValue = value;
+                widget.onChanged(value);
+              });
+            },
+            validator: widget.validator,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            icon: const Icon(Icons.keyboard_arrow_down),
+            decoration: InputDecoration(
+              hintText: widget.dropdownLabel,
+              hintStyle: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize:
+                    widget.isDense ? Sizes.fontSizeSmall : Sizes.fontSizeMedium,
+                color: PZColors.pzGrey,
+              ),
+              fillColor: PZColors.pzGrey.withOpacity(0.125),
+              filled: true,
+              border: OutlineInputBorder(
+                borderRadius:
+                    BorderRadius.circular(Sizes.textFieldCornerRadius),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: EdgeInsets.all(
+                widget.isDense ? Sizes.paddingAllSmall : Sizes.paddingAll,
+              ),
+              isDense: widget.isDense,
+            ),
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize:
+                  widget.isDense ? Sizes.fontSizeSmall : Sizes.fontSizeMedium,
+              color: PZColors.pzBlack,
+            ),
+            items: widget.dropdownItems
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          );
+  }
+
+  bool isIOS() {
+    return Theme.of(context).platform == TargetPlatform.iOS;
   }
 }

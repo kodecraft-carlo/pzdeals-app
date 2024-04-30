@@ -51,10 +51,18 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      ref.read(blogsProvider).loadMoreBlogs();
+  bool _isLoading = false;
+
+  void _onScroll() async {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_isLoading) {
+        return;
+      }
+
+      _isLoading = true;
+      await ref.read(blogsProvider).loadMoreBlogs();
+      _isLoading = false;
     }
   }
 
@@ -71,8 +79,7 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
     final blogState = ref.watch(blogsProvider);
     Widget body;
     if (blogState.isLoading && blogState.blogs.isEmpty) {
-      body = const Center(
-          child: CircularProgressIndicator(color: PZColors.pzOrange));
+      body = const Center(child: CircularProgressIndicator.adaptive());
     } else if (blogState.blogs.isEmpty) {
       body = Padding(
           padding: const EdgeInsets.all(Sizes.paddingAll),
@@ -110,25 +117,30 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
         child: Column(
           children: [
             Expanded(
-                child: ListView.builder(
-              // controller: _scrollController,
-              shrinkWrap: true,
-              itemCount: blogData.length,
-              itemBuilder: (BuildContext context, int index) {
-                final blog = blogData[index];
-                return BlogpostCardWidget(
-                  blogTitle: blog.blogTitle,
-                  blogImage: blog.blogImage,
-                  blogId: blog.id,
-                );
-              },
-            )),
-            // if (blogState.isLoading)
-            //   const Padding(
-            //     padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-            //     child: Center(
-            //         child: CircularProgressIndicator(color: PZColors.pzOrange)),
-            //   ),
+              child: RefreshIndicator.adaptive(
+                  color: PZColors.pzOrange,
+                  child: ListView.builder(
+                    // controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: blogData.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final blog = blogData[index];
+                      return BlogpostCardWidget(
+                        blogTitle: blog.blogTitle,
+                        blogImage: blog.blogImage,
+                        blogId: blog.id,
+                      );
+                    },
+                  ),
+                  onRefresh: () => blogState.refreshBlogs()),
+            ),
+            if (blogState.isLoading && blogState.blogs.isNotEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+                child: Center(
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              ),
           ],
         ),
       );

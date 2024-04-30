@@ -15,6 +15,23 @@ class BlogsNotifier extends ChangeNotifier {
   List<BlogData> get blogs => _blogs;
   List<BlogData> get filteredBlogs => _filteredBlogs;
 
+  Future<void> refreshBlogs() async {
+    _isLoading = true;
+    notifyListeners();
+    pageNumber = 1;
+    try {
+      final serverBlogs =
+          await _blogService.fetchBlogs(_collectionName, _boxName, pageNumber);
+      _blogs = serverBlogs;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("error loading blogs: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> loadBlogs() async {
     _isLoading = true;
     notifyListeners();

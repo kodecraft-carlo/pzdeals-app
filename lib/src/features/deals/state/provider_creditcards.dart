@@ -23,6 +23,23 @@ class CreditCardsNotifier extends ChangeNotifier {
     _loadCreditCards();
   }
 
+  Future<void> refreshCreditCards() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final serverCreditCards = await _creditcardService.fetchCreditCardDeals(
+          _boxName, pageNumber, limit);
+      _creditcards = serverCreditCards;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("error loading credit cards: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> _loadCreditCards() async {
     _isLoading = true;
     notifyListeners();

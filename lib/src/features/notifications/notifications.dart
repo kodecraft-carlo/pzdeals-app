@@ -61,8 +61,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
     if (notificationState.isLoading &&
         notificationState.notifications.isEmpty) {
       notificationWidget = const Expanded(
-        child:
-            Center(child: CircularProgressIndicator(color: PZColors.pzOrange)),
+        child: Center(child: CircularProgressIndicator.adaptive()),
       );
     } else if (notificationState.notifications.isEmpty) {
       notificationWidget = Expanded(
@@ -126,9 +125,8 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
                   color: Colors.transparent,
                   padding:
                       const EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                  child: const Center(
-                      child:
-                          CircularProgressIndicator(color: PZColors.pzOrange)),
+                  child:
+                      const Center(child: CircularProgressIndicator.adaptive()),
                 )
               : const SizedBox.shrink()
         ],

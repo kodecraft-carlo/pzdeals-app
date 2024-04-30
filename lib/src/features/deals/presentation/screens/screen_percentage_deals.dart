@@ -72,8 +72,7 @@ class PercentageDealsScreenState extends ConsumerState<PercentageDealsScreen>
     if (percentageDealsState.isLoading &&
         percentageDealsState.products.isEmpty) {
       searchResultWidget = const Expanded(
-          child: Center(
-              child: CircularProgressIndicator(color: PZColors.pzOrange)));
+          child: Center(child: CircularProgressIndicator.adaptive()));
     } else if (percentageDealsState.products.isEmpty) {
       searchResultWidget = Expanded(
         child: Padding(

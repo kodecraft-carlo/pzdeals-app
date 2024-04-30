@@ -48,10 +48,18 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      ref.read(searchproductProvider).loadMoreProducts();
+  bool _isLoading = false;
+
+  void _onScroll() async {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_isLoading) {
+        return;
+      }
+
+      _isLoading = true;
+      await ref.read(searchproductProvider).loadMoreProducts();
+      _isLoading = false;
     }
   }
 
@@ -73,8 +81,8 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
         searchState.searchKey != '' ? searchState.searchKey : widget.searchKey;
 
     if (searchState.isLoading && searchState.products.isEmpty) {
-      searchResultWidget = const Center(
-          child: CircularProgressIndicator(color: PZColors.pzOrange));
+      searchResultWidget =
+          const Center(child: CircularProgressIndicator.adaptive());
     } else if (searchState.products.isEmpty) {
       searchResultWidget = Expanded(
         child: Padding(
@@ -109,11 +117,21 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
     } else {
       final productData = searchState.products;
       searchResultWidget = Flexible(
-        child: ProductsDisplay(
-          productData: productData,
-          layoutType: 'grid',
-          scrollKey: 'searchResult',
-          scrollController: _scrollController,
+        child: Column(
+          children: [
+            Expanded(
+                child: ProductsDisplay(
+              productData: productData,
+              layoutType: 'grid',
+              scrollKey: 'searchResult',
+              scrollController: _scrollController,
+            )),
+            if (searchState.isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+                child: Center(child: CircularProgressIndicator.adaptive()),
+              ),
+          ],
         ),
       );
     }

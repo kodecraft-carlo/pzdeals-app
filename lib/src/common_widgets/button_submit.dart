@@ -52,9 +52,7 @@ class _SubmitButtonWidgetState extends State<SubmitButtonWidget> {
                   aspectRatio: 1,
                   child: Padding(
                       padding: EdgeInsets.all(6),
-                      child: CircularProgressIndicator(
-                        color: PZColors.pzOrange,
-                      )),
+                      child: CircularProgressIndicator.adaptive()),
                 ),
                 SizedBox(width: Sizes.paddingAllSmall),
                 Text(

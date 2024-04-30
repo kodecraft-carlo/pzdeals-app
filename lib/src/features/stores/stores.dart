@@ -76,9 +76,7 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
 
     if (storescreenState.isLoading && storescreenState.stores.isEmpty) {
       body = const Center(
-        child: CircularProgressIndicator(
-          color: PZColors.pzOrange,
-        ),
+        child: CircularProgressIndicator.adaptive(),
       );
     } else if (storescreenState.stores.isEmpty) {
       body = Padding(
