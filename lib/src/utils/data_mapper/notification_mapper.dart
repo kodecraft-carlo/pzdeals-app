@@ -16,7 +16,7 @@ class NotificationMapper {
         title: json.notification.title ?? 'Notification',
         body: json.notification.body ?? '',
         imageUrl: imageSrc,
-        timestamp: json.sentTime,
+        timestamp: DateTime.now(),
         isRead: false,
         data: json.data,
       );

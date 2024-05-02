@@ -113,7 +113,6 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
       body = RefreshIndicator.adaptive(
           color: PZColors.pzOrange,
           child: DisplayStores(
-            scrollController: _scrollController,
             storedata: displayStores,
           ),
           onRefresh: () => storescreenState.refreshStores());
@@ -130,6 +129,7 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
         },
         child: Scaffold(
           body: NestedScrollView(
+            controller: _scrollController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
                 SliverAppBarWidget(
@@ -140,7 +140,7 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
                       storeNames: storescreenState.storeNames,
                       searchController: searchController,
                     )),
-                SliverToBoxAdapter(
+                const SliverToBoxAdapter(
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(

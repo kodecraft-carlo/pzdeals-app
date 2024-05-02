@@ -32,7 +32,6 @@ class NavigationWidget extends ConsumerStatefulWidget {
 
 class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   late int currentPageIndex;
-  late AsyncValue<UserData?> userData;
   int unreadNotificationCount = 0;
   String id = '';
   String dealType = '';
@@ -89,16 +88,18 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
           .collection('notification')
           .snapshots()
           .listen((QuerySnapshot snapshot) {
-        ref.read(notificationsProvider).refreshNotification();
-        unreadNotificationCount = 0;
-        snapshot.docs.forEach((doc) {
-          if (doc.exists && doc['isRead'] == false) {
-            unreadNotificationCount++;
-          }
-        });
-        setState(() {
-          unreadNotificationCount = unreadNotificationCount;
-        });
+        if (mounted) {
+          ref.read(notificationsProvider).refreshNotification();
+          unreadNotificationCount = 0;
+          snapshot.docs.forEach((doc) {
+            if (doc.exists && doc['isRead'] == false) {
+              unreadNotificationCount++;
+            }
+          });
+          setState(() {
+            unreadNotificationCount = unreadNotificationCount;
+          });
+        }
       });
     }
   }
@@ -195,8 +196,9 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: SafeArea(
-        top: true,
+        top: false,
         child: Container(
+          height: 65,
           decoration: BoxDecoration(
             boxShadow: [
               //borderside at the top if platform is ios and box shadow if platform is android
@@ -220,7 +222,8 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
                 highlightColor: Colors.transparent),
             child: SizedBox(
               height: 65,
-              child: BottomNavigationBar(
+              child: SafeArea(
+                  child: BottomNavigationBar(
                 currentIndex: currentPageIndex,
                 elevation: 0,
                 onTap: destinationSelected,
@@ -295,64 +298,9 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
                     label: 'More',
                   ),
                 ],
-              ),
+              )),
             ),
           ),
-          // NavigationBar(
-          //   onDestinationSelected: destinationSelected,
-          //   selectedIndex: currentPageIndex,
-          //   indicatorColor: Colors.transparent,
-          //   backgroundColor: Colors.white,
-          //   overlayColor:
-          //       MaterialStateColor.resolveWith((states) => Colors.transparent),
-          //   surfaceTintColor: Colors.white,
-          //   destinations: <Widget>[
-          //     const NavigationDestination(
-          //       selectedIcon: Icon(Icons.local_offer_rounded),
-          //       icon: Icon(Icons.local_offer_outlined),
-          //       label: 'Deals',
-          //     ),
-          //     const NavigationDestination(
-          //       selectedIcon: Icon(Icons.store_rounded),
-          //       icon: Icon(Icons.store_outlined),
-          //       label: 'Stores',
-          //     ),
-          //     badges.Badge(
-          //       showBadge: unreadNotificationCount > 0,
-          //       badgeContent: Text(
-          //         unreadNotificationCount.toString(),
-          //         style: const TextStyle(color: Colors.white),
-          //       ),
-          //       position: badges.BadgePosition.topEnd(top: 5, end: 10),
-          //       badgeStyle: const badges.BadgeStyle(
-          //         badgeColor: PZColors.pzOrange,
-          //         elevation: 0,
-          //       ),
-          //       badgeAnimation: const badges.BadgeAnimation.fade(
-          //         animationDuration: Duration(seconds: 1),
-          //         colorChangeAnimationDuration: Duration(seconds: 1),
-          //         loopAnimation: false,
-          //         curve: Curves.fastOutSlowIn,
-          //         colorChangeAnimationCurve: Curves.easeInCubic,
-          //       ),
-          //       child: const NavigationDestination(
-          //         selectedIcon: Icon(Icons.notifications_active_rounded),
-          //         icon: Icon(Icons.notifications_outlined),
-          //         label: 'Notification',
-          //       ),
-          //     ),
-          //     const NavigationDestination(
-          //       selectedIcon: Icon(Icons.campaign_rounded),
-          //       icon: Icon(Icons.campaign_outlined),
-          //       label: 'Deal Alert',
-          //     ),
-          //     const NavigationDestination(
-          //       selectedIcon: Icon(Icons.more_horiz),
-          //       icon: Icon(Icons.more_horiz),
-          //       label: 'More',
-          //     ),
-          //   ],
-          // ),
         ),
       ),
       body: SafeArea(

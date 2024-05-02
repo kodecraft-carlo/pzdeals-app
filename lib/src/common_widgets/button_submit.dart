@@ -8,8 +8,7 @@ class SubmitButtonWidget extends StatefulWidget {
 
   const SubmitButtonWidget({
     super.key,
-    this.buttonLabel =
-        const Text('Submit', style: TextStyle(fontSize: Sizes.fontSizeLarge)),
+    this.buttonLabel = const Text('Submit', style: TextStyle(fontSize: 16)),
     required this.onSubmit,
     this.isEnabled = true,
   });

@@ -168,7 +168,9 @@ class NotificationCardWidget extends ConsumerWidget {
                 const SizedBox(height: Sizes.spaceBetweenSections),
                 Row(
                   children: [
-                    Text(timeago.format(notificationData.timestamp),
+                    Text(
+                        timeago.format(notificationData.timestamp,
+                            clock: DateTime.now()),
                         style: const TextStyle(
                             color: PZColors.pzGrey,
                             fontSize: Sizes.fontSizeXSmall)),

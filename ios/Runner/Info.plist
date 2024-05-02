@@ -26,7 +26,7 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.pzdeals.app</string>
+			<string>com.app.pzdeals</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>pzdealsapp</string>
@@ -37,14 +37,14 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.629344566477-qt75pqk0jp7o2tr3ahjdhb8mhm8qvpic</string>
+				<string>com.googleusercontent.apps.629344566477-no430ns2jcio4s861rovubq9bgcbd3b9</string>
 			</array>
-    	</dict>
+		</dict>
 	</array>
-	<key>GIDClientID</key>
-	<string>629344566477-qt75pqk0jp7o2tr3ahjdhb8mhm8qvpic.apps.googleusercontent.com</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>GIDClientID</key>
+	<string>629344566477-no430ns2jcio4s861rovubq9bgcbd3b9.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

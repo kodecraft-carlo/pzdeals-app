@@ -25,6 +25,7 @@ class StoreScreenProvider extends ChangeNotifier {
   }
 
   Future<void> refreshStores() async {
+    pageNumber = 1;
     try {
       _stores.clear();
       // _stores = await _storeSvc.getCachedStores(_boxName);

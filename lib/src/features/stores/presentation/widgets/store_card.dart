@@ -107,7 +107,6 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
 
     if (widget.storeData.assetSourceType == 'network') {
       if (_isSvgImage(widget.storeData.storeAssetImage)) {
-        debugPrint('svg: ${widget.storeData.storeAssetImage}');
         try {
           imageWidget = SvgPicture.network(
             widget.storeData.storeAssetImage,

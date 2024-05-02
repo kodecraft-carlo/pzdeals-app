@@ -34,9 +34,12 @@ class DisplayStores extends StatelessWidget {
           itemBuilder: (context, index) {
             if (index == 0) {
               return StoreCardWidget(storeData: pzDeals);
-            } else {
+            } else if (storedata.isNotEmpty) {
               final store = storedata[index - 1];
               return StoreCardWidget(storeData: store);
+            } else {
+              // Return an empty container if storedata is empty
+              return Container();
             }
           },
         ));

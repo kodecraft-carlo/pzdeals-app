@@ -118,10 +118,7 @@ class MainAppState extends ConsumerState<MainApp>
     handleLinkData(data);
     FirebaseDynamicLinks.instance.onLink.listen(
       (pendingDynamicLinkData) {
-        debugPrint('listening to dynamic links');
-        if (pendingDynamicLinkData != null) {
-          handleLinkData(pendingDynamicLinkData);
-        }
+        handleLinkData(pendingDynamicLinkData);
       },
     ).onError((error) {
       debugPrint('error listening to dynamic links: $error');

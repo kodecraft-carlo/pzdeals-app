@@ -95,7 +95,9 @@ class FirebaseMessagingApi {
       requestSoundPermission: true,
       requestAlertPermission: true,
       onDidReceiveLocalNotification: (id, title, body, payload) {
-        return;
+        debugPrint(
+            'Local Notification received -- onDidReceiveLocalNotification');
+        debugPrint('id: $id, title: $title, body: $body, payload: $payload');
       },
     );
     const android = AndroidInitializationSettings('@drawable/ic_launcher');
