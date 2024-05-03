@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -25,7 +26,7 @@ class FirebaseMessagingApi {
 
   final _localNotifications = FlutterLocalNotificationsPlugin();
 
-  AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
+  final AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
 
   void handleMessage(RemoteMessage? message) {
     debugPrint('handleMessage called with message: $message');
@@ -49,9 +50,10 @@ class FirebaseMessagingApi {
           icon: '@drawable/ic_launcher',
           importance: _androidChannel.importance),
       iOS: const DarwinNotificationDetails(
-        presentAlert: true,
-        presentSound: true,
-      ),
+          presentAlert: true,
+          presentSound: true,
+          presentBanner: true,
+          attachments: [DarwinNotificationAttachment('')]),
     );
     await _localNotifications.show(
         notificationId, title, body, notificationDetails,
@@ -80,15 +82,26 @@ class FirebaseMessagingApi {
         final newTitle = addNotificationTypeToTitle(
             message.data['alert_type'] ?? '', notification.title ?? '');
 
-        if (_appLifecycleState != AppLifecycleState.resumed) {
+        //add platform check
+        if (Platform.isAndroid) {
+          debugPrint('foreground notification received on android');
           showNotification(
             notificationId: message.hashCode,
             title: newTitle,
             body: message.notification!.body ?? '',
             payload: jsonEncode(message.data),
           );
+        } else {
+          if (_appLifecycleState != AppLifecycleState.resumed) {
+            debugPrint('foreground notification received on ios');
+            showNotification(
+              notificationId: message.hashCode,
+              title: newTitle,
+              body: message.notification!.body ?? '',
+              payload: jsonEncode(message.data),
+            );
+          }
         }
-        // }
         storeNotification(message);
       }
     });

@@ -119,10 +119,10 @@ class NotificationListNotifier extends ChangeNotifier {
 
   Future<void> removeNotification(String notifId) async {
     try {
-      await _notifService.deleteNotification(notifId, _boxName);
       _notifications.removeWhere((element) => element.id == notifId);
       _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
+      await _notifService.deleteNotification(notifId, _boxName);
     } catch (e) {
       debugPrint('error removing bookmark: $e');
     }
@@ -145,10 +145,8 @@ class NotificationListNotifier extends ChangeNotifier {
           _notifications.firstWhere((element) => element.id == notifId);
       notif.isRead = true;
       _unreadCount = await getUnreadNotificationsCount();
-
-      await _notifService.updateNotifications(notif, notifId, _boxName);
-
       notifyListeners();
+      await _notifService.updateNotifications(notif, notifId, _boxName);
     } catch (e) {
       debugPrint('error marking as read: $e');
     }
