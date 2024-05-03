@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:io' show Platform;
 
 class MaterialNavigateScreen extends StatelessWidget {
   final Widget childWidget;
@@ -12,10 +14,15 @@ class MaterialNavigateScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => destinationScreen,
-            ));
+          context,
+          Platform.isIOS
+              ? CupertinoPageRoute(
+                  builder: (context) => destinationScreen,
+                )
+              : MaterialPageRoute(
+                  builder: (context) => destinationScreen,
+                ),
+        );
       },
       child: childWidget,
     );
