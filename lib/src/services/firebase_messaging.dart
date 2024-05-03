@@ -131,8 +131,10 @@ class FirebaseMessagingApi {
     });
 
     final platform = _localNotifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()!;
-    await platform.createNotificationChannel(_androidChannel);
+        AndroidFlutterLocalNotificationsPlugin>();
+    if (platform != null) {
+      await platform.createNotificationChannel(_androidChannel);
+    }
 
     tz.initializeTimeZones();
   }

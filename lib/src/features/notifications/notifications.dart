@@ -152,6 +152,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
               children: [
                 Row(
                   children: <Widget>[

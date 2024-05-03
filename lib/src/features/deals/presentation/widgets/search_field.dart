@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_deals.dart';
 import 'package:pzdeals/src/features/deals/state/provider_search.dart';
+import 'dart:io' show Platform;
 
 class HomescreenSearchFieldWidget extends ConsumerWidget {
   const HomescreenSearchFieldWidget({super.key, required this.hintText});

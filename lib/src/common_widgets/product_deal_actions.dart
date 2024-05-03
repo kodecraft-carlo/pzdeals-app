@@ -12,6 +12,7 @@ import 'package:pzdeals/src/services/email_service.dart';
 import 'package:pzdeals/src/services/firebase_dynamiclink.dart';
 import 'package:pzdeals/src/services/products_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
+import 'package:pzdeals/src/state/bookmarks_provider.dart';
 import 'package:pzdeals/src/state/productlikes_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -168,8 +169,9 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                       },
                     ),
                     IconButton(
-                      icon: bookmarkState
-                              .isBookmarked(widget.productData.productId)
+                      icon: authUserDataState.isAuthenticated == true &&
+                              bookmarkState
+                                  .isBookmarked(widget.productData.productId)
                           ? const Icon(
                               Icons.bookmark_added_rounded,
                               color: PZColors.pzOrange,

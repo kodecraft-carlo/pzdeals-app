@@ -26,7 +26,7 @@ class BookmarkedProductsNotifier extends ChangeNotifier {
     _userUID = uid;
     _boxName = '${_userUID}_bookmarks';
     _bookmarkedProductsBox = '${_userUID}_bookmarked_products';
-    // _loadBookmarks();
+    _loadBookmarks();
   }
 
   Future<void> loadCachedBookmarks() async {

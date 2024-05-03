@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
 class SearchCancelWidget extends StatelessWidget {
@@ -8,8 +9,11 @@ class SearchCancelWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => destinationWidget)),
+      onTap: () {
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => destinationWidget));
+      },
       child: const Text(
         "Cancel",
         style: TextStyle(

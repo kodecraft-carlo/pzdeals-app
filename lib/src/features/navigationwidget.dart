@@ -159,6 +159,9 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
       ref.read(tabFrontPageProvider).refresh();
       dealsKey.currentState?.setTabIndex(1);
     }
+    if (index == 2) {
+      ref.read(notificationsProvider).refreshNotification();
+    }
     setState(() {
       currentPageIndex = index;
     });
@@ -273,8 +276,9 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
                         elevation: 0,
                       ),
                       badgeAnimation: const badges.BadgeAnimation.fade(
-                        animationDuration: Duration(seconds: 1),
-                        colorChangeAnimationDuration: Duration(seconds: 1),
+                        animationDuration: Duration(milliseconds: 200),
+                        colorChangeAnimationDuration:
+                            Duration(milliseconds: 200),
                         loopAnimation: false,
                         curve: Curves.fastOutSlowIn,
                         colorChangeAnimationCurve: Curves.easeInCubic,

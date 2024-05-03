@@ -85,9 +85,9 @@ final bookmarkedproductsProvider =
     ChangeNotifierProvider<BookmarkedProductsNotifier>((ref) {
   final bookmarksNotifier = BookmarkedProductsNotifier();
 
-  ref.onDispose(() {
-    bookmarksNotifier.dispose();
-  });
+  // ref.onDispose(() {
+  //   bookmarksNotifier.dispose();
+  // });
 
   if (ref.watch(authUserDataProvider).isAuthenticated) {
     bookmarksNotifier.setUserUID(ref.read(authUserDataProvider).userData!.uid);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/actions/material_navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/search_cancel.dart';
@@ -68,29 +69,38 @@ class SearchDealScreenState extends ConsumerState<SearchDealScreen> {
             builder: (context, constraints) {
               final authUserDataState = ref.watch(authUserDataProvider);
               if (authUserDataState.isAuthenticated == true) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                   child: Column(children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Saved Keywords",
+                        const Text("Saved Keywords",
                             style: TextStyle(
                                 fontSize: Sizes.fontSizeMedium,
                                 fontWeight: FontWeight.w600,
                                 color: PZColors.pzBlack)),
-                        MaterialNavigateScreen(
-                            childWidget: Text("Manage",
-                                style: TextStyle(
-                                    fontSize: Sizes.fontSizeMedium,
-                                    fontWeight: FontWeight.w600,
-                                    color: PZColors.pzOrange)),
-                            destinationScreen: NavigationWidget(
-                              initialPageIndex: 3,
-                            )),
+                        GestureDetector(
+                          child: const Text("Manage",
+                              style: TextStyle(
+                                  fontSize: Sizes.fontSizeMedium,
+                                  fontWeight: FontWeight.w600,
+                                  color: PZColors.pzOrange)),
+                          onTap: () {
+                            SystemChannels.textInput
+                                .invokeMethod('TextInput.hide');
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return const NavigationWidget(
+                                initialPageIndex: 3,
+                              );
+                            }));
+                          },
+                        ),
                       ],
                     ),
-                    Row(
+                    const Row(
                       children: [
                         Expanded(
                           child: ChipSavedKeywords(
