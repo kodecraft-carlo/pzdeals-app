@@ -25,6 +25,8 @@ class FirebaseMessagingApi {
 
   final _localNotifications = FlutterLocalNotificationsPlugin();
 
+  AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
+
   void handleMessage(RemoteMessage? message) {
     debugPrint('handleMessage called with message: $message');
     if (message == null) return;
@@ -78,12 +80,14 @@ class FirebaseMessagingApi {
         final newTitle = addNotificationTypeToTitle(
             message.data['alert_type'] ?? '', notification.title ?? '');
 
-        showNotification(
-          notificationId: notification.hashCode,
-          title: newTitle,
-          body: notification.body ?? '',
-          payload: jsonEncode(message.toMap()),
-        );
+        if (_appLifecycleState != AppLifecycleState.resumed) {
+          showNotification(
+            notificationId: message.hashCode,
+            title: newTitle,
+            body: message.notification!.body ?? '',
+            payload: jsonEncode(message.data),
+          );
+        }
         // }
         storeNotification(message);
       }

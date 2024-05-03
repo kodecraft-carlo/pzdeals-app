@@ -21,7 +21,7 @@ class NotificationService {
             .doc(user?.uid)
             .collection('notification')
             .orderBy('timestamp', descending: true)
-            .limit(10)
+            .limit(20)
             .get();
         if (snapshot.docs.isNotEmpty) {
           // _cacheNotifications(snapshot.docs, boxName);
@@ -48,7 +48,7 @@ class NotificationService {
             .collection('notification')
             .orderBy('timestamp', descending: true)
             .startAfterDocument(lastDoc)
-            .limit(10)
+            .limit(20)
             .get();
         if (snapshot.docs.isNotEmpty) {
           // _cacheNotifications(snapshot.docs, boxName);
