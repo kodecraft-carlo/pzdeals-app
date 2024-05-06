@@ -11,8 +11,12 @@ class SearchCancelWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         SystemChannels.textInput.invokeMethod('TextInput.hide');
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => destinationWidget));
+        Future.delayed(const Duration(milliseconds: 350), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => destinationWidget),
+          );
+        });
       },
       child: const Text(
         "Cancel",

@@ -8,6 +8,7 @@ import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_de
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/deals/state/provider_filters.dart';
 import 'package:pzdeals/src/features/deals/state/provider_search.dart';
+import 'dart:io' show Platform;
 
 final searchFilterProvider = ChangeNotifierProvider<SearchFilterNotifier>(
     (ref) => SearchFilterNotifier());
@@ -143,8 +144,12 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
         title: Row(
           children: [
             GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const SearchDealScreen())),
+              onTap: () {
+                Platform.isAndroid
+                    ? Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const SearchDealScreen()))
+                    : Navigator.of(context).pop();
+              },
               child: const Icon(Icons.arrow_back_ios_new),
             ),
             const SizedBox(width: Sizes.spaceBetweenContent),
@@ -161,18 +166,20 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
           Padding(
               padding: const EdgeInsets.only(right: Sizes.paddingRight),
               child: GestureDetector(
-                onTap: () {
-                  if (!searchFilterState.isFilterApplied) {
-                    ref.read(searchFilterProvider).resetFilter();
-                  }
-                  showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      enableDrag: true,
-                      showDragHandle: true,
-                      useSafeArea: true,
-                      builder: (context) => buildSheet(context));
-                },
+                onTap: searchState.products.isNotEmpty
+                    ? () {
+                        if (!searchFilterState.isFilterApplied) {
+                          ref.read(searchFilterProvider).resetFilter();
+                        }
+                        showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            enableDrag: true,
+                            showDragHandle: true,
+                            useSafeArea: true,
+                            builder: (context) => buildSheet(context));
+                      }
+                    : null,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -182,14 +189,21 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
                             Icons.filter_alt,
                             color: PZColors.pzOrange,
                           )
-                        : const Icon(
-                            Icons.filter_alt_outlined,
-                            color: PZColors.pzOrange,
-                          ),
-                    const Text(
+                        : searchState.products.isEmpty
+                            ? const Icon(
+                                Icons.filter_alt_outlined,
+                                color: PZColors.pzGrey,
+                              )
+                            : const Icon(
+                                Icons.filter_alt_outlined,
+                                color: PZColors.pzOrange,
+                              ),
+                    Text(
                       "Filter",
                       style: TextStyle(
-                          color: PZColors.pzOrange,
+                          color: searchState.products.isEmpty
+                              ? PZColors.pzGrey
+                              : PZColors.pzOrange,
                           fontSize: Sizes.fontSizeXSmall,
                           fontWeight: FontWeight.w400),
                     )
@@ -198,125 +212,130 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
               )),
         ],
       ),
-      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-          child: Text.rich(
-            TextSpan(
-              text: "Search result for '",
-              style: const TextStyle(
-                fontSize: Sizes.bodyFontSize,
-                fontWeight: FontWeight.w500,
-              ),
-              children: <TextSpan>[
-                TextSpan(
-                  text: searchValue,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
-                ),
-                const TextSpan(
-                  text: "'",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: Sizes.spaceBetweenContent),
-        if (searchFilterState.isFilterApplied)
+      body: Align(
+        alignment: Alignment.center,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  //Stores
-                  searchFilterState.selectedStoreIds.isNotEmpty
-                      ? const Text(
-                          "Store: ",
-                          style: TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        )
-                      : const SizedBox(),
-                  searchFilterState.selectedStoreIds.isNotEmpty
-                      ? Text(
-                          searchFilterState.selectedStoreIds
-                              .map((map) => map['store_name'] as String)
-                              .join(', '),
-                          style: const TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                          ),
-                        )
-                      : const SizedBox(),
-                  //Collections
-                  searchFilterState.selectedCollectionIds.isNotEmpty &&
-                          searchFilterState.selectedStoreIds.isNotEmpty
-                      ? const Text(" & ",
-                          style: TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                            fontWeight: FontWeight.w500,
-                          ))
-                      : const SizedBox(),
-                  searchFilterState.selectedCollectionIds.isNotEmpty
-                      ? const Text(
-                          "Collection: ",
-                          style: TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        )
-                      : const SizedBox(),
-                  searchFilterState.selectedCollectionIds.isNotEmpty
-                      ? Text(
-                          searchFilterState.selectedCollectionIds
-                              .map((map) => map['collection_name'] as String)
-                              .join(', '),
-                          style: const TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                          ),
-                        )
-                      : const SizedBox(),
-                  //Price Range
-                  (searchFilterState.selectedCollectionIds.isNotEmpty ||
-                              searchFilterState.selectedStoreIds.isNotEmpty) &&
-                          searchFilterState.minAmount > 0 &&
-                          searchFilterState.maxAmount > 0
-                      ? const Text(" & ",
-                          style: TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                            fontWeight: FontWeight.w500,
-                          ))
-                      : const SizedBox(),
-                  searchFilterState.minAmount > 0 &&
-                          searchFilterState.maxAmount > 0
-                      ? const Text(
-                          "Price Range: ",
-                          style: TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        )
-                      : const SizedBox(),
-                  searchFilterState.minAmount > 0 &&
-                          searchFilterState.maxAmount > 0
-                      ? Text(
-                          '\$${searchFilterState.minAmount} ${searchFilterState.maxAmount == 100000000000 ? 'up' : '- \$${searchFilterState.maxAmount}'}',
-                          style: const TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                          ),
-                        )
-                      : const SizedBox(),
+            child: Text.rich(
+              TextSpan(
+                text: "Search result for '",
+                style: const TextStyle(
+                  fontSize: Sizes.bodyFontSize,
+                  fontWeight: FontWeight.w500,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: searchValue,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontStyle: FontStyle.italic),
+                  ),
+                  const TextSpan(
+                    text: "'",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-        const SizedBox(height: Sizes.spaceBetweenSections),
-        searchResultWidget,
-      ]),
+          const SizedBox(height: Sizes.spaceBetweenContent),
+          if (searchFilterState.isFilterApplied)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    //Stores
+                    searchFilterState.selectedStoreIds.isNotEmpty
+                        ? const Text(
+                            "Store: ",
+                            style: TextStyle(
+                              fontSize: Sizes.bodyFontSize,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        : const SizedBox(),
+                    searchFilterState.selectedStoreIds.isNotEmpty
+                        ? Text(
+                            searchFilterState.selectedStoreIds
+                                .map((map) => map['store_name'] as String)
+                                .join(', '),
+                            style: const TextStyle(
+                              fontSize: Sizes.bodyFontSize,
+                            ),
+                          )
+                        : const SizedBox(),
+                    //Collections
+                    searchFilterState.selectedCollectionIds.isNotEmpty &&
+                            searchFilterState.selectedStoreIds.isNotEmpty
+                        ? const Text(" & ",
+                            style: TextStyle(
+                              fontSize: Sizes.bodyFontSize,
+                              fontWeight: FontWeight.w500,
+                            ))
+                        : const SizedBox(),
+                    searchFilterState.selectedCollectionIds.isNotEmpty
+                        ? const Text(
+                            "Collection: ",
+                            style: TextStyle(
+                              fontSize: Sizes.bodyFontSize,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        : const SizedBox(),
+                    searchFilterState.selectedCollectionIds.isNotEmpty
+                        ? Text(
+                            searchFilterState.selectedCollectionIds
+                                .map((map) => map['collection_name'] as String)
+                                .join(', '),
+                            style: const TextStyle(
+                              fontSize: Sizes.bodyFontSize,
+                            ),
+                          )
+                        : const SizedBox(),
+                    //Price Range
+                    (searchFilterState.selectedCollectionIds.isNotEmpty ||
+                                searchFilterState
+                                    .selectedStoreIds.isNotEmpty) &&
+                            searchFilterState.minAmount > 0 &&
+                            searchFilterState.maxAmount > 0
+                        ? const Text(" & ",
+                            style: TextStyle(
+                              fontSize: Sizes.bodyFontSize,
+                              fontWeight: FontWeight.w500,
+                            ))
+                        : const SizedBox(),
+                    searchFilterState.minAmount > 0 &&
+                            searchFilterState.maxAmount > 0
+                        ? const Text(
+                            "Price Range: ",
+                            style: TextStyle(
+                              fontSize: Sizes.bodyFontSize,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        : const SizedBox(),
+                    searchFilterState.minAmount > 0 &&
+                            searchFilterState.maxAmount > 0
+                        ? Text(
+                            '\$${searchFilterState.minAmount} ${searchFilterState.maxAmount == 100000000000 ? 'up' : '- \$${searchFilterState.maxAmount}'}',
+                            style: const TextStyle(
+                              fontSize: Sizes.bodyFontSize,
+                            ),
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
+              ),
+            ),
+          const SizedBox(height: Sizes.spaceBetweenSections),
+          searchResultWidget,
+        ]),
+      ),
     );
   }
 }

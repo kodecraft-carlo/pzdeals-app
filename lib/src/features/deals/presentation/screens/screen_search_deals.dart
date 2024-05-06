@@ -10,7 +10,7 @@ import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_re
 import 'package:pzdeals/src/features/deals/presentation/widgets/search_discovery.dart';
 import 'package:pzdeals/src/features/deals/state/provider_search.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
-
+import 'dart:io' show Platform;
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class SearchDealScreen extends ConsumerStatefulWidget {
@@ -20,12 +20,30 @@ class SearchDealScreen extends ConsumerStatefulWidget {
 }
 
 class SearchDealScreenState extends ConsumerState<SearchDealScreen> {
+  FocusNode focusNode = FocusNode();
   void searchfieldSubmit(String value) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return SearchResultScreen(
-        searchKey: value,
-      );
-    }));
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+
+    Future.delayed(Duration(milliseconds: Platform.isAndroid ? 100 : 400), () {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return SearchResultScreen(
+          searchKey: value,
+        );
+      }));
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    requestFocus();
+  }
+
+  //request focus after 500ms
+  Future<void> requestFocus() async {
+    await Future.delayed(
+        Duration(milliseconds: Platform.isAndroid ? 100 : 500));
+    focusNode.requestFocus();
   }
 
   @override
@@ -44,7 +62,8 @@ class SearchDealScreenState extends ConsumerState<SearchDealScreen> {
                 child: SearchFieldWidget(
                   hintText: "Search deals",
                   destinationScreen: const SearchResultScreen(),
-                  autoFocus: true,
+                  autoFocus: false,
+                  focusNode: focusNode,
                   textValue: searchState.searchKey,
                   onSubmitted: () {
                     searchfieldSubmit(searchState.searchKey);
@@ -91,12 +110,17 @@ class SearchDealScreenState extends ConsumerState<SearchDealScreen> {
                           onTap: () {
                             SystemChannels.textInput
                                 .invokeMethod('TextInput.hide');
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return const NavigationWidget(
-                                initialPageIndex: 3,
-                              );
-                            }));
+                            Future.delayed(
+                                Duration(
+                                    milliseconds:
+                                        Platform.isAndroid ? 100 : 400), () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return const NavigationWidget(
+                                  initialPageIndex: 3,
+                                );
+                              }));
+                            });
                           },
                         ),
                       ],

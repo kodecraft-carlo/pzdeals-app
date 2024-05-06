@@ -6,7 +6,9 @@ class NotificationMapper {
     try {
       final json = payload;
       String imageSrc = '';
-      if (json.notification.android != null) {
+      if (json.data["image_url"] != null) {
+        imageSrc = json.data["image_url"] ?? '';
+      } else if (json.notification.android != null) {
         imageSrc = json.notification.android.imageUrl ?? '';
       } else if (json.notification.apple != null) {
         imageSrc = json.notification.apple.imageUrl ?? '';

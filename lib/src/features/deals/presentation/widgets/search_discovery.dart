@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
 import 'package:pzdeals/src/constants/index.dart';
@@ -25,13 +26,16 @@ class SearchDiscoveryWidget extends ConsumerWidget {
         final searchDiscovery = searchDiscoveryData[index];
         return GestureDetector(
           onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SearchResultScreen(
-                    searchKey: searchDiscovery.title,
-                  ),
-                ));
+            SystemChannels.textInput.invokeMethod('TextInput.hide');
+            Future.delayed(const Duration(milliseconds: 300), () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SearchResultScreen(
+                      searchKey: searchDiscovery.title,
+                    ),
+                  ));
+            });
           },
           child: searchDiscoveryCard(
             searchDiscovery.title,

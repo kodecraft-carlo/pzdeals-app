@@ -71,6 +71,7 @@ class FirebaseMessagingApi {
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
+      debugPrint('message: ${message.toMap()}');
       if (notification == null) {
         debugPrint('message: ${message.toMap()}');
         if (message.data['alert_type'] == 'scheduled_reminder' &&

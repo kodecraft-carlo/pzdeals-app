@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_result.dart';
+import 'dart:io' show Platform;
 
 class FilterByPriceWidget extends ConsumerStatefulWidget {
   const FilterByPriceWidget({super.key});
@@ -68,6 +70,8 @@ class _FilterByPriceWidgetState extends ConsumerState<FilterByPriceWidget> {
                         .read(searchFilterProvider)
                         .setMinAmount(int.tryParse(minAmount.text) ?? 0);
                   },
+                  onTapOutside: (event) =>
+                      SystemChannels.textInput.invokeMethod('TextInput.hide'),
                   onChanged: (value) => ref
                       .read(searchFilterProvider)
                       .setMinAmount(int.tryParse(value) ?? 0),
@@ -98,7 +102,11 @@ class _FilterByPriceWidgetState extends ConsumerState<FilterByPriceWidget> {
                   focusNode: maxFocus,
                   textInputAction: TextInputAction.done,
                   keyboardType: TextInputType.number,
-                  onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).unfocus();
+                  },
+                  onTapOutside: (event) =>
+                      SystemChannels.textInput.invokeMethod('TextInput.hide'),
                   onEditingComplete: () => ref
                       .read(searchFilterProvider)
                       .setMaxAmount(maxAmount.text != '~'

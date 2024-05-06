@@ -10,13 +10,15 @@ class SearchFieldWidget extends StatefulWidget {
       this.textValue = '',
       this.destinationScreen,
       this.autoFocus = false,
-      this.onSubmitted});
+      this.onSubmitted,
+      this.focusNode});
 
   final String hintText;
   final String textValue;
   final Widget? destinationScreen;
   final bool autoFocus;
   final VoidCallback? onSubmitted;
+  final FocusNode? focusNode;
   @override
   SearchFieldWidgetState createState() => SearchFieldWidgetState();
 }
@@ -30,6 +32,7 @@ class SearchFieldWidgetState extends State<SearchFieldWidget> {
     return Consumer(builder: (context, ref, child) {
       return TextField(
         autofocus: widget.autoFocus,
+        focusNode: widget.focusNode,
         controller: textController,
         decoration: InputDecoration(
           prefixIcon: const Icon(
