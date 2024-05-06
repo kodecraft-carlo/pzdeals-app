@@ -121,6 +121,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             ? settingsState.settingsData!.percentageThreshold.toString()
             : '10';
     return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
       child: Padding(
         padding: const EdgeInsets.all(Sizes.paddingAll),
         child: Column(

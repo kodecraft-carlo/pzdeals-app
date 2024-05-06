@@ -31,6 +31,7 @@ class SearchDealScreenState extends ConsumerState<SearchDealScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: PZColors.pzWhite,

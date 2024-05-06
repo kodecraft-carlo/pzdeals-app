@@ -99,6 +99,7 @@ class DealsTabControllerWidgetState
       length: 3,
       initialIndex: 1,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
         body: NestedScrollView(
             key: globalKey,

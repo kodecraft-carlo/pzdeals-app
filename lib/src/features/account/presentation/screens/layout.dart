@@ -10,6 +10,7 @@ class LayoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
       child: Padding(
         padding: EdgeInsets.all(Sizes.paddingAll),
         child: Column(

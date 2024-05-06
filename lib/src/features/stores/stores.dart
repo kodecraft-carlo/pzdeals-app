@@ -128,6 +128,7 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
                       )));
         },
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           body: NestedScrollView(
             controller: _scrollController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
