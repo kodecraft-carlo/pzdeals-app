@@ -32,6 +32,7 @@ NotificationService notifService = NotificationService();
 FirebaseMessagingApi firebaseMessagingApi = FirebaseMessagingApi();
 @pragma('vm:entry-point')
 Future<void> _handleBackgroundMessage(RemoteMessage message) async {
+  debugPrint('background message received');
   await Firebase.initializeApp();
   debugPrint('notification data: ${message.toMap()}');
   final notification = message.notification;

@@ -144,7 +144,7 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                   ),
                 ],
               ),
-              Expanded(
+              Flexible(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.center,

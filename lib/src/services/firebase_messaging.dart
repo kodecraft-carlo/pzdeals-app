@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:hive/hive.dart';
 import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
@@ -32,7 +32,7 @@ class FirebaseMessagingApi {
     debugPrint('handleMessage called with message: $message');
     if (message == null) return;
     debugPrint('handleMessage called with message: $message');
-    storeNotification(message);
+    // storeNotification(message);
 
     final dynamic notifdata = message.toMap();
     navigateToScreens(notifdata);
@@ -147,6 +147,7 @@ class FirebaseMessagingApi {
   }
 
   Future<void> storeNotification(dynamic message) async {
+    await Firebase.initializeApp();
     notifService.addNotification(
         NotificationMapper.mapToNotificationData(message), 'notifications');
     debugPrint('Notification added');

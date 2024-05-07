@@ -197,6 +197,7 @@ class _AlertsManagementScreenState
             ];
           },
           body: TabBarView(
+            // physics: const NeverScrollableScrollPhysics(),
             children: <Widget>[
               Container(
                   margin:
@@ -240,35 +241,37 @@ class _AlertsManagementScreenState
                       ),
                     ],
                   )),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: Sizes.spaceBetweenSections),
-                    const Text("Category Alerts",
+              SingleChildScrollView(
+                child: Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: Sizes.spaceBetweenSections),
+                      const Text("Category Alerts",
+                          style: TextStyle(
+                              fontSize: Sizes.fontSizeMedium,
+                              fontWeight: FontWeight.w600,
+                              color: PZColors.pzBlack)),
+                      const Text(
+                        "Toggle on category to get notified on new category deals",
                         style: TextStyle(
-                            fontSize: Sizes.fontSizeMedium,
-                            fontWeight: FontWeight.w600,
-                            color: PZColors.pzBlack)),
-                    const Text(
-                      "Toggle on category to get notified on new category deals",
-                      style: TextStyle(
-                          fontSize: Sizes.bodyFontSize,
-                          fontWeight: FontWeight.w400,
-                          color: PZColors.pzBlack),
-                    ),
-                    const SizedBox(height: Sizes.spaceBetweenSections),
-                    Expanded(
-                      child: CategoryNotificationToggleList(
-                        collections: foryouState.collections,
+                            fontSize: Sizes.bodyFontSize,
+                            fontWeight: FontWeight.w400,
+                            color: PZColors.pzBlack),
                       ),
-                    )
-                  ],
+                      const SizedBox(height: Sizes.spaceBetweenSections),
+                      Flexible(
+                        child: CategoryNotificationToggleList(
+                          collections: foryouState.collections,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),

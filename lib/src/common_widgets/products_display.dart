@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/product_deal_card.dart';
@@ -52,31 +53,58 @@ class ProductsDisplay extends StatelessWidget {
     );
   }
 
+  // Widget buildGridView(itemWidth) {
+  //   return RefreshIndicator.adaptive(
+  //     onRefresh: onRefresh ?? () async {},
+  //     color: PZColors.pzOrange,
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(Sizes.paddingAllSmall),
+  //       child: StaggeredGridView.countBuilder(
+  //         crossAxisCount: 2,
+  //         itemCount: productData.length,
+  //         controller: scrollController,
+  //         shrinkWrap: true,
+  //         mainAxisSpacing: 3,
+  //         crossAxisSpacing: 15,
+  //         key: PageStorageKey<String>(scrollKey ?? 'grid'),
+  //         staggeredTileBuilder: (int index) => const StaggeredTile.fit(1),
+  //         itemBuilder: (BuildContext context, int index) {
+  //           final product = productData[index];
+  //           return ProductDealcard(
+  //             productData: product,
+  //           );
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget buildGridView(itemWidth) {
     return RefreshIndicator.adaptive(
-        onRefresh: onRefresh ?? () async {},
-        color: PZColors.pzOrange,
-        child: GridView.builder(
-          shrinkWrap: true,
-          controller: scrollController,
-          key: PageStorageKey<String>(scrollKey ?? 'grid'),
-          padding: const EdgeInsets.only(
-            top: Sizes.paddingTopSmall,
-            left: Sizes.paddingLeft,
-            right: Sizes.paddingRight,
-            bottom: Sizes.paddingBottom,
-          ),
-          itemCount: productData.length,
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: itemWidth,
-              crossAxisSpacing: 15,
-              childAspectRatio: .47),
-          itemBuilder: (BuildContext context, int index) {
-            final product = productData[index];
-            return ProductDealcard(
-              productData: product,
-            );
-          },
-        ));
+      onRefresh: onRefresh ?? () async {},
+      color: PZColors.pzOrange,
+      child: GridView.builder(
+        shrinkWrap: true,
+        controller: scrollController,
+        key: PageStorageKey<String>(scrollKey ?? 'grid'),
+        padding: const EdgeInsets.only(
+          top: Sizes.paddingTopSmall,
+          left: Sizes.paddingLeft,
+          right: Sizes.paddingRight,
+          bottom: Sizes.paddingBottom,
+        ),
+        itemCount: productData.length,
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: itemWidth,
+            crossAxisSpacing: 15,
+            childAspectRatio: .47),
+        itemBuilder: (BuildContext context, int index) {
+          final product = productData[index];
+          return ProductDealcard(
+            productData: product,
+          );
+        },
+      ),
+    );
   }
 }

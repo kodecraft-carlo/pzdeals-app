@@ -51,6 +51,7 @@ class _CategoryNotificationToggleListState
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
         key: const PageStorageKey<String>('category_notification_toggle_list'),
         shrinkWrap: true,
         itemCount: widget.collections.length,
