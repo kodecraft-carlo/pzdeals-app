@@ -121,26 +121,22 @@ class NotificationCardWidget extends ConsumerWidget {
             ),
             isThreeLine: true,
             leading: CircleAvatar(
-                backgroundColor: PZColors.pzOrange,
-                child: Transform.rotate(
-                  angle: notificationData.imageUrl != '' ? 0 : -7,
-                  child: notificationData.imageUrl != ''
-                      ? CachedNetworkImage(
-                          imageUrl: notificationData.imageUrl,
-                          errorWidget: (context, url, error) =>
-                              Transform.rotate(
-                            angle: -7,
-                            child: const Icon(
-                              Icons.campaign_rounded,
-                              color: PZColors.pzWhite,
-                            ),
-                          ),
-                        )
-                      : const Icon(
-                          Icons.campaign_rounded,
-                          color: PZColors.pzWhite,
-                        ),
-                )),
+              backgroundColor: PZColors.pzOrange,
+              backgroundImage: notificationData.imageUrl != ''
+                  ? CachedNetworkImageProvider(
+                      notificationData.imageUrl,
+                    )
+                  : null,
+              child: Transform.rotate(
+                angle: notificationData.imageUrl != '' ? 0 : -7,
+                child: notificationData.imageUrl != ''
+                    ? null
+                    : const Icon(
+                        Icons.campaign_rounded,
+                        color: PZColors.pzWhite,
+                      ),
+              ),
+            ),
             title: Text(
               notificationData.title,
               style: const TextStyle(

@@ -40,6 +40,9 @@ class ProductDealcardData {
   @HiveField(11)
   final String? barcodeLink;
 
+  @HiveField(12)
+  final String? tagDealDescription;
+
   ProductDealcardData(
       {required this.productId,
       required this.productName,
@@ -52,5 +55,6 @@ class ProductDealcardData {
       this.isProductNoPrice = false,
       this.isProductExpired = false,
       this.productDealDescription = '',
-      required this.barcodeLink});
+      required this.barcodeLink,
+      this.tagDealDescription = ''});
 }

@@ -163,6 +163,38 @@ class ProductDealDescriptionState
             widget.productData.isProductExpired == true)
           const ExpiredDealBannerWidget(
               message: 'Sorry, this deal has expired'),
+        //Added 05/08/2024 Tag Description
+        widget.productData.tagDealDescription?.isNotEmpty != null &&
+                widget.productData.tagDealDescription != ''
+            ? Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Sizes.paddingAll,
+                      ),
+                      child: Html(
+                        shrinkWrap: true,
+                        data: widget.productData.tagDealDescription,
+                        style: {
+                          "ul": Style(
+                            padding: HtmlPaddings.zero,
+                            margin: Margins.zero,
+                            textAlign: TextAlign.left,
+                          ),
+                          "a": Style(
+                            color: Colors.blue,
+                            textDecoration: TextDecoration.none,
+                          ),
+                        },
+                        onLinkTap: (url, attributes, element) =>
+                            openBrowser(url ?? ''),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : const SizedBox.shrink(),
         widget.productData.productDealDescription != null &&
                 widget.productData.productDealDescription != ''
             ? Row(

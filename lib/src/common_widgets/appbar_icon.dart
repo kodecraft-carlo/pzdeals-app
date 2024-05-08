@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
+import 'dart:io' show Platform;
 
 class AppbarIcon extends StatelessWidget {
   const AppbarIcon({
@@ -10,12 +11,14 @@ class AppbarIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const NavigationWidget(
-                        initialPageIndex: 0,
-                      )));
+          Platform.isAndroid
+              ? Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NavigationWidget(
+                            initialPageIndex: 0,
+                          )))
+              : null;
         },
         child: Image.asset(
           'assets/images/pzdeals.png',

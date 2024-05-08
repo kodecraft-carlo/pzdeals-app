@@ -53,33 +53,35 @@ class ProductsDisplay extends StatelessWidget {
     );
   }
 
-  // Widget buildGridView(itemWidth) {
-  //   return RefreshIndicator.adaptive(
-  //     onRefresh: onRefresh ?? () async {},
-  //     color: PZColors.pzOrange,
-  //     child: Padding(
-  //       padding: const EdgeInsets.all(Sizes.paddingAllSmall),
-  //       child: StaggeredGridView.countBuilder(
-  //         crossAxisCount: 2,
-  //         itemCount: productData.length,
-  //         controller: scrollController,
-  //         shrinkWrap: true,
-  //         mainAxisSpacing: 3,
-  //         crossAxisSpacing: 15,
-  //         key: PageStorageKey<String>(scrollKey ?? 'grid'),
-  //         staggeredTileBuilder: (int index) => const StaggeredTile.fit(1),
-  //         itemBuilder: (BuildContext context, int index) {
-  //           final product = productData[index];
-  //           return ProductDealcard(
-  //             productData: product,
-  //           );
-  //         },
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget buildGridView(itemWidth) {
+    return RefreshIndicator.adaptive(
+      onRefresh: onRefresh ?? () async {},
+      color: PZColors.pzOrange,
+      child: Padding(
+        padding: const EdgeInsets.all(Sizes.paddingAllSmall),
+        child: StaggeredGridView.countBuilder(
+          crossAxisCount: 4,
+          itemCount: productData.length,
+          controller: scrollController,
+          shrinkWrap: true,
+          mainAxisSpacing: 3,
+          crossAxisSpacing: 15,
+          key: PageStorageKey<String>(scrollKey ?? 'grid'),
+          staggeredTileBuilder: (int index) {
+            return const StaggeredTile.fit(2);
+          },
+          itemBuilder: (BuildContext context, int index) {
+            final product = productData[index];
+            return ProductDealcard(
+              productData: product,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildGridView1(itemWidth) {
     return RefreshIndicator.adaptive(
       onRefresh: onRefresh ?? () async {},
       color: PZColors.pzOrange,
