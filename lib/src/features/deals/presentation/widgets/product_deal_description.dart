@@ -171,12 +171,17 @@ class ProductDealDescriptionState
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: Sizes.paddingAll,
+                        horizontal: Sizes.paddingAllSmall,
                       ),
                       child: Html(
                         shrinkWrap: true,
                         data: widget.productData.tagDealDescription,
                         style: {
+                          "body": Style(
+                            padding: HtmlPaddings.zero,
+                            margin: Margins.zero,
+                            textAlign: TextAlign.left,
+                          ),
                           "ul": Style(
                             padding: HtmlPaddings.zero,
                             margin: Margins.zero,

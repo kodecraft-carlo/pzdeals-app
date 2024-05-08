@@ -72,8 +72,11 @@ class ProductsDisplay extends StatelessWidget {
           },
           itemBuilder: (BuildContext context, int index) {
             final product = productData[index];
-            return ProductDealcard(
-              productData: product,
+            return AspectRatio(
+              aspectRatio: .49,
+              child: ProductDealcard(
+                productData: product,
+              ),
             );
           },
         ),

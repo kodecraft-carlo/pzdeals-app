@@ -55,9 +55,9 @@ String extractTagDealDescription(List<dynamic> tagIds) {
       case 'walmart':
         tagDealDescription +=
             '<li>Get free shipping on orders of \$35 or more, or with a <strong><a href="https://fave.co/3n9Mutc" target="_blank">Walmart+</a></strong> subscription.</li>';
-      case 'sold-out':
-        tagDealDescription +=
-            '<li><p>Join our <strong><a href="https://chat.whatsapp.com/FB2m2wn2Eed8X7U1dKvuJQ">WhatsApp</a></strong> or <strong><a href="https://twitter.com/pzdeals">Twitter</a></strong> to be notified when it\'s back!</p></li>';
+      // case 'sold-out':
+      //   tagDealDescription +=
+      //       '<li><p>Join our <strong><a href="https://chat.whatsapp.com/FB2m2wn2Eed8X7U1dKvuJQ">WhatsApp</a></strong> or <strong><a href="https://twitter.com/pzdeals">Twitter</a></strong> to be notified when it\'s back!</p></li>';
       case 'ac':
         tagDealDescription +=
             '<li class="nudge2">Make sure to <span style="font-weight: 600; color:green">clip the coupon</span> from under the price on Amazon.</li>';
