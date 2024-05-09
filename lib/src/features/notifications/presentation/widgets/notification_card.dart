@@ -2,21 +2,76 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
+import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/deals/models/index.dart';
+import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
+import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/notifications/presentation/widgets/notification_dialog.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:badges/badges.dart' as badges;
 
-class NotificationCardWidget extends ConsumerWidget {
+class NotificationCardWidget extends ConsumerStatefulWidget {
   const NotificationCardWidget({super.key, required this.notificationData});
 
   final NotificationData notificationData;
+  @override
+  NotificationCardWidgetState createState() => NotificationCardWidgetState();
+}
+
+class NotificationCardWidgetState
+    extends ConsumerState<NotificationCardWidget> {
+  FetchProductDealService productDealService = FetchProductDealService();
+  void showProductDeal(int productId) {
+    // if (mounted) {
+    // LoadingDialog.show(context);
+    loadProduct(productId).then((product) {
+      // if (mounted) {
+      showDialog(
+        context: context,
+        useRootNavigator: false,
+        barrierDismissible: true,
+        builder: (context) => ScaffoldMessenger(
+          child: Builder(
+            builder: (context) => Scaffold(
+              backgroundColor: Colors.transparent,
+              body: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                behavior: HitTestBehavior.opaque,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: ProductContentDialog(
+                    hasDescription: product.productDealDescription != null &&
+                        product.productDealDescription != '',
+                    productData: product,
+                    content: ProductDealDescription(
+                      snackbarContext: context,
+                      productData: product,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      // LoadingDialog.hide(context);
+      // }
+    });
+    // }
+  }
+
+  Future<ProductDealcardData> loadProduct(int productId) async {
+    final product = await productDealService.fetchProductInfo(productId);
+    return product;
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final data = notificationData.data;
+  Widget build(BuildContext context) {
+    final data = widget.notificationData.data;
+    final notificationData = widget.notificationData;
     return Dismissible(
       key: Key(notificationData.id),
       onDismissed: (direction) {
@@ -49,23 +104,26 @@ class NotificationCardWidget extends ConsumerWidget {
           if (notificationData.data != null || notificationData.data != {}) {
             debugPrint('Notification Data: $data');
             if (data['alert_type'] == 'keyword') {
-              Navigator.of(context).pushNamed('/keyword-deals', arguments: {
-                'title': notificationData.title,
-                'keyword': data['value'],
-                'product_id': data['item_id'] ?? ''
-              });
+              showProductDeal(int.parse(data['item_id']));
+              // Navigator.of(context).pushNamed('/keyword-deals', arguments: {
+              //   'title': notificationData.title,
+              //   'keyword': data['value'],
+              //   'product_id': data['item_id'] ?? ''
+              // });
             } else if (data['alert_type'] == 'percentage') {
-              Navigator.of(context).pushNamed('/percentage-deals', arguments: {
-                'title': notificationData.title,
-                'value': data['value'],
-                'product_id': data['item_id'] ?? ''
-              });
+              showProductDeal(int.parse(data['item_id']));
+              // Navigator.of(context).pushNamed('/percentage-deals', arguments: {
+              //   'title': notificationData.title,
+              //   'value': data['value'],
+              //   'product_id': data['item_id'] ?? ''
+              // });
             } else if (data['alert_type'] == 'price_mistake' ||
                 data['alert_type'] == 'front_page') {
-              Navigator.of(context).pushNamed('/deals', arguments: {
-                'type': 'price_mistake',
-                'product_id': data['id'] ?? ''
-              });
+              showProductDeal(int.parse(data['id']));
+              // Navigator.of(context).pushNamed('/deals', arguments: {
+              //   'type': 'price_mistake',
+              //   'product_id': data['id'] ?? ''
+              // });
             } else if (data['alert_type'] == 'category') {
               Navigator.of(context).pushNamed('/deal-collections', arguments: {
                 'value': data['value'],
@@ -103,7 +161,7 @@ class NotificationCardWidget extends ConsumerWidget {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           color: notificationData.isRead
-              ? PZColors.pzLightGrey.withOpacity(.6)
+              ? PZColors.pzLightGrey.withOpacity(.3)
               : PZColors.pzOrange.withOpacity(.1),
           margin: const EdgeInsets.symmetric(vertical: 5),
           clipBehavior: Clip.hardEdge,
@@ -139,8 +197,10 @@ class NotificationCardWidget extends ConsumerWidget {
             ),
             title: Text(
               notificationData.title,
-              style: const TextStyle(
-                  color: PZColors.pzBlack,
+              style: TextStyle(
+                  color: notificationData.isRead
+                      ? PZColors.pzGrey
+                      : PZColors.pzBlack,
                   fontWeight: FontWeight.w700,
                   fontSize: Sizes.fontSizeSmall),
             ),
@@ -148,8 +208,10 @@ class NotificationCardWidget extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(notificationData.body,
-                    style: const TextStyle(
-                        color: PZColors.pzBlack,
+                    style: TextStyle(
+                        color: notificationData.isRead
+                            ? PZColors.pzGrey
+                            : PZColors.pzBlack,
                         fontSize: Sizes.fontSizeSmall)),
                 const SizedBox(height: Sizes.spaceBetweenContentSmall),
                 notificationData.imageUrl != ''

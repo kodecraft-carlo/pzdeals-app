@@ -9,8 +9,14 @@ import 'package:pzdeals/src/utils/http/http_client.dart';
 
 class NotificationService {
   final _firestoreDb = FirebaseFirestore.instance;
-  User? user = FirebaseAuth.instance.currentUser;
+  User? user;
   final _firebaseMessaging = FirebaseMessaging.instance;
+
+  NotificationService() {
+    FirebaseAuth.instance.authStateChanges().listen((User? currentUser) {
+      user = currentUser;
+    });
+  }
 
   Future<List<DocumentSnapshot>> getInitialNotifications(String boxName) async {
     try {
@@ -24,8 +30,12 @@ class NotificationService {
             .limit(20)
             .get();
         if (snapshot.docs.isNotEmpty) {
+          debugPrint(
+              'getInitialNotifications: ${snapshot.docs.length} notifications');
           // _cacheNotifications(snapshot.docs, boxName);
           return snapshot.docs;
+        } else {
+          debugPrint('getInitialNotifications: No notifications found');
         }
         return [];
       } else {

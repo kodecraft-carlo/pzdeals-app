@@ -18,6 +18,7 @@ import 'package:pzdeals/src/features/notifications/state/notification_provider.d
 import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/features/stores/stores.dart';
 import 'package:pzdeals/src/models/index.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/directus_auth_service.dart';
 import 'package:badges/badges.dart' as badges;
 
@@ -38,6 +39,18 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   FetchProductDealService productDealService = FetchProductDealService();
   final GlobalKey<DealsTabControllerWidgetState> dealsKey =
       GlobalKey<DealsTabControllerWidgetState>();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final userAuthState = ref.watch(authUserDataProvider);
+    final user = userAuthState.userData;
+
+    if (user != null) {
+      updateNotificationsCount(user.uid);
+      ref.read(notificationsProvider).refreshNotification();
+    }
+  }
 
   @override
   void initState() {
@@ -79,29 +92,28 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
         }
       }
     });
+  }
 
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      FirebaseFirestore.instance
-          .collection('notifications')
-          .doc(user.uid)
-          .collection('notification')
-          .snapshots()
-          .listen((QuerySnapshot snapshot) {
-        if (mounted) {
-          ref.read(notificationsProvider).refreshNotification();
-          unreadNotificationCount = 0;
-          snapshot.docs.forEach((doc) {
-            if (doc.exists && doc['isRead'] == false) {
-              unreadNotificationCount++;
-            }
-          });
-          setState(() {
-            unreadNotificationCount = unreadNotificationCount;
-          });
-        }
-      });
-    }
+  void updateNotificationsCount(String userId) {
+    FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(userId)
+        .collection('notification')
+        .snapshots()
+        .listen((QuerySnapshot snapshot) {
+      if (mounted) {
+        unreadNotificationCount = 0;
+        snapshot.docs.forEach((doc) {
+          if (doc.exists && doc['isRead'] == false) {
+            unreadNotificationCount++;
+          }
+        });
+        setState(() {
+          debugPrint('unreadNotificationCount: $unreadNotificationCount');
+          unreadNotificationCount = unreadNotificationCount;
+        });
+      }
+    });
   }
 
   void showProductDeal(int productId) {

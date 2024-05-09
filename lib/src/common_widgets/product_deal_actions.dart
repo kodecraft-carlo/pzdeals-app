@@ -101,114 +101,112 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
         );
       },
     );
-    return widget.productData.isProductExpired != null &&
-            widget.productData.isProductExpired == false
-        ? Container(
-            color: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon:
-                          productLikeState.isLiked(widget.productData.productId)
-                              ? const Icon(
-                                  Icons.thumb_up_alt_rounded,
-                                  color: PZColors.pzOrange,
-                                )
-                              : const Icon(Icons.thumb_up_outlined),
-                      iconSize: Sizes.screenCloseIconSize,
-                      onPressed: () {
-                        productLikeState.addToCachedProducts(
-                            widget.productData.productId, 'like');
-                        if (productLikeState
-                            .isLiked(widget.productData.productId)) {
-                          // showSnackbarWithMessage(
-                          //     context, 'You like this deal!');
-                        }
-                      },
-                    ),
-                    IconButton(
-                      icon: productLikeState
-                              .isDisliked(widget.productData.productId)
-                          ? const Icon(
-                              Icons.thumb_down_alt_rounded,
-                              color: PZColors.pzOrange,
-                            )
-                          : const Icon(Icons.thumb_down_outlined),
-                      iconSize: Sizes.screenCloseIconSize,
-                      onPressed: () {
-                        productLikeState.addToCachedProducts(
-                            widget.productData.productId, 'disliked');
-                        if (productLikeState
-                            .isDisliked(widget.productData.productId)) {
-                          // showSnackbarWithMessage(
-                          //     context, 'You dislike this deal!');
-                        }
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.sell_outlined),
-                      iconSize: Sizes.screenCloseIconSize,
-                      onPressed: () async {
-                        if (mounted) LoadingDialog.show(context);
-                        updateProductStatus(
-                                widget.productData.productId,
-                                'soldout_pending',
-                                widget.productData.productName,
-                                widget.productData.barcodeLink ?? '')
-                            .then((value) {
-                          if (value == true) {
-                            showSnackbarWithMessage(
-                                context, 'Thanks for letting us know!');
-                          }
-                          if (mounted) LoadingDialog.hide(context);
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: authUserDataState.isAuthenticated == true &&
-                              bookmarkState
-                                  .isBookmarked(widget.productData.productId)
-                          ? const Icon(
-                              Icons.bookmark_added_rounded,
-                              color: PZColors.pzOrange,
-                              size: Sizes.screenCloseIconSize,
-                            )
-                          : const Icon(Icons.bookmark_border_outlined),
-                      iconSize: Sizes.screenCloseIconSize,
-                      onPressed: () {
-                        if (authUserDataState.isAuthenticated == false) {
-                          showSnackbarWithAction(
-                              context,
-                              'Please login to bookmark this deal',
-                              gotoLoginScreen,
-                              'Login');
-                          return;
-                        } else {
-                          if (bookmarkState
-                              .isBookmarked(widget.productData.productId)) {
-                            bookmarkState.removeBookmarkLocally(
-                                widget.productData.productId);
-                            // showSnackbarWithMessage(
-                            //     context, 'Removed from bookmarks');
-                          } else {
-                            bookmarkState.addBookmarkLocally(
-                                widget.productData.productId);
-                            // showSnackbarWithMessage(
-                            //     context, 'Added to bookmarks');
-                          }
-                        }
-                      },
-                    ),
-                    shareAction
-                  ],
-                ),
-              ],
-            ),
-          )
-        : const SizedBox.shrink();
+    return
+        // widget.productData.isProductExpired != null &&
+        //         widget.productData.isProductExpired == false
+        //     ?
+        Container(
+      color: Colors.white,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: productLikeState.isLiked(widget.productData.productId)
+                    ? const Icon(
+                        Icons.thumb_up_alt_rounded,
+                        color: PZColors.pzOrange,
+                      )
+                    : const Icon(Icons.thumb_up_outlined),
+                iconSize: Sizes.screenCloseIconSize,
+                onPressed: () {
+                  productLikeState.addToCachedProducts(
+                      widget.productData.productId, 'like');
+                  if (productLikeState.isLiked(widget.productData.productId)) {
+                    // showSnackbarWithMessage(
+                    //     context, 'You like this deal!');
+                  }
+                },
+              ),
+              IconButton(
+                icon: productLikeState.isDisliked(widget.productData.productId)
+                    ? const Icon(
+                        Icons.thumb_down_alt_rounded,
+                        color: PZColors.pzOrange,
+                      )
+                    : const Icon(Icons.thumb_down_outlined),
+                iconSize: Sizes.screenCloseIconSize,
+                onPressed: () {
+                  productLikeState.addToCachedProducts(
+                      widget.productData.productId, 'disliked');
+                  if (productLikeState
+                      .isDisliked(widget.productData.productId)) {
+                    // showSnackbarWithMessage(
+                    //     context, 'You dislike this deal!');
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.sell_outlined),
+                iconSize: Sizes.screenCloseIconSize,
+                onPressed: () async {
+                  if (mounted) LoadingDialog.show(context);
+                  updateProductStatus(
+                          widget.productData.productId,
+                          'soldout_pending',
+                          widget.productData.productName,
+                          widget.productData.barcodeLink ?? '')
+                      .then((value) {
+                    if (value == true) {
+                      showSnackbarWithMessage(
+                          context, 'Thanks for letting us know!');
+                    }
+                    if (mounted) LoadingDialog.hide(context);
+                  });
+                },
+              ),
+              IconButton(
+                icon: authUserDataState.isAuthenticated == true &&
+                        bookmarkState.isBookmarked(widget.productData.productId)
+                    ? const Icon(
+                        Icons.bookmark_added_rounded,
+                        color: PZColors.pzOrange,
+                        size: Sizes.screenCloseIconSize,
+                      )
+                    : const Icon(Icons.bookmark_border_outlined),
+                iconSize: Sizes.screenCloseIconSize,
+                onPressed: () {
+                  if (authUserDataState.isAuthenticated == false) {
+                    showSnackbarWithAction(
+                        context,
+                        'Please login to bookmark this deal',
+                        gotoLoginScreen,
+                        'Login');
+                    return;
+                  } else {
+                    if (bookmarkState
+                        .isBookmarked(widget.productData.productId)) {
+                      bookmarkState
+                          .removeBookmarkLocally(widget.productData.productId);
+                      // showSnackbarWithMessage(
+                      //     context, 'Removed from bookmarks');
+                    } else {
+                      bookmarkState
+                          .addBookmarkLocally(widget.productData.productId);
+                      // showSnackbarWithMessage(
+                      //     context, 'Added to bookmarks');
+                    }
+                  }
+                },
+              ),
+              shareAction
+            ],
+          ),
+        ],
+      ),
+    );
+    // : const SizedBox.shrink();
   }
 }

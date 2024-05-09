@@ -144,6 +144,7 @@ class NotificationListNotifier extends ChangeNotifier {
       final notif =
           _notifications.firstWhere((element) => element.id == notifId);
       notif.isRead = true;
+
       _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
       await _notifService.updateNotifications(notif, notifId, _boxName);

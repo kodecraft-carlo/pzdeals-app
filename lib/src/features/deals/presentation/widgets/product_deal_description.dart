@@ -34,30 +34,44 @@ class ProductDealDescriptionState
         Stack(
           alignment: Alignment.center,
           children: [
+            //Commented as of 05/08/2024 - client requested to remove the image preview
+            // GestureDetector(
+            //   onTap: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => ProductImageDetailScreen(
+            //           imageUrl: widget.productData.imageAsset,
+            //           heroTag:
+            //               'imageHero${widget.productData.productId}', // Unique tag for this image within the screen
+            //         ),
+            //       ),
+            //     );
+            //   },
+            //   child: Hero(
+            //     tag: 'imageHero${widget.productData.productId}',
+            //     child: ProductImageWidget(
+            //       imageAsset: widget.productData.imageAsset,
+            //       sourceType: widget.productData.assetSourceType,
+            //       size: 'container',
+            //       fit: BoxFit.contain,
+            //       isExpired: widget.productData.isProductExpired != null &&
+            //           widget.productData.isProductExpired == true,
+            //     ),
+            //   ),
+            // ),
             GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProductImageDetailScreen(
-                      imageUrl: widget.productData.imageAsset,
-                      heroTag:
-                          'imageHero${widget.productData.productId}', // Unique tag for this image within the screen
-                    ),
-                  ),
-                );
-              },
-              child: Hero(
-                tag: 'imageHero${widget.productData.productId}',
-                child: ProductImageWidget(
-                  imageAsset: widget.productData.imageAsset,
-                  sourceType: widget.productData.assetSourceType,
-                  size: 'container',
-                  fit: BoxFit.contain,
-                  isExpired: widget.productData.isProductExpired != null &&
-                      widget.productData.isProductExpired == true,
-                ),
+              child: ProductImageWidget(
+                imageAsset: widget.productData.imageAsset,
+                sourceType: widget.productData.assetSourceType,
+                size: 'container',
+                fit: BoxFit.contain,
+                isExpired: widget.productData.isProductExpired != null &&
+                    widget.productData.isProductExpired == true,
               ),
+              onTap: () {
+                openBrowser(widget.productData.barcodeLink ?? '');
+              },
             ),
             widget.productData.isProductExpired != null &&
                     widget.productData.isProductExpired == true

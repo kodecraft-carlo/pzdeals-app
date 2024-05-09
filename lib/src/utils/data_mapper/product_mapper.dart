@@ -19,7 +19,8 @@ class ProductMapper {
                 : 0;
         return ProductDealcardData(
           productId: json['id'],
-          productName: json['title'],
+          productName:
+              json['title'] != null ? json['title'].toString().trim() : '',
           price: price.toStringAsFixed(2),
           storeAssetImage: json['store_images'].isNotEmpty
               ? json['store_images'][0]
@@ -32,7 +33,9 @@ class ProductMapper {
           assetSourceType: 'network',
           isProductNoPrice: isProductNoPrice(json['tag_ids']),
           isProductExpired: isProductExpired(json['tag_ids']),
-          productDealDescription: json['body_html'] ?? '',
+          productDealDescription: json['body_html'] != null
+              ? json['body_html'].toString().trim()
+              : '',
           barcodeLink: json['variants'][0]['barcode'] ?? '',
           tagDealDescription: extractTagDealDescription(json['tag_ids']),
         );
@@ -59,7 +62,8 @@ class ProductMapper {
               : 0;
       return ProductDealcardData(
         productId: json['id'],
-        productName: json['title'],
+        productName:
+            json['title'] != null ? json['title'].toString().trim() : '',
         price: price.toStringAsFixed(2),
         storeAssetImage: json['store_images'].isNotEmpty
             ? json['store_images'][0]
@@ -72,7 +76,9 @@ class ProductMapper {
         assetSourceType: 'network',
         isProductNoPrice: isProductNoPrice(json['tag_ids']),
         isProductExpired: isProductExpired(json['tag_ids']),
-        productDealDescription: json['body_html'],
+        productDealDescription: json['body_html'] != null
+            ? json['body_html'].toString().trim()
+            : '',
         barcodeLink: json['variants'][0]['barcode'] ?? '',
         tagDealDescription: extractTagDealDescription(json['tag_ids']),
       );
