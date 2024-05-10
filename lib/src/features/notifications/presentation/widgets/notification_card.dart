@@ -76,6 +76,26 @@ class NotificationCardWidgetState
       key: Key(notificationData.id),
       onDismissed: (direction) {
         ref.read(notificationsProvider).removeNotification(notificationData.id);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Notification cleared'),
+            action: SnackBarAction(
+              label: 'UNDO',
+              onPressed: () async {
+                ref
+                    .read(notificationsProvider)
+                    .reinsertNotificationToNotificationList(
+                        notificationData.id);
+                ref
+                    .read(notificationsProvider)
+                    .removeNotificationIdFromDeletionList(notificationData.id);
+
+                ref.read(notificationsProvider).refreshNotification();
+              },
+            ),
+            duration: const Duration(seconds: 5),
+          ),
+        );
       },
       background: Container(
           margin: const EdgeInsets.symmetric(vertical: 5),
@@ -215,12 +235,14 @@ class NotificationCardWidgetState
                         fontSize: Sizes.fontSizeSmall)),
                 const SizedBox(height: Sizes.spaceBetweenContentSmall),
                 notificationData.imageUrl != ''
-                    ? CachedNetworkImage(
-                        imageUrl: notificationData.imageUrl,
-                        width: MediaQuery.of(context).size.width / 2,
-                        fit: BoxFit.fitWidth,
-                        errorWidget: (context, url, error) =>
-                            const SizedBox.shrink(),
+                    ? ClipRRect(
+                        borderRadius:
+                            BorderRadius.circular(Sizes.cardBorderRadius),
+                        child: CachedNetworkImage(
+                          imageUrl: notificationData.imageUrl,
+                          width: MediaQuery.of(context).size.width / 2,
+                          fit: BoxFit.fitWidth,
+                        ),
                       )
                     : const SizedBox.shrink(),
                 const SizedBox(height: Sizes.spaceBetweenSections),

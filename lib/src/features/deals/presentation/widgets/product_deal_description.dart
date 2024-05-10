@@ -3,9 +3,9 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/badge.dart';
+import 'package:pzdeals/src/common_widgets/coupon_code_widget.dart';
 import 'package:pzdeals/src/common_widgets/expired_deal_banner.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
-import 'package:pzdeals/src/common_widgets/product_image_detail.dart';
 import 'package:pzdeals/src/common_widgets/store_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
@@ -178,7 +178,40 @@ class ProductDealDescriptionState
           const ExpiredDealBannerWidget(
               message: 'Sorry, this deal has expired'),
         //Added 05/08/2024 Tag Description
-        widget.productData.tagDealDescription?.isNotEmpty != null &&
+        widget.productData.sku != null && widget.productData.sku!.isNotEmpty
+            ? Align(
+                alignment: Alignment.centerLeft,
+                child: RichText(
+                  textAlign: TextAlign.start,
+                  text: TextSpan(children: [
+                    const TextSpan(
+                      text: '• ',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const TextSpan(
+                      text: 'Coupon code ',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: CouponCodeWidget(
+                          text: widget.productData.sku ?? '',
+                          url: widget.productData.barcodeLink ?? '',
+                        )),
+                  ]),
+                ),
+              )
+            : const SizedBox.shrink(),
+
+        widget.productData.tagDealDescription != null &&
                 widget.productData.tagDealDescription != ''
             ? Row(
                 children: [

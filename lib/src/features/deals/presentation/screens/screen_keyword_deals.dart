@@ -87,6 +87,11 @@ class KeywordDealsScreenState extends ConsumerState<KeywordDealsScreen>
     });
   }
 
+  Future<ProductDealcardData> loadProduct(int productId) async {
+    final product = await productDealService.fetchProductInfo(productId);
+    return product;
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -107,11 +112,6 @@ class KeywordDealsScreenState extends ConsumerState<KeywordDealsScreen>
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-  }
-
-  Future<ProductDealcardData> loadProduct(int productId) async {
-    final product = await productDealService.fetchProductInfo(productId);
-    return product;
   }
 
   @override

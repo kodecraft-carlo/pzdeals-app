@@ -21,10 +21,13 @@ class NotificationListNotifier extends ChangeNotifier {
 
   List<NotificationData> _notifications = [];
   List<DocumentSnapshot> _notifData = [];
+  List<NotificationData> _notificationForDeletion = [];
 
   bool get isLoading => _isLoading;
   List<NotificationData> get notifications => _notifications;
   int get unreadCount => _unreadCount;
+  List<NotificationData> get notificationForDeletion =>
+      _notificationForDeletion;
 
   void setUserUID(String uid) {
     debugPrint('setUserUID called with $uid');
@@ -119,13 +122,49 @@ class NotificationListNotifier extends ChangeNotifier {
 
   Future<void> removeNotification(String notifId) async {
     try {
+      _notificationForDeletion
+          .add(_notifications.firstWhere((element) => element.id == notifId));
       _notifications.removeWhere((element) => element.id == notifId);
       _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
-      await _notifService.deleteNotification(notifId, _boxName);
-    } catch (e) {
-      debugPrint('error removing bookmark: $e');
+
+      await Future.delayed(const Duration(seconds: 5), () {
+        removeNotificationFromFirestore();
+      });
+      // await _notifService.deleteNotification(notifId, _boxName);
+    } catch (e, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace);
+      debugPrint('error removeNotification: $e');
     }
+  }
+
+  Future<void> removeNotificationFromFirestore() async {
+    debugPrint('start removeNotificationFromFirestore');
+    debugPrint('notifForDeletion: ${_notificationForDeletion.length}');
+    if (_notificationForDeletion.isEmpty) return;
+    try {
+      for (final element in _notificationForDeletion) {
+        await _notifService.deleteNotification(element.id, _boxName);
+      }
+      _notificationForDeletion.clear();
+    } catch (e) {
+      debugPrint('error removeNotificationFromFirestore: $e');
+    }
+  }
+
+  void removeNotificationIdFromDeletionList(String notifId) {
+    debugPrint('removeNotificationIdFromDeletionList');
+    _notificationForDeletion.removeWhere((element) => element.id == notifId);
+  }
+
+  void reinsertNotificationToNotificationList(String notifId) async {
+    debugPrint('reinsertNotificationToNotificationList');
+    debugPrint('notif count before: ${_notifications.length}');
+    final notif =
+        _notificationForDeletion.firstWhere((element) => element.id == notifId);
+    _notifications.add(notif);
+    debugPrint('notif count after: ${_notifications.length}');
+    _unreadCount = await getUnreadNotificationsCount();
   }
 
   Future<void> removeAllNotification() async {
@@ -135,7 +174,7 @@ class NotificationListNotifier extends ChangeNotifier {
       _unreadCount = 0;
       notifyListeners();
     } catch (e) {
-      debugPrint('error removing bookmark: $e');
+      debugPrint('error removeAllNotification: $e');
     }
   }
 
