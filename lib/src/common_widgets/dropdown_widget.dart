@@ -107,7 +107,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 borderRadius:
                     BorderRadius.circular(Sizes.textFieldCornerRadius),
               ),
-              child: Text(_selectedValue ?? widget.dropdownLabel),
+              child: Text('${_selectedValue ?? widget.dropdownLabel}%'),
             ),
           )
         : DropdownButtonFormField<String>(

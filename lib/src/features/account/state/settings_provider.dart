@@ -98,7 +98,7 @@ class SettingsNotifier extends ChangeNotifier {
           dynamic threshold = setting['threshold'];
           if (setting['percentOff'] == true) {
             _settingsData?.setPercentageThreshold =
-                int.parse(threshold) == 0 ? 10 : int.parse(threshold);
+                int.parse(threshold) == 0 ? 50 : int.parse(threshold);
             _firebaseMessaging.subscribeToTopic('percent_off');
           } else {
             _settingsData?.setPercentageThreshold = 0;

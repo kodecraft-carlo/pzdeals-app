@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'dart:io' show Platform;
@@ -18,7 +19,12 @@ class AppbarIcon extends StatelessWidget {
                       builder: (context) => const NavigationWidget(
                             initialPageIndex: 0,
                           )))
-              : null;
+              : Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => const NavigationWidget(
+                            initialPageIndex: 0,
+                          )));
         },
         child: Image.asset(
           'assets/images/pzdeals.png',

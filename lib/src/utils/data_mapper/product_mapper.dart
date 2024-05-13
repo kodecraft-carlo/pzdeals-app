@@ -19,7 +19,6 @@ class ProductMapper {
             : isProductPriceValid(json['variants'][0]['price'])
                 ? priceFormatter(json['variants'][0]['price'])
                 : 0.0;
-
         return ProductDealcardData(
           productId: json['id'],
           productName:

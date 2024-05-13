@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 String getStoreImageUrlFromTags(List<dynamic> tagIds) {
   final Map<String, String> storeImageUrls = {
@@ -54,7 +55,9 @@ String extractTagDealDescription(List<dynamic> tagIds) {
   for (var tag in tagIds) {
     final tagDealKey = tag['tags_id']['tag_deal_key'];
     if (tagDealKey != null) {
-      tagDealDescription += tagDealKey;
+      if (tagDealKey['deal_description'] != null) {
+        tagDealDescription += tagDealKey['deal_description'];
+      }
     }
   }
   return tagDealDescription != '' ? '<ul>$tagDealDescription</ul>' : '';

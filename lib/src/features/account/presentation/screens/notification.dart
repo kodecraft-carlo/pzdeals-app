@@ -91,18 +91,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   Widget build(BuildContext context) {
     final authUserState = ref.watch(authUserDataProvider);
     final settingsState = ref.watch(settingsProvider);
-    List<String> dropdownItems = [
-      '10',
-      '20',
-      '30',
-      '40',
-      '50',
-      '60',
-      '70',
-      '80',
-      '90',
-      '100'
-    ];
+    List<String> dropdownItems = ['50', '60', '70', '80', '90'];
     isPercentOff =
         !settingsState.isLoading && settingsState.settingsData != null
             ? settingsState.settingsData!.percentageNotification
@@ -136,16 +125,16 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             ),
             const SizedBox(height: Sizes.spaceBetweenContent),
             // 04/04/2024 demo: Price mistake alert (turned on by default and remove on settings)
-            // ListTileWithSwitchWidget(
-            //   title: 'Price Mistake',
-            //   subtitle:
-            //       'Get notified about significant drops in the price of a product',
-            //   value: !settingsState.isLoading &&
-            //           settingsState.settingsData != null
-            //       ? settingsState.settingsData!.priceMistake
-            //       : false,
-            //   onChanged: onPriceMistakeChanged,
-            // ),
+            ListTileWithSwitchWidget(
+              title: 'Price Mistake & Glitches Notifications',
+              subtitle:
+                  'Get notified about significant drops in the price of a product',
+              value:
+                  !settingsState.isLoading && settingsState.settingsData != null
+                      ? settingsState.settingsData!.priceMistake
+                      : false,
+              onChanged: onPriceMistakeChanged,
+            ),
             ListTileWithSwitchWidget(
               title: 'Front Page Notifications',
               subtitle: 'Get notified about front page deals',

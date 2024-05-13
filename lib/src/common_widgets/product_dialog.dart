@@ -111,47 +111,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: Sizes.paddingAll,
                                     vertical: Sizes.paddingAllSmall),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                        child: RichText(
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(children: [
-                                        const TextSpan(
-                                            text:
-                                                'We may earn commission from ',
-                                            style: TextStyle(
-                                                color: PZColors.pzBlack,
-                                                fontSize:
-                                                    Sizes.fontSizeXSmall / 1.2,
-                                                fontFamily: 'Poppins',
-                                                fontStyle: FontStyle.italic)),
-                                        TextSpan(
-                                            text: 'affiliate links',
-                                            style: const TextStyle(
-                                                fontSize:
-                                                    Sizes.fontSizeXSmall / 1.2,
-                                                fontStyle: FontStyle.italic,
-                                                fontFamily: 'Poppins',
-                                                color: PZColors.pzOrange),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                openBrowser(
-                                                    'https://www.pzdeals.com/pages/advertiser-disclosure');
-                                              }),
-                                        const TextSpan(
-                                            text:
-                                                '. We appreciate your support!',
-                                            style: TextStyle(
-                                                color: PZColors.pzBlack,
-                                                fontSize:
-                                                    Sizes.fontSizeXSmall / 1.2,
-                                                fontFamily: 'Poppins',
-                                                fontStyle: FontStyle.italic))
-                                      ]),
-                                    ))
-                                  ],
-                                ),
+                                child: affiliateLinkDescription(),
                               ),
                             ],
                           ),
@@ -219,6 +179,45 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget affiliateLinkDescription() {
+    return Row(
+      children: [
+        Expanded(
+            child: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(children: [
+            const TextSpan(
+                text: 'We may earn commission from ',
+                style: TextStyle(
+                    color: PZColors.pzBlack,
+                    fontSize: Sizes.fontSizeXSmall / 1.2,
+                    fontFamily: 'Poppins',
+                    fontStyle: FontStyle.italic)),
+            TextSpan(
+                text: 'affiliate links',
+                style: const TextStyle(
+                    fontSize: Sizes.fontSizeXSmall / 1.2,
+                    fontStyle: FontStyle.italic,
+                    fontFamily: 'Poppins',
+                    color: PZColors.pzOrange),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    openBrowser(
+                        'https://www.pzdeals.com/pages/advertiser-disclosure');
+                  }),
+            const TextSpan(
+                text: '. We appreciate your support!',
+                style: TextStyle(
+                    color: PZColors.pzBlack,
+                    fontSize: Sizes.fontSizeXSmall / 1.2,
+                    fontFamily: 'Poppins',
+                    fontStyle: FontStyle.italic))
+          ]),
+        ))
+      ],
     );
   }
 }
