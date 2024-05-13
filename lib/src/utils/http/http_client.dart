@@ -22,7 +22,7 @@ class ApiClient {
     // _dio.options.headers['Authorization'] =
     //     'Bearer T31Er9KbfbINcnS4vTuI-Yrnv0EhYFk9'; // -- client uat token
     _dio.options.headers['Authorization'] =
-        'Bearer OVf7zuFk2DYGRj2hj_0su20EEmRRzrVe'; // -- client prod token
+        'Bearer 1acLfOFDMSdEvIkJ6yAa7Zf78CLNUp7H'; // -- client prod token
   }
 
   Dio get dio => _dio;

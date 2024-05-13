@@ -40,7 +40,7 @@ class FetchForYouService {
         }
 
         final products =
-            ProductMapper.mapToProductDealcardDataList(responseData);
+            ProductMapper.mapToProductDealcardDataList(responseData['data']);
 
         await _cacheProductCollections(products, boxName);
 

@@ -28,7 +28,7 @@ class BookmarksService {
         }
 
         final products =
-            ProductMapper.mapToProductDealcardDataList(responseData);
+            ProductMapper.mapToProductDealcardDataList(responseData['data']);
         // await _cacheProducts(products, boxName);
         return products;
       } else {

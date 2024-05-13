@@ -51,6 +51,9 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
                 // If any error occurs
                 return noForYouData(map['collection_name']);
               } else {
+                if (snapshot.data == null || snapshot.data!.isEmpty) {
+                  return noForYouData(map['collection_name']);
+                }
                 // Data loaded successfully
                 final List<ProductDealcardData> productList = snapshot.data!;
                 return ForYouCollectionList(
