@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/bouncing_arrow_down.dart';
 import 'package:pzdeals/src/common_widgets/button_browser.dart';
@@ -30,6 +31,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
   bool showMore = false;
   bool _isScrollingDown = false;
   final scrollController = ScrollController();
+  final GlobalKey widgetKey = GlobalKey();
 
   @override
   void initState() {
@@ -58,12 +60,28 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
     super.dispose();
   }
 
+  bool isMarkerVisible() {
+    final RenderBox renderBox =
+        widgetKey.currentContext!.findRenderObject() as RenderBox;
+    final widgetSize = renderBox.size;
+    final widgetPosition = renderBox.localToGlobal(Offset.zero);
+
+    final scrollPosition = scrollController.position;
+    final isVisible = widgetPosition.dy >= scrollPosition.pixels &&
+        widgetPosition.dy + widgetSize.height <=
+            scrollPosition.pixels + scrollPosition.viewportDimension;
+
+    debugPrint('Is marker visible: $isVisible');
+    return isVisible;
+  }
+
   @override
   Widget build(BuildContext context) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
         showMore = scrollController.position.maxScrollExtent > 0;
       });
+      // isMarkerVisible();
     });
     double screenHeight = MediaQuery.of(context).size.height;
     double dialogHeight = screenHeight / 1.4;
@@ -105,11 +123,19 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               widget.content,
+                              SizedBox(
+                                key: widgetKey,
+                                child: const Text('marker',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: .5)),
+                              ),
                               widget.hasDescription == false
                                   ? const SizedBox(
                                       height: 200,
                                     )
-                                  : const SizedBox.shrink(),
+                                  : const SizedBox(
+                                      height: 120,
+                                    ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: Sizes.paddingAll,
@@ -122,7 +148,8 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                   ),
                   showMore == true &&
                           !_isScrollingDown &&
-                          widget.hasDescription == true
+                          widget.hasDescription == true &&
+                          !isMarkerVisible()
                       ? GestureDetector(
                           onTap: () {
                             scrollController.animateTo(

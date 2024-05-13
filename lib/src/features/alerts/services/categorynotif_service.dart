@@ -157,7 +157,7 @@ class CategoryNotifService {
     box.clear();
     // final settings = box.get('categorysettings_$userId');
     // debugPrint('cached categorysettings: $settings');
-    await box.close();
+    // await box.close();
     return null;
   }
 

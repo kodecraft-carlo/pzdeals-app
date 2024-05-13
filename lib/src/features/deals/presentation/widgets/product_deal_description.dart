@@ -254,14 +254,15 @@ class ProductDealDescriptionState
                   Expanded(
                       child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: Sizes.paddingAllSmall,
-                        vertical: Sizes.paddingAllSmall),
+                      horizontal: Sizes.paddingAllSmall,
+                    ),
                     child: Html(
                         shrinkWrap: true,
-                        data: widget.productData.productDealDescription,
+                        data: widget.productData.productDealDescription!.trim(),
                         style: {
                           "body": Style(
                             padding: HtmlPaddings.zero,
+                            verticalAlign: VerticalAlign.middle,
                             margin: Margins.zero,
                             textAlign: TextAlign.left,
                           ),

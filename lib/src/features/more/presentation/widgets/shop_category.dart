@@ -17,6 +17,7 @@ class ShopCategory extends StatelessWidget {
     return GridView.builder(
       padding: const EdgeInsets.all(Sizes.paddingAll),
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: itemWidth,
           crossAxisSpacing: 10,

@@ -3,6 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/features/alerts/services/categorynotif_service.dart';
+import 'package:pzdeals/src/features/deals/models/index.dart';
+import 'package:pzdeals/src/features/deals/services/fetch_collections.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
 final categorySettingsProvider =
@@ -13,22 +15,64 @@ class CategorySettingsNotifier extends ChangeNotifier {
   Ref ref;
   CategorySettingsNotifier(this.ref) : super();
   final CategoryNotifService _settingsService = CategoryNotifService();
+  final FetchCollectionService _collectionService = FetchCollectionService();
   final _firebaseMessaging = FirebaseMessaging.instance;
 
   String _boxName = '';
+  final String _collectionListBoxName = 'category_alerts_list';
   bool _isLoading = false;
   String _userUID = '';
+  bool _isCollectionLoading = false;
 
   List? _settingsData;
+  List<CollectionData> _collections = [];
 
   bool get isLoading => _isLoading;
   List? get settingsData => _settingsData;
+  List get collections => _collections;
+  bool get isCollectionLoading => _isCollectionLoading;
 
   void setUserUID(String uid) {
     debugPrint('SettingsNotifier setUserUID called with $uid');
     _userUID = uid;
     _boxName = '${_userUID}_user_category_settings';
     loadUserSettings();
+  }
+
+  Future<void> loadCollections() async {
+    try {
+      final cachedCollections =
+          await _collectionService.getCachedCollection(_collectionListBoxName);
+      _collections = cachedCollections;
+      if (settingsData != null) {
+        for (int i = 0; i < _collections.length; i++) {
+          final collection = _collections[i];
+          final isSubscribed = settingsData!
+              .contains(formatToValidTopic(collection.keyword ?? ''));
+          collection.isSubscribed = isSubscribed;
+        }
+      }
+      notifyListeners();
+
+      final serverCollection =
+          await _collectionService.fetchCollections(_collectionListBoxName);
+      _collections = serverCollection;
+      //check for occurence of tag in settingsData to update isSubscribed to true/false
+      if (settingsData != null) {
+        for (int i = 0; i < _collections.length; i++) {
+          final collection = _collections[i];
+          final isSubscribed = settingsData!
+              .contains(formatToValidTopic(collection.keyword ?? ''));
+          collection.isSubscribed = isSubscribed;
+        }
+      }
+      notifyListeners();
+    } catch (e, stackTrace) {
+      debugPrint("error loading collections: $stackTrace");
+    } finally {
+      _isCollectionLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> loadUserSettings() async {
@@ -41,16 +85,16 @@ class CategorySettingsNotifier extends ChangeNotifier {
       _settingsData =
           await _settingsService.getCachedCategorySettings(_boxName, userId);
       if (_settingsData != null) {
-        notifyListeners();
+        loadCollections();
       } else {
         final serverSettings =
             await _settingsService.fetchUserCategorySettings(_boxName, userId);
 
         _settingsData = serverSettings;
-        notifyListeners();
+        loadCollections();
       }
-    } catch (e) {
-      debugPrint("error loading user settings: $e");
+    } catch (e, stackTrace) {
+      debugPrint("error loading user settings: $stackTrace");
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -65,16 +109,26 @@ class CategorySettingsNotifier extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
+    topicName = formatToValidTopic(topicName);
     debugPrint('updateSettingsLocally: $value, $topicName');
     if (value == true) {
       //add collectionTitle to _settingsData
-      _settingsData?.add(topicName.toLowerCase());
-      _firebaseMessaging.subscribeToTopic(topicName.toLowerCase());
+      _settingsData?.add(topicName);
+      _firebaseMessaging.subscribeToTopic(topicName);
+      _collections
+          .firstWhere((element) =>
+              formatToValidTopic(element.keyword ?? '') == topicName)
+          .isSubscribed = true;
     } else {
       //remove collectionTitle from _settingsData
-      _settingsData?.remove(topicName.toLowerCase());
-      _firebaseMessaging.unsubscribeFromTopic(topicName.toLowerCase());
+      _settingsData?.remove(topicName);
+      _firebaseMessaging.unsubscribeFromTopic(topicName);
+      _collections
+          .firstWhere((element) =>
+              formatToValidTopic(element.keyword ?? '') == topicName)
+          .isSubscribed = false;
     }
+    notifyListeners();
     removeDuplicates();
     debugPrint('updateSettingsLocally: $_settingsData');
 
@@ -82,7 +136,7 @@ class CategorySettingsNotifier extends ChangeNotifier {
       _settingsService.updateUserCategorySettings(
           _boxName, userId, _settingsData!);
 
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       debugPrint('error updating settings: $e');
       _firebaseMessaging.unsubscribeFromTopic(topicName.toLowerCase());
@@ -90,6 +144,13 @@ class CategorySettingsNotifier extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  String formatToValidTopic(String topic) {
+    //remove special characters and convert to lowercase
+    //convert home & kitchen to home_kitchen
+    topic = topic.replaceAll(RegExp(r'[\W\s]+'), '_');
+    return topic.toLowerCase();
   }
 
   bool isSubscribed(String topicName) {

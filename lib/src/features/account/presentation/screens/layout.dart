@@ -49,6 +49,8 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
   @override
   Widget build(BuildContext context) {
     final layoutType = ref.watch(layoutTypeProvider);
+    double screenHeight = MediaQuery.of(context).size.height;
+    double itemHeight = screenHeight / 2.7;
     return Column(
       children: [
         Row(
@@ -97,16 +99,19 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
           child: layoutType == 'Grid'
               ? Image.asset(
                   'assets/images/layout_grid_view.png',
-                  height: 320,
+                  fit: BoxFit.fitHeight,
+                  height: itemHeight,
                 )
               : layoutType == 'List'
                   ? Image.asset(
                       'assets/images/layout_list_view.png',
-                      height: 320,
+                      fit: BoxFit.fitHeight,
+                      height: itemHeight,
                     )
                   : Image.asset(
                       'assets/images/layout_grid_view.png',
-                      height: 320,
+                      fit: BoxFit.fitHeight,
+                      height: itemHeight,
                     ),
         ),
       ],

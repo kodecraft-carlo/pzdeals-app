@@ -23,6 +23,7 @@ class MoreShortcutsWidget extends StatelessWidget {
       mainAxisSpacing: 15,
       childAspectRatio: 2 / 3,
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       children: [
         NavigateScreenWidget(
           destinationWidget: const CreditCardDealsScreen(),
