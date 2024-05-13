@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 String getProductsAll(int pageNumber) {
-  String query = '/products_store'
+  String query = '/products'
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=body_html'
@@ -24,7 +24,7 @@ String getProductsAll(int pageNumber) {
 }
 
 String getProductsByCollectionQuery(String pageName, int pageNumber) {
-  String query = '/products_store'
+  String query = '/products'
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=body_html'
@@ -49,7 +49,7 @@ String getProductsByCollectionQuery(String pageName, int pageNumber) {
 }
 
 String getProductsByProductIdsQuery(List<int> productIds, int pageNumber) {
-  String query = '/products_store'
+  String query = '/products'
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=body_html'
@@ -72,7 +72,7 @@ String getProductsByProductIdsQuery(List<int> productIds, int pageNumber) {
 }
 
 String getProductsByCollectionIdQuery(int collectionId, int limit) {
-  String query = '/products_store'
+  String query = '/products'
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=body_html'
@@ -96,7 +96,7 @@ String getProductsByCollectionIdQuery(int collectionId, int limit) {
 }
 
 String getProductSpecificDetailsQuery(int productId) {
-  String query = '/products_store'
+  String query = '/products'
       '?filter={"id":{"_eq":$productId}}'
       '&fields[]=id'
       '&fields[]=title'
@@ -133,7 +133,7 @@ String getCreditCardsCollectionQuery(int pageNumber, int limit) {
 }
 
 String getProductsByTagQuery(String tagName, int pageNumber) {
-  return '/products_store'
+  return '/products'
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=body_html'
@@ -170,7 +170,7 @@ String getCollections(String colType) {
 }
 
 String searchProductQuery(String keyword, int pageNumber) {
-  String query = '/products_store'
+  String query = '/products'
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=body_html'
@@ -193,7 +193,7 @@ String searchProductQuery(String keyword, int pageNumber) {
 }
 
 String searchPercentageProductQuery(int pageNumber) {
-  String query = '/products_store'
+  String query = '/products'
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=body_html'
