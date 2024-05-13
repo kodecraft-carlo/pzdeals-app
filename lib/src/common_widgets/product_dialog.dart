@@ -91,9 +91,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                 children: [
                   // Add some padding
                   Expanded(
-                    child: ScrollbarWidget(
-                      scrollController: scrollController,
-                      child: SingleChildScrollView(
+                    child: SingleChildScrollView(
                         controller: scrollController,
                         physics: const BouncingScrollPhysics(),
                         child: Padding(
@@ -107,6 +105,11 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               widget.content,
+                              widget.hasDescription == false
+                                  ? const SizedBox(
+                                      height: 200,
+                                    )
+                                  : const SizedBox.shrink(),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: Sizes.paddingAll,
@@ -115,9 +118,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
+                        )),
                   ),
                   showMore == true &&
                           !_isScrollingDown &&
@@ -137,6 +138,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                           ),
                         )
                       : const SizedBox.shrink(),
+
                   ProductDealActions(
                     productData: widget.productData,
                   ),
