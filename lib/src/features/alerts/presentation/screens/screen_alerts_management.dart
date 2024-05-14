@@ -245,28 +245,26 @@ class _AlertsManagementScreenState
                 child: Container(
                   margin:
                       const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-                  child: Column(
+                  child: const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const SizedBox(height: Sizes.spaceBetweenSections),
-                      const Text("Category Alerts",
+                      SizedBox(height: Sizes.spaceBetweenSections),
+                      Text("Category Alerts",
                           style: TextStyle(
                               fontSize: Sizes.fontSizeMedium,
                               fontWeight: FontWeight.w600,
                               color: PZColors.pzBlack)),
-                      const Text(
+                      Text(
                         "Toggle on category to get notified on new category deals",
                         style: TextStyle(
                             fontSize: Sizes.bodyFontSize,
                             fontWeight: FontWeight.w400,
                             color: PZColors.pzBlack),
                       ),
-                      const SizedBox(height: Sizes.spaceBetweenSections),
+                      SizedBox(height: Sizes.spaceBetweenSections),
                       Flexible(
-                        child: CategoryNotificationToggleList(
-                          collections: foryouState.collections,
-                        ),
+                        child: CategoryNotificationToggleList(),
                       )
                     ],
                   ),

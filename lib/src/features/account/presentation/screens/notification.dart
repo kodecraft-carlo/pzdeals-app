@@ -108,7 +108,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     _selectedThreshold =
         !settingsState.isLoading && settingsState.settingsData != null
             ? settingsState.settingsData!.percentageThreshold.toString()
-            : '10';
+            : '50';
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
       child: Padding(
@@ -177,7 +177,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                         onChanged: thresholdOnChanged,
                         isDense: true,
                         initialValue: _selectedThreshold == '0'
-                            ? '10'
+                            ? '50'
                             : _selectedThreshold,
                         dropdownLabel: '% Off Threshold',
                         dropdownItems: dropdownItems,

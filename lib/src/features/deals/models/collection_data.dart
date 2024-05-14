@@ -19,11 +19,19 @@ class CollectionData {
   @HiveField(4)
   final String? keyword;
 
+  @HiveField(5)
+  bool? isSubscribed;
+
   CollectionData({
     required this.id,
     required this.title,
     required this.imageAsset,
     required this.assetSourceType,
     this.keyword,
+    this.isSubscribed = false,
   });
+
+  set isSubscribedStatus(bool status) {
+    isSubscribed = status;
+  }
 }

@@ -22,13 +22,14 @@ class CollectionDataAdapter extends TypeAdapter<CollectionData> {
       imageAsset: fields[1] as String,
       assetSourceType: fields[2] as String,
       keyword: fields[4] as String?,
+      isSubscribed: fields[5] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, CollectionData obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class CollectionDataAdapter extends TypeAdapter<CollectionData> {
       ..writeByte(3)
       ..write(obj.id)
       ..writeByte(4)
-      ..write(obj.keyword);
+      ..write(obj.keyword)
+      ..writeByte(5)
+      ..write(obj.isSubscribed);
   }
 
   @override

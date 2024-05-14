@@ -7,10 +7,7 @@ import 'package:pzdeals/src/features/deals/models/collection_data.dart';
 class CategoryNotificationToggleList extends ConsumerStatefulWidget {
   const CategoryNotificationToggleList({
     super.key,
-    required this.collections,
   });
-
-  final List<CollectionData> collections;
 
   @override
   _CategoryNotificationToggleListState createState() =>
@@ -27,22 +24,25 @@ class _CategoryNotificationToggleListState
     Future(() {
       ref.read(categorySettingsProvider).loadUserSettings();
     });
-    isSubscribedList = List.filled(widget.collections.length, false);
-    for (int i = 0; i < widget.collections.length; i++) {
-      final collection = widget.collections[i];
-      final isSubscribed = ref
-          .read(categorySettingsProvider)
-          .isSubscribed(collection.keyword ?? '');
-      isSubscribedList[i] = isSubscribed;
-    }
+    // Future(() {
+    //   ref.read(categorySettingsProvider).loadCollections();
+    // });
+    // isSubscribedList = List.filled(widget.collections.length, false);
+    // for (int i = 0; i < widget.collections.length; i++) {
+    //   final collection = widget.collections[i];
+    //   final isSubscribed = ref
+    //       .read(categorySettingsProvider)
+    //       .isSubscribed(collection.keyword ?? '');
+    //   isSubscribedList[i] = isSubscribed;
+    // }
   }
 
   void onSwitchChanged(bool value, String title, int index, String keyword) {
     // Update the configuration based on the switch state
     // Call the provider to update the settings
-    setState(() {
-      isSubscribedList[index] = value;
-    });
+    // setState(() {
+    //   isSubscribedList[index] = value;
+    // });
     ref
         .read(categorySettingsProvider)
         .updateSettingsLocally(value, title, keyword);
@@ -50,16 +50,18 @@ class _CategoryNotificationToggleListState
 
   @override
   Widget build(BuildContext context) {
+    final categSettingsCollection =
+        ref.watch(categorySettingsProvider).collections;
     return ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
         key: const PageStorageKey<String>('category_notification_toggle_list'),
         shrinkWrap: true,
-        itemCount: widget.collections.length,
+        itemCount: categSettingsCollection.length,
         itemBuilder: (context, index) {
-          final collection = widget.collections[index];
+          final collection = categSettingsCollection[index];
           return ListTileWithSwitchWidget(
             title: collection.title,
-            value: isSubscribedList[index],
+            value: collection.isSubscribed,
             onChanged: (value) {
               onSwitchChanged(
                   value, collection.title, index, collection.keyword ?? '');

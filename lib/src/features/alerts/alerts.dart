@@ -7,7 +7,7 @@ import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class DealAlertsScreen extends StatelessWidget {
-  DealAlertsScreen({super.key});
+  const DealAlertsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
