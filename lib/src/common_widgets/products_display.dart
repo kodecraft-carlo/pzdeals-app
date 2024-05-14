@@ -58,7 +58,10 @@ class ProductsDisplay extends StatelessWidget {
       onRefresh: onRefresh ?? () async {},
       color: PZColors.pzOrange,
       child: Padding(
-        padding: const EdgeInsets.all(Sizes.paddingAllSmall),
+        padding: const EdgeInsets.only(
+            top: Sizes.paddingAllSmall,
+            left: Sizes.paddingAllSmall,
+            right: Sizes.paddingAllSmall),
         child: StaggeredGridView.countBuilder(
           crossAxisCount: 4,
           itemCount: productData.length,
@@ -72,11 +75,8 @@ class ProductsDisplay extends StatelessWidget {
           },
           itemBuilder: (BuildContext context, int index) {
             final product = productData[index];
-            return AspectRatio(
-              aspectRatio: .49,
-              child: ProductDealcard(
-                productData: product,
-              ),
+            return ProductDealcard(
+              productData: product,
             );
           },
         ),

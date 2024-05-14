@@ -8,4 +8,5 @@ class PZColors {
   static const Color pzLightGrey = Color(0xFFEEEEEE);
   static const Color pzGreen = Color(0xFF008937);
   static const Color pzBadgeColor = Color(0xFFE80F77);
+  static Color hyperlinkColor = Colors.blue.shade600;
 }

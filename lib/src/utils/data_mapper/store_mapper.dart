@@ -31,8 +31,7 @@ class StoreDataMapper {
           handle: json['handle'],
           storeAssetImage:
               json['image_src'] ?? 'assets/images/pzdeals_store.png',
-          appStoreImg:
-              json['app_store_img'] ?? 'assets/images/pzdeals_store.png',
+          appStoreImg: json['app_store_img'],
           assetSourceType: 'network',
           tagName: json['tags'].length > 0
               ? json['tags'][0]['tags_id']['tag_name']
@@ -54,7 +53,7 @@ class StoreDataMapper {
         storeName: json['title'],
         handle: json['handle'],
         storeAssetImage: json['image_src'] ?? 'assets/images/pzdeals_store.png',
-        appStoreImg: json['app_store_img'] ?? 'assets/images/pzdeals_store.png',
+        appStoreImg: json['app_store_img'],
         assetSourceType: 'network',
         tagName: json['tags'].length > 0
             ? json['tags'][0]['tags_id']['tag_name']

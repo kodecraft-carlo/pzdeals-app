@@ -22,6 +22,9 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
   void initState() {
     super.initState();
     _animationController = AnimationController(vsync: this);
+    // Future(() {
+    //   ref.read(tabForYouProvider).loadDataFromSelectedCollection();
+    // });
   }
 
   @override

@@ -166,6 +166,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   void destinationSelected(int index) {
     if (index == 1) {
       ref.read(storescreenProvider).clearFilter();
+      ref.read(storescreenProvider).refresh();
     }
     if (index == 0) {
       ref.read(tabFrontPageProvider).refresh();

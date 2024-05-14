@@ -84,4 +84,31 @@ class FetchCollectionService {
       throw Exception('Failed to fetch directus fetchCollectionIdAndName');
     }
   }
+
+  Future<List<Map<String, dynamic>>> getCachedSelectedCollection(
+      String boxName) async {
+    debugPrint("getCachedSelectedCollection called for $boxName");
+    final box = await Hive.openBox<Map<dynamic, dynamic>>(boxName);
+    final collections = box.values.toList();
+    List<Map<String, dynamic>> data =
+        collections.map((map) => Map<String, dynamic>.from(map)).toList();
+    await box.close();
+    return data;
+  }
+
+  Future<void> addSelectedCollectionToCache(
+      List<Map<String, dynamic>> selectedCollections, String boxName) async {
+    debugPrint("addSelectedCollectionToCache called for $boxName");
+    final box = await Hive.openBox<Map<String, dynamic>>(boxName);
+    await box.clear();
+    for (final collection in selectedCollections) {
+      box.put(collection['collection_id'], collection);
+    }
+  }
+
+  Future<void> clearSelectedCollectionCache(String boxName) async {
+    debugPrint("clearSelectedCollectionCache called for $boxName");
+    final box = await Hive.openBox<Map<String, dynamic>>(boxName);
+    await box.clear();
+  }
 }

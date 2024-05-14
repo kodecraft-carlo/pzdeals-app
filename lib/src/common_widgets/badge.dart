@@ -17,13 +17,15 @@ class BadgeWidget extends StatelessWidget {
         vertical: 4.0,
       ),
       decoration: BoxDecoration(
-        color: PZColors.pzBadgeColor, // Badge color
+        color: discountPercentage > 0
+            ? PZColors.pzBadgeColor
+            : Colors.transparent, // Badge color
         borderRadius: BorderRadius.circular(6.0),
       ),
       child: Text(
         '$discountPercentage% Off',
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: discountPercentage > 0 ? Colors.white : Colors.transparent,
           fontSize: Sizes.bodySmallSize,
           fontWeight: FontWeight.bold,
         ),

@@ -90,6 +90,8 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
     double width = 80;
     double height = 80;
 
+    // debugPrint('storeAssetImage: ${widget.storeData.storeAssetImage}, '
+    //     'assetSourceType: ${widget.storeData.assetSourceType}, appStoreImg: ${widget.storeData.appStoreImg}');
     if (widget.storeData.assetSourceType == 'asset') {
       imageProvider = AssetImage(widget.storeData.storeAssetImage);
     } else if (widget.storeData.assetSourceType == 'network') {

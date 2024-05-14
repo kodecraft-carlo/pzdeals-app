@@ -22,7 +22,7 @@ class StoreImageWidget extends ConsumerWidget {
             'assets/images/pzdeals.png',
             width: 18,
             height: 18,
-            fit: BoxFit.fitHeight,
+            fit: BoxFit.fitWidth,
           )
         : CachedNetworkImage(
             imageUrl: storeAssetImage,

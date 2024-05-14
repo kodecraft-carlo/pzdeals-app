@@ -24,6 +24,10 @@ class StoreScreenProvider extends ChangeNotifier {
     _loadStores();
   }
 
+  Future<void> refresh() async {
+    _loadStores();
+  }
+
   Future<void> refreshStores() async {
     pageNumber = 1;
     try {
@@ -46,6 +50,7 @@ class StoreScreenProvider extends ChangeNotifier {
 
   Future<void> _loadStores() async {
     _isLoading = true;
+    pageNumber = 1;
     notifyListeners();
 
     try {

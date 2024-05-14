@@ -6,6 +6,7 @@ import 'package:pzdeals/src/features/account/presentation/screens/index.dart';
 import 'package:pzdeals/src/features/account/presentation/widgets/account_card.dart';
 import 'package:pzdeals/src/features/account/presentation/widgets/login_card.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
+import 'dart:io' show Platform;
 
 class AccountWidget extends ConsumerWidget {
   const AccountWidget({super.key});
@@ -77,6 +78,7 @@ class AccountWidget extends ConsumerWidget {
     }
     return SafeArea(
       top: false,
+      bottom: Platform.isIOS ? false : true,
       child: DefaultTabController(
         length: authUserState.isAuthenticated ? 2 : 1,
         child: Scaffold(

@@ -5,6 +5,7 @@ import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/badge.dart';
 import 'package:pzdeals/src/common_widgets/coupon_code_widget.dart';
 import 'package:pzdeals/src/common_widgets/expired_deal_banner.dart';
+import 'package:pzdeals/src/common_widgets/html_content.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
 import 'package:pzdeals/src/common_widgets/store_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
@@ -220,27 +221,9 @@ class ProductDealDescriptionState
                       padding: const EdgeInsets.symmetric(
                         horizontal: Sizes.paddingAllSmall,
                       ),
-                      child: Html(
-                        shrinkWrap: true,
-                        data: widget.productData.tagDealDescription,
-                        style: {
-                          "body": Style(
-                            padding: HtmlPaddings.zero,
-                            margin: Margins.zero,
-                            textAlign: TextAlign.left,
-                          ),
-                          "ul": Style(
-                            padding: HtmlPaddings.zero,
-                            margin: Margins.zero,
-                            textAlign: TextAlign.left,
-                          ),
-                          "a": Style(
-                            color: Colors.blue,
-                            textDecoration: TextDecoration.none,
-                          ),
-                        },
-                        onLinkTap: (url, attributes, element) =>
-                            openBrowser(url ?? ''),
+                      child: HtmlContent(
+                        htmlContent:
+                            widget.productData.tagDealDescription ?? '',
                       ),
                     ),
                   ),
@@ -256,28 +239,10 @@ class ProductDealDescriptionState
                     padding: const EdgeInsets.symmetric(
                       horizontal: Sizes.paddingAllSmall,
                     ),
-                    child: Html(
-                        shrinkWrap: true,
-                        data: widget.productData.productDealDescription!.trim(),
-                        style: {
-                          "body": Style(
-                            padding: HtmlPaddings.zero,
-                            verticalAlign: VerticalAlign.middle,
-                            margin: Margins.zero,
-                            textAlign: TextAlign.left,
-                          ),
-                          "ul": Style(
-                            padding: HtmlPaddings.zero,
-                            margin: Margins.zero,
-                            textAlign: TextAlign.left,
-                          ),
-                          "a": Style(
-                            color: Colors.blue,
-                            textDecoration: TextDecoration.none,
-                          ),
-                        },
-                        onLinkTap: (url, attributes, element) =>
-                            openBrowser(url ?? '')),
+                    child: HtmlContent(
+                      htmlContent:
+                          widget.productData.productDealDescription!.trim(),
+                    ),
                   ))
                 ],
               )

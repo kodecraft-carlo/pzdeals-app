@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pzdeals/src/constants/index.dart';
@@ -12,10 +14,25 @@ class SearchCancelWidget extends StatelessWidget {
       onTap: () {
         SystemChannels.textInput.invokeMethod('TextInput.hide');
         Future.delayed(const Duration(milliseconds: 350), () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => destinationWidget),
-          );
+          Platform.isAndroid
+              ? Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => destinationWidget),
+                )
+              : Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        destinationWidget,
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
         });
       },
       child: const Text(

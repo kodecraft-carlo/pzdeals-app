@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
+import 'package:pzdeals/src/common_widgets/html_content.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/models/index.dart';
 
@@ -72,27 +73,9 @@ class NotificationDialog extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: Sizes.paddingAllSmall,
                               vertical: Sizes.paddingAllSmall),
-                          child: Html(
-                              shrinkWrap: false,
-                              data: notificationData.body,
-                              style: {
-                                "body": Style(
-                                  padding: HtmlPaddings.zero,
-                                  margin: Margins.zero,
-                                  textAlign: TextAlign.center,
-                                ),
-                                "ul": Style(
-                                  padding: HtmlPaddings.zero,
-                                  margin: Margins.zero,
-                                  textAlign: TextAlign.left,
-                                ),
-                                "a": Style(
-                                  color: Colors.blue,
-                                  textDecoration: TextDecoration.none,
-                                ),
-                              },
-                              onLinkTap: (url, attributes, element) =>
-                                  openBrowser(url ?? '')),
+                          child: HtmlContent(
+                            htmlContent: notificationData.body,
+                          ),
                         ))
                       ],
                     )

@@ -47,6 +47,18 @@ class TabForYouNotifier extends ChangeNotifier {
     getProductsFromSelectedCollection();
   }
 
+  // Future<void> loadDataFromSelectedCollection() async {
+  //   final selectedCollectionsfromcache = await _collectionService
+  //       .getCachedSelectedCollection('selectedcollections');
+  //   if (selectedCollections.isNotEmpty) {
+  //     _selectedCollectionIds.clear();
+  //     _selectedCollectionIds.addAll(selectedCollections);
+  //     _isSelectionApplied = true;
+  //     await getProductsFromSelectedCollection();
+  //     notifyListeners();
+  //   }
+  // }
+
   Future<void> loadForYouProducts(
       int collectionId, int limit, String boxName) async {
     _isForYouLoading = true;
@@ -111,7 +123,16 @@ class TabForYouNotifier extends ChangeNotifier {
     return exists;
   }
 
+  void resetCollectionMap() {
+    _collectionsMap.clear();
+    if (_selectedCollectionIds.isNotEmpty) {
+      _collectionsMap.addAll(_selectedCollectionIds);
+    }
+    notifyListeners();
+  }
+
   void applySelectedCollections() async {
+    _collectionService.clearSelectedCollectionCache('selectedcollections');
     _selectedCollectionIds.clear();
     _collectionsMap
         .sort((a, b) => a['collection_id'].compareTo(b['collection_id']));
@@ -120,6 +141,8 @@ class TabForYouNotifier extends ChangeNotifier {
     _isSelectionApplied = true;
     await getProductsFromSelectedCollection();
     notifyListeners();
+    _collectionService.addSelectedCollectionToCache(
+        _selectedCollectionIds, 'selectedcollections');
   }
 
   Future<void> getProductsFromSelectedCollection() async {
@@ -127,7 +150,14 @@ class TabForYouNotifier extends ChangeNotifier {
     notifyListeners();
 
     if (_selectedCollectionIds.isEmpty) {
-      _selectedCollectionIds.addAll(_defaultCollections);
+      final selectedCollectionsfromcache = await _collectionService
+          .getCachedSelectedCollection('selectedcollections');
+      if (selectedCollectionsfromcache.isNotEmpty) {
+        _selectedCollectionIds.clear();
+        _selectedCollectionIds.addAll(selectedCollectionsfromcache);
+      } else {
+        _selectedCollectionIds.addAll(_defaultCollections);
+      }
     }
     try {
       _collectionProducts.clear();
