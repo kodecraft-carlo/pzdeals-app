@@ -61,21 +61,26 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
   Widget build(BuildContext context) {
     final creditcardState = ref.watch(creditcardsProvider);
     return Scaffold(
-        appBar: AppBar(
-          title: const TextWidget(
-            text: "Latest Credit Card Deals",
-            textDisplayType: TextDisplayType.appbarTitle,
-            textAlign: TextAlign.center,
-          ),
-          centerTitle: true,
-          surfaceTintColor: PZColors.pzWhite,
-          backgroundColor: PZColors.pzWhite,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: GestureDetector(
+              onTap: scrollToTop,
+              child: AppBar(
+                title: const TextWidget(
+                  text: "Latest Credit Card Deals",
+                  textDisplayType: TextDisplayType.appbarTitle,
+                  textAlign: TextAlign.center,
+                ),
+                centerTitle: true,
+                surfaceTintColor: PZColors.pzWhite,
+                backgroundColor: PZColors.pzWhite,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              )),
         ),
         body: RefreshIndicator.adaptive(
             color: PZColors.pzOrange,

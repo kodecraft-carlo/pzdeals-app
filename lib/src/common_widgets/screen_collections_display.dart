@@ -17,10 +17,14 @@ final productCollectionProvider =
 
 class CollectionDisplayScreenWidget extends ConsumerStatefulWidget {
   const CollectionDisplayScreenWidget(
-      {super.key, required this.collectionTitle, required this.collectionId});
+      {super.key,
+      required this.collectionTitle,
+      required this.collectionId,
+      this.keyword = ""});
 
   final String collectionTitle;
   final int collectionId;
+  final String keyword;
 
   @override
   CollectionDisplayScreenWidgetState createState() =>
@@ -205,28 +209,35 @@ class CollectionDisplayScreenWidgetState
       );
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.collectionTitle != ''
-              ? widget.collectionTitle
-              : paramcollectionName,
-          style: const TextStyle(
-            color: PZColors.pzBlack,
-            fontWeight: FontWeight.w700,
-            fontSize: Sizes.appBarFontSize,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        centerTitle: true,
-        surfaceTintColor: PZColors.pzWhite,
-        backgroundColor: PZColors.pzWhite,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: GestureDetector(
+            onTap: () {
+              scrollToTop();
+            },
+            child: AppBar(
+              title: Text(
+                widget.collectionTitle != ''
+                    ? widget.collectionTitle
+                    : paramcollectionName,
+                style: const TextStyle(
+                  color: PZColors.pzBlack,
+                  fontWeight: FontWeight.w700,
+                  fontSize: Sizes.appBarFontSize,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              centerTitle: true,
+              surfaceTintColor: PZColors.pzWhite,
+              backgroundColor: PZColors.pzWhite,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          )),
       body: body,
     );
   }

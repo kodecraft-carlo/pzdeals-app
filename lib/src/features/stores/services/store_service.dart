@@ -31,7 +31,6 @@ class StoreScreenService {
         if (responseData == null || responseData.isEmpty) {
           throw Exception('No Data Found');
         }
-
         final stores = StoreDataMapper.mapToStoreIconList(responseData);
         await _cacheStores(stores, boxName);
         return stores;

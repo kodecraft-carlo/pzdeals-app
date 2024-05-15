@@ -32,7 +32,6 @@ class FilterService {
         if (responseData == null || responseData.isEmpty) {
           throw Exception('No Data Found');
         }
-
         final stores = StoreDataMapper.mapToStoreDataList(responseData);
         await _cacheStores(stores, boxName);
         return stores;

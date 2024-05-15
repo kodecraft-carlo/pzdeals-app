@@ -80,7 +80,7 @@ class BookmarkedProductsNotifier extends ChangeNotifier {
       _products = serverProducts;
       notifyListeners();
     } catch (e) {
-      debugPrint("error loading products: $e");
+      debugPrint("error loading bookdmarked products: $e");
     } finally {
       _isProductLoading = false;
       notifyListeners();

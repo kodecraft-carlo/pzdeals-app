@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 String getStoreCollectionQuery(int pageNumber) {
   String query = '/items/stores'
       '?fields[]=id'
@@ -10,6 +12,7 @@ String getStoreCollectionQuery(int pageNumber) {
       '&sort[]=title'
       '&limit=200'
       '&page=$pageNumber';
+  debugPrint('getStoreCollectionQuery: $query');
   return query;
 }
 

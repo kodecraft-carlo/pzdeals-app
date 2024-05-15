@@ -45,8 +45,8 @@ class BlogsService {
     } on DioException catch (e) {
       debugPrint("DioExceptionw: ${e.message}");
       throw Exception('Failed to fetch directus blog list');
-    } catch (e) {
-      debugPrint('Error fetching frontpage deals: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching blogs: $stackTrace');
       throw Exception('Failed to fetch directus blog list');
     }
   }
@@ -85,8 +85,8 @@ class BlogsService {
     } on DioException catch (e) {
       debugPrint("DioExceptionw: ${e.message}");
       throw Exception('Failed to fetch directus blog info');
-    } catch (e) {
-      debugPrint('Error fetching fetchBlogInfo blogs: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching fetchBlogInfo blogs: $stackTrace');
       throw Exception('Failed to fetch directus blog info');
     }
   }

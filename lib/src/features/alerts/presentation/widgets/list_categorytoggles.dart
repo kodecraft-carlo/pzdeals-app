@@ -24,25 +24,9 @@ class _CategoryNotificationToggleListState
     Future(() {
       ref.read(categorySettingsProvider).loadUserSettings();
     });
-    // Future(() {
-    //   ref.read(categorySettingsProvider).loadCollections();
-    // });
-    // isSubscribedList = List.filled(widget.collections.length, false);
-    // for (int i = 0; i < widget.collections.length; i++) {
-    //   final collection = widget.collections[i];
-    //   final isSubscribed = ref
-    //       .read(categorySettingsProvider)
-    //       .isSubscribed(collection.keyword ?? '');
-    //   isSubscribedList[i] = isSubscribed;
-    // }
   }
 
   void onSwitchChanged(bool value, String title, int index, String keyword) {
-    // Update the configuration based on the switch state
-    // Call the provider to update the settings
-    // setState(() {
-    //   isSubscribedList[index] = value;
-    // });
     ref
         .read(categorySettingsProvider)
         .updateSettingsLocally(value, title, keyword);

@@ -18,7 +18,7 @@ class CategoryNotifService {
       if (response.statusCode == 200) {
         final responseData = response.data["data"];
         if (responseData == null || responseData.isEmpty) {
-          throw Exception('No Data Found');
+          return [];
         }
         final categorySettings = responseData[0]["category_notifications"];
         await _cacheCategorySettings(categorySettings, boxName, userId!);
@@ -41,6 +41,7 @@ class CategoryNotifService {
     try {
       final int id = await getSettingsId(userId!);
       if (id == 0) {
+        debugPrint('Adding new categorySettings');
         await addCategorySettings(boxName, userId, categorySettings);
         return;
       }
@@ -81,6 +82,7 @@ class CategoryNotifService {
         if (responseData == null ||
             responseData.isEmpty ||
             responseData.length <= 0) {
+          debugPrint('No settings found');
           return 0;
         }
         return responseData[0]["id"];
@@ -103,7 +105,7 @@ class CategoryNotifService {
     try {
       Response response = await apiClient.dio.post(
           '/items/notification_settings',
-          data: {"category_notifications": categorySettings}
+          data: {"category_notifications": categorySettings, "user_id": userId}
           // options: Options(
           //   headers: {'Authorization': 'Bearer $accessToken'},
           // ),
@@ -151,14 +153,13 @@ class CategoryNotifService {
     }
   }
 
-  Future<List?> getCachedCategorySettings(
-      String boxName, String? userId) async {
+  Future<List> getCachedCategorySettings(String boxName, String? userId) async {
     final box = await Hive.openBox<List>(boxName);
     box.clear();
     // final settings = box.get('categorysettings_$userId');
     // debugPrint('cached categorysettings: $settings');
     // await box.close();
-    return null;
+    return [];
   }
 
   Future<void> _cacheCategorySettings(

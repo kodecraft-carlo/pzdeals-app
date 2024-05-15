@@ -35,7 +35,7 @@ class FetchProductDealService {
         }
 
         final products =
-            ProductMapper.mapToProductDealcardDataList(responseData);
+            ProductMapper.mapToProductDealcardDataList(responseData['data']);
         await _cacheProducts(products, boxName);
         return products;
       } else {
@@ -71,7 +71,7 @@ class FetchProductDealService {
         }
 
         final products =
-            ProductMapper.mapToProductDealcardDataList(responseData);
+            ProductMapper.mapToProductDealcardDataList(responseData['data']);
         await _cacheProducts(products, boxName);
         return products;
       } else {
@@ -81,7 +81,8 @@ class FetchProductDealService {
     } on DioException catch (e) {
       debugPrint("DioExceptionw: ${e.message}");
       throw Exception('Failed to fetch directus product list');
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint(stackTrace.toString());
       debugPrint('Error fetching frontpage deals: $e');
       throw Exception('Failed to fetch directus product list');
     }
@@ -94,7 +95,7 @@ class FetchProductDealService {
     // await box.clear();
     // box.addAll(products);
     for (final product in products) {
-      box.add(product);
+      box.put(product.productId, product);
     }
   }
 
@@ -125,7 +126,8 @@ class FetchProductDealService {
           throw Exception('No Data Found');
         }
 
-        final products = ProductMapper.mapToProductDealcardData(responseData);
+        final products =
+            ProductMapper.mapToProductDealcardData(responseData['data']);
         return products;
       } else {
         throw Exception('Failed to fetch directus product info');

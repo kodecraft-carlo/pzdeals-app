@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
@@ -156,67 +157,69 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
               children: [
                 Row(
                   children: <Widget>[
-                    const Expanded(
+                    Expanded(
                       child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Notification",
-                          style: TextStyle(
-                              fontSize: Sizes.headerFontSize,
-                              fontWeight: FontWeight.w600,
-                              color: PZColors.pzBlack),
-                        ),
-                      ),
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: () {
+                              scrollToTop();
+                            },
+                            child: const Text(
+                              "Notification",
+                              style: TextStyle(
+                                  fontSize: Sizes.headerFontSize,
+                                  fontWeight: FontWeight.w600,
+                                  color: PZColors.pzBlack),
+                            ),
+                          )),
                     ),
                     notificationState.notifications.isNotEmpty
-                        ? Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog.adaptive(
-                                      title: const Text('Clear Notifications'),
-                                      content: const Text(
-                                          'Are you sure you want to clear all notifications?'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text(
-                                            'Cancel',
-                                            style: TextStyle(
-                                                color: PZColors.pzBlack),
-                                          ),
+                        ? GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog.adaptive(
+                                    title: const Text('Clear Notifications'),
+                                    content: const Text(
+                                        'Are you sure you want to clear all notifications?'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                              color: PZColors.pzBlack),
                                         ),
-                                        TextButton(
-                                          onPressed: () {
-                                            ref
-                                                .read(notificationsProvider)
-                                                .removeAllNotification();
-                                            Navigator.of(context).pop();
-                                            showSnackbarWithMessage(context,
-                                                'Notifications cleared');
-                                          },
-                                          child: const Text(
-                                            'Clear',
-                                            style: TextStyle(
-                                                color: PZColors.pzOrange),
-                                          ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          ref
+                                              .read(notificationsProvider)
+                                              .removeAllNotification();
+                                          Navigator.of(context).pop();
+                                          showSnackbarWithMessage(
+                                              context, 'Notifications cleared');
+                                        },
+                                        child: const Text(
+                                          'Clear',
+                                          style: TextStyle(
+                                              color: PZColors.pzOrange),
                                         ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              child: const Text('Clear',
-                                  textAlign: TextAlign.end,
-                                  style: TextStyle(
-                                      fontSize: Sizes.bodyFontSize,
-                                      color: PZColors.pzOrange,
-                                      fontWeight: FontWeight.w600)),
-                            ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: const Text('Clear',
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                    fontSize: Sizes.bodyFontSize,
+                                    color: PZColors.pzOrange,
+                                    fontWeight: FontWeight.w600)),
                           )
                         : const SizedBox.shrink(),
                   ],

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_result.dart';
 
@@ -35,6 +36,11 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
         _scrollController.position.maxScrollExtent) {
       ref.read(searchFilterProvider).loadMoreStores();
     }
+  }
+
+  bool isSvgImage(String imageUrl) {
+    final regex = RegExp(r'\.svg(\?|$)');
+    return regex.hasMatch(imageUrl.toLowerCase());
   }
 
   @override
@@ -142,6 +148,21 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
       height: 30,
       errorWidget: (context, url, error) {
         debugPrint('Error loading image: $error');
+        if (isSvgImage(imageUrl)) {
+          try {
+            return SvgPicture.network(
+              imageUrl,
+              fit: BoxFit.contain,
+              height: 30,
+            );
+          } catch (e) {
+            debugPrint('Error loading image: $e');
+            return Image.asset(
+              'assets/images/pzdeals.png',
+              fit: BoxFit.fitHeight,
+            );
+          }
+        }
         return ClipRRect(
           borderRadius: BorderRadius.circular(Sizes.containerBorderRadius),
           child: Image.asset(

@@ -139,24 +139,32 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
 
     return authUserDataState.isAuthenticated
         ? Scaffold(
-            appBar: AppBar(
-              title: const Text(
-                'Bookmarked Deals',
-                style: TextStyle(
-                  color: PZColors.pzBlack,
-                  fontWeight: FontWeight.w700,
-                  fontSize: Sizes.appBarFontSize,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              centerTitle: true,
-              surfaceTintColor: PZColors.pzWhite,
-              backgroundColor: PZColors.pzWhite,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new),
-                onPressed: () {
-                  Navigator.of(context).pop();
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(kToolbarHeight),
+              child: GestureDetector(
+                onTap: () {
+                  scrollToTop();
                 },
+                child: AppBar(
+                  title: const Text(
+                    'Bookmarked Deals',
+                    style: TextStyle(
+                      color: PZColors.pzBlack,
+                      fontWeight: FontWeight.w700,
+                      fontSize: Sizes.appBarFontSize,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  centerTitle: true,
+                  surfaceTintColor: PZColors.pzWhite,
+                  backgroundColor: PZColors.pzWhite,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
               ),
             ),
             body: body,

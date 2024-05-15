@@ -5,7 +5,8 @@ import 'package:pzdeals/src/models/index.dart';
 class StoreDataMapper {
   static List<PZStoreData> mapToStoreDataList(List<dynamic> responseData) {
     try {
-      return List<PZStoreData>.from(responseData.map((json) {
+      return List<PZStoreData>.from(
+          responseData.where((json) => json['title'] != null).map((json) {
         return PZStoreData(
           id: json['id'],
           title: json['title'],
@@ -24,14 +25,15 @@ class StoreDataMapper {
 
   static List<StoreData> mapToStoreIconList(List<dynamic> responseData) {
     try {
-      return List<StoreData>.from(responseData.map((json) {
+      return List<StoreData>.from(
+          responseData.where((json) => json['title'] != null).map((json) {
         return StoreData(
           id: json['id'],
           storeName: json['title'],
           handle: json['handle'],
           storeAssetImage:
               json['image_src'] ?? 'assets/images/pzdeals_store.png',
-          appStoreImg: json['app_store_img'],
+          appStoreImg: json['app_store_img'] ?? '',
           assetSourceType: 'network',
           tagName: json['tags'].length > 0
               ? json['tags'][0]['tags_id']['tag_name']
@@ -40,8 +42,8 @@ class StoreDataMapper {
         );
       }));
     } catch (e) {
-      debugPrint('Error in mapToStoreDataList: $e');
-      throw ('Error in mapToStoreDataList $e');
+      debugPrint('Error in mapToStoreIconList: $e');
+      throw ('Error in mapToStoreIconList $e');
     }
   }
 
@@ -53,7 +55,7 @@ class StoreDataMapper {
         storeName: json['title'],
         handle: json['handle'],
         storeAssetImage: json['image_src'] ?? 'assets/images/pzdeals_store.png',
-        appStoreImg: json['app_store_img'],
+        appStoreImg: json['app_store_img'] ?? '',
         assetSourceType: 'network',
         tagName: json['tags'].length > 0
             ? json['tags'][0]['tags_id']['tag_name']

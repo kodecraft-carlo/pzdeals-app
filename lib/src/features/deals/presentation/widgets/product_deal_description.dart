@@ -178,6 +178,9 @@ class ProductDealDescriptionState
             widget.productData.isProductExpired == true)
           const ExpiredDealBannerWidget(
               message: 'Sorry, this deal has expired'),
+        if (widget.productData.isProductExpired != null &&
+            widget.productData.isProductExpired == true)
+          const SizedBox(height: Sizes.spaceBetweenContent),
         //Added 05/08/2024 Tag Description
         widget.productData.sku != null && widget.productData.sku!.isNotEmpty
             ? Align(

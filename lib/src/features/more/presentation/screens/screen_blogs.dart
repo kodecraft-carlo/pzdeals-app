@@ -153,14 +153,19 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
           return [
             SliverAppBar(
               pinned: true,
-              title: const Text(
-                'Blog',
-                style: TextStyle(
-                  color: PZColors.pzBlack,
-                  fontWeight: FontWeight.w700,
-                  fontSize: Sizes.appBarFontSize,
+              title: GestureDetector(
+                onTap: () {
+                  scrollToTop();
+                },
+                child: const Text(
+                  'Blog',
+                  style: TextStyle(
+                    color: PZColors.pzBlack,
+                    fontWeight: FontWeight.w700,
+                    fontSize: Sizes.appBarFontSize,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
               centerTitle: true,
               surfaceTintColor: PZColors.pzWhite,

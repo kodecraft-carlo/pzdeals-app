@@ -29,6 +29,7 @@ class ShopCategory extends StatelessWidget {
         return NavigateScreenWidget(
           destinationWidget: CollectionDisplayScreenWidget(
             collectionTitle: category.title,
+            keyword: category.keyword ?? '',
             collectionId: category.id,
           ),
           childWidget: SquareLabeledIcon(

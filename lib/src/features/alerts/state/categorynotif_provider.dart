@@ -24,7 +24,7 @@ class CategorySettingsNotifier extends ChangeNotifier {
   String _userUID = '';
   bool _isCollectionLoading = false;
 
-  List? _settingsData;
+  List<dynamic> _settingsData = [];
   List<CollectionData> _collections = [];
 
   bool get isLoading => _isLoading;
@@ -84,13 +84,17 @@ class CategorySettingsNotifier extends ChangeNotifier {
     try {
       _settingsData =
           await _settingsService.getCachedCategorySettings(_boxName, userId);
-      if (_settingsData != null) {
+      if (_settingsData.isNotEmpty) {
+        debugPrint('fetching user settings from cache');
         loadCollections();
       } else {
+        debugPrint('fetching user settings from server');
         final serverSettings =
             await _settingsService.fetchUserCategorySettings(_boxName, userId);
 
-        _settingsData = serverSettings;
+        if (serverSettings.isNotEmpty) {
+          _settingsData = serverSettings;
+        }
         loadCollections();
       }
     } catch (e, stackTrace) {
@@ -112,8 +116,10 @@ class CategorySettingsNotifier extends ChangeNotifier {
     topicName = formatToValidTopic(topicName);
     debugPrint('updateSettingsLocally: $value, $topicName');
     if (value == true) {
+      debugPrint('subscribing to $topicName');
       //add collectionTitle to _settingsData
-      _settingsData?.add(topicName);
+      _settingsData.add(topicName);
+      debugPrint('added to _settingsData: $_settingsData');
       _firebaseMessaging.subscribeToTopic(topicName);
       _collections
           .firstWhere((element) =>
@@ -121,7 +127,7 @@ class CategorySettingsNotifier extends ChangeNotifier {
           .isSubscribed = true;
     } else {
       //remove collectionTitle from _settingsData
-      _settingsData?.remove(topicName);
+      _settingsData.remove(topicName);
       _firebaseMessaging.unsubscribeFromTopic(topicName);
       _collections
           .firstWhere((element) =>
@@ -134,11 +140,11 @@ class CategorySettingsNotifier extends ChangeNotifier {
 
     try {
       _settingsService.updateUserCategorySettings(
-          _boxName, userId, _settingsData!);
+          _boxName, userId, _settingsData);
 
       // notifyListeners();
-    } catch (e) {
-      debugPrint('error updating settings: $e');
+    } catch (e, stackTrace) {
+      debugPrint('error updating settings: $stackTrace');
       _firebaseMessaging.unsubscribeFromTopic(topicName.toLowerCase());
     } finally {
       _isLoading = false;
@@ -154,11 +160,12 @@ class CategorySettingsNotifier extends ChangeNotifier {
   }
 
   bool isSubscribed(String topicName) {
-    return _settingsData?.contains(topicName.toLowerCase()) ?? false;
+    return _settingsData.isNotEmpty &&
+        _settingsData.contains(topicName.toLowerCase());
   }
 
   void removeDuplicates() {
-    _settingsData = _settingsData?.toSet().toList();
+    _settingsData = _settingsData.toSet().toList();
     notifyListeners();
   }
 }

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:googleapis/androidenterprise/v1.dart';
 import 'package:pzdeals/src/common_widgets/badge.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
@@ -234,8 +233,11 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                               ],
                             ),
                           )
-                        : StoreImageWidget(
-                            storeAssetImage: productData.storeAssetImage),
+                        : SizedBox(
+                            height: 25,
+                            child: StoreImageWidget(
+                                storeAssetImage: productData.storeAssetImage),
+                          ),
                   )
                 ],
               ),

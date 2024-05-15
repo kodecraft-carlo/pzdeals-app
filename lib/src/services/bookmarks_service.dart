@@ -28,7 +28,7 @@ class BookmarksService {
         }
 
         final products =
-            ProductMapper.mapToProductDealcardDataList(responseData);
+            ProductMapper.mapToProductDealcardDataList(responseData['data']);
         // await _cacheProducts(products, boxName);
         return products;
       } else {
@@ -37,8 +37,8 @@ class BookmarksService {
     } on DioException catch (e) {
       debugPrint("DioExceptionw: ${e.message}");
       throw Exception('Failed to fetch directus product list');
-    } catch (e) {
-      debugPrint('Error fetching frontpage deals: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching bookmarked deals: $e');
       throw Exception('Failed to fetch directus product list');
     }
   }

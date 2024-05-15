@@ -62,7 +62,7 @@ class SearchProductService {
         }
 
         final products =
-            ProductMapper.mapToProductDealcardDataList(responseData);
+            ProductMapper.mapToProductDealcardDataList(responseData["data"]);
         return products;
       } else {
         throw Exception('Failed to fetch directus searchProduct list');
@@ -94,7 +94,7 @@ class SearchProductService {
         }
 
         final products =
-            ProductMapper.mapToProductDealcardDataList(responseData);
+            ProductMapper.mapToProductDealcardDataList(responseData["data"]);
         return products;
       } else {
         throw Exception(
@@ -129,7 +129,8 @@ class SearchProductService {
           throw Exception('No Data Found');
         }
 
-        final products = ProductMapper.mapToProductDealcardData(responseData);
+        final products =
+            ProductMapper.mapToProductDealcardData(responseData["data"]);
         return products;
       } else {
         throw Exception('Failed to fetch directus product info');
