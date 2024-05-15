@@ -201,7 +201,7 @@ class DealsTabControllerWidgetState
             body: TabBarView(
               controller: tabController,
               children: <Widget>[
-                const ForYouWidget(),
+                ForYouWidget(key: _foryoupageKey),
                 NotificationListener<ScrollNotification>(
                   child: FrontPageDealsWidget(key: _frontpageKey),
                   onNotification: (ScrollNotification scrollInfo) {

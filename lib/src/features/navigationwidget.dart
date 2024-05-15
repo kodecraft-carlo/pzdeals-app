@@ -337,7 +337,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
             child: DealsTabControllerWidget(key: dealsKey)),
         const StoresWidget(),
         const NotificationScreen(),
-        DealAlertsScreen(),
+        const DealAlertsScreen(),
         MoreScreen()
       ][currentPageIndex]),
     );

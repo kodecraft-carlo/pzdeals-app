@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/androidenterprise/v1.dart';
@@ -389,17 +391,20 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
   Widget productName(String productName, BuildContext context) {
     double baseHeight =
         2.8; // The base height for the default text scale factor
+    double multiplier = Platform.isIOS
+        ? 1.3
+        : 1.0; // The multiplier for the default text scale factor
+    double scaleFactor =
+        MediaQuery.textScalerOf(context).scale(Sizes.bodyFontSize * multiplier);
 
     return SizedBox(
-      height: baseHeight *
-          MediaQuery.textScalerOf(context).scale(Sizes.bodyFontSize * 1.3),
+      height: baseHeight * scaleFactor,
       child: Align(
         alignment: Alignment.bottomLeft,
         child: Text(
           productName,
           style: TextStyle(
-            fontSize: MediaQuery.textScalerOf(context)
-                .scale(Sizes.bodyFontSize * 1.3),
+            fontSize: scaleFactor,
             fontWeight: FontWeight.w500,
           ),
           textAlign: TextAlign.start,
