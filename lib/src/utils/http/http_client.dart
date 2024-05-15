@@ -13,7 +13,7 @@ class ApiClient {
     BaseOptions baseOptions = BaseOptions(
       // baseUrl: 'http://3.81.66.127:8055/', // internal dev
       // baseUrl: 'http://52.14.196.100:8055/', // -- client uat
-      baseUrl: 'http://52.14.196.100:8056/', // -- client prod
+      baseUrl: 'https://backend.pzdeals.com/', // -- client prod
       connectTimeout: const Duration(minutes: 3),
       receiveTimeout: const Duration(minutes: 3),
     );
