@@ -40,8 +40,8 @@ class ProductImageWidget extends StatelessWidget {
         height = 140.0;
         break;
       case 'xlarge':
-        width = 180.0;
-        height = 180.0;
+        width = containerWidth / 2;
+        height = containerWidth / 2;
         break;
       case 'container':
         width = containerWidth / 1.75;

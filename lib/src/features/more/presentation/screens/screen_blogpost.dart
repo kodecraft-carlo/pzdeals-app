@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
+import 'package:pzdeals/src/common_widgets/html_content.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/more/models/index.dart';
 
@@ -56,24 +57,9 @@ class BlogpostScreenWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: Sizes.spaceBetweenSections),
-            Html(
-              data: blogData.blogContent,
-              shrinkWrap: true,
-              style: {
-                "body": Style(
-                  textAlign: TextAlign.left,
-                ),
-                "ul": Style(
-                  padding: HtmlPaddings.zero,
-                  margin: Margins.zero,
-                  textAlign: TextAlign.left,
-                ),
-                "a": Style(
-                  color: Colors.blue,
-                  textDecoration: TextDecoration.none,
-                ),
-              },
-              onLinkTap: (url, attributes, element) => openBrowser(url ?? ''),
+            HtmlContent(
+              htmlContent: blogData.blogContent,
+              margin: Margins.symmetric(horizontal: 15),
             ),
           ],
         ),

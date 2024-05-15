@@ -6,6 +6,7 @@ import 'package:pzdeals/src/common_widgets/category_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
 import 'package:pzdeals/src/features/deals/deals.dart';
+import 'dart:io' show Platform;
 
 class CollectionSelectionWidget extends ConsumerStatefulWidget {
   const CollectionSelectionWidget({super.key});
@@ -26,6 +27,7 @@ class _CollectionSelectionWidgetState
     _animationController = AnimationController(vsync: this);
     Future(() {
       ref.read(tabForYouProvider).loadCollections();
+      ref.read(tabForYouProvider).resetCollectionMap();
     });
   }
 
@@ -102,6 +104,7 @@ class _CollectionSelectionWidgetState
 
     return SafeArea(
       top: false,
+      bottom: Platform.isIOS ? false : true,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: PZColors.pzWhite,
@@ -113,6 +116,7 @@ class _CollectionSelectionWidgetState
               fontWeight: FontWeight.w600,
               fontSize: Sizes.fontSizeMedium,
             ),
+            textAlign: TextAlign.center,
           ),
           actions: [
             foryouState.collections.isEmpty
@@ -142,6 +146,8 @@ class BottomSheetWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
+      padding:
+          EdgeInsets.only(bottom: Platform.isIOS ? 5 : 0), // Keyboard padding
       margin: const EdgeInsets.all(Sizes.paddingAll),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -177,15 +183,15 @@ class BottomSheetWidget extends StatelessWidget {
               }),
             ],
           ),
-          // TextButton(
-          //     onPressed: () {
-          //       Navigator.of(context).pop();
-          //     },
-          //     child: const Text(
-          //       'Cancel',
-          //       style: TextStyle(
-          //           color: PZColors.pzBlack, fontWeight: FontWeight.w600),
-          //     ))
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                    color: PZColors.pzBlack, fontWeight: FontWeight.w600),
+              ))
         ],
       ),
     );

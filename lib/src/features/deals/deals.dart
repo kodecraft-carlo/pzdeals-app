@@ -31,6 +31,8 @@ class DealsTabControllerWidgetState
     with SingleTickerProviderStateMixin {
   final GlobalKey<NestedScrollViewState> globalKey =
       GlobalKey<NestedScrollViewState>();
+  final GlobalKey<ForYouWidgetState> _foryoupageKey =
+      GlobalKey<ForYouWidgetState>();
   final GlobalKey<FrontPageDealsWidgetState> _frontpageKey =
       GlobalKey<FrontPageDealsWidgetState>();
   final GlobalKey<PZPicksScreenWidgetState> _pzpicksKey =
@@ -150,9 +152,13 @@ class DealsTabControllerWidgetState
                             fontFamily: 'Poppins'),
                         tabs: <Widget>[
                           GestureDetector(
-                            onTap: () {
-                              debugPrint('for you tapped');
-                              tabController.animateTo(0);
+                            onTap: () => {
+                              debugPrint('for you tapped'),
+                              tabController.animateTo(0),
+                              if (_foryoupageKey.currentState != null)
+                                {
+                                  scrollToTop(),
+                                }
                             },
                             child: const Tab(
                               text: 'For You',
@@ -195,7 +201,7 @@ class DealsTabControllerWidgetState
             body: TabBarView(
               controller: tabController,
               children: <Widget>[
-                const ForYouWidget(),
+                ForYouWidget(key: _foryoupageKey),
                 NotificationListener<ScrollNotification>(
                   child: FrontPageDealsWidget(key: _frontpageKey),
                   onNotification: (ScrollNotification scrollInfo) {

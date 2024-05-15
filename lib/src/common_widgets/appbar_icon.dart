@@ -21,10 +21,20 @@ class AppbarIcon extends StatelessWidget {
                           )))
               : Navigator.push(
                   context,
-                  CupertinoPageRoute(
-                      builder: (context) => const NavigationWidget(
-                            initialPageIndex: 0,
-                          )));
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const NavigationWidget(
+                      initialPageIndex: 0,
+                    ),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
         },
         child: Image.asset(
           'assets/images/pzdeals.png',

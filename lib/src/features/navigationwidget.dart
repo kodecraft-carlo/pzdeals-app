@@ -166,6 +166,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   void destinationSelected(int index) {
     if (index == 1) {
       ref.read(storescreenProvider).clearFilter();
+      ref.read(storescreenProvider).refresh();
     }
     if (index == 0) {
       ref.read(tabFrontPageProvider).refresh();
@@ -336,7 +337,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
             child: DealsTabControllerWidget(key: dealsKey)),
         const StoresWidget(),
         const NotificationScreen(),
-        DealAlertsScreen(),
+        const DealAlertsScreen(),
         MoreScreen()
       ][currentPageIndex]),
     );

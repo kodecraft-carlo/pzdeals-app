@@ -8,7 +8,7 @@ String getStoreCollectionQuery(int pageNumber) {
       '&fields[]=tags.tags_id.tag_name'
       '&fields[]=handle'
       '&sort[]=title'
-      '&limit=100'
+      '&limit=200'
       '&page=$pageNumber';
   return query;
 }

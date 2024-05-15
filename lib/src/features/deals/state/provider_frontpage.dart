@@ -25,9 +25,9 @@ class TabFrontPageNotifier extends ChangeNotifier {
 
   Future<void> refresh() async {
     pageNumber = 1;
-    _products.clear();
-    // notifyListeners();
-    loadProducts();
+    _isLoading = true;
+    notifyListeners();
+    refreshDeals();
   }
 
   Future<void> refreshDeals() async {

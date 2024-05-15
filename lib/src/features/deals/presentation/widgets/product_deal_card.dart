@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:googleapis/androidenterprise/v1.dart';
 import 'package:pzdeals/src/common_widgets/badge.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
@@ -25,6 +28,13 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
   //   final product = await productDealService.fetchProductInfo(productId);
   //   return product;
   // }
+
+  bool isProductNoPrice(ProductDealcardData productData) {
+    return productData.isProductNoPrice != null &&
+        productData.isProductNoPrice == false &&
+        productData.price != '' &&
+        productData.price != '0.00';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,19 +165,7 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                           .spaceBetweenContent), // Add some spacing between
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      productData.productName,
-                      style: const TextStyle(
-                        fontSize: Sizes.bodyFontSize,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.start,
-                      maxLines: productData.isProductNoPrice != null &&
-                              productData.isProductNoPrice == true
-                          ? 3
-                          : 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    child: productName(productData.productName, context),
                   ),
                   const SizedBox(
                       height: Sizes
@@ -177,19 +175,24 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      StoreImageWidget(
-                          storeAssetImage: productData.storeAssetImage),
+                      !isProductNoPrice(productData)
+                          ? const Text('No price',
+                              style: TextStyle(
+                                  fontSize: 18, color: Colors.transparent))
+                          : SizedBox(
+                              height: 25,
+                              child: StoreImageWidget(
+                                  storeAssetImage: productData.storeAssetImage),
+                            ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             // Discount Badge
-                            productData.discountPercentage > 0
-                                ? BadgeWidget(
-                                    discountPercentage:
-                                        productData.discountPercentage)
-                                : const SizedBox(),
+                            BadgeWidget(
+                                discountPercentage:
+                                    productData.discountPercentage)
                           ],
                         ),
                       ),
@@ -231,7 +234,8 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                               ],
                             ),
                           )
-                        : const SizedBox(),
+                        : StoreImageWidget(
+                            storeAssetImage: productData.storeAssetImage),
                   )
                 ],
               ),
@@ -379,6 +383,33 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget productName(String productName, BuildContext context) {
+    double baseHeight =
+        2.8; // The base height for the default text scale factor
+    double multiplier = Platform.isIOS
+        ? 1.3
+        : 1.0; // The multiplier for the default text scale factor
+    double scaleFactor =
+        MediaQuery.textScalerOf(context).scale(Sizes.bodyFontSize * multiplier);
+
+    return SizedBox(
+      height: baseHeight * scaleFactor,
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: Text(
+          productName,
+          style: TextStyle(
+            fontSize: scaleFactor,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.start,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );

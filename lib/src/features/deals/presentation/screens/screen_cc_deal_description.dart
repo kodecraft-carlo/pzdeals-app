@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:pzdeals/src/common_widgets/button_browser.dart';
 import 'package:pzdeals/src/common_widgets/expired_deal_banner.dart';
+import 'package:pzdeals/src/common_widgets/html_content.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
 import 'package:pzdeals/src/common_widgets/scrollbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
@@ -69,14 +70,9 @@ class CreditCardDealDescription extends StatelessWidget {
                     url: creditCardDealData.barCodeLink ?? '',
                     buttonLabel: 'Apply Now'),
               const SizedBox(height: Sizes.spaceBetweenSections),
-              Html(
-                data: creditCardDealData.description,
-                style: {
-                  "body": Style(
-                    padding: HtmlPaddings.zero,
-                    margin: Margins.zero,
-                  ),
-                },
+              HtmlContent(
+                htmlContent: creditCardDealData.description ?? '',
+                margin: Margins.symmetric(horizontal: 10),
               ),
             ],
           ),

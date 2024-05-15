@@ -24,8 +24,8 @@ class ProductMapper {
           productName:
               json['title'] != null ? json['title'].toString().trim() : '',
           price: price,
-          storeAssetImage: json['store'] != null
-              ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
+          storeAssetImage: json['store_images'].isNotEmpty
+              ? json['store_images'][0]
               : 'assets/images/pzdeals_store.png',
           oldPrice: oldPrice,
           imageAsset: json['image_src'],
@@ -73,8 +73,8 @@ class ProductMapper {
         productName:
             json['title'] != null ? json['title'].toString().trim() : '',
         price: price,
-        storeAssetImage: json['store'] != null
-            ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
+        storeAssetImage: json['store_images'].isNotEmpty
+            ? json['store_images'][0]
             : 'assets/images/pzdeals_store.png',
         oldPrice: oldPrice,
         imageAsset: json['image_src'],
