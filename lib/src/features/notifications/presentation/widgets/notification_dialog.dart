@@ -5,6 +5,7 @@ import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/html_content.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/models/index.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class NotificationDialog extends StatelessWidget {
   final NotificationData notificationData;
@@ -56,6 +57,7 @@ class NotificationDialog extends StatelessWidget {
               notificationData.imageUrl != ''
                   ? CachedNetworkImage(
                       imageUrl: notificationData.imageUrl,
+                      cacheManager: networkImageCacheManager,
                       width: MediaQuery.of(context).size.width / 1.5,
                       fit: BoxFit.fitWidth,
                     )

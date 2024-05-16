@@ -185,36 +185,67 @@ class ProductDealDescriptionState
         widget.productData.sku != null && widget.productData.sku!.isNotEmpty
             ? Align(
                 alignment: Alignment.centerLeft,
-                child: RichText(
-                  textAlign: TextAlign.start,
-                  text: TextSpan(children: [
-                    const TextSpan(
-                      text: '• ',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
+                child: Padding(
+                  padding: EdgeInsets.only(left: 9),
+                  child: RichText(
+                    textAlign: TextAlign.start,
+                    text: TextSpan(children: [
+                      const TextSpan(
+                        text: '• ',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Poppins',
+                        ),
                       ),
-                    ),
-                    const TextSpan(
-                      text: 'Coupon code ',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
+                      const TextSpan(
+                        text: 'Coupon code ',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Poppins',
+                        ),
                       ),
-                    ),
-                    WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
-                        child: CouponCodeWidget(
-                          text: widget.productData.sku ?? '',
-                          url: widget.productData.barcodeLink ?? '',
-                        )),
-                  ]),
+                      WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: CouponCodeWidget(
+                            text: widget.productData.sku ?? '',
+                            url: widget.productData.barcodeLink ?? '',
+                          )),
+                    ]),
+                  ),
                 ),
               )
             : const SizedBox.shrink(),
+        widget.productData.sku != null && widget.productData.sku!.isNotEmpty
+            ? const SizedBox(height: Sizes.spaceBetweenContent)
+            : const SizedBox.shrink(),
 
+        widget.productData.productDealDescription != null &&
+                widget.productData.productDealDescription != ''
+            ? Row(
+                children: [
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Sizes.paddingAllSmall,
+                    ),
+                    child: HtmlContent(
+                      htmlContent:
+                          widget.productData.productDealDescription!.trim(),
+                    ),
+                  ))
+                ],
+              )
+            : const SizedBox(),
+        widget.productData.tagDealDescription != null &&
+                widget.productData.tagDealDescription != '' &&
+                widget.productData.productDealDescription != null &&
+                widget.productData.productDealDescription != ''
+            ? const SizedBox(
+                height: Sizes.spaceBetweenContent,
+              )
+            : const SizedBox.shrink(),
         widget.productData.tagDealDescription != null &&
                 widget.productData.tagDealDescription != ''
             ? Row(
@@ -233,23 +264,6 @@ class ProductDealDescriptionState
                 ],
               )
             : const SizedBox.shrink(),
-        widget.productData.productDealDescription != null &&
-                widget.productData.productDealDescription != ''
-            ? Row(
-                children: [
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Sizes.paddingAllSmall,
-                    ),
-                    child: HtmlContent(
-                      htmlContent:
-                          widget.productData.productDealDescription!.trim(),
-                    ),
-                  ))
-                ],
-              )
-            : const SizedBox(),
         const SizedBox(height: Sizes.spaceBetweenSections),
       ],
     );

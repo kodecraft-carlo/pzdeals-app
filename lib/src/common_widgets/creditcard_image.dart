@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class CreditCardImageWidget extends StatelessWidget {
   const CreditCardImageWidget({
@@ -34,10 +35,11 @@ class CreditCardImageWidget extends StatelessWidget {
     if (sourceType == 'network') {
       imageWidget = CachedNetworkImage(
         imageUrl: imageAsset,
+        cacheManager: networkImageCacheManager,
         width: 100.0,
         height: 80.0,
         fit: BoxFit.fitWidth,
-        fadeInDuration: const Duration(milliseconds: 100),
+        fadeInDuration: const Duration(milliseconds: 10),
         // placeholder: (context, url) => const Center(
         //   child: CircularProgressIndicator(
         //     valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),

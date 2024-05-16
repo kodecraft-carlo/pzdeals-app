@@ -5,6 +5,7 @@ import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
 import 'package:pzdeals/src/features/alerts/state/keyword_provider.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class PopularKeywordsGrid extends StatelessWidget {
   const PopularKeywordsGrid({super.key, required this.keywordsdata});
@@ -113,8 +114,9 @@ class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
               borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
               child: CachedNetworkImage(
                 imageUrl: widget.keywordData.imageUrl,
+                cacheManager: networkImageCacheManager,
                 fit: BoxFit.contain,
-                fadeInDuration: const Duration(milliseconds: 100),
+                fadeInDuration: const Duration(milliseconds: 10),
                 errorWidget: (context, url, error) {
                   debugPrint('Error loading image: $error');
                   return Image.asset(

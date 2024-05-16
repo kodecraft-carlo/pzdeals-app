@@ -366,4 +366,6 @@ class NotificationService {
       await box.close();
     }
   }
+
+  //listen to notification changes
 }

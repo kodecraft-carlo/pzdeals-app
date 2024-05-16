@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class CategoryImageWidget extends StatelessWidget {
   const CategoryImageWidget({
@@ -65,9 +66,10 @@ class CategoryImageWidget extends StatelessWidget {
     if (sourceType == 'network') {
       imageWidget = CachedNetworkImage(
         imageUrl: imageAsset,
+        cacheManager: networkImageCacheManager,
         width: width,
         height: height,
-        fadeInDuration: const Duration(milliseconds: 100),
+        fadeInDuration: const Duration(milliseconds: 10),
         fit: BoxFit.cover,
         // placeholder: (context, url) => const Center(
         //   child: CircularProgressIndicator(

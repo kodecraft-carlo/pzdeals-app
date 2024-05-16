@@ -27,11 +27,16 @@ class HtmlContent extends StatelessWidget {
             textAlign: TextAlign.left,
           ),
           "ul": Style(
-            padding: HtmlPaddings.zero,
+            padding: HtmlPaddings.only(left: 10.0),
             margin: Margins.zero,
             textAlign: TextAlign.left,
-            lineHeight: const LineHeight(1.65),
+            lineHeight: const LineHeight(1.75),
           ),
+          // "li": Style(
+          //   padding: HtmlPaddings.zero,
+          //   margin: Margins.zero,
+          //   textAlign: TextAlign.left,
+          // ),
           "a": Style(
             color: PZColors.hyperlinkColor,
             fontWeight: FontWeight.w600,

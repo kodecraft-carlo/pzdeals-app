@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class ProductImageWidget extends StatelessWidget {
   const ProductImageWidget({
@@ -92,7 +93,8 @@ class ProductImageWidget extends StatelessWidget {
           imageUrl: imageAsset,
           width: width,
           height: height,
-          fadeInDuration: const Duration(milliseconds: 100),
+          cacheManager: networkImageCacheManager,
+          fadeInDuration: const Duration(milliseconds: 10),
           fit: fit,
           // placeholder: (context, url) => const Center(
           //   child: CircularProgressIndicator(

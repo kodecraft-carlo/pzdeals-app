@@ -5,6 +5,7 @@ import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/html_content.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/more/models/index.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class BlogpostScreenWidget extends StatelessWidget {
   const BlogpostScreenWidget({super.key, required this.blogData});
@@ -42,6 +43,7 @@ class BlogpostScreenWidget extends StatelessWidget {
             blogData.blogImage != ""
                 ? CachedNetworkImage(
                     imageUrl: blogData.blogImage,
+                    cacheManager: networkImageCacheManager,
                     width: MediaQuery.of(context).size.width / 2,
                     fit: BoxFit.fitWidth,
                     errorWidget: (context, url, error) => const SizedBox(),

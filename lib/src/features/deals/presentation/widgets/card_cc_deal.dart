@@ -5,6 +5,7 @@ import 'package:pzdeals/src/common_widgets/creditcard_image.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_cc_deal_description.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class CreditCardItem extends StatelessWidget {
   final String displayType;
@@ -77,7 +78,7 @@ class CreditCardItem extends StatelessWidget {
                   ),
                 ),
               ),
-        animationDirection: 'bottomToTop');
+        animationDirection: 'leftToRight');
   }
 
   Widget creditcardImage(String imageAsset, String sourceType) {
@@ -85,6 +86,7 @@ class CreditCardItem extends StatelessWidget {
     if (sourceType == 'network') {
       imageWidget = CachedNetworkImage(
         imageUrl: imageAsset,
+        cacheManager: networkImageCacheManager,
         height: 65,
         fit: BoxFit.fitWidth,
         // placeholder: (context, url) => const Center(

@@ -71,7 +71,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
         widgetPosition.dy + widgetSize.height <=
             scrollPosition.pixels + scrollPosition.viewportDimension;
 
-    debugPrint('Is marker visible: $isVisible');
+    // debugPrint('Is marker visible: $isVisible');
     return isVisible;
   }
 

@@ -164,7 +164,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                       )
                     : const SizedBox()),
             ListTileWithSwitchWidget(
-              title: '% Off Notifications',
+              title: 'Percentage Off Notifications',
               subtitle:
                   'Get notified about significant drops in the price of a product',
               value: isPercentOff,
@@ -179,7 +179,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                         initialValue: _selectedThreshold == '0'
                             ? '50'
                             : _selectedThreshold,
-                        dropdownLabel: '% Off Threshold',
+                        dropdownLabel: 'Percentage Off Threshold',
                         dropdownItems: dropdownItems,
                         validator: thresholdValidator,
                       )

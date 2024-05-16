@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class StoreImageWidget extends ConsumerWidget {
   const StoreImageWidget(
@@ -27,6 +28,7 @@ class StoreImageWidget extends ConsumerWidget {
         : CachedNetworkImage(
             imageUrl: storeAssetImage,
             height: imageHeight,
+            cacheManager: networkImageCacheManager,
             fit: BoxFit.fitHeight,
             errorWidget: (context, url, error) {
               debugPrint('Error loading image: $error');

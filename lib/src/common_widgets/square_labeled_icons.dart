@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class SquareLabeledIcon extends StatelessWidget {
   final String iconTitle;
@@ -88,6 +89,8 @@ class SquareLabeledIcon extends StatelessWidget {
       imageWidget = CachedNetworkImage(
         imageUrl: iconImage,
         width: width,
+        cacheManager: networkImageCacheManager,
+        fadeInDuration: const Duration(milliseconds: 10),
         height: height,
         fit: BoxFit.cover,
         // placeholder: (context, url) => const Center(

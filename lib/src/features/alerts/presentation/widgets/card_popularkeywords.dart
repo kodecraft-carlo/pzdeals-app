@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class PopularKeywordsCard extends StatelessWidget {
   final String imagePath;
@@ -47,6 +48,7 @@ class PopularKeywordsCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
                   child: CachedNetworkImage(
                     imageUrl: imagePath,
+                    cacheManager: networkImageCacheManager,
                     fit: BoxFit.contain,
                     errorWidget: (context, url, error) {
                       debugPrint('Error loading image: $error');

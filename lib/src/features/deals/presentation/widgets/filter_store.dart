@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_result.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class FilterByStoresWidget extends ConsumerStatefulWidget {
   const FilterByStoresWidget({super.key});
@@ -142,7 +143,8 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
   Widget storeFilterImage(String imageUrl) {
     return CachedNetworkImage(
       imageUrl: imageUrl,
-      fadeInDuration: const Duration(milliseconds: 100),
+      cacheManager: networkImageCacheManager,
+      fadeInDuration: const Duration(milliseconds: 10),
       fit: BoxFit.contain,
       cacheKey: Key(imageUrl.trim()).toString(),
       height: 30,

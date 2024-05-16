@@ -13,10 +13,12 @@ class TabFrontPageNotifier extends ChangeNotifier {
   // final String _boxName = 'alldeals';
   int pageNumber = 1;
   bool _isLoading = false;
+  bool _isrefreshing = false;
 
   List<ProductDealcardData> _products = [];
 
   bool get isLoading => _isLoading;
+  bool get isRefreshing => _isrefreshing;
   List<ProductDealcardData> get products => _products;
 
   TabFrontPageNotifier() {
@@ -25,7 +27,7 @@ class TabFrontPageNotifier extends ChangeNotifier {
 
   Future<void> refresh() async {
     pageNumber = 1;
-    _isLoading = true;
+    _isrefreshing = true;
     notifyListeners();
     refreshDeals();
   }
@@ -36,11 +38,12 @@ class TabFrontPageNotifier extends ChangeNotifier {
       final serverProducts = await _productService.fetchProductDeals(
           _collectionName, _boxName, pageNumber);
       _products = serverProducts;
+      _isrefreshing = false;
       notifyListeners();
     } catch (e) {
       debugPrint("error loading products: $e");
     } finally {
-      _isLoading = false;
+      _isrefreshing = false;
       notifyListeners();
     }
   }

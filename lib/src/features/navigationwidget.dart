@@ -12,6 +12,7 @@ import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/product_deal_description.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
+import 'package:pzdeals/src/features/deals/state/provider_notificationdeals.dart';
 import 'package:pzdeals/src/features/more/more.dart';
 import 'package:pzdeals/src/features/notifications/notifications.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
@@ -24,7 +25,9 @@ import 'package:badges/badges.dart' as badges;
 
 class NavigationWidget extends ConsumerStatefulWidget {
   final int initialPageIndex;
-  const NavigationWidget({super.key, this.initialPageIndex = 0});
+  final Map<String, dynamic> arguments;
+  const NavigationWidget(
+      {super.key, this.initialPageIndex = 0, this.arguments = const {}});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -36,6 +39,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   int unreadNotificationCount = 0;
   String id = '';
   String dealType = '';
+  String notifId = '';
   FetchProductDealService productDealService = FetchProductDealService();
   final GlobalKey<DealsTabControllerWidgetState> dealsKey =
       GlobalKey<DealsTabControllerWidgetState>();
@@ -69,11 +73,11 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
     });
 
     Future(() {
-      final arguments = ModalRoute.of(context)!.settings.arguments;
-
-      if (arguments != null && arguments is Map<String, dynamic>) {
-        id = arguments['product_id'] as String;
-        dealType = arguments['type'] as String;
+      if (widget.arguments.isNotEmpty) {
+        debugPrint('arguments: ${widget.arguments}');
+        id = widget.arguments['product_id'] as String;
+        dealType = widget.arguments['type'] as String;
+        notifId = widget.arguments['notification_id'] as String;
         if (dealType != '' && dealType == 'price_mistake') {
           debugPrint('from price_mistake id: $id');
           if (id != '') {
@@ -92,6 +96,30 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
         }
       }
     });
+    // Future(() {
+    //   final arguments = ModalRoute.of(context)!.settings.arguments;
+
+    //   if (arguments != null && arguments is Map<String, dynamic>) {
+    //     id = arguments['product_id'] as String;
+    //     dealType = arguments['type'] as String;
+    //     if (dealType != '' && dealType == 'price_mistake') {
+    //       debugPrint('from price_mistake id: $id');
+    //       if (id != '') {
+    //         showProductDeal(int.parse(id));
+    //       }
+    //     } else if (dealType != '' && dealType == 'deeplink') {
+    //       debugPrint('from deeplink id: $id');
+    //       if (id != '') {
+    //         showProductDeal(int.parse(id));
+    //       }
+    //     } else {
+    //       debugPrint('from others id: $id');
+    //       if (id != '') {
+    //         showProductDeal(int.parse(id));
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   void updateNotificationsCount(String userId) {
@@ -108,6 +136,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
             unreadNotificationCount++;
           }
         });
+        ref.read(notificationsProvider).refreshNotification();
         setState(() {
           debugPrint('unreadNotificationCount: $unreadNotificationCount');
           unreadNotificationCount = unreadNotificationCount;
@@ -118,6 +147,8 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
 
   void showProductDeal(int productId) {
     loadProduct(productId).then((product) {
+      debugPrint('notifiId: $notifId');
+      ref.read(notificationsProvider).markAsRead(notifId);
       showDialog(
         context: context,
         useRootNavigator: false,
@@ -166,7 +197,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   void destinationSelected(int index) {
     if (index == 1) {
       ref.read(storescreenProvider).clearFilter();
-      ref.read(storescreenProvider).refresh();
+      // ref.read(storescreenProvider).refresh();
     }
     if (index == 0) {
       ref.read(tabFrontPageProvider).refresh();

@@ -10,7 +10,7 @@ String getBlogsByCollectionNameQuery(int pageNumber) {
       '&filter[collection_ids][collection_id][collection_name][_eq]=PzBlog'
       '&limit[]=15'
       '&page[]=$pageNumber'
-      '&sort=id'
+      '&sort=-created_at,-id'
       '&filter[title][_nempty]='
       '&filter[published][_eq]=true';
 

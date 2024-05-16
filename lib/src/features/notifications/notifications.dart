@@ -3,8 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
+import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
+import 'package:pzdeals/src/features/deals/models/index.dart';
+import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
+import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/features/notifications/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
@@ -19,6 +23,10 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
     with TickerProviderStateMixin {
   late final AnimationController _animationController;
   final _scrollController = ScrollController(keepScrollOffset: true);
+  String title = '';
+  String value = '';
+  String productid = '';
+  String notifId = '';
 
   @override
   void initState() {
@@ -29,6 +37,67 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
     Future(() {
       ref.read(notificationsProvider).loadNotifications();
     });
+
+    Future(() {
+      final arguments = ModalRoute.of(context)!.settings.arguments;
+
+      if (arguments != null && arguments is Map<String, dynamic>) {
+        value = arguments['value'] as String;
+        title = arguments['title'] as String;
+        productid = arguments['product_id'] as String;
+        notifId = arguments['notification_id'] as String;
+        if (productid != '') {
+          showProductDeal(int.parse(productid));
+        }
+      }
+    });
+  }
+
+  FetchProductDealService productDealService = FetchProductDealService();
+  void showProductDeal(int productId) {
+    debugPrint('mark as read: $notifId');
+    ref.read(notificationsProvider).markAsRead(notifId);
+    // if (mounted) {
+    // LoadingDialog.show(context);
+    loadProduct(productId).then((product) {
+      // if (mounted) {
+      showDialog(
+        context: context,
+        useRootNavigator: false,
+        barrierDismissible: true,
+        builder: (context) => ScaffoldMessenger(
+          child: Builder(
+            builder: (context) => Scaffold(
+              backgroundColor: Colors.transparent,
+              body: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                behavior: HitTestBehavior.opaque,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: ProductContentDialog(
+                    hasDescription: product.productDealDescription != null &&
+                        product.productDealDescription != '',
+                    productData: product,
+                    content: ProductDealDescription(
+                      snackbarContext: context,
+                      productData: product,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      // LoadingDialog.hide(context);
+      // }
+    });
+    // }
+  }
+
+  Future<ProductDealcardData> loadProduct(int productId) async {
+    final product = await productDealService.fetchProductInfo(productId);
+    return product;
   }
 
   @override
@@ -114,6 +183,9 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
                   itemBuilder: (BuildContext context, int index) {
                     return NotificationCardWidget(
                       notificationData: notifData[index],
+                      // onCardTap: (int productId) {
+                      //   showProductDeal(productId);
+                      // },
                     );
                   },
                 ),

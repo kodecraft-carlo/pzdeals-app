@@ -88,7 +88,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                           children: widget.dropdownItems.map((String item) {
                             return Center(
                               child: Text(
-                                item,
+                                '$item% off',
                               ),
                             );
                           }).toList(),
@@ -107,7 +107,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 borderRadius:
                     BorderRadius.circular(Sizes.textFieldCornerRadius),
               ),
-              child: Text('${_selectedValue ?? widget.dropdownLabel}%'),
+              child: Text('${_selectedValue ?? widget.dropdownLabel}% off'),
             ),
           )
         : DropdownButtonFormField<String>(
@@ -152,7 +152,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Text(value),
+                child: Text('$value% off'),
               );
             }).toList(),
           );

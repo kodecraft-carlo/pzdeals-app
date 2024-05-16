@@ -221,4 +221,22 @@ class NotificationListNotifier extends ChangeNotifier {
     _unreadCount = count;
     notifyListeners();
   }
+
+  //listen to firestore notifications
+  // void listenToNotifications() {
+  //   _notifService.listenToNotifications(_boxName).listen((event) {
+  //     final notif = NotificationData(
+  //       id: event.id,
+  //       title: event["title"],
+  //       body: event["body"],
+  //       timestamp: timestampToDateTime(event["timestamp"]),
+  //       isRead: event["isRead"] as bool,
+  //       data: event["data"],
+  //       imageUrl: event["imageUrl"],
+  //     );
+  //     _notifications.insert(0, notif);
+  //     _unreadCount = _notifications.where((element) => element.isRead == false).length;
+  //     notifyListeners();
+  //   });
+  // }
 }

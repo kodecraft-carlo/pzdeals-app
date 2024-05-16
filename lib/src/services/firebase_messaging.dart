@@ -154,42 +154,65 @@ class FirebaseMessagingApi {
   }
 
   void navigateToScreens(dynamic message) {
+    debugPrint('navigateToScreens called with message: $message');
     final data = message["data"];
     if (navigatorKey.currentState != null) {
-      if (data['alert_type'] == 'keyword') {
-        navigatorKey.currentState!
-            .pushReplacementNamed('/keyword-deals', arguments: {
-          'title': message["notification"]["title"],
-          'keyword': data['value'],
-          'product_id': data['item_id'] ?? ''
-        });
-      } else if (data['alert_type'] == 'percentage') {
-        navigatorKey.currentState!
-            .pushReplacementNamed('/percentage-deals', arguments: {
-          'title': message["notification"]["title"],
-          'value': data['value'],
-          'product_id': data['item_id'] ?? ''
-        });
-      } else if (data['alert_type'] == 'price_mistake' ||
-          data['alert_type'] == 'front_page') {
-        navigatorKey.currentState!.pushReplacementNamed('/deals', arguments: {
-          'type': data['alert_type'],
-          'product_id': data['id'] ?? ''
-        });
-      } else if (data['alert_type'] == 'category') {
-        navigatorKey.currentState!.pushNamed('/deal-collections', arguments: {
-          'value': data['value'],
-          'product_id': data['id'] ?? ''
-        });
-      } else {
-        navigatorKey.currentState!.pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const NavigationWidget(
-              initialPageIndex: 2,
-            ),
+      // if (data['alert_type'] == 'keyword') {
+      //   navigatorKey.currentState!
+      //       .pushReplacementNamed('/keyword-deals', arguments: {
+      //     'title': message["notification"]["title"],
+      //     'keyword': data['value'],
+      //     'product_id': data['item_id'] ?? ''
+      //   });
+      // } else if (data['alert_type'] == 'percentage') {
+      //   navigatorKey.currentState!
+      //       .pushReplacementNamed('/percentage-deals', arguments: {
+      //     'title': message["notification"]["title"],
+      //     'value': data['value'],
+      //     'product_id': data['item_id'] ?? ''
+      //   });
+      // } else if (data['alert_type'] == 'price-mistake' ||
+      //     data['alert_type'] == 'front-page' ||
+      //     data['alert_type'] == 'front_page') {
+      //   navigatorKey.currentState!.pushReplacementNamed('/deals', arguments: {
+      //     'type': data['alert_type'],
+      //     'product_id': data['id'] ?? ''
+      //   });
+      // } else if (data['alert_type'] == 'category') {
+      //   navigatorKey.currentState!.pushNamed('/deal-collections', arguments: {
+      //     'value': data['value'],
+      //     'product_id': data['id'] ?? ''
+      //   });
+      // } else {
+      // navigatorKey.currentState!.pushNamed('/notification-screen', arguments: {
+      //   'title': message["notification"]["title"],
+      //   'value': data['value'],
+      //   'product_id': data['item_id'] ?? '',
+      //   'notification_id': message["messageId"]
+      // });
+
+      //not working yet
+      // navigatorKey.currentState!.pushReplacement(
+      //   MaterialPageRoute(
+      //     builder: (context) =>
+      //         NavigationWidget(initialPageIndex: 2, arguments: {
+      //       'title': message["notification"]["title"],
+      //       'type': data['alert_type'],
+      //       'value': data['value'],
+      //       'product_id': data['item_id'] ?? '',
+      //       'notification_id': message["messageId"]
+      //     }),
+      //   ),
+      // );
+      //end
+      navigatorKey.currentState!.pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const NavigationWidget(
+            initialPageIndex: 2,
           ),
-        );
-      }
+        ),
+      );
+      // }
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/stores/presentation/widgets/index.dart';
 import 'package:pzdeals/src/models/index.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class StoreCardWidget extends ConsumerStatefulWidget {
   final StoreData storeData;
@@ -130,17 +131,19 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
             imageUrl: widget.storeData.appStoreImg ??
                 widget.storeData.storeAssetImage,
             width: width,
+            cacheManager: networkImageCacheManager,
             height: height,
-            fadeInDuration: const Duration(milliseconds: 100),
+            fadeInDuration: const Duration(milliseconds: 10),
             fit: BoxFit.fitWidth,
             errorWidget: (context, url, error) {
               if (widget.storeData.storeAssetImage.isNotEmpty) {
                 return CachedNetworkImage(
                     imageUrl: widget.storeData
                         .storeAssetImage, // Change to your default image
-                    fadeInDuration: const Duration(milliseconds: 100),
+                    fadeInDuration: const Duration(milliseconds: 10),
                     width: width,
                     height: height,
+                    cacheManager: networkImageCacheManager,
                     fit: BoxFit.fitWidth,
                     errorWidget: (context, url, error) {
                       return Image.asset(

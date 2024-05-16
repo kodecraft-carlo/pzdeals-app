@@ -5,6 +5,7 @@ import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/more/models/index.dart';
 import 'package:pzdeals/src/features/more/presentation/screens/screen_blogpost.dart';
 import 'package:pzdeals/src/features/more/services/blogs_service.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class BlogpostCardWidget extends StatefulWidget {
   const BlogpostCardWidget(
@@ -40,6 +41,27 @@ class BlogpostCardWidgetState extends State<BlogpostCardWidget> {
               blogData: value,
             );
           }));
+        }, onError: (error) {
+          debugPrint('Error loading blog data: $error');
+          LoadingDialog.hide(context);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog.adaptive(
+                title: const Text('Message'),
+                content:
+                    const Text('Something went wrong. Please try again later.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         });
       },
       child: Card(
@@ -61,9 +83,10 @@ class BlogpostCardWidgetState extends State<BlogpostCardWidget> {
                   aspectRatio: 1.0,
                   child: CachedNetworkImage(
                     imageUrl: widget.blogImage,
+                    cacheManager: networkImageCacheManager,
                     width: MediaQuery.of(context).size.width / 2,
                     fit: BoxFit.cover,
-                    fadeInDuration: const Duration(milliseconds: 100),
+                    fadeInDuration: const Duration(milliseconds: 10),
                     errorWidget: (context, url, error) {
                       debugPrint('Error loading image: $error');
                       return Image.asset(

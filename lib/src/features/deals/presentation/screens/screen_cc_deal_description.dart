@@ -17,17 +17,14 @@ class CreditCardDealDescription extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: PZColors.pzWhite,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         surfaceTintColor: PZColors.pzWhite,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            iconSize: Sizes.screenCloseIconSize,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: ScrollbarWidget(
           child: SingleChildScrollView(

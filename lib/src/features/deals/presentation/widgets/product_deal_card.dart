@@ -161,7 +161,7 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                 children: [
                   const SizedBox(
                       height: Sizes
-                          .spaceBetweenContent), // Add some spacing between
+                          .spaceBetweenContentSmall), // Add some spacing between
                   Align(
                     alignment: Alignment.centerLeft,
                     child: productName(productData.productName, context),

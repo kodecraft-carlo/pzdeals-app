@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
@@ -11,6 +10,8 @@ import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/notifications/presentation/widgets/notification_dialog.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/models/index.dart';
+import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class NotificationCardWidget extends ConsumerStatefulWidget {
@@ -25,42 +26,42 @@ class NotificationCardWidgetState
     extends ConsumerState<NotificationCardWidget> {
   FetchProductDealService productDealService = FetchProductDealService();
   void showProductDeal(int productId) {
-    // if (mounted) {
-    // LoadingDialog.show(context);
-    loadProduct(productId).then((product) {
-      // if (mounted) {
-      showDialog(
-        context: context,
-        useRootNavigator: false,
-        barrierDismissible: true,
-        builder: (context) => ScaffoldMessenger(
-          child: Builder(
-            builder: (context) => Scaffold(
-              backgroundColor: Colors.transparent,
-              body: GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                behavior: HitTestBehavior.opaque,
-                child: GestureDetector(
-                  onTap: () {},
-                  child: ProductContentDialog(
-                    hasDescription: product.productDealDescription != null &&
-                        product.productDealDescription != '',
-                    productData: product,
-                    content: ProductDealDescription(
-                      snackbarContext: context,
+    if (mounted) {
+      // LoadingDialog.show(context);
+      loadProduct(productId).then((product) {
+        // if (mounted) {
+        showDialog(
+          context: context,
+          useRootNavigator: false,
+          barrierDismissible: true,
+          builder: (context) => ScaffoldMessenger(
+            child: Builder(
+              builder: (context) => Scaffold(
+                backgroundColor: Colors.transparent,
+                body: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  behavior: HitTestBehavior.opaque,
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: ProductContentDialog(
+                      hasDescription: product.productDealDescription != null &&
+                          product.productDealDescription != '',
                       productData: product,
+                      content: ProductDealDescription(
+                        snackbarContext: context,
+                        productData: product,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-      // LoadingDialog.hide(context);
-      // }
-    });
-    // }
+        );
+        // LoadingDialog.hide(context);
+        // }
+      });
+    }
   }
 
   Future<ProductDealcardData> loadProduct(int productId) async {
@@ -137,9 +138,11 @@ class NotificationCardWidgetState
               //   'value': data['value'],
               //   'product_id': data['item_id'] ?? ''
               // });
-            } else if (data['alert_type'] == 'price_mistake' ||
-                data['alert_type'] == 'front_page') {
-              showProductDeal(int.parse(data['id']));
+            } else if (data['alert_type'] == 'price-mistake' ||
+                data['alert_type'] == 'front_page' ||
+                data['alert_type'] == 'front-page') {
+              debugPrint('Notification Data: $data');
+              showProductDeal(int.parse(data['item_id']));
               // Navigator.of(context).pushNamed('/deals', arguments: {
               //   'type': 'price_mistake',
               //   'product_id': data['id'] ?? ''
@@ -201,9 +204,8 @@ class NotificationCardWidgetState
             leading: CircleAvatar(
               backgroundColor: PZColors.pzOrange,
               backgroundImage: notificationData.imageUrl != ''
-                  ? CachedNetworkImageProvider(
-                      notificationData.imageUrl,
-                    )
+                  ? CachedNetworkImageProvider(notificationData.imageUrl,
+                      cacheManager: networkImageCacheManager)
                   : null,
               child: Transform.rotate(
                 angle: notificationData.imageUrl != '' ? 0 : -7,
@@ -240,6 +242,25 @@ class NotificationCardWidgetState
                             BorderRadius.circular(Sizes.cardBorderRadius),
                         child: CachedNetworkImage(
                           imageUrl: notificationData.imageUrl,
+                          cacheManager: networkImageCacheManager,
+                          fadeInDuration: const Duration(milliseconds: 10),
+                          placeholder: (context, url) {
+                            // return Skeletonizer(
+                            //   enabled: true,
+                            //   child: Container(
+                            //     width: MediaQuery.of(context).size.width / 2,
+                            //     color: PZColors.pzLightGrey,
+                            //   ),
+                            // );
+                            return AspectRatio(
+                              aspectRatio: 1,
+                              child: Image.asset(
+                                'assets/images/shortcuts/blogs_placeholder.png',
+                                width: MediaQuery.of(context).size.width / 2,
+                                fit: BoxFit.fitWidth,
+                              ),
+                            );
+                          },
                           width: MediaQuery.of(context).size.width / 2,
                           fit: BoxFit.fitWidth,
                         ),
