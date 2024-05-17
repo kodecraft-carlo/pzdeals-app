@@ -27,7 +27,6 @@ class ProductDealDescriptionState
   @override
   Widget build(BuildContext context) {
     // RenderObject.debugCheckingIntrinsics = true;
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -71,7 +70,11 @@ class ProductDealDescriptionState
                     widget.productData.isProductExpired == true,
               ),
               onTap: () {
-                openBrowser(widget.productData.barcodeLink ?? '');
+                if (widget.productData.barcodeLink != null &&
+                    widget.productData.barcodeLink!.isNotEmpty &&
+                    widget.productData.barcodeLink != '') {
+                  openBrowser(widget.productData.barcodeLink ?? '');
+                }
               },
             ),
             widget.productData.isProductExpired != null &&
@@ -186,7 +189,7 @@ class ProductDealDescriptionState
             ? Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 9),
+                  padding: const EdgeInsets.only(left: 9),
                   child: RichText(
                     textAlign: TextAlign.start,
                     text: TextSpan(children: [
@@ -222,7 +225,7 @@ class ProductDealDescriptionState
             : const SizedBox.shrink(),
 
         widget.productData.productDealDescription != null &&
-                widget.productData.productDealDescription != ''
+                widget.productData.productDealDescription?.trim() != ''
             ? Row(
                 children: [
                   Expanded(
@@ -237,7 +240,7 @@ class ProductDealDescriptionState
                   ))
                 ],
               )
-            : const SizedBox(),
+            : const SizedBox.shrink(),
         widget.productData.tagDealDescription != null &&
                 widget.productData.tagDealDescription != '' &&
                 widget.productData.productDealDescription != null &&

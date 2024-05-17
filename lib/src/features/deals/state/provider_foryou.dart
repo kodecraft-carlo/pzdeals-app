@@ -15,6 +15,7 @@ class TabForYouNotifier extends ChangeNotifier {
   bool _isLoading = false;
   bool _isForYouLoading = false;
   bool _isForYouCollectionProductsLoading = false;
+  bool _hasSelectedCollectionsFromCache = false;
   List<CollectionData> _collections = [];
   final List<Map<String, dynamic>> _selectedCollectionIds = [];
   final List<Map<String, dynamic>> _collectionsMap = [];
@@ -41,10 +42,12 @@ class TabForYouNotifier extends ChangeNotifier {
   List<Map<String, dynamic>> get collectionProducts => _collectionProducts;
   bool get isForYouCollectionProductsLoading =>
       _isForYouCollectionProductsLoading;
+  bool get hasSelectedCollectionsFromCache => _hasSelectedCollectionsFromCache;
 
   TabForYouNotifier() {
     loadCollections();
     getProductsFromSelectedCollection();
+    checkSelectedCollectionStatus();
   }
 
   // Future<void> loadDataFromSelectedCollection() async {
@@ -86,8 +89,9 @@ class TabForYouNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // _collections = await _collectionService.getCachedCollection(_boxName);
-      // notifyListeners();
+      _collections = await _collectionService.getCachedCollection(_boxName);
+
+      notifyListeners();
 
       final serverCollection =
           await _collectionService.fetchCollections(_boxName);
@@ -140,9 +144,12 @@ class TabForYouNotifier extends ChangeNotifier {
     _selectedCollectionIds.addAll(_collectionsMap);
     _isSelectionApplied = true;
     await getProductsFromSelectedCollection();
+    _hasSelectedCollectionsFromCache = true;
     notifyListeners();
     _collectionService.addSelectedCollectionToCache(
         _selectedCollectionIds, 'selectedcollections');
+    _forYouService.cacheCollectionSelectionStatus(
+        true, 'box_foryoucollectionstatus');
   }
 
   Future<void> getProductsFromSelectedCollection() async {
@@ -171,6 +178,7 @@ class TabForYouNotifier extends ChangeNotifier {
           'products': cachedProducts
         });
       }
+      _isForYouCollectionProductsLoading = false;
       notifyListeners();
       _collectionProducts.clear();
       for (var collection in _selectedCollectionIds) {
@@ -188,6 +196,16 @@ class TabForYouNotifier extends ChangeNotifier {
     } finally {
       _isForYouCollectionProductsLoading = false;
       notifyListeners();
+    }
+  }
+
+  void checkSelectedCollectionStatus() async {
+    final status = await _forYouService
+        .getCachedCollectionSelectionStatus('box_foryoucollectionstatus');
+    if (status) {
+      _hasSelectedCollectionsFromCache = true;
+    } else {
+      _hasSelectedCollectionsFromCache = false;
     }
   }
 }

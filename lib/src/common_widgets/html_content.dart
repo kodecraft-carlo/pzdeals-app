@@ -39,7 +39,7 @@ class HtmlContent extends StatelessWidget {
           // ),
           "a": Style(
             color: PZColors.hyperlinkColor,
-            fontWeight: FontWeight.w600,
+            // fontWeight: FontWeight.w600,
             textDecoration: TextDecoration.none,
           ),
         },

@@ -54,8 +54,8 @@ class StoreScreenProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // _stores = await _storeSvc.getCachedStores(_boxName);
-      // notifyListeners();
+      _stores = await _storeSvc.getCachedStores(_boxName);
+      notifyListeners();
 
       final serverStores =
           await _storeSvc.fetchStoreCollection(_boxName, pageNumber);

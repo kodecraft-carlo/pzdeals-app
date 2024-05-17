@@ -5,6 +5,7 @@ class BouncingArrowIcon extends StatefulWidget {
   final Duration duration;
   final Widget icon;
   final MaterialColor color;
+  final String bounceText;
 
   const BouncingArrowIcon({
     super.key,
@@ -12,6 +13,7 @@ class BouncingArrowIcon extends StatefulWidget {
     this.duration = const Duration(milliseconds: 500),
     this.icon = const Icon(Icons.keyboard_arrow_down),
     this.color = Colors.grey,
+    this.bounceText = '',
   });
 
   @override
@@ -48,9 +50,17 @@ class _BouncingArrowIconState extends State<BouncingArrowIcon>
         );
       },
       child: SizedBox(
-        height: widget.height,
-        child: widget.icon,
-      ),
+          height: widget.height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              widget.icon,
+              widget.bounceText.isNotEmpty
+                  ? Text(widget.bounceText,
+                      style: TextStyle(fontSize: 9.0, color: widget.color))
+                  : const SizedBox.shrink(),
+            ],
+          )),
     );
   }
 }

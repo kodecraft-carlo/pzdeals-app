@@ -108,4 +108,18 @@ class FetchForYouService {
       box.add(collection);
     }
   }
+
+  Future<void> cacheCollectionSelectionStatus(
+      bool hasCollection, String boxName) async {
+    final box = await Hive.openBox<bool>(boxName);
+    await box.clear();
+    box.add(hasCollection);
+  }
+
+  Future<bool> getCachedCollectionSelectionStatus(String boxName) async {
+    final box = await Hive.openBox<bool>(boxName);
+    final hasCollection = box.values.first;
+    await box.close();
+    return hasCollection;
+  }
 }

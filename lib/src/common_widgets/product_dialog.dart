@@ -60,20 +60,20 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
     super.dispose();
   }
 
-  bool isMarkerVisible() {
-    final RenderBox renderBox =
-        widgetKey.currentContext!.findRenderObject() as RenderBox;
-    final widgetSize = renderBox.size;
-    final widgetPosition = renderBox.localToGlobal(Offset.zero);
+  // bool isMarkerVisible() {
+  //   final RenderBox renderBox =
+  //       widgetKey.currentContext!.findRenderObject() as RenderBox;
+  //   final widgetSize = renderBox.size;
+  //   final widgetPosition = renderBox.localToGlobal(Offset.zero);
 
-    final scrollPosition = scrollController.position;
-    final isVisible = widgetPosition.dy >= scrollPosition.pixels &&
-        widgetPosition.dy + widgetSize.height <=
-            scrollPosition.pixels + scrollPosition.viewportDimension;
+  //   final scrollPosition = scrollController.position;
+  //   final isVisible = widgetPosition.dy >= scrollPosition.pixels &&
+  //       widgetPosition.dy + widgetSize.height <=
+  //           scrollPosition.pixels + scrollPosition.viewportDimension;
 
-    // debugPrint('Is marker visible: $isVisible');
-    return isVisible;
-  }
+  //   // debugPrint('Is marker visible: $isVisible');
+  //   return isVisible;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +84,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
       // isMarkerVisible();
     });
     double screenHeight = MediaQuery.of(context).size.height;
-    double dialogHeight = screenHeight / 1.4;
+    double dialogHeight = screenHeight / 1.32;
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
@@ -123,33 +123,32 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               widget.content,
-                              SizedBox(
-                                key: widgetKey,
-                                child: const Text('marker',
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: .5)),
-                              ),
-                              widget.hasDescription == false
-                                  ? const SizedBox(
-                                      height: 200,
-                                    )
-                                  : const SizedBox(
-                                      height: 120,
-                                    ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: Sizes.paddingAll,
-                                    vertical: Sizes.paddingAllSmall),
-                                child: affiliateLinkDescription(),
-                              ),
+                              // SizedBox(
+                              //   key: widgetKey,
+                              //   child: const Text('marker',
+                              //       style: TextStyle(
+                              //           color: Colors.black, fontSize: .5)),
+                              // ),
+                              // widget.hasDescription == false
+                              //     ? const SizedBox(
+                              //         height: 200,
+                              //       )
+                              //     : const SizedBox(
+                              //         height: 120,
+                              //       ),
+                              // Padding(
+                              //   padding: const EdgeInsets.symmetric(
+                              //       horizontal: Sizes.paddingAll,
+                              //       vertical: Sizes.paddingAllSmall),
+                              //   child: affiliateLinkDescription(),
+                              // ),
                             ],
                           ),
                         )),
                   ),
                   showMore == true &&
                           !_isScrollingDown &&
-                          widget.hasDescription == true &&
-                          !isMarkerVisible()
+                          widget.hasDescription == true
                       ? GestureDetector(
                           onTap: () {
                             scrollController.animateTo(
@@ -161,7 +160,8 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                             });
                           },
                           child: const BouncingArrowIcon(
-                            height: 30,
+                            height: 45,
+                            bounceText: 'Scroll down for more',
                           ),
                         )
                       : const SizedBox.shrink(),
@@ -178,7 +178,16 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                             buttonLabel: 'See Deal',
                             url: widget.productData.barcodeLink ?? '',
                           ))
-                      : const SizedBox.shrink(),
+                      : const SizedBox(
+                          height: Sizes.spaceBetweenSectionsXL,
+                        ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: Sizes.paddingAll,
+                        right: Sizes.paddingAll,
+                        bottom: Sizes.paddingAll),
+                    child: affiliateLinkDescription(),
+                  )
                 ],
               ),
               Align(

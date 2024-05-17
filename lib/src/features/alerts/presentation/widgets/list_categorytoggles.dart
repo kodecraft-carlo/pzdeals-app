@@ -32,6 +32,13 @@ class _CategoryNotificationToggleListState
         .updateSettingsLocally(value, title, keyword);
   }
 
+  String getKeywordTitle(String title) {
+    if (title.toLowerCase() == 'toys') {
+      return 'Toy Deals';
+    }
+    return '$title Deals';
+  }
+
   @override
   Widget build(BuildContext context) {
     final categSettingsCollection =
@@ -44,7 +51,7 @@ class _CategoryNotificationToggleListState
         itemBuilder: (context, index) {
           final collection = categSettingsCollection[index];
           return ListTileWithSwitchWidget(
-            title: collection.title,
+            title: getKeywordTitle(collection.title),
             value: collection.isSubscribed,
             onChanged: (value) {
               onSwitchChanged(

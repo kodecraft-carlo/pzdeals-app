@@ -48,6 +48,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: PZColors.pzWhite,
@@ -75,18 +76,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               Lottie.asset(
                 key: const Key('loginScreenBlob'),
                 'assets/images/lottie/pzdeals_blob_orange.json',
-                width: 200,
-                height: 200,
-                fit: BoxFit.fill,
+                width: width / 2.5,
+                fit: BoxFit.fitWidth,
               ),
               Image.asset(
                 key: const Key('loginScreenLogo'),
                 'assets/images/pzdeals_white.png',
-                height: 80,
-                fit: BoxFit.fitHeight,
+                height: width / 6,
+                fit: BoxFit.fitWidth,
               ),
             ])),
-            const SizedBox(height: Sizes.spaceBetweenSectionsXL),
+            const SizedBox(height: Sizes.spaceBetweenSections),
             IgnorePointer(
               ignoring: _isSubmitting,
               child: AnimatedSwitcher(

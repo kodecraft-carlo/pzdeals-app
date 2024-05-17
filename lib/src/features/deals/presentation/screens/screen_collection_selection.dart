@@ -26,7 +26,7 @@ class _CollectionSelectionWidgetState
     super.initState();
     _animationController = AnimationController(vsync: this);
     Future(() {
-      ref.read(tabForYouProvider).loadCollections();
+      // ref.read(tabForYouProvider).loadCollections();
       ref.read(tabForYouProvider).resetCollectionMap();
     });
   }

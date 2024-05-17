@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/actions/navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/text_widget.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
+import 'package:pzdeals/src/features/deals/presentation/screens/screen_collection_selection.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -72,36 +74,46 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
         }
       }).toList();
     }
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: Sizes.paddingAllSmall,
-          ),
-          const Align(
-            alignment: Alignment.center,
-            child: Text(
-              "This is a sample description of this tab",
-              style: TextStyle(
-                  color: Colors.black54, fontSize: Sizes.bodyFontSize),
-            ),
-          ),
-          const ForYouBannerWidget(),
-          Skeletonizer(
-            enabled: foryouState.isForYouCollectionProductsLoading,
-            child: Container(
-              margin: const EdgeInsets.all(Sizes.paddingAll),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: sectionContent,
+    return RefreshIndicator.adaptive(
+        color: PZColors.pzOrange,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: Sizes.paddingAllSmall,
               ),
-            ),
+              const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "This is a sample description of this tab",
+                  style: TextStyle(
+                      color: Colors.black54, fontSize: Sizes.bodyFontSize),
+                ),
+              ),
+              foryouState.hasSelectedCollectionsFromCache
+                  ? Align(
+                      alignment: Alignment.center,
+                      child: customizeHereLink(),
+                    )
+                  : const ForYouBannerWidget(),
+              Skeletonizer(
+                enabled: foryouState.isForYouCollectionProductsLoading,
+                child: Container(
+                  margin: const EdgeInsets.all(Sizes.paddingAll),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: sectionContent,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+        onRefresh: () async {
+          await ref.read(tabForYouProvider).getProductsFromSelectedCollection();
+        });
   }
 
   Widget noForYouData(String collectionName) {
@@ -156,5 +168,19 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
         ],
       )
     ]);
+  }
+
+  Widget customizeHereLink() {
+    return NavigateScreenWidget(
+        destinationWidget: const CollectionSelectionWidget(),
+        animationDirection: 'bottomToTop',
+        childWidget: Text(
+          'Customize Here',
+          style: TextStyle(
+              color: Colors.blue.shade600,
+              fontSize: Sizes.bodyFontSize,
+              fontStyle: FontStyle.italic),
+          textAlign: TextAlign.center,
+        ));
   }
 }

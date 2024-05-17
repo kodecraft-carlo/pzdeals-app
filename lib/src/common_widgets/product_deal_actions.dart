@@ -92,53 +92,51 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
     final productLikeState = ref.watch(likedproductsProvider);
     final authUserDataState = ref.watch(authUserDataProvider);
 
-    Widget shareAction = Builder(
-      builder: (BuildContext context) {
-        return IconButton(
-          icon: const Icon(Icons.ios_share_rounded),
-          iconSize: Sizes.screenCloseIconSize,
-          onPressed: () => _onShare(context),
-        );
-      },
-    );
     return
         // widget.productData.isProductExpired != null &&
         //         widget.productData.isProductExpired == false
         //     ?
         Container(
+      padding: const EdgeInsets.only(top: 10),
       color: Colors.white,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                icon: productLikeState.isLiked(widget.productData.productId)
-                    ? const Icon(
-                        Icons.thumb_up_alt_rounded,
-                        color: PZColors.pzOrange,
-                      )
-                    : const Icon(Icons.thumb_up_outlined),
-                iconSize: Sizes.screenCloseIconSize,
-                onPressed: () {
-                  productLikeState.addToCachedProducts(
-                      widget.productData.productId, 'like');
-                  if (productLikeState.isLiked(widget.productData.productId)) {
-                    // showSnackbarWithMessage(
-                    //     context, 'You like this deal!');
-                  }
-                },
-              ),
-              IconButton(
-                icon: productLikeState.isDisliked(widget.productData.productId)
-                    ? const Icon(
-                        Icons.thumb_down_alt_rounded,
-                        color: PZColors.pzOrange,
-                      )
-                    : const Icon(Icons.thumb_down_outlined),
-                iconSize: Sizes.screenCloseIconSize,
-                onPressed: () {
+              dealActionIconButton(
+                  productLikeState.isLiked(widget.productData.productId)
+                      ? const Icon(
+                          Icons.thumb_up_alt_rounded,
+                          color: PZColors.pzOrange,
+                        )
+                      : const Icon(Icons.thumb_up_outlined),
+                  'Like', () {
+                productLikeState.addToCachedProducts(
+                    widget.productData.productId, 'like');
+                if (productLikeState.isLiked(widget.productData.productId)) {
+                  // showSnackbarWithMessage(
+                  //     context, 'You like this deal!');
+                }
+              }),
+              dealActionIconButton(
+                  productLikeState.isDisliked(widget.productData.productId)
+                      ? const Icon(
+                          Icons.thumb_down_alt_rounded,
+                          color: PZColors.pzOrange,
+                        )
+                      : const Icon(Icons.thumb_down_outlined),
+                  'Dislike', () {
+                if (authUserDataState.isAuthenticated == false) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const LoginRequiredScreen(
+                      message: "Login to ${Wordings.appName}!",
+                    );
+                  }));
+                  return;
+                } else {
                   productLikeState.addToCachedProducts(
                       widget.productData.productId, 'disliked');
                   if (productLikeState
@@ -146,67 +144,108 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                     // showSnackbarWithMessage(
                     //     context, 'You dislike this deal!');
                   }
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.sell_outlined),
-                iconSize: Sizes.screenCloseIconSize,
-                onPressed: () async {
-                  if (mounted) LoadingDialog.show(context);
-                  updateProductStatus(
-                          widget.productData.productId,
-                          'soldout_pending',
-                          widget.productData.productName,
-                          widget.productData.barcodeLink ?? '')
-                      .then((value) {
-                    if (value == true) {
-                      showSnackbarWithMessage(
-                          context, 'Thanks for letting us know!');
-                    }
-                    if (mounted) LoadingDialog.hide(context);
-                  });
-                },
-              ),
-              IconButton(
-                icon: authUserDataState.isAuthenticated == true &&
-                        bookmarkState.isBookmarked(widget.productData.productId)
-                    ? const Icon(
-                        Icons.bookmark_added_rounded,
-                        color: PZColors.pzOrange,
-                        size: Sizes.screenCloseIconSize,
-                      )
-                    : const Icon(Icons.bookmark_border_outlined),
-                iconSize: Sizes.screenCloseIconSize,
-                onPressed: () {
-                  if (authUserDataState.isAuthenticated == false) {
-                    showSnackbarWithAction(
-                        context,
-                        'Please login to bookmark this deal',
-                        gotoLoginScreen,
-                        'Login');
-                    return;
-                  } else {
-                    if (bookmarkState
-                        .isBookmarked(widget.productData.productId)) {
-                      bookmarkState
-                          .removeBookmarkLocally(widget.productData.productId);
-                      // showSnackbarWithMessage(
-                      //     context, 'Removed from bookmarks');
-                    } else {
-                      bookmarkState
-                          .addBookmarkLocally(widget.productData.productId);
-                      // showSnackbarWithMessage(
-                      //     context, 'Added to bookmarks');
-                    }
+                }
+              }),
+              dealActionIconButton(const Icon(Icons.sell_outlined), 'Sold-out',
+                  () async {
+                if (authUserDataState.isAuthenticated == false) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const LoginRequiredScreen(
+                      message: "Login to ${Wordings.appName}!",
+                    );
+                  }));
+                  return;
+                }
+                // if (mounted) LoadingDialog.show(context);
+                updateProductStatus(
+                        widget.productData.productId,
+                        'soldout_pending',
+                        widget.productData.productName,
+                        widget.productData.barcodeLink ?? '')
+                    .then((value) {
+                  if (value == true) {
+                    showSnackbarWithMessage(
+                        context, 'Thanks for letting us know!');
                   }
-                },
-              ),
-              shareAction
+                  // if (mounted) LoadingDialog.hide(context);
+                });
+              }),
+              dealActionIconButton(
+                  authUserDataState.isAuthenticated == true &&
+                          bookmarkState
+                              .isBookmarked(widget.productData.productId)
+                      ? const Icon(
+                          Icons.bookmark_added_rounded,
+                          color: PZColors.pzOrange,
+                          size: Sizes.screenCloseIconSize,
+                        )
+                      : const Icon(Icons.bookmark_border_outlined),
+                  'Bookmark', () {
+                if (authUserDataState.isAuthenticated == false) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const LoginRequiredScreen(
+                      message: "Login to ${Wordings.appName}!",
+                    );
+                  }));
+                  // showSnackbarWithAction(
+                  //     context,
+                  //     'Please login to bookmark this deal',
+                  //     gotoLoginScreen,
+                  //     'Login');
+                  return;
+                } else {
+                  if (bookmarkState
+                      .isBookmarked(widget.productData.productId)) {
+                    bookmarkState
+                        .removeBookmarkLocally(widget.productData.productId);
+                    // showSnackbarWithMessage(
+                    //     context, 'Removed from bookmarks');
+                  } else {
+                    bookmarkState
+                        .addBookmarkLocally(widget.productData.productId);
+                    // showSnackbarWithMessage(
+                    //     context, 'Added to bookmarks');
+                  }
+                }
+              }),
+              dealActionIconButton(const Icon(Icons.ios_share_rounded), 'Share',
+                  () => _onShare(context)),
             ],
           ),
         ],
       ),
     );
     // : const SizedBox.shrink();
+  }
+
+  Widget dealActionIconButton(
+      Widget dealIcon, String label, Function onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            style: ButtonStyle(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                overlayColor: MaterialStateProperty.all(Colors.transparent)),
+            icon: dealIcon,
+            iconSize: Sizes.screenCloseIconSize,
+            onPressed: onPressed as void Function()?,
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Text(
+            label,
+            style: const TextStyle(fontSize: Sizes.bodySmallestSize),
+            textAlign: TextAlign.center,
+          )
+        ],
+      ),
+    );
   }
 }
