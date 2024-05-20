@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/actions/navigate_screen.dart';
@@ -84,20 +86,32 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
               const SizedBox(
                 height: Sizes.paddingAllSmall,
               ),
-              const Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "This is a sample description of this tab",
-                  style: TextStyle(
-                      color: Colors.black54, fontSize: Sizes.bodyFontSize),
-                ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+                child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: Wordings.descForYou,
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Colors.black54,
+                              fontSize: Sizes.bodyFontSize),
+                        ),
+                        const TextSpan(text: ' '),
+                        WidgetSpan(
+                          child: foryouState.hasSelectedCollectionsFromCache
+                              ? customizeHereLink()
+                              : const SizedBox.shrink(),
+                        )
+                      ],
+                    )),
               ),
-              foryouState.hasSelectedCollectionsFromCache
-                  ? Align(
-                      alignment: Alignment.center,
-                      child: customizeHereLink(),
-                    )
-                  : const ForYouBannerWidget(),
+              !foryouState.hasSelectedCollectionsFromCache
+                  ? const ForYouBannerWidget()
+                  : const SizedBox.shrink(),
               Skeletonizer(
                 enabled: foryouState.isForYouCollectionProductsLoading,
                 child: Container(
@@ -171,13 +185,14 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
   }
 
   Widget customizeHereLink() {
-    return NavigateScreenWidget(
-        destinationWidget: const CollectionSelectionWidget(),
+    return const NavigateScreenWidget(
+        destinationWidget: CollectionSelectionWidget(),
         animationDirection: 'bottomToTop',
         childWidget: Text(
           'Customize Here',
           style: TextStyle(
-              color: Colors.blue.shade600,
+              textBaseline: TextBaseline.alphabetic,
+              color: PZColors.hyperlinkColor,
               fontSize: Sizes.bodyFontSize,
               fontStyle: FontStyle.italic),
           textAlign: TextAlign.center,

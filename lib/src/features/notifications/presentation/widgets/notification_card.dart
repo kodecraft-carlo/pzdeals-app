@@ -148,10 +148,11 @@ class NotificationCardWidgetState
               //   'product_id': data['id'] ?? ''
               // });
             } else if (data['alert_type'] == 'category') {
-              Navigator.of(context).pushNamed('/deal-collections', arguments: {
-                'value': data['value'],
-                'product_id': data['id'] ?? ''
-              });
+              showProductDeal(int.parse(data['id']));
+              // Navigator.of(context).pushNamed('/deal-collections', arguments: {
+              //   'value': data['value'],
+              //   'product_id': data['id'] ?? ''
+              // });
             } else {
               showDialog(
                 context: context,

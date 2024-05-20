@@ -43,6 +43,12 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
   }
 
   void _onScroll() {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      setState(() {
+        _isScrollingRight = true;
+      });
+    }
     //scrolling to right
     if (scrollController.position.userScrollDirection ==
         ScrollDirection.reverse) {
@@ -145,13 +151,18 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () {
+                      if (scrollController.position.pixels +
+                              (MediaQuery.of(context).size.width / 1.5) >
+                          scrollController.position.maxScrollExtent - 200) {
+                        setState(() {
+                          _isScrollingRight = true;
+                        });
+                      }
                       scrollController.animateTo(
-                          scrollController.position.maxScrollExtent,
+                          scrollController.position.pixels +
+                              MediaQuery.of(context).size.width / 1.5,
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.easeOut);
-                      setState(() {
-                        _isScrollingRight = true;
-                      });
                     },
                     child: Transform.rotate(
                       angle: -MathConstants.pi / 2,

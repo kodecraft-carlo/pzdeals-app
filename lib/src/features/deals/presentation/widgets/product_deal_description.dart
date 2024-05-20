@@ -115,11 +115,15 @@ class ProductDealDescriptionState
         ),
         Align(
           alignment: Alignment.center,
-          child: StoreImageWidget(
-            storeAssetImage: widget.productData.storeAssetImage,
-            imageWidth: 40,
-            imageHeight: 40,
-            hasLayoutType: false,
+          child: Padding(
+            padding: const EdgeInsets.only(
+                top: Sizes.paddingAllSmall, bottom: Sizes.paddingAllSmall),
+            child: StoreImageWidget(
+              storeAssetImage: widget.productData.storeAssetImage,
+              imageWidth: 30,
+              imageHeight: 30,
+              hasLayoutType: false,
+            ),
           ),
         ),
         Text(
@@ -255,9 +259,10 @@ class ProductDealDescriptionState
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Sizes.paddingAllSmall,
-                      ),
+                      padding: const EdgeInsets.only(
+                          left: Sizes.paddingAllSmall,
+                          right: Sizes.paddingAllSmall,
+                          top: Sizes.paddingAll),
                       child: HtmlContent(
                         htmlContent:
                             widget.productData.tagDealDescription ?? '',

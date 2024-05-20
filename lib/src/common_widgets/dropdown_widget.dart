@@ -9,16 +9,17 @@ class DropdownWidget extends StatefulWidget {
   final List<String> dropdownItems;
   final bool isDense;
   final FormFieldValidator<String>? validator;
+  final bool isPercentOff;
 
-  const DropdownWidget({
-    super.key,
-    this.initialValue,
-    required this.onChanged,
-    required this.dropdownLabel,
-    required this.dropdownItems,
-    this.isDense = false,
-    this.validator,
-  });
+  const DropdownWidget(
+      {super.key,
+      this.initialValue,
+      required this.onChanged,
+      required this.dropdownLabel,
+      required this.dropdownItems,
+      this.isDense = false,
+      this.validator,
+      this.isPercentOff = false});
 
   @override
   _DropdownWidgetState createState() => _DropdownWidgetState();
@@ -88,7 +89,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                           children: widget.dropdownItems.map((String item) {
                             return Center(
                               child: Text(
-                                '$item% off',
+                                '$item${widget.isPercentOff ? '% off or more' : ''}',
                               ),
                             );
                           }).toList(),
@@ -107,7 +108,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 borderRadius:
                     BorderRadius.circular(Sizes.textFieldCornerRadius),
               ),
-              child: Text('${_selectedValue ?? widget.dropdownLabel}% off'),
+              child: Text(
+                  '${_selectedValue ?? widget.dropdownLabel}${widget.isPercentOff ? '% off or more' : ''}'),
             ),
           )
         : DropdownButtonFormField<String>(
@@ -152,7 +154,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Text('$value% off'),
+                child:
+                    Text('$value${widget.isPercentOff ? '% off or more' : ''}'),
               );
             }).toList(),
           );

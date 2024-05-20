@@ -70,7 +70,7 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
             height: Sizes.paddingAllSmall,
           ),
           const Text(
-            "This is a sample description of this tab",
+            Wordings.descFrontPage,
             style:
                 TextStyle(color: Colors.black54, fontSize: Sizes.bodyFontSize),
           ),

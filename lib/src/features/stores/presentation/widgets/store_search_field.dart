@@ -63,6 +63,7 @@ class _StoreSearchFieldWidgetState extends State<StoreSearchFieldWidget> {
                       });
                       widget.searchController.clear();
                       widget.filterStores('');
+                      SystemChannels.textInput.invokeMethod('TextInput.hide');
                     },
                   )
                 : null,

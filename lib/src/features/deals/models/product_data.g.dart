@@ -31,13 +31,14 @@ class ProductDealcardDataAdapter extends TypeAdapter<ProductDealcardData> {
       barcodeLink: fields[11] as String?,
       tagDealDescription: fields[12] as String?,
       sku: fields[13] as String?,
+      handle: fields[14] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductDealcardData obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.productId)
       ..writeByte(1)
@@ -65,7 +66,9 @@ class ProductDealcardDataAdapter extends TypeAdapter<ProductDealcardData> {
       ..writeByte(12)
       ..write(obj.tagDealDescription)
       ..writeByte(13)
-      ..write(obj.sku);
+      ..write(obj.sku)
+      ..writeByte(14)
+      ..write(obj.handle);
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/common_widgets/textfield_button.dart';
@@ -42,6 +43,7 @@ class _AlertsManagementScreenState
           'input')) {
         // showSnackbarWithMessage(context, 'Keyword added');
         textController.clear();
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
       } else {
         showSnackbarWithMessage(context, 'Keyword already exists');
       }

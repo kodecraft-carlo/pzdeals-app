@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/common_widgets/scrollbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/more/presentation/widgets/blogs_search_field.dart';
 import 'package:pzdeals/src/features/more/presentation/widgets/card_blogpost.dart';
@@ -147,51 +148,53 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
     }
     return Scaffold(
       body: NestedScrollView(
-        controller: _scrollController,
-        key: globalKey,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              pinned: true,
-              title: GestureDetector(
-                onTap: () {
-                  scrollToTop();
-                },
-                child: const Text(
-                  'Blog',
-                  style: TextStyle(
-                    color: PZColors.pzBlack,
-                    fontWeight: FontWeight.w700,
-                    fontSize: Sizes.appBarFontSize,
+          controller: _scrollController,
+          key: globalKey,
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                pinned: true,
+                title: GestureDetector(
+                  onTap: () {
+                    scrollToTop();
+                  },
+                  child: const Text(
+                    'Blog',
+                    style: TextStyle(
+                      color: PZColors.pzBlack,
+                      fontWeight: FontWeight.w700,
+                      fontSize: Sizes.appBarFontSize,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
+                ),
+                centerTitle: true,
+                surfaceTintColor: PZColors.pzWhite,
+                backgroundColor: PZColors.pzWhite,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new),
+                  onPressed: () {
+                    blogState.clearFilter();
+                    Navigator.of(context).pop();
+                  },
                 ),
               ),
-              centerTitle: true,
-              surfaceTintColor: PZColors.pzWhite,
-              backgroundColor: PZColors.pzWhite,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new),
-                onPressed: () {
-                  blogState.clearFilter();
-                  Navigator.of(context).pop();
-                },
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+                  child: BlogSearchFieldWidget(
+                      hintText: 'Search blog',
+                      searchController: searchController,
+                      filterData: _onTextChanged),
+                ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-                child: BlogSearchFieldWidget(
-                    hintText: 'Search blog',
-                    searchController: searchController,
-                    filterData: _onTextChanged),
-              ),
-            ),
-          ];
-        },
-        body: body,
-      ),
+            ];
+          },
+          body: ScrollbarWidget(
+            scrollController: _scrollController,
+            child: body,
+          )),
     );
   }
 }

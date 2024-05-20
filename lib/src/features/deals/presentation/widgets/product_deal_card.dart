@@ -172,16 +172,20 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                   Flex(
                     direction: Axis.horizontal,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       !isProductNoPrice(productData)
                           ? const Text('No price',
                               style: TextStyle(
                                   fontSize: 18, color: Colors.transparent))
-                          : SizedBox(
-                              height: 25,
-                              child: StoreImageWidget(
-                                  storeAssetImage: productData.storeAssetImage),
+                          : Align(
+                              alignment: Alignment.centerLeft,
+                              child: SizedBox(
+                                height: 20,
+                                child: StoreImageWidget(
+                                    storeAssetImage:
+                                        productData.storeAssetImage),
+                              ),
                             ),
                       Expanded(
                         child: Column(
@@ -233,10 +237,19 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                               ],
                             ),
                           )
-                        : SizedBox(
-                            height: 25,
-                            child: StoreImageWidget(
-                                storeAssetImage: productData.storeAssetImage),
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: SizedBox(
+                                  height: 20,
+                                  child: StoreImageWidget(
+                                      storeAssetImage:
+                                          productData.storeAssetImage),
+                                ),
+                              )
+                            ],
                           ),
                   )
                 ],

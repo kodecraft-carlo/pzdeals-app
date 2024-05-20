@@ -166,9 +166,12 @@ class StaticProductDealCardWidgetState
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            StoreImageWidget(
-                                storeAssetImage:
-                                    widget.productData.storeAssetImage),
+                            SizedBox(
+                              height: 18,
+                              child: StoreImageWidget(
+                                  storeAssetImage:
+                                      widget.productData.storeAssetImage),
+                            ),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,

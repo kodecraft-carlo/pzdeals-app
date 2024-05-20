@@ -70,7 +70,8 @@ class PZPicksScreenWidgetState extends ConsumerState<PZPicksScreenWidget>
             height: Sizes.paddingAllSmall,
           ),
           const Text(
-            "This is a sample description of this tab",
+            Wordings.descFlashDeals,
+            textAlign: TextAlign.center,
             style:
                 TextStyle(color: Colors.black54, fontSize: Sizes.bodyFontSize),
           ),

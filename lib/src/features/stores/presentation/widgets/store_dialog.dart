@@ -244,8 +244,8 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                                           ),
                                           child: Text(
                                             collection['list_name'] ?? '',
-                                            style: TextStyle(
-                                                color: Colors.blue.shade600,
+                                            style: const TextStyle(
+                                                color: PZColors.hyperlinkColor,
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: Sizes.fontSizeSmall),
                                           ),

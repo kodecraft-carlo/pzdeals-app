@@ -7,6 +7,7 @@ import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/features/stores/presentation/screens/stores_display.dart';
 import 'package:pzdeals/src/features/stores/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
+import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/utils/helpers/debouncer.dart';
 
 class StoresWidget extends ConsumerStatefulWidget {
@@ -23,6 +24,13 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
   late final AnimationController _animationController;
   final _scrollController = ScrollController();
   final _debouncer = Debouncer(delay: const Duration(milliseconds: 300));
+
+  final StoreData pzDeals = StoreData(
+      id: 0,
+      handle: 'pzdeals',
+      storeName: Wordings.appName,
+      storeAssetImage: 'assets/images/pzdeals_store.png',
+      assetSourceType: 'asset');
 
   void _onTextChanged(String text) {
     _debouncer.run(() {
@@ -110,6 +118,13 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
       final displayStores = storescreenState.filteredStores.isNotEmpty
           ? storescreenState.filteredStores
           : storescreenState.stores;
+
+      if (searchController.text.isEmpty) {
+        if (displayStores[0].id != 0) {
+          displayStores.insert(0, pzDeals);
+        }
+      }
+
       body = RefreshIndicator.adaptive(
           color: PZColors.pzOrange,
           child: DisplayStores(
@@ -144,10 +159,18 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
                 const SliverToBoxAdapter(
                   child: Align(
                     alignment: Alignment.center,
-                    child: Text(
-                      "This is a sample description of store page",
-                      style: TextStyle(
-                          color: Colors.black54, fontSize: Sizes.bodyFontSize),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: Sizes.paddingAll,
+                          right: Sizes.paddingAll,
+                          top: Sizes.paddingAllSmall),
+                      child: Text(
+                        Wordings.descStoreScreen,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: Sizes.bodyFontSize),
+                      ),
                     ),
                   ),
                 )

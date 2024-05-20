@@ -151,7 +151,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: Sizes.spaceBetweenSections),
-                          const Text("Number of alerts to receive",
+                          const Text("Number of alerts to receive daily",
                               style: TextStyle(
                                   fontSize: Sizes.listTitleFontSize,
                                   fontWeight: FontWeight.w500)),
@@ -182,6 +182,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                         dropdownLabel: 'Percentage Off Threshold',
                         dropdownItems: dropdownItems,
                         validator: thresholdValidator,
+                        isPercentOff: true,
                       )
                     : const SizedBox()),
             const SizedBox(height: Sizes.spaceBetweenSectionsXL),

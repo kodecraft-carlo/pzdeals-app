@@ -46,6 +46,9 @@ class ProductDealcardData {
   @HiveField(13)
   final String? sku;
 
+  @HiveField(14)
+  final String? handle;
+
   ProductDealcardData(
       {required this.productId,
       required this.productName,
@@ -60,5 +63,6 @@ class ProductDealcardData {
       this.productDealDescription = '',
       required this.barcodeLink,
       this.tagDealDescription = '',
-      this.sku = ''});
+      this.sku = '',
+      this.handle = ''});
 }

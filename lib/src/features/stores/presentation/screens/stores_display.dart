@@ -8,12 +8,6 @@ class DisplayStores extends StatelessWidget {
   DisplayStores({super.key, required this.storedata, this.scrollController});
 
   final List<StoreData> storedata;
-  final StoreData pzDeals = StoreData(
-      id: 0,
-      handle: 'pzdeals',
-      storeName: Wordings.appName,
-      storeAssetImage: 'assets/images/pzdeals_store.png',
-      assetSourceType: 'asset');
 
   final ScrollController? scrollController;
   @override
@@ -30,12 +24,10 @@ class DisplayStores extends StatelessWidget {
               crossAxisSpacing: 10,
               mainAxisSpacing: 15,
               childAspectRatio: 2 / 3),
-          itemCount: storedata.length + 1,
+          itemCount: storedata.length,
           itemBuilder: (context, index) {
-            if (index == 0) {
-              return StoreCardWidget(storeData: pzDeals);
-            } else if (storedata.isNotEmpty) {
-              final store = storedata[index - 1];
+            if (storedata.isNotEmpty) {
+              final store = storedata[index];
               return StoreCardWidget(storeData: store);
             } else {
               // Return an empty container if storedata is empty

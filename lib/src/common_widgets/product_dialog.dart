@@ -123,6 +123,16 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               widget.content,
+                              const SizedBox(
+                                height: Sizes.spaceBetweenSectionsXL,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: Sizes.paddingAll,
+                                    right: Sizes.paddingAll,
+                                    bottom: Sizes.paddingAll),
+                                child: affiliateLinkDescription(),
+                              )
                               // SizedBox(
                               //   key: widgetKey,
                               //   child: const Text('marker',
@@ -181,13 +191,6 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                       : const SizedBox(
                           height: Sizes.spaceBetweenSectionsXL,
                         ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: Sizes.paddingAll,
-                        right: Sizes.paddingAll,
-                        bottom: Sizes.paddingAll),
-                    child: affiliateLinkDescription(),
-                  )
                 ],
               ),
               Align(

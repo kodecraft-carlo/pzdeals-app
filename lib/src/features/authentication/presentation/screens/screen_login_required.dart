@@ -27,18 +27,17 @@ class LoginRequiredScreen extends StatelessWidget {
                 backgroundColor: PZColors.pzWhite,
                 automaticallyImplyLeading: false,
                 surfaceTintColor: PZColors.pzWhite,
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    iconSize: Sizes.screenCloseIconSize,
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const NavigationWidget();
-                      }));
-                    },
-                  ),
-                ],
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new),
+                  iconSize: Sizes.screenCloseIconSize,
+                  onPressed: () {
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) {
+                    //   return const NavigationWidget();
+                    // }));
+                    Navigator.pop(context);
+                  },
+                ),
               )
             : null,
         body: Padding(

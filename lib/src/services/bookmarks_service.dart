@@ -133,8 +133,8 @@ class BookmarksService {
       return [];
     } catch (e) {
       debugPrint("Error fetching bookmarks data: $e");
+      return [];
     }
-    throw Exception('getBookmarks error');
   }
 
   Future<void> updateBookmarks(

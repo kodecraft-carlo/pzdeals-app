@@ -72,12 +72,38 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
       // });
     });
 
+    // Future(() {
+    //   if (widget.arguments.isNotEmpty) {
+    //     debugPrint('arguments: ${widget.arguments}');
+    //     id = widget.arguments['product_id'] as String;
+    //     dealType = widget.arguments['type'] as String;
+    //     notifId = widget.arguments['notification_id'] as String;
+    //     if (dealType != '' && dealType == 'price_mistake') {
+    //       debugPrint('from price_mistake id: $id');
+    //       if (id != '') {
+    //         showProductDeal(int.parse(id));
+    //       }
+    //     } else if (dealType != '' && dealType == 'deeplink') {
+    //       debugPrint('from deeplink id: $id');
+    //       if (id != '') {
+    //         showProductDeal(int.parse(id));
+    //       }
+    //     } else {
+    //       debugPrint('from others id: $id');
+    //       if (id != '') {
+    //         showProductDeal(int.parse(id));
+    //       }
+    //     }
+    //   } else {
+    //     debugPrint('no arguments');
+    //   }
+    // });
     Future(() {
-      if (widget.arguments.isNotEmpty) {
-        debugPrint('arguments: ${widget.arguments}');
-        id = widget.arguments['product_id'] as String;
-        dealType = widget.arguments['type'] as String;
-        notifId = widget.arguments['notification_id'] as String;
+      final arguments = ModalRoute.of(context)!.settings.arguments;
+
+      if (arguments != null && arguments is Map<String, dynamic>) {
+        id = arguments['product_id'] as String;
+        dealType = arguments['type'] as String;
         if (dealType != '' && dealType == 'price_mistake') {
           debugPrint('from price_mistake id: $id');
           if (id != '') {
@@ -96,30 +122,6 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
         }
       }
     });
-    // Future(() {
-    //   final arguments = ModalRoute.of(context)!.settings.arguments;
-
-    //   if (arguments != null && arguments is Map<String, dynamic>) {
-    //     id = arguments['product_id'] as String;
-    //     dealType = arguments['type'] as String;
-    //     if (dealType != '' && dealType == 'price_mistake') {
-    //       debugPrint('from price_mistake id: $id');
-    //       if (id != '') {
-    //         showProductDeal(int.parse(id));
-    //       }
-    //     } else if (dealType != '' && dealType == 'deeplink') {
-    //       debugPrint('from deeplink id: $id');
-    //       if (id != '') {
-    //         showProductDeal(int.parse(id));
-    //       }
-    //     } else {
-    //       debugPrint('from others id: $id');
-    //       if (id != '') {
-    //         showProductDeal(int.parse(id));
-    //       }
-    //     }
-    //   }
-    // });
   }
 
   void updateNotificationsCount(String userId) {
@@ -148,7 +150,10 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   void showProductDeal(int productId) {
     loadProduct(productId).then((product) {
       debugPrint('notifiId: $notifId');
-      ref.read(notificationsProvider).markAsRead(notifId);
+      if (notifId != '') {
+        ref.read(notificationsProvider).markAsRead(notifId);
+      }
+
       showDialog(
         context: context,
         useRootNavigator: false,

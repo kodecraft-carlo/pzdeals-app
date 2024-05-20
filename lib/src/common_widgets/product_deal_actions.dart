@@ -28,6 +28,7 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
   EmailService emailSvc = EmailService();
   ProductService productSvc = ProductService();
   FirebaseDynamicLinksApi dynamicLinkApi = FirebaseDynamicLinksApi();
+  bool reportingSoldOut = false;
   void gotoLoginScreen() {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return const LoginRequiredScreen(
@@ -75,7 +76,8 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
         widget.productData.productId.toString(),
         widget.productData.productName,
         productDescription,
-        widget.productData.imageAsset);
+        widget.productData.imageAsset,
+        widget.productData.handle ?? '');
     final result = await Share.shareWithResult(
       'Check this \'${widget.productData.productName}\' for only \$${widget.productData.price} from ${Wordings.appName}! $dynamicLink',
       subject: 'Product Deal from ${Wordings.appName}',
@@ -146,8 +148,14 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                   }
                 }
               }),
-              dealActionIconButton(const Icon(Icons.sell_outlined), 'Sold-out',
-                  () async {
+              dealActionIconButton(
+                  reportingSoldOut
+                      ? const Icon(
+                          Icons.sell_rounded,
+                          color: PZColors.pzOrange,
+                        )
+                      : const Icon(Icons.sell_outlined),
+                  'Sold-out', () async {
                 if (authUserDataState.isAuthenticated == false) {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return const LoginRequiredScreen(
@@ -156,6 +164,9 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                   }));
                   return;
                 }
+                setState(() {
+                  reportingSoldOut = true;
+                });
                 // if (mounted) LoadingDialog.show(context);
                 updateProductStatus(
                         widget.productData.productId,
@@ -166,6 +177,11 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                   if (value == true) {
                     showSnackbarWithMessage(
                         context, 'Thanks for letting us know!');
+                    Future.delayed(const Duration(seconds: 3), () {
+                      setState(() {
+                        reportingSoldOut = false;
+                      });
+                    });
                   }
                   // if (mounted) LoadingDialog.hide(context);
                 });

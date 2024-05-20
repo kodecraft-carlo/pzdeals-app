@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
 class TextFieldButton extends StatefulWidget {
@@ -26,6 +27,13 @@ class TextFieldButton extends StatefulWidget {
 
 class _TextFieldButtonState extends State<TextFieldButton> {
   bool isActionEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isActionEnabled = widget.textController.text.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -94,7 +102,14 @@ class _TextFieldButtonState extends State<TextFieldButton> {
             ),
             onPressed: !isActionEnabled || widget.textController.text.isEmpty
                 ? null
-                : widget.onButtonPressed,
+                : () {
+                    widget.onButtonPressed();
+                    widget.textController.clear();
+                    setState(() {
+                      isActionEnabled = false;
+                    });
+                    SystemChannels.textInput.invokeMethod('TextInput.hide');
+                  },
             child: Text(
               widget.buttonLabel,
               style: const TextStyle(color: PZColors.pzWhite),

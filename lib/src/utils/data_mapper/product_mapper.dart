@@ -24,9 +24,10 @@ class ProductMapper {
           productName:
               json['title'] != null ? json['title'].toString().trim() : '',
           price: price,
-          storeAssetImage: json['store'] != null
-              ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
-              : 'assets/images/pzdeals_store.png',
+          // storeAssetImage: json['store'] != null
+          //     ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
+          //     : 'assets/images/pzdeals_store.png',
+          storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
           oldPrice: oldPrice,
           imageAsset: json['image_src'],
           discountPercentage: !isProductNoPrice(json['tag_ids'])
@@ -44,6 +45,7 @@ class ProductMapper {
               ? json['variants'][0]['sku']
               : '',
           tagDealDescription: extractTagDealDescription(json['tag_ids']),
+          handle: json['handle'] ?? '',
         );
       }));
     } catch (e, stackTrace) {
@@ -73,9 +75,10 @@ class ProductMapper {
         productName:
             json['title'] != null ? json['title'].toString().trim() : '',
         price: price,
-        storeAssetImage: json['store'] != null
-            ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
-            : 'assets/images/pzdeals_store.png',
+        // storeAssetImage: json['store'] != null
+        //     ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
+        //     : 'assets/images/pzdeals_store.png',
+        storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
         oldPrice: oldPrice,
         imageAsset: json['image_src'],
         discountPercentage: !isProductNoPrice(json['tag_ids'])
@@ -93,6 +96,7 @@ class ProductMapper {
             ? json['variants'][0]['sku']
             : '',
         tagDealDescription: extractTagDealDescription(json['tag_ids']),
+        handle: json['handle'] ?? '',
       );
     } catch (e, stackTrace) {
       debugPrint('Error in mapToProductDealcardDataList: $e');
