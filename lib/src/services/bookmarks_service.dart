@@ -121,14 +121,17 @@ class BookmarksService {
 
   Future<List<int>> getBookmarks(String boxName, String uuid) async {
     try {
-      final serverBookmarks = await FirebaseFirestore.instance
-          .collection("bookmarks")
-          .doc(uuid)
-          .get();
-      if (serverBookmarks.exists) {
-        final data = serverBookmarks.data() as Map<String, dynamic>;
-        final productIds = List<int>.from(data['productIds'] ?? []);
-        return productIds;
+      if (uuid.isNotEmpty) {
+        final serverBookmarks = await FirebaseFirestore.instance
+            .collection("bookmarks")
+            .doc(uuid)
+            .get();
+        if (serverBookmarks.exists) {
+          final data = serverBookmarks.data() as Map<String, dynamic>;
+          final productIds = List<int>.from(data['productIds'] ?? []);
+          return productIds;
+        }
+        return [];
       }
       return [];
     } catch (e) {

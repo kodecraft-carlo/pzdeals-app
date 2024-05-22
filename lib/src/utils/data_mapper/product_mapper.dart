@@ -23,12 +23,12 @@ class ProductMapper {
           productId: json['id'],
           productName:
               json['title'] != null ? json['title'].toString().trim() : '',
-          price: price,
+          price: priceFormatterWithComma(price),
           // storeAssetImage: json['store'] != null
           //     ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
           //     : 'assets/images/pzdeals_store.png',
           storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
-          oldPrice: oldPrice,
+          oldPrice: priceFormatterWithComma(oldPrice),
           imageAsset: json['image_src'],
           discountPercentage: !isProductNoPrice(json['tag_ids'])
               ? calculateDiscountPercentage(oldPrice, price)
@@ -74,12 +74,12 @@ class ProductMapper {
         productId: json['id'],
         productName:
             json['title'] != null ? json['title'].toString().trim() : '',
-        price: price,
+        price: priceFormatterWithComma(price),
         // storeAssetImage: json['store'] != null
         //     ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
         //     : 'assets/images/pzdeals_store.png',
         storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
-        oldPrice: oldPrice,
+        oldPrice: priceFormatterWithComma(oldPrice),
         imageAsset: json['image_src'],
         discountPercentage: !isProductNoPrice(json['tag_ids'])
             ? calculateDiscountPercentage(oldPrice, price)

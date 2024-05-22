@@ -1,14 +1,16 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:pzdeals/config.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
 class FirebaseDynamicLinksApi {
   final _firebaseDynamicLinks = FirebaseDynamicLinks.instance;
   Future<Uri> generateDealDynamicLink(String productId, String productName,
       String productDescription, String imageUrl, String handle) async {
-    final String fallbackUrl = 'https://www.pzdeals.com/products/$handle';
+    final String fallbackUrl = '${AppConfig.pzDealsStoreUrl}/$handle';
     final DynamicLinkParameters dynamicLinkParams = DynamicLinkParameters(
-      uriPrefix: 'https://pzdealsapp.page.link',
-      link: Uri.parse('https://pzdealsapp.page.link/deals?id=$productId'),
+      uriPrefix: AppConfig.firebaseDynamicLinkBaseUrl,
+      link: Uri.parse(
+          '${AppConfig.firebaseDynamicLinkBaseUrl}/deals?id=$productId'),
       androidParameters: AndroidParameters(
         packageName: 'com.kodecraft.pzdeals',
         minimumVersion: 34,

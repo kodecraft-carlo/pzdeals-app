@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:pzdeals/config.dart';
 
 class ApiClient {
   static final ApiClient _singleton = ApiClient._internal();
@@ -13,7 +14,7 @@ class ApiClient {
     BaseOptions baseOptions = BaseOptions(
       // baseUrl: 'http://3.81.66.127:8055/', // internal dev
       // baseUrl: 'http://52.14.196.100:8055/', // -- client uat
-      baseUrl: 'https://backend.pzdeals.com/', // -- client prod
+      baseUrl: AppConfig.directusUrl, // -- client prod
       connectTimeout: const Duration(minutes: 3),
       receiveTimeout: const Duration(minutes: 3),
     );
@@ -22,7 +23,7 @@ class ApiClient {
     // _dio.options.headers['Authorization'] =
     //     'Bearer T31Er9KbfbINcnS4vTuI-Yrnv0EhYFk9'; // -- client uat token
     _dio.options.headers['Authorization'] =
-        'Bearer 1acLfOFDMSdEvIkJ6yAa7Zf78CLNUp7H'; // -- client prod token
+        'Bearer ${AppConfig.directusToken}'; // -- client prod token
   }
 
   Dio get dio => _dio;

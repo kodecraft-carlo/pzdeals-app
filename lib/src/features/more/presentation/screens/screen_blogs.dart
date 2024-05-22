@@ -135,13 +135,13 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
                   ),
                   onRefresh: () => blogState.refreshBlogs()),
             ),
-            if (blogState.isLoading && blogState.blogs.isNotEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                child: Center(
-                  child: CircularProgressIndicator.adaptive(),
-                ),
-              ),
+            // if (blogState.isLoading && blogState.blogs.isNotEmpty)
+            //   const Padding(
+            //     padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+            //     child: Center(
+            //       child: CircularProgressIndicator.adaptive(),
+            //     ),
+            //   ),
           ],
         ),
       );

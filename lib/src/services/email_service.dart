@@ -108,6 +108,38 @@ class EmailService {
     return false;
   }
 
+  Future<bool> sendEmailDealAlive(
+      String productName, String productLink) async {
+    await _fetchRecipients();
+    if (_recipients.isEmpty) {
+      debugPrint('No recipients found. Cannot send email.');
+      return false;
+    }
+    final emailContent = await getEmailContent(3000);
+    final msgBody = emailContent['message']
+        .replaceAll('[product_name]', productName)
+        .replaceAll('[link]', productLink);
+    final message = Message()
+      ..from = _email
+      ..recipients.addAll(_recipients)
+      ..subject = emailContent['subject'];
+    message.html = msgBody;
+
+    try {
+      await send(message, _smtpServer);
+      return true;
+    } on MailerException catch (e) {
+      debugPrint('Message not sent.');
+      for (var p in e.problems) {
+        debugPrint('Problem: ${p.code}: ${p.msg}');
+      }
+    } catch (e) {
+      debugPrint('Error sending deal alive email: $e');
+      throw Exception('Failed to send deal alive email');
+    }
+    return false;
+  }
+
   Future<bool> sendEmailStoreSubmission(String storeName) async {
     await _fetchRecipients();
     if (_recipients.isEmpty) {

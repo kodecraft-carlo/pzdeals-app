@@ -212,16 +212,18 @@ class StaticProductDealCardWidgetState
                                       const TextSpan(
                                         text: ' ',
                                       ),
-                                      TextSpan(
-                                        text:
-                                            '\$${widget.productData.oldPrice}',
-                                        style: const TextStyle(
-                                            fontSize: Sizes.bodyFontSize,
-                                            color: Colors.red,
-                                            decoration:
-                                                TextDecoration.lineThrough,
-                                            fontWeight: FontWeight.w700),
-                                      ),
+                                      widget.productData.oldPrice != '0.00'
+                                          ? TextSpan(
+                                              text:
+                                                  '\$${widget.productData.oldPrice}',
+                                              style: const TextStyle(
+                                                  fontSize: Sizes.bodyFontSize,
+                                                  color: Colors.red,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                  fontWeight: FontWeight.w700),
+                                            )
+                                          : const TextSpan(text: ''),
                                     ],
                                   ),
                                 )

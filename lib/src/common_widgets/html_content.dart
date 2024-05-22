@@ -28,7 +28,7 @@ class HtmlContent extends StatelessWidget {
           ),
           "ul": Style(
             padding: HtmlPaddings.only(left: 10.0),
-            margin: Margins.zero,
+            // margin: Margins.zero,
             textAlign: TextAlign.left,
             lineHeight: const LineHeight(1.3),
           ),
@@ -41,6 +41,12 @@ class HtmlContent extends StatelessWidget {
             color: PZColors.hyperlinkColor,
             // fontWeight: FontWeight.w600,
             textDecoration: TextDecoration.none,
+          ),
+          "span": Style(
+            margin: Margins.zero,
+          ),
+          "p": Style(
+            margin: Margins.zero,
           ),
         },
         onLinkTap: (url, attributes, element) => openBrowser(url ?? ''));

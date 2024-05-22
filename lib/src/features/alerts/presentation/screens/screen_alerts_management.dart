@@ -187,7 +187,7 @@ class _AlertsManagementScreenState
                       fontFamily: 'Poppins'),
                   tabs: const <Widget>[
                     Tab(
-                      text: 'Popular Keywords',
+                      text: 'Keyword Alerts',
                     ),
                     Tab(
                       text: 'Category Alerts',

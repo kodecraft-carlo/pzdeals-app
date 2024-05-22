@@ -5,11 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
+import 'package:pzdeals/config.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/screens/screen_login_required.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/services/email_service.dart';
 import 'package:pzdeals/src/services/firebase_dynamiclink.dart';
+import 'package:pzdeals/src/services/google_sheet_service.dart';
 import 'package:pzdeals/src/services/products_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/bookmarks_provider.dart';
@@ -28,7 +30,9 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
   EmailService emailSvc = EmailService();
   ProductService productSvc = ProductService();
   FirebaseDynamicLinksApi dynamicLinkApi = FirebaseDynamicLinksApi();
+  GoogleSheetService googletSheetSvc = GoogleSheetService();
   bool reportingSoldOut = false;
+  bool reportingDealAlive = false;
   void gotoLoginScreen() {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return const LoginRequiredScreen(
@@ -148,44 +152,96 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                   }
                 }
               }),
-              dealActionIconButton(
-                  reportingSoldOut
-                      ? const Icon(
-                          Icons.sell_rounded,
-                          color: PZColors.pzOrange,
-                        )
-                      : const Icon(Icons.sell_outlined),
-                  'Sold-out', () async {
-                if (authUserDataState.isAuthenticated == false) {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const LoginRequiredScreen(
-                      message: "Login to ${Wordings.appName}!",
-                    );
-                  }));
-                  return;
-                }
-                setState(() {
-                  reportingSoldOut = true;
-                });
-                // if (mounted) LoadingDialog.show(context);
-                updateProductStatus(
-                        widget.productData.productId,
-                        'soldout_pending',
-                        widget.productData.productName,
-                        widget.productData.barcodeLink ?? '')
-                    .then((value) {
-                  if (value == true) {
-                    showSnackbarWithMessage(
-                        context, 'Thanks for letting us know!');
-                    Future.delayed(const Duration(seconds: 3), () {
+              widget.productData.isProductExpired != null &&
+                      widget.productData.isProductExpired == true
+                  ? dealActionIconButton(
+                      //report deal alive
+                      reportingDealAlive
+                          ? const Icon(
+                              Icons.verified_rounded,
+                              color: PZColors.pzOrange,
+                            )
+                          : const Icon(Icons.verified_outlined),
+                      'Deal Alive', () async {
+                      if (authUserDataState.isAuthenticated == false) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return const LoginRequiredScreen(
+                            message: "Login to ${Wordings.appName}!",
+                          );
+                        }));
+                        return;
+                      }
                       setState(() {
-                        reportingSoldOut = false;
+                        reportingDealAlive = true;
                       });
-                    });
-                  }
-                  // if (mounted) LoadingDialog.hide(context);
-                });
-              }),
+                      // if (mounted) LoadingDialog.show(context);
+                      googletSheetSvc
+                          .reportDealAlive('?timestamp=${DateTime.now()}'
+                              '&product=${widget.productData.productName}'
+                              '&url=${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}'
+                              '&email=${authUserDataState.userData?.emailAddress}'
+                              '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
+                          .then((value) {
+                        if (value == true) {
+                          emailSvc.sendEmailDealAlive(
+                              widget.productData.productName,
+                              '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
+                          showSnackbarWithMessage(
+                              context, 'Thanks for letting us know!');
+                          Future.delayed(const Duration(seconds: 3), () {
+                            setState(() {
+                              reportingDealAlive = false;
+                            });
+                          });
+                        }
+                        // if (mounted) LoadingDialog.hide(context);
+                      });
+                    })
+                  : dealActionIconButton(
+                      //report soldout
+                      reportingSoldOut
+                          ? const Icon(
+                              Icons.sell_rounded,
+                              color: PZColors.pzOrange,
+                            )
+                          : const Icon(Icons.sell_outlined),
+                      'Sold-out', () async {
+                      if (authUserDataState.isAuthenticated == false) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return const LoginRequiredScreen(
+                            message: "Login to ${Wordings.appName}!",
+                          );
+                        }));
+                        return;
+                      }
+                      setState(() {
+                        reportingSoldOut = true;
+                      });
+                      // if (mounted) LoadingDialog.show(context);
+                      googletSheetSvc
+                          .reportSoldout('?timestamp=${DateTime.now()}'
+                              '&product=${widget.productData.productName}'
+                              '&url=${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}'
+                              '&email=${authUserDataState.userData?.emailAddress}'
+                              '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
+                          .then((value) {
+                        if (value == true) {
+                          emailSvc.sendEmailSoldOut(
+                              widget.productData.productName,
+                              '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
+                          showSnackbarWithMessage(
+                              context, 'Thanks for letting us know!');
+                          Future.delayed(const Duration(seconds: 3), () {
+                            setState(() {
+                              reportingSoldOut = false;
+                            });
+                          });
+                        }
+                        // if (mounted) LoadingDialog.hide(context);
+                      });
+                    }),
               dealActionIconButton(
                   authUserDataState.isAuthenticated == true &&
                           bookmarkState

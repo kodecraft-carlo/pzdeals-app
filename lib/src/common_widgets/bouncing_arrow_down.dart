@@ -49,8 +49,9 @@ class _BouncingArrowIconState extends State<BouncingArrowIcon>
           child: child,
         );
       },
-      child: SizedBox(
+      child: Container(
           height: widget.height,
+          color: Colors.transparent,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

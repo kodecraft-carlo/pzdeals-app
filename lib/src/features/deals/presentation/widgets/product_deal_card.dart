@@ -206,8 +206,7 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                     alignment: Alignment.centerLeft,
                     child: productData.isProductNoPrice != null &&
                             productData.isProductNoPrice == false &&
-                            productData.price != '' &&
-                            productData.price != '0.00'
+                            productData.price != ''
                         ? RichText(
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -225,15 +224,18 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                                 const TextSpan(
                                   text: ' ',
                                 ),
-                                TextSpan(
-                                  text:
-                                      '\$${productData.oldPrice}', // Replace with your old price
-                                  style: const TextStyle(
-                                      fontSize: Sizes.bodyFontSize,
-                                      color: Colors.red,
-                                      decoration: TextDecoration.lineThrough,
-                                      fontWeight: FontWeight.w700),
-                                ),
+                                productData.oldPrice != '0.00'
+                                    ? TextSpan(
+                                        text:
+                                            '\$${productData.oldPrice}', // Replace with your old price
+                                        style: const TextStyle(
+                                            fontSize: Sizes.bodyFontSize,
+                                            color: Colors.red,
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                            fontWeight: FontWeight.w700),
+                                      )
+                                    : const TextSpan(text: ''),
                               ],
                             ),
                           )
@@ -377,15 +379,17 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                                       text: '  ',
                                     ),
                                     // Old Price with Strikethrough
-                                    TextSpan(
-                                      text: '\$${productData.oldPrice}',
-                                      style: const TextStyle(
-                                          fontSize: Sizes.bodyFontSize,
-                                          color: Colors.red,
-                                          decoration:
-                                              TextDecoration.lineThrough,
-                                          fontWeight: FontWeight.w700),
-                                    ),
+                                    productData.oldPrice != '0.00'
+                                        ? TextSpan(
+                                            text: '\$${productData.oldPrice}',
+                                            style: const TextStyle(
+                                                fontSize: Sizes.bodyFontSize,
+                                                color: Colors.red,
+                                                decoration:
+                                                    TextDecoration.lineThrough,
+                                                fontWeight: FontWeight.w700),
+                                          )
+                                        : const TextSpan(text: ''),
                                   ],
                                 ),
                               ),

@@ -16,6 +16,8 @@ class BlogsNotifier extends ChangeNotifier {
   List<BlogData> get filteredBlogs => _filteredBlogs;
 
   Future<void> refreshBlogs() async {
+    _isLoading = true;
+    notifyListeners();
     pageNumber = 1;
     try {
       final serverBlogs =

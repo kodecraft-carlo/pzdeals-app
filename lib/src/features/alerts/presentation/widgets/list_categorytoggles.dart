@@ -44,20 +44,25 @@ class _CategoryNotificationToggleListState
     final categSettingsCollection =
         ref.watch(categorySettingsProvider).collections;
     return ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        key: const PageStorageKey<String>('category_notification_toggle_list'),
-        shrinkWrap: true,
-        itemCount: categSettingsCollection.length,
-        itemBuilder: (context, index) {
-          final collection = categSettingsCollection[index];
-          return ListTileWithSwitchWidget(
+      physics: const NeverScrollableScrollPhysics(),
+      key: const PageStorageKey<String>('category_notification_toggle_list'),
+      shrinkWrap: true,
+      itemCount: categSettingsCollection.length,
+      itemBuilder: (context, index) {
+        final collection = categSettingsCollection[index];
+        return Container(
+          decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.grey.shade200))),
+          child: ListTileWithSwitchWidget(
             title: getKeywordTitle(collection.title),
             value: collection.isSubscribed,
             onChanged: (value) {
               onSwitchChanged(
                   value, collection.title, index, collection.keyword ?? '');
             },
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }

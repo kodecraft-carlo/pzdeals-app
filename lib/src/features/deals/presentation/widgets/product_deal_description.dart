@@ -144,8 +144,7 @@ class ProductDealDescriptionState
         const SizedBox(height: Sizes.spaceBetweenContentSmall),
         widget.productData.isProductNoPrice != null &&
                 widget.productData.isProductNoPrice == false &&
-                widget.productData.price != '' &&
-                widget.productData.price != '0.00'
+                widget.productData.price != ''
             ? RichText(
                 text: TextSpan(
                   children: [
@@ -166,21 +165,23 @@ class ProductDealDescriptionState
                     ),
 
                     // Old Price with Strikethrough
-                    TextSpan(
-                      text:
-                          '\$${widget.productData.oldPrice}', // Replace with your old price
-                      style: const TextStyle(
-                        fontSize: Sizes.fontSizeMedium,
-                        color: Colors.red,
-                        decoration: TextDecoration.lineThrough,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    widget.productData.oldPrice != '0.00'
+                        ? TextSpan(
+                            text:
+                                '\$${widget.productData.oldPrice}', // Replace with your old price
+                            style: const TextStyle(
+                              fontSize: Sizes.fontSizeMedium,
+                              color: Colors.red,
+                              decoration: TextDecoration.lineThrough,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        : const TextSpan(text: ''),
                   ],
                 ),
               )
             : const SizedBox.shrink(),
-        const SizedBox(height: Sizes.spaceBetweenSections),
+        const SizedBox(height: Sizes.spaceBetweenContent),
         if (widget.productData.isProductExpired != null &&
             widget.productData.isProductExpired == true)
           const ExpiredDealBannerWidget(
@@ -200,7 +201,7 @@ class ProductDealDescriptionState
                       const TextSpan(
                         text: '• ',
                         style: TextStyle(
-                          color: Colors.red,
+                          color: Colors.black,
                           fontWeight: FontWeight.w600,
                           fontFamily: 'Poppins',
                         ),
@@ -208,7 +209,7 @@ class ProductDealDescriptionState
                       const TextSpan(
                         text: 'Coupon code ',
                         style: TextStyle(
-                          color: Colors.red,
+                          color: Colors.black,
                           fontWeight: FontWeight.w600,
                           fontFamily: 'Poppins',
                         ),

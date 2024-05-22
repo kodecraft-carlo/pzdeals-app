@@ -109,7 +109,17 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                 children: [
                   // Add some padding
                   Expanded(
-                    child: SingleChildScrollView(
+                    child: ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: <Color>[Colors.transparent, Colors.white],
+                          stops: <double>[0.85, 1.0],
+                        ).createShader(bounds);
+                      },
+                      blendMode: BlendMode.dstOut,
+                      child: SingleChildScrollView(
                         controller: scrollController,
                         physics: const BouncingScrollPhysics(),
                         child: Padding(
@@ -133,32 +143,16 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                     bottom: Sizes.paddingAll),
                                 child: affiliateLinkDescription(),
                               )
-                              // SizedBox(
-                              //   key: widgetKey,
-                              //   child: const Text('marker',
-                              //       style: TextStyle(
-                              //           color: Colors.black, fontSize: .5)),
-                              // ),
-                              // widget.hasDescription == false
-                              //     ? const SizedBox(
-                              //         height: 200,
-                              //       )
-                              //     : const SizedBox(
-                              //         height: 120,
-                              //       ),
-                              // Padding(
-                              //   padding: const EdgeInsets.symmetric(
-                              //       horizontal: Sizes.paddingAll,
-                              //       vertical: Sizes.paddingAllSmall),
-                              //   child: affiliateLinkDescription(),
-                              // ),
                             ],
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
                   ),
                   showMore == true &&
                           !_isScrollingDown &&
-                          widget.hasDescription == true
+                          widget.hasDescription == true &&
+                          widget.productData.sku != null
                       ? GestureDetector(
                           onTap: () {
                             scrollController.animateTo(
@@ -175,7 +169,6 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                           ),
                         )
                       : const SizedBox.shrink(),
-
                   ProductDealActions(
                     productData: widget.productData,
                   ),
@@ -243,7 +236,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                     fontSize: Sizes.fontSizeXSmall / 1.2,
                     fontStyle: FontStyle.italic,
                     fontFamily: 'Poppins',
-                    color: PZColors.pzOrange),
+                    color: PZColors.hyperlinkColor),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
                     openBrowser(

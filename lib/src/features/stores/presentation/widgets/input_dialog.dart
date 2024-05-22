@@ -5,6 +5,8 @@ import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/common_widgets/textfield_button.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/services/email_service.dart';
+import 'package:pzdeals/src/services/google_sheet_service.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class StoreInputDialog extends ConsumerStatefulWidget {
   const StoreInputDialog({super.key});
@@ -15,14 +17,18 @@ class StoreInputDialog extends ConsumerStatefulWidget {
 
 class _StoreInputDialogState extends ConsumerState<StoreInputDialog> {
   EmailService emailSvc = EmailService();
+  GoogleSheetService googletSheetSvc = GoogleSheetService();
+  String storeName = '';
+
   TextEditingController dialogFieldController = TextEditingController();
 
-  Future<bool> sendMail(String storeName) async {
+  sendMail(String storeName) {
     return emailSvc.sendEmailStoreSubmission(storeName);
   }
 
   @override
   Widget build(BuildContext context) {
+    final authUserDataState = ref.watch(authUserDataProvider);
     return AlertDialog(
       titlePadding: EdgeInsets.zero,
       surfaceTintColor: Colors.transparent,
@@ -65,12 +71,26 @@ class _StoreInputDialogState extends ConsumerState<StoreInputDialog> {
           TextFieldButton(
             textController: dialogFieldController,
             onButtonPressed: () async {
+              setState(() {
+                storeName = dialogFieldController.text.trim();
+              });
               if (mounted) LoadingDialog.show(context);
-              if (await sendMail(dialogFieldController.text)) {
-                if (mounted) LoadingDialog.hide(context);
-                showSnackbarWithMessage(context, 'Store submitted. Thank you!');
-                Navigator.of(context).pop();
-              }
+              googletSheetSvc
+                  .requestStore('?timestamp=${DateTime.now()}'
+                      '&store=${dialogFieldController.text}'
+                      '&email=${authUserDataState.userData?.emailAddress}'
+                      '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
+                  .then((value) {
+                if (value == true) {
+                  emailSvc.sendEmailStoreSubmission(storeName);
+                  if (mounted) LoadingDialog.hide(context);
+
+                  showSnackbarWithMessage(
+                      context, 'Store submitted. Thank you!');
+                  Navigator.of(context).pop();
+                }
+                // if (mounted) LoadingDialog.hide(context);
+              });
             },
             buttonLabel: 'Submit',
             textFieldHint: 'Store name or website..',
