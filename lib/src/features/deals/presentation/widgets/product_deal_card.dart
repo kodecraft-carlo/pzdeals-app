@@ -116,7 +116,7 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                           sourceType: productData.assetSourceType,
                           size: 'xlarge',
                           fit: BoxFit
-                              .contain, //cover will expand but crop the image
+                              .fitWidth, //cover will expand but crop the image
                           isExpired: productData.isProductExpired != null &&
                               productData.isProductExpired == true,
                         ),

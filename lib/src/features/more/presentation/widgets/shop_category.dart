@@ -28,7 +28,7 @@ class ShopCategory extends StatelessWidget {
         final category = categoryData[index];
         return NavigateScreenWidget(
           destinationWidget: CollectionDisplayScreenWidget(
-            collectionTitle: category.title,
+            collectionTitle: '${category.title} Deals',
             keyword: category.keyword ?? '',
             collectionId: category.id,
           ),

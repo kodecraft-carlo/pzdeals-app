@@ -156,8 +156,11 @@ class CollectionDisplayScreenWidgetState
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('collectionTitle: ${widget.collectionTitle}');
+    debugPrint('paramcollectionName: $paramcollectionName');
     final layoutType = ref.watch(layoutTypeProvider);
     final productCollectionState = ref.watch(productCollectionProvider);
+
     Widget body;
     if (productCollectionState.isLoading &&
         productCollectionState.products.isEmpty) {
@@ -219,7 +222,9 @@ class CollectionDisplayScreenWidgetState
             child: AppBar(
               title: Text(
                 widget.collectionTitle != ''
-                    ? widget.collectionTitle
+                    ? widget.collectionTitle == 'Toys Deals'
+                        ? 'Toy Deals'
+                        : widget.collectionTitle
                     : paramcollectionName,
                 style: const TextStyle(
                   color: PZColors.pzBlack,

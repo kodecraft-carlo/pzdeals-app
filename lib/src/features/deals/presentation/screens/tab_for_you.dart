@@ -112,7 +112,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
               !foryouState.hasSelectedCollectionsFromCache
                   ? const ForYouBannerWidget()
                   : const SizedBox.shrink(),
-              Skeletonizer(
+              Skeletonizer.zone(
                 enabled: foryouState.isForYouCollectionProductsLoading,
                 child: Container(
                   margin: const EdgeInsets.all(Sizes.paddingAll),

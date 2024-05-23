@@ -69,11 +69,14 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
           const SizedBox(
             height: Sizes.paddingAllSmall,
           ),
-          const Text(
-            Wordings.descFrontPage,
-            style:
-                TextStyle(color: Colors.black54, fontSize: Sizes.bodyFontSize),
-          ),
+          const Padding(
+              padding: EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+              child: Text(
+                Wordings.descFrontPage,
+                style: TextStyle(
+                    color: Colors.black54, fontSize: Sizes.bodyFontSize),
+                textAlign: TextAlign.center,
+              )),
           Expanded(
               child: ProductsDisplay(
             productData: productData,

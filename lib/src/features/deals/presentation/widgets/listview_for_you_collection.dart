@@ -86,7 +86,8 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextWidget(
-                  text: widget.title,
+                  text:
+                      widget.title == 'Toys Deals' ? 'Toy Deals' : widget.title,
                   textDisplayType: TextDisplayType.sectionTitle),
               Flexible(
                 child: ListView.separated(

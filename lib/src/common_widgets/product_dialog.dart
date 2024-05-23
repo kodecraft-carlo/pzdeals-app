@@ -8,7 +8,6 @@ import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/bouncing_arrow_down.dart';
 import 'package:pzdeals/src/common_widgets/button_browser.dart';
 import 'package:pzdeals/src/common_widgets/product_deal_actions.dart';
-import 'package:pzdeals/src/common_widgets/scrollbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 
@@ -80,6 +79,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
         showMore = scrollController.position.maxScrollExtent > 0;
+        debugPrint('showMore: $showMore');
       });
       // isMarkerVisible();
     });
@@ -151,8 +151,11 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                   ),
                   showMore == true &&
                           !_isScrollingDown &&
-                          widget.hasDescription == true &&
-                          widget.productData.sku != null
+                          (widget.hasDescription == true ||
+                              (widget.hasDescription == false &&
+                                  widget.productData.tagDealDescription != '' &&
+                                  (widget.productData.sku != null &&
+                                      widget.productData.sku != '')))
                       ? GestureDetector(
                           onTap: () {
                             scrollController.animateTo(

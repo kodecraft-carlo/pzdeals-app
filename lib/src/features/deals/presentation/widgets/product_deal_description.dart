@@ -199,7 +199,7 @@ class ProductDealDescriptionState
                     textAlign: TextAlign.start,
                     text: TextSpan(children: [
                       const TextSpan(
-                        text: '• ',
+                        text: '•  ',
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w600,
@@ -210,7 +210,7 @@ class ProductDealDescriptionState
                         text: 'Coupon code ',
                         style: TextStyle(
                           color: Colors.black,
-                          fontWeight: FontWeight.w600,
+                          // fontWeight: FontWeight.w600,
                           fontFamily: 'Poppins',
                         ),
                       ),

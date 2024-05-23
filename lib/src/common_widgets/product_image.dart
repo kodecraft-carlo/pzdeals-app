@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ProductImageWidget extends StatelessWidget {
   const ProductImageWidget({
@@ -92,23 +94,26 @@ class ProductImageWidget extends StatelessWidget {
         imageWidget = CachedNetworkImage(
           imageUrl: imageAsset,
           width: width,
-          height: height,
           cacheManager: networkImageCacheManager,
-          fadeInDuration: const Duration(milliseconds: 10),
+          fadeInDuration: const Duration(milliseconds: 1),
           fit: fit,
-          // placeholder: (context, url) => const Center(
-          //   child: CircularProgressIndicator(
-          //     valueColor: AlwaysStoppedAnimation<Color>(PZColors.pzGrey),
-          //     backgroundColor: PZColors.pzLightGrey,
-          //     strokeWidth: 3,
-          //   ),
-          // ),
+          placeholder: (context, url) => Skeletonizer(
+              effect: PulseEffect(
+                  from: Colors.white,
+                  to: Colors.grey[200]!,
+                  duration: const Duration(milliseconds: 1000)),
+              child: Image.asset(
+                'assets/images/placeholder_white.png',
+                width: width,
+                // height: height,
+                fit: BoxFit.fitWidth,
+              )),
           errorWidget: (context, url, error) {
             debugPrint('Error loading image: $error');
             return Image.asset(
               'assets/images/pzdeals.png',
               width: width,
-              height: height,
+              // height: height,
               fit: BoxFit.fitWidth,
             );
           },

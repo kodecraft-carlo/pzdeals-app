@@ -53,7 +53,15 @@ class ProductCollectionNotifier extends ChangeNotifier {
 
       final serverProducts = await _productService.fetchProductDeals(
           _collectionName, _boxName, pageNumber);
-      _products = serverProducts;
+
+      // Check if serverProducts are already in _products
+      for (var serverProduct in serverProducts) {
+        if (!_products.any((cachedProduct) =>
+            cachedProduct.productId == serverProduct.productId)) {
+          _products.add(serverProduct);
+        }
+      }
+
       notifyListeners();
     } catch (e) {
       debugPrint("error loading products: $e");
