@@ -79,7 +79,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
         showMore = scrollController.position.maxScrollExtent > 0;
-        debugPrint('showMore: $showMore');
+        // debugPrint('showMore: $showMore');
       });
       // isMarkerVisible();
     });
