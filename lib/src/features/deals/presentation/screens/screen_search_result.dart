@@ -10,6 +10,8 @@ import 'package:pzdeals/src/features/deals/state/provider_filters.dart';
 import 'package:pzdeals/src/features/deals/state/provider_search.dart';
 import 'dart:io' show Platform;
 
+import 'package:pzdeals/src/state/layout_type_provider.dart';
+
 final searchFilterProvider = ChangeNotifierProvider<SearchFilterNotifier>(
     (ref) => SearchFilterNotifier());
 
@@ -117,13 +119,14 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
       );
     } else {
       final productData = searchState.products;
+      final layoutType = ref.watch(layoutTypeProvider);
       searchResultWidget = Flexible(
         child: Column(
           children: [
             Expanded(
                 child: ProductsDisplay(
               productData: productData,
-              layoutType: 'grid',
+              layoutType: layoutType,
               scrollKey: 'searchResult',
               scrollController: _scrollController,
             )),

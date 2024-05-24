@@ -5,7 +5,8 @@ import 'package:pzdeals/src/features/stores/presentation/widgets/index.dart';
 import 'package:pzdeals/src/models/index.dart';
 
 class DisplayStores extends StatelessWidget {
-  DisplayStores({super.key, required this.storedata, this.scrollController});
+  const DisplayStores(
+      {super.key, required this.storedata, this.scrollController});
 
   final List<StoreData> storedata;
 

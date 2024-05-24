@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
+
 int calculateDiscountPercentage(dynamic oldPrice, dynamic price) {
+  // debugPrint('oldPrice: $oldPrice, price: $price');
   if (oldPrice is String) {
     oldPrice = double.parse(oldPrice);
   }
@@ -6,7 +9,7 @@ int calculateDiscountPercentage(dynamic oldPrice, dynamic price) {
     price = double.parse(price);
   }
   //return 100 if price is 0
-  if (price == 0) return 100;
+  if (price == 0 && oldPrice > 0) return 100;
   if (oldPrice <= 0) return 0;
   return ((oldPrice - price) / oldPrice * 100).round();
 }

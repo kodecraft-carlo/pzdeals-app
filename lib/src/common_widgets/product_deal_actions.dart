@@ -187,15 +187,15 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                           emailSvc.sendEmailDealAlive(
                               widget.productData.productName,
                               '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
-                          showSnackbarWithMessage(
-                              context, 'Thanks for letting us know!');
-                          Future.delayed(const Duration(seconds: 3), () {
-                            setState(() {
-                              reportingDealAlive = false;
-                            });
-                          });
                         }
                         // if (mounted) LoadingDialog.hide(context);
+                      });
+                      showSnackbarWithMessage(
+                          context, 'Thanks for letting us know!');
+                      Future.delayed(const Duration(milliseconds: 3500), () {
+                        setState(() {
+                          reportingDealAlive = false;
+                        });
                       });
                     })
                   : dealActionIconButton(
@@ -231,15 +231,15 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                           emailSvc.sendEmailSoldOut(
                               widget.productData.productName,
                               '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
-                          showSnackbarWithMessage(
-                              context, 'Thanks for letting us know!');
-                          Future.delayed(const Duration(seconds: 3), () {
-                            setState(() {
-                              reportingSoldOut = false;
-                            });
-                          });
                         }
                         // if (mounted) LoadingDialog.hide(context);
+                      });
+                      showSnackbarWithMessage(
+                          context, 'Thanks for letting us know!');
+                      Future.delayed(const Duration(milliseconds: 3500), () {
+                        setState(() {
+                          reportingSoldOut = false;
+                        });
                       });
                     }),
               dealActionIconButton(

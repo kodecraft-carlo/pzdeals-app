@@ -21,11 +21,11 @@ class StoreScreenProvider extends ChangeNotifier {
   List<String> get storeNames => _storeNames;
 
   StoreScreenProvider() {
-    _loadStores();
+    loadStores();
   }
 
   Future<void> refresh() async {
-    _loadStores();
+    loadStores();
   }
 
   Future<void> refreshStores() async {
@@ -48,7 +48,7 @@ class StoreScreenProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _loadStores() async {
+  Future<void> loadStores() async {
     _isLoading = true;
     pageNumber = 1;
     notifyListeners();

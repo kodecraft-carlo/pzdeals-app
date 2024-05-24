@@ -117,7 +117,7 @@ class NotificationService {
             .add(notification.toMap());
 
         //update notification received info only when data['alert_type'] is 'front-page'
-        if (notification.data['alert_type'] == 'front_page') {
+        if (notification.data['alert_type'] == 'front-page') {
           await updateFrontPageNotificationReceivedInfo(user?.uid);
         }
       } else {

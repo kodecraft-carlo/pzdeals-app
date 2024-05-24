@@ -100,10 +100,11 @@ class FetchProductDealService {
         box.get(boxName)?.cast<ProductDealcardData>() ?? [];
 
     // Append the new products to the cached products, if they're not already in the cache.
+    products = products.reversed.toList();
     for (var product in products) {
       if (!cachedProducts.any(
           (cachedProduct) => cachedProduct.productId == product.productId)) {
-        cachedProducts.add(product);
+        cachedProducts.insert(0, product);
       }
     }
 

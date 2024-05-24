@@ -201,53 +201,73 @@ class NotificationCardWidgetState
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
             ),
-            // isThreeLine: true,
-            leading: notificationData.imageUrl == ''
-                ? CircleAvatar(
-                    backgroundColor: PZColors.pzOrange,
-                    child: Transform.rotate(
-                      angle: -7,
-                      child: const Icon(
+            isThreeLine: true,
+            leading: CircleAvatar(
+              backgroundColor: PZColors.pzOrange,
+              backgroundImage: notificationData.imageUrl != ''
+                  ? CachedNetworkImageProvider(notificationData.imageUrl,
+                      cacheManager: networkImageCacheManager)
+                  : null,
+              child: Transform.rotate(
+                angle: notificationData.imageUrl != '' ? 0 : -7,
+                child: notificationData.imageUrl != ''
+                    ? null
+                    : const Icon(
                         Icons.campaign_rounded,
                         color: PZColors.pzWhite,
                       ),
-                    ),
-                  )
-                : Container(
-                    width: 50.0,
-                    height: 50.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                          Sizes.containerBorderRadius / 2),
-                    ),
-                    child: CachedNetworkImage(
-                        imageUrl: notificationData.imageUrl,
-                        cacheManager: networkImageCacheManager,
-                        errorWidget: (context, url, error) => CircleAvatar(
-                              backgroundColor: PZColors.pzOrange,
-                              child: Transform.rotate(
-                                angle: -7,
-                                child: const Icon(
-                                  Icons.campaign_rounded,
-                                  color: PZColors.pzWhite,
-                                ),
-                              ),
-                            )),
-                  ),
+              ),
+            ),
             title: Text(
-              notificationData.body,
+              notificationData.title,
               style: TextStyle(
                   color: notificationData.isRead
                       ? PZColors.pzGrey
                       : PZColors.pzBlack,
-                  fontWeight: notificationData.isRead
-                      ? FontWeight.w500
-                      : FontWeight.w700,
+                  fontWeight: FontWeight.w700,
                   fontSize: Sizes.fontSizeSmall),
             ),
             subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(notificationData.body,
+                    style: TextStyle(
+                        color: notificationData.isRead
+                            ? PZColors.pzGrey
+                            : PZColors.pzBlack,
+                        fontSize: Sizes.fontSizeSmall)),
+                const SizedBox(height: Sizes.spaceBetweenContentSmall),
+                notificationData.imageUrl != ''
+                    ? ClipRRect(
+                        borderRadius:
+                            BorderRadius.circular(Sizes.cardBorderRadius),
+                        child: CachedNetworkImage(
+                          imageUrl: notificationData.imageUrl,
+                          cacheManager: networkImageCacheManager,
+                          fadeInDuration: const Duration(milliseconds: 10),
+                          placeholder: (context, url) {
+                            // return Skeletonizer(
+                            //   enabled: true,
+                            //   child: Container(
+                            //     width: MediaQuery.of(context).size.width / 2,
+                            //     color: PZColors.pzLightGrey,
+                            //   ),
+                            // );
+                            return AspectRatio(
+                              aspectRatio: 1,
+                              child: Image.asset(
+                                'assets/images/shortcuts/blogs_placeholder.png',
+                                width: MediaQuery.of(context).size.width / 2,
+                                fit: BoxFit.fitWidth,
+                              ),
+                            );
+                          },
+                          width: MediaQuery.of(context).size.width / 2,
+                          fit: BoxFit.fitWidth,
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(height: Sizes.spaceBetweenSections),
                 Row(
                   children: [
                     Text(

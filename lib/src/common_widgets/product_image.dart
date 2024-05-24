@@ -94,6 +94,9 @@ class ProductImageWidget extends StatelessWidget {
         imageWidget = CachedNetworkImage(
           imageUrl: imageAsset,
           width: width,
+          height: height,
+          // memCacheHeight: height.toInt(),
+          // memCacheWidth: width.toInt(),
           cacheManager: networkImageCacheManager,
           fadeInDuration: const Duration(milliseconds: 1),
           fit: fit,
@@ -105,7 +108,7 @@ class ProductImageWidget extends StatelessWidget {
               child: Image.asset(
                 'assets/images/placeholder_white.png',
                 width: width,
-                // height: height,
+                height: height,
                 fit: BoxFit.fitWidth,
               )),
           errorWidget: (context, url, error) {

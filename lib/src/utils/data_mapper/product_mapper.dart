@@ -9,16 +9,13 @@ class ProductMapper {
     // debugPrint('responseData: $responseData');
     try {
       return List<ProductDealcardData>.from(responseData.map((json) {
-        final dynamic oldPrice = isProductNoPrice(json['tag_ids'])
-            ? 0.0
-            : isProductPriceValid(json['variants'][0]['compare_at_price'])
+        final dynamic oldPrice =
+            isProductPriceValid(json['variants'][0]['compare_at_price'])
                 ? priceFormatter(json['variants'][0]['compare_at_price'])
                 : 0.0;
-        final dynamic price = isProductNoPrice(json['tag_ids'])
-            ? 0.0
-            : isProductPriceValid(json['variants'][0]['price'])
-                ? priceFormatter(json['variants'][0]['price'])
-                : 0.0;
+        final dynamic price = isProductPriceValid(json['variants'][0]['price'])
+            ? priceFormatter(json['variants'][0]['price'])
+            : 0.0;
         return ProductDealcardData(
           productId: json['id'],
           productName:
@@ -30,9 +27,7 @@ class ProductMapper {
           storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
           oldPrice: priceFormatterWithComma(oldPrice),
           imageAsset: json['image_src'],
-          discountPercentage: !isProductNoPrice(json['tag_ids'])
-              ? calculateDiscountPercentage(oldPrice, price)
-              : 0,
+          discountPercentage: calculateDiscountPercentage(oldPrice, price),
           assetSourceType: 'network',
           isProductNoPrice: isProductNoPrice(json['tag_ids']),
           isProductExpired: isProductExpired(json['tag_ids']),
@@ -60,16 +55,13 @@ class ProductMapper {
     // debugPrint('responseData: $responseData');
     try {
       final json = responseData[0];
-      final dynamic oldPrice = isProductNoPrice(json['tag_ids'])
-          ? 0.0
-          : isProductPriceValid(json['variants'][0]['compare_at_price'])
+      final dynamic oldPrice =
+          isProductPriceValid(json['variants'][0]['compare_at_price'])
               ? priceFormatter(json['variants'][0]['compare_at_price'])
               : 0.0;
-      final dynamic price = isProductNoPrice(json['tag_ids'])
-          ? 0.0
-          : isProductPriceValid(json['variants'][0]['price'])
-              ? priceFormatter(json['variants'][0]['price'])
-              : 0.0;
+      final dynamic price = isProductPriceValid(json['variants'][0]['price'])
+          ? priceFormatter(json['variants'][0]['price'])
+          : 0.0;
       return ProductDealcardData(
         productId: json['id'],
         productName:
@@ -81,9 +73,7 @@ class ProductMapper {
         storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
         oldPrice: priceFormatterWithComma(oldPrice),
         imageAsset: json['image_src'],
-        discountPercentage: !isProductNoPrice(json['tag_ids'])
-            ? calculateDiscountPercentage(oldPrice, price)
-            : 0,
+        discountPercentage: calculateDiscountPercentage(oldPrice, price),
         assetSourceType: 'network',
         isProductNoPrice: isProductNoPrice(json['tag_ids']),
         isProductExpired: isProductExpired(json['tag_ids']),

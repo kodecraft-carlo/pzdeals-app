@@ -111,14 +111,17 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        ProductImageWidget(
-                          imageAsset: productData.imageAsset,
-                          sourceType: productData.assetSourceType,
-                          size: 'xlarge',
-                          fit: BoxFit
-                              .fitWidth, //cover will expand but crop the image
-                          isExpired: productData.isProductExpired != null &&
-                              productData.isProductExpired == true,
+                        AspectRatio(
+                          aspectRatio: 1,
+                          child: ProductImageWidget(
+                            imageAsset: productData.imageAsset,
+                            sourceType: productData.assetSourceType,
+                            size: 'xlarge',
+                            fit: BoxFit
+                                .cover, //cover will expand but crop the image
+                            isExpired: productData.isProductExpired != null &&
+                                productData.isProductExpired == true,
+                          ),
                         ),
                         productData.isProductExpired != null &&
                                 productData.isProductExpired == true
@@ -193,9 +196,11 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             // Discount Badge
-                            BadgeWidget(
-                                discountPercentage:
-                                    productData.discountPercentage)
+                            productData.discountPercentage > 0
+                                ? BadgeWidget(
+                                    discountPercentage:
+                                        productData.discountPercentage)
+                                : const SizedBox.shrink()
                           ],
                         ),
                       ),
@@ -206,7 +211,11 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                     alignment: Alignment.centerLeft,
                     child: productData.isProductNoPrice != null &&
                             productData.isProductNoPrice == false &&
-                            productData.price != ''
+                            (productData.oldPrice != null &&
+                                double.parse(productData.oldPrice
+                                        .replaceAll(',', '')) >
+                                    0 &&
+                                productData.oldPrice != '')
                         ? RichText(
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

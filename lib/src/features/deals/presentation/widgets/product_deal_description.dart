@@ -144,7 +144,12 @@ class ProductDealDescriptionState
         const SizedBox(height: Sizes.spaceBetweenContentSmall),
         widget.productData.isProductNoPrice != null &&
                 widget.productData.isProductNoPrice == false &&
-                widget.productData.price != ''
+                (widget.productData.oldPrice != null &&
+                    double.parse(widget.productData.oldPrice
+                            .toString()
+                            .replaceAll(',', '')) >
+                        0 &&
+                    widget.productData.oldPrice != '')
             ? RichText(
                 text: TextSpan(
                   children: [

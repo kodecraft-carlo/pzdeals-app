@@ -54,13 +54,7 @@ class ProductCollectionNotifier extends ChangeNotifier {
       final serverProducts = await _productService.fetchProductDeals(
           _collectionName, _boxName, pageNumber);
 
-      // Check if serverProducts are already in _products
-      for (var serverProduct in serverProducts) {
-        if (!_products.any((cachedProduct) =>
-            cachedProduct.productId == serverProduct.productId)) {
-          _products.add(serverProduct);
-        }
-      }
+      _products = serverProducts;
 
       notifyListeners();
     } catch (e) {

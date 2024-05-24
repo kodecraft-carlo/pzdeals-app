@@ -91,8 +91,6 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
     double width = 80;
     double height = 80;
 
-    // debugPrint('storeAssetImage: ${widget.storeData.storeAssetImage}, '
-    //     'assetSourceType: ${widget.storeData.assetSourceType}, appStoreImg: ${widget.storeData.appStoreImg}');
     if (widget.storeData.assetSourceType == 'asset') {
       imageProvider = AssetImage(widget.storeData.storeAssetImage);
     } else if (widget.storeData.assetSourceType == 'network') {
@@ -116,8 +114,9 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
             width: width,
             height: height,
           );
-        } catch (e) {
-          debugPrint('Error loading image: $e');
+        } catch (e, stackTrace) {
+          debugPrint('SVG Error loading image: $e');
+          debugPrint('Error loading image: $stackTrace');
           imageWidget = Image.asset(
             'assets/images/pzdeals_store.png',
             width: width,
@@ -133,6 +132,8 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
             width: width,
             cacheManager: networkImageCacheManager,
             height: height,
+            // memCacheHeight: height.toInt(),
+            // memCacheWidth: width.toInt(),
             fadeInDuration: const Duration(milliseconds: 10),
             fit: BoxFit.fitWidth,
             errorWidget: (context, url, error) {
@@ -162,8 +163,9 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
               );
             },
           );
-        } catch (e) {
+        } catch (e, stackTrace) {
           debugPrint('Error loading image: $e');
+          debugPrint('Error loading image: $stackTrace');
           imageWidget = Image.asset(
             'assets/images/pzdeals_store.png',
             width: width,

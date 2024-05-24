@@ -26,6 +26,7 @@ class TabForYouNotifier extends ChangeNotifier {
     {'collection_id': 10, 'collection_name': 'Home'}
   ];
   List<ProductDealcardData> _foryouProducts = [];
+  int _selectedCollectionsCount = 0;
 
   //List of collections with their respective products
   final List<Map<String, dynamic>> _collectionProducts = [];
@@ -43,6 +44,7 @@ class TabForYouNotifier extends ChangeNotifier {
   bool get isForYouCollectionProductsLoading =>
       _isForYouCollectionProductsLoading;
   bool get hasSelectedCollectionsFromCache => _hasSelectedCollectionsFromCache;
+  int get selectedCollectionsCount => _selectedCollectionsCount;
 
   TabForYouNotifier() {
     loadCollections();

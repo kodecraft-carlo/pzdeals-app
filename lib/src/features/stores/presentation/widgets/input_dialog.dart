@@ -74,7 +74,7 @@ class _StoreInputDialogState extends ConsumerState<StoreInputDialog> {
               setState(() {
                 storeName = dialogFieldController.text.trim();
               });
-              if (mounted) LoadingDialog.show(context);
+              // if (mounted) LoadingDialog.show(context);
               googletSheetSvc
                   .requestStore('?timestamp=${DateTime.now()}'
                       '&store=${dialogFieldController.text}'
@@ -83,14 +83,12 @@ class _StoreInputDialogState extends ConsumerState<StoreInputDialog> {
                   .then((value) {
                 if (value == true) {
                   emailSvc.sendEmailStoreSubmission(storeName);
-                  if (mounted) LoadingDialog.hide(context);
-
-                  showSnackbarWithMessage(
-                      context, 'Store submitted. Thank you!');
-                  Navigator.of(context).pop();
+                  // if (mounted) LoadingDialog.hide(context);
                 }
                 // if (mounted) LoadingDialog.hide(context);
               });
+              showSnackbarWithMessage(context, 'Store submitted. Thank you!');
+              Navigator.of(context).pop();
             },
             buttonLabel: 'Submit',
             textFieldHint: 'Store name or website..',

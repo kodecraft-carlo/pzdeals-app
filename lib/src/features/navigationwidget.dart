@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,13 +11,10 @@ import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/product_deal_description.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
-import 'package:pzdeals/src/features/deals/state/provider_notificationdeals.dart';
 import 'package:pzdeals/src/features/more/more.dart';
 import 'package:pzdeals/src/features/notifications/notifications.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
-import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/features/stores/stores.dart';
-import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/directus_auth_service.dart';
 import 'package:badges/badges.dart' as badges;
@@ -43,7 +39,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   FetchProductDealService productDealService = FetchProductDealService();
   final GlobalKey<DealsTabControllerWidgetState> dealsKey =
       GlobalKey<DealsTabControllerWidgetState>();
-
+  late List<Widget> _pages;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -122,6 +118,26 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
         }
       }
     });
+
+    _pages = <Widget>[
+      PopScope(
+          canPop: false,
+          onPopInvoked: (didPop) async {
+            if (didPop) {
+              return;
+            }
+
+            final bool exit = await onback(context);
+            if (exit) {
+              SystemNavigator.pop();
+            }
+          },
+          child: DealsTabControllerWidget(key: dealsKey)),
+      const StoresWidget(),
+      const NotificationScreen(),
+      const DealAlertsScreen(),
+      MoreScreen()
+    ];
   }
 
   void updateNotificationsCount(String userId) {
@@ -200,13 +216,14 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   }
 
   void destinationSelected(int index) {
-    if (index == 1) {
-      ref.read(storescreenProvider).clearFilter();
-      // ref.read(storescreenProvider).refresh();
-    }
     if (index == 0) {
       ref.read(tabFrontPageProvider).refresh();
       dealsKey.currentState?.setTabIndex(1);
+      dealsKey.currentState?.scrollToTop();
+    }
+    if (index == 1) {
+      ref.read(storescreenProvider).clearFilter();
+      // ref.read(storescreenProvider).refresh();
     }
     if (index == 2) {
       ref.read(notificationsProvider).refreshNotification();
@@ -216,7 +233,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
     });
   }
 
-  Future<bool> _onback(BuildContext context) async {
+  Future<bool> onback(BuildContext context) async {
     bool? exitApp = await showDialog(
       context: context,
       builder: ((context) {
@@ -356,26 +373,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
           ),
         ),
       ),
-      body: SafeArea(
-          child: <Widget>[
-        PopScope(
-            canPop: false,
-            onPopInvoked: (didPop) async {
-              if (didPop) {
-                return;
-              }
-
-              final bool exit = await _onback(context);
-              if (exit) {
-                SystemNavigator.pop();
-              }
-            },
-            child: DealsTabControllerWidget(key: dealsKey)),
-        const StoresWidget(),
-        const NotificationScreen(),
-        const DealAlertsScreen(),
-        MoreScreen()
-      ][currentPageIndex]),
+      body: SafeArea(child: _pages[currentPageIndex]),
     );
   }
 }

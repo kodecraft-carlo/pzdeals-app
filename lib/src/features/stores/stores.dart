@@ -10,6 +10,9 @@ import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/utils/helpers/debouncer.dart';
 
+final storescreenProvider =
+    ChangeNotifierProvider<StoreScreenProvider>((ref) => StoreScreenProvider());
+
 class StoresWidget extends ConsumerStatefulWidget {
   const StoresWidget({super.key});
 
@@ -20,7 +23,7 @@ class StoresWidget extends ConsumerStatefulWidget {
 class _StoresWidgetState extends ConsumerState<StoresWidget>
     with TickerProviderStateMixin {
   // late List<StoreData> filteredStores;
-  late TextEditingController searchController;
+  final searchController = TextEditingController();
   late final AnimationController _animationController;
   final _scrollController = ScrollController();
   final _debouncer = Debouncer(delay: const Duration(milliseconds: 300));
@@ -46,7 +49,10 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
   void initState() {
     super.initState();
     // filteredStores = [];
-    searchController = TextEditingController();
+    Future(() {
+      ref.read(storescreenProvider).loadStores();
+    });
+    // searchController = TextEditingController();
     _scrollController.addListener(_onScroll);
     _animationController = AnimationController(vsync: this);
   }

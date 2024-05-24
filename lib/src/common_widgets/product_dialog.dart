@@ -30,6 +30,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
   bool showMore = false;
   bool _isScrollingDown = false;
   final scrollController = ScrollController();
+  bool _showAffiliateLinkDescription = false;
   final GlobalKey widgetKey = GlobalKey();
 
   @override
@@ -45,11 +46,18 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
       setState(() {
         _isScrollingDown = true;
       });
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        setState(() {
+          _showAffiliateLinkDescription = true;
+        });
+      }
     } else if (scrollController.position.userScrollDirection ==
         ScrollDirection.forward) {
       //scrollup
       setState(() {
         _isScrollingDown = false;
+        _showAffiliateLinkDescription = false;
       });
     }
   }
@@ -119,33 +127,40 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                         ).createShader(bounds);
                       },
                       blendMode: BlendMode.dstOut,
-                      child: SingleChildScrollView(
-                        controller: scrollController,
-                        physics: const BouncingScrollPhysics(),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: Sizes.paddingTop,
-                            left: Sizes.paddingLeft,
-                            right: Sizes.paddingRight,
-                            bottom: Sizes.paddingBottom,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              widget.content,
-                              const SizedBox(
-                                height: Sizes.spaceBetweenSectionsXL,
+                      child: Stack(
+                        children: [
+                          SingleChildScrollView(
+                            controller: scrollController,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: Sizes.paddingTop,
+                                left: Sizes.paddingLeft,
+                                right: Sizes.paddingRight,
+                                bottom: Sizes.paddingBottom,
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: Sizes.paddingAll,
-                                    right: Sizes.paddingAll,
-                                    bottom: Sizes.paddingAll),
-                                child: affiliateLinkDescription(),
-                              )
-                            ],
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  widget.content,
+                                  const SizedBox(
+                                    height: Sizes.spaceBetweenSectionsXL,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
+                          if (_showAffiliateLinkDescription)
+                            Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: Sizes.paddingAll,
+                                      right: Sizes.paddingAll,
+                                      bottom: Sizes.paddingAll),
+                                  child: affiliateLinkDescription(),
+                                ))
+                        ],
                       ),
                     ),
                   ),

@@ -5,6 +5,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pzdeals/firebase_options.dart';
@@ -25,6 +26,7 @@ import 'package:pzdeals/src/services/notifications_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/bookmarks_provider.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -48,8 +50,27 @@ Future<void> _handleBackgroundMessage(RemoteMessage message) async {
   }
 }
 
+const secureStorage = FlutterSecureStorage();
+
+Future<void> clearSecureStorage() async {
+  await secureStorage.deleteAll();
+}
+
+Future<bool> isFirstLaunch() async {
+  final prefs = await SharedPreferences.getInstance();
+  final isFirstLaunch = prefs.getBool('is_first_launch') ?? true;
+  if (isFirstLaunch) {
+    await prefs.setBool('is_first_launch', false);
+  }
+  return isFirstLaunch;
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (await isFirstLaunch()) {
+    await clearSecureStorage();
+  }
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

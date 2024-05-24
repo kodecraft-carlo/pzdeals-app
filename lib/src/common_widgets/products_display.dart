@@ -75,6 +75,9 @@ class ProductsDisplay extends StatelessWidget {
           },
           itemBuilder: (BuildContext context, int index) {
             final product = productData[index];
+            if (productData.isEmpty) {
+              return const SizedBox();
+            }
             return ProductDealcard(
               productData: product,
             );

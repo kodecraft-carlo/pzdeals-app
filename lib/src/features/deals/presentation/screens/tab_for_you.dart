@@ -189,7 +189,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
         destinationWidget: CollectionSelectionWidget(),
         animationDirection: 'bottomToTop',
         childWidget: Text(
-          'Customize Here',
+          'Tap to change',
           style: TextStyle(
               textBaseline: TextBaseline.alphabetic,
               color: PZColors.hyperlinkColor,

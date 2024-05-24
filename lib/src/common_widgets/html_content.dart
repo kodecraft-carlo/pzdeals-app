@@ -31,9 +31,10 @@ class HtmlContent extends StatelessWidget {
             // margin: Margins.zero,
             textAlign: TextAlign.left,
             lineHeight: const LineHeight(1.3),
+            display: Display.block,
           ),
           "li": Style(
-            padding: HtmlPaddings.only(bottom: 5),
+            padding: HtmlPaddings.only(bottom: 15),
             // margin: Margins.zero,
             // textAlign: TextAlign.left,
           ),
