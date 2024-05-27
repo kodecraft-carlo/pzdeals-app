@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
@@ -10,7 +9,7 @@ import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
-import 'package:pzdeals/src/features/notifications/presentation/widgets/index.dart';
+import 'package:pzdeals/src/features/notifications/presentation/screens/index.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
@@ -19,24 +18,17 @@ class NotificationScreen extends ConsumerStatefulWidget {
   NotificationScreenState createState() => NotificationScreenState();
 }
 
-class NotificationScreenState extends ConsumerState<NotificationScreen>
-    with TickerProviderStateMixin {
-  late final AnimationController _animationController;
-  final _scrollController = ScrollController(keepScrollOffset: true);
+class NotificationScreenState extends ConsumerState<NotificationScreen> {
   String title = '';
   String value = '';
   String productid = '';
   String notifId = '';
 
+  GlobalKey<NotificationsDisplayState> notificationDisplayKey =
+      GlobalKey<NotificationsDisplayState>();
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(vsync: this);
-    _scrollController.addListener(_onScroll);
-
-    Future(() {
-      ref.read(notificationsProvider).loadNotifications();
-    });
 
     Future(() {
       final arguments = ModalRoute.of(context)!.settings.arguments;
@@ -101,111 +93,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
   }
 
   @override
-  void dispose() {
-    _animationController.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      ref.read(notificationsProvider).loadMoreNotifications();
-    }
-  }
-
-  void scrollToTop() {
-    _scrollController.animateTo(
-      0.0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // final message = ModalRoute.of(context)!.settings.arguments as String;
-    // debugPrint('message: $message');
-    final notificationState = ref.watch(notificationsProvider);
-    Widget notificationWidget;
-    if (notificationState.isLoading &&
-        notificationState.notifications.isEmpty) {
-      notificationWidget = const Expanded(
-        child: Center(child: CircularProgressIndicator.adaptive()),
-      );
-    } else if (notificationState.notifications.isEmpty) {
-      notificationWidget = Expanded(
-          // padding: const EdgeInsets.all(Sizes.paddingAll),
-          child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Lottie.asset(
-              'assets/images/lottie/empty.json',
-              height: 200,
-              fit: BoxFit.fitHeight,
-              frameRate: FrameRate.max,
-              controller: _animationController,
-              onLoaded: (composition) {
-                _animationController
-                  ..duration = composition.duration
-                  ..forward();
-              },
-            ),
-            const SizedBox(height: Sizes.spaceBetweenSections),
-            const Text(
-              'No notifications yet',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
-            ),
-            const SizedBox(height: Sizes.spaceBetweenContentSmall),
-          ],
-        ),
-      ));
-    } else {
-      final notifData = notificationState.notifications;
-      notificationWidget = Expanded(
-          child: Column(
-        children: [
-          Expanded(
-            child: RefreshIndicator.adaptive(
-                displacement: 20,
-                edgeOffset: 10,
-                color: PZColors.pzOrange,
-                child: ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  controller: _scrollController,
-                  // physics: const BouncingScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: notifData.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return NotificationCardWidget(
-                      notificationData: notifData[index],
-                      // onCardTap: (int productId) {
-                      //   showProductDeal(productId);
-                      // },
-                    );
-                  },
-                ),
-                onRefresh: () async {
-                  ref.read(notificationsProvider).refreshNotification();
-                }),
-          ),
-          notificationState.isLoading
-              ? Container(
-                  color: Colors.transparent,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                  child:
-                      const Center(child: CircularProgressIndicator.adaptive()),
-                )
-              : const SizedBox.shrink()
-        ],
-      ));
-    }
-
     return PopScope(
         canPop: false,
         onPopInvoked: (didPop) {
@@ -234,7 +122,8 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
                           alignment: Alignment.centerLeft,
                           child: GestureDetector(
                             onTap: () {
-                              scrollToTop();
+                              notificationDisplayKey.currentState!
+                                  .scrollToTop();
                             },
                             child: const Text(
                               "Notification",
@@ -245,7 +134,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
                             ),
                           )),
                     ),
-                    notificationState.notifications.isNotEmpty
+                    ref.watch(notificationsProvider).unreadCount > 0
                         ? GestureDetector(
                             onTap: () {
                               showDialog(
@@ -272,8 +161,29 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
                                               .read(notificationsProvider)
                                               .removeAllNotification();
                                           Navigator.of(context).pop();
-                                          showSnackbarWithMessage(
-                                              context, 'Notifications cleared');
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: const Text(
+                                                  'Notification cleared'),
+                                              action: SnackBarAction(
+                                                label: 'UNDO',
+                                                onPressed: () async {
+                                                  ref
+                                                      .read(
+                                                          notificationsProvider)
+                                                      .reinsertAllNotificationToNotificationList();
+
+                                                  ref
+                                                      .read(
+                                                          notificationsProvider)
+                                                      .refreshNotification();
+                                                },
+                                              ),
+                                              duration:
+                                                  const Duration(seconds: 5),
+                                            ),
+                                          );
                                         },
                                         child: const Text(
                                           'Clear',
@@ -297,7 +207,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen>
                   ],
                 ),
                 const SizedBox(height: Sizes.spaceBetweenSections),
-                notificationWidget,
+                NotificationsDisplay(key: notificationDisplayKey),
                 const SizedBox(height: Sizes.paddingBottomSmall)
               ],
             ),

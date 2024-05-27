@@ -26,7 +26,7 @@ class _CollectionSelectionWidgetState
     super.initState();
     _animationController = AnimationController(vsync: this);
     Future(() {
-      // ref.read(tabForYouProvider).loadCollections();
+      ref.read(tabForYouProvider).loadCollections();
       ref.read(tabForYouProvider).resetCollectionMap();
     });
   }
@@ -139,11 +139,12 @@ class _CollectionSelectionWidgetState
   }
 }
 
-class BottomSheetWidget extends StatelessWidget {
+class BottomSheetWidget extends ConsumerWidget {
   const BottomSheetWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final foryouState = ref.watch(tabForYouProvider);
     return Container(
       color: Colors.white,
       padding:
@@ -155,32 +156,29 @@ class BottomSheetWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Consumer(builder: (context, ref, child) {
-                final foryouState = ref.watch(tabForYouProvider);
-                return Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(Sizes.buttonBorderRadius),
-                        ),
-                        backgroundColor: PZColors.pzOrange,
-                        minimumSize: const Size(150, 40),
-                        elevation: Sizes.buttonElevation),
-                    onPressed: foryouState.collectionsMap.isNotEmpty
-                        ? () {
-                            Navigator.of(context).pop();
-                            foryouState.applySelectedCollections();
-                            debugPrint('Apply Selection pressed');
-                          }
-                        : null,
-                    child: const Text(
-                      'Apply Selection',
-                      style: TextStyle(color: PZColors.pzWhite),
-                    ),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(Sizes.buttonBorderRadius),
+                      ),
+                      backgroundColor: PZColors.pzOrange,
+                      minimumSize: const Size(150, 40),
+                      elevation: Sizes.buttonElevation),
+                  onPressed: foryouState.collectionsMap.isNotEmpty
+                      ? () {
+                          Navigator.of(context).pop();
+                          foryouState.applySelectedCollections();
+                          debugPrint('Apply Selection pressed');
+                        }
+                      : null,
+                  child: const Text(
+                    'Apply Selection',
+                    style: TextStyle(color: PZColors.pzWhite),
                   ),
-                );
-              }),
+                ),
+              )
             ],
           ),
           TextButton(
@@ -277,13 +275,34 @@ class _GridItemWidgetState extends State<GridItemWidget>
                     if (widget.isSelected)
                       SizedBox.square(
                         dimension: 80,
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                          child: Container(
-                            color: PZColors.pzGreen.withOpacity(0.3),
-                          ),
+                        child: Stack(
+                          children: [
+                            ImageFiltered(
+                              imageFilter:
+                                  ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+                              child: widget.containerChild,
+                            ),
+                            Container(
+                              color: PZColors.pzGreen.withOpacity(0.3),
+                            ),
+                          ],
                         ),
                       ),
+                    // SizedBox.square(
+                    //     dimension: 80,
+                    //     child: ImageFiltered(
+                    //       imageFilter:
+                    //           ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                    //       child: widget.containerChild,
+                    //     )
+                    // BackdropFilter(
+                    //   filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                    //   child: Container(
+                    //     color: PZColors.pzGreen.withOpacity(0.3),
+                    //   ),
+                    // ),
+                    // ),
+
                     if (widget.isSelected)
                       const Icon(
                         Icons.check_circle_rounded,

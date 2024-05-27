@@ -40,17 +40,17 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   final GlobalKey<DealsTabControllerWidgetState> dealsKey =
       GlobalKey<DealsTabControllerWidgetState>();
   late List<Widget> _pages;
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final userAuthState = ref.watch(authUserDataProvider);
-    final user = userAuthState.userData;
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   final userAuthState = ref.watch(authUserDataProvider);
+  //   final user = userAuthState.userData;
 
-    if (user != null) {
-      updateNotificationsCount(user.uid);
-      ref.read(notificationsProvider).refreshNotification();
-    }
-  }
+  //   if (user != null) {
+  //     updateNotificationsCount(user.uid);
+  //     ref.read(notificationsProvider).refreshNotification();
+  //   }
+  // }
 
   @override
   void initState() {
@@ -330,9 +330,10 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
                   ),
                   BottomNavigationBarItem(
                     icon: badges.Badge(
-                      showBadge: unreadNotificationCount > 0,
+                      showBadge:
+                          ref.watch(notificationsProvider).unreadCount > 0,
                       badgeContent: Text(
-                        unreadNotificationCount.toString(),
+                        ref.watch(notificationsProvider).unreadCount.toString(),
                         style:
                             const TextStyle(color: Colors.white, fontSize: 10),
                       ),

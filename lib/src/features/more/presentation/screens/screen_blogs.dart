@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/scrollbar.dart';
@@ -21,7 +22,7 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
     with TickerProviderStateMixin {
   late final AnimationController _animationController;
   final _scrollController = ScrollController(keepScrollOffset: true);
-  final GlobalKey<NestedScrollViewState> globalKey =
+  final GlobalKey<NestedScrollViewState> globalKeyBlogs =
       GlobalKey<NestedScrollViewState>();
   final _debouncer = Debouncer(delay: const Duration(milliseconds: 300));
   late TextEditingController searchController;
@@ -133,7 +134,10 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
                       );
                     },
                   ),
-                  onRefresh: () => blogState.refreshBlogs()),
+                  onRefresh: () async {
+                    HapticFeedback.mediumImpact();
+                    blogState.refreshBlogs();
+                  }),
             ),
             // if (blogState.isLoading && blogState.blogs.isNotEmpty)
             //   const Padding(
@@ -149,7 +153,7 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
     return Scaffold(
       body: NestedScrollView(
           controller: _scrollController,
-          key: globalKey,
+          key: globalKeyBlogs,
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               SliverAppBar(

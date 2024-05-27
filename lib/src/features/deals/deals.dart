@@ -10,6 +10,9 @@ import 'package:pzdeals/src/features/deals/state/provider_foryou.dart';
 import 'package:pzdeals/src/features/deals/state/provider_frontpage.dart';
 import 'package:pzdeals/src/features/deals/state/provider_pzpicks.dart';
 
+final GlobalKey<NestedScrollViewState> dealsScreenKey =
+    GlobalKey<NestedScrollViewState>();
+
 final tabFrontPageProvider = ChangeNotifierProvider<TabFrontPageNotifier>(
     (ref) => TabFrontPageNotifier());
 final tabPzPicksProvider =
@@ -29,8 +32,6 @@ class DealsTabControllerWidget extends ConsumerStatefulWidget {
 class DealsTabControllerWidgetState
     extends ConsumerState<DealsTabControllerWidget>
     with SingleTickerProviderStateMixin {
-  final GlobalKey<NestedScrollViewState> globalKey =
-      GlobalKey<NestedScrollViewState>();
   final GlobalKey<ForYouWidgetState> _foryoupageKey =
       GlobalKey<ForYouWidgetState>();
   final GlobalKey<FrontPageDealsWidgetState> _frontpageKey =
@@ -48,7 +49,7 @@ class DealsTabControllerWidgetState
   @override
   void initState() {
     super.initState();
-    globalKey.currentState?.innerController.addListener(_onScroll);
+    dealsScreenKey.currentState?.innerController.addListener(_onScroll);
     _scrollController.addListener(_onScroll);
     tabController = TabController(
       length: 3,
@@ -76,13 +77,13 @@ class DealsTabControllerWidgetState
   }
 
   void scrollToTop() {
-    globalKey.currentState?.innerController.animateTo(
+    dealsScreenKey.currentState?.innerController.animateTo(
       0.0, // Scroll to the top of the list
       duration:
           const Duration(milliseconds: 300), // Adjust the duration as needed
       curve: Curves.easeInOut, // Adjust the curve as needed
     );
-    globalKey.currentState?.outerController.animateTo(
+    dealsScreenKey.currentState?.outerController.animateTo(
       0.0, // Scroll to the top of the list
       duration:
           const Duration(milliseconds: 300), // Adjust the duration as needed
@@ -104,7 +105,7 @@ class DealsTabControllerWidgetState
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
         body: NestedScrollView(
-            key: globalKey,
+            key: dealsScreenKey,
             scrollBehavior: const CupertinoScrollBehavior(),
             controller: _scrollController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -201,7 +202,7 @@ class DealsTabControllerWidgetState
             body: TabBarView(
               controller: tabController,
               children: <Widget>[
-                ForYouWidget(key: _foryoupageKey),
+                ForYouWidget(key: _foryoupageKey, tabController: tabController),
                 NotificationListener<ScrollNotification>(
                   child: FrontPageDealsWidget(key: _frontpageKey),
                   onNotification: (ScrollNotification scrollInfo) {

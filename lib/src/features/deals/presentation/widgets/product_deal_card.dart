@@ -371,7 +371,12 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
 
                             // Product Price
                             if (productData.isProductNoPrice != null &&
-                                productData.isProductNoPrice == false)
+                                productData.isProductNoPrice == false &&
+                                (productData.oldPrice != null &&
+                                    double.parse(productData.oldPrice
+                                            .replaceAll(',', '')) >
+                                        0 &&
+                                    productData.oldPrice != ''))
                               RichText(
                                 text: TextSpan(
                                   children: [

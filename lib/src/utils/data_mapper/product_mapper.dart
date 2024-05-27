@@ -9,12 +9,19 @@ class ProductMapper {
     // debugPrint('responseData: $responseData');
     try {
       return List<ProductDealcardData>.from(responseData.map((json) {
-        final dynamic oldPrice =
-            isProductPriceValid(json['variants'][0]['compare_at_price'])
-                ? priceFormatter(json['variants'][0]['compare_at_price'])
-                : 0.0;
-        final dynamic price = isProductPriceValid(json['variants'][0]['price'])
-            ? priceFormatter(json['variants'][0]['price'])
+        final dynamic oldPrice = isProductPriceValid(json['variants'].isNotEmpty
+                ? json['variants'][0]['compare_at_price']
+                : null)
+            ? priceFormatter(json['variants'].isNotEmpty
+                ? json['variants'][0]['compare_at_price']
+                : null)
+            : 0.0;
+        final dynamic price = isProductPriceValid(json['variants'].isNotEmpty
+                ? json['variants'][0]['price']
+                : null)
+            ? priceFormatter(json['variants'].isNotEmpty
+                ? json['variants'][0]['price']
+                : null)
             : 0.0;
         return ProductDealcardData(
           productId: json['id'],
@@ -34,8 +41,11 @@ class ProductMapper {
           productDealDescription: json['body_html'] != null
               ? json['body_html'].toString().trim()
               : '',
-          barcodeLink: json['variants'][0]['barcode'] ?? '',
-          sku: json['variants'][0]['sku'] != null &&
+          barcodeLink: json['variants'].isNotEmpty
+              ? json['variants'][0]['barcode'] ?? ''
+              : '',
+          sku: json['variants'].isNotEmpty &&
+                  json['variants'][0]['sku'] != null &&
                   json['variants'][0]['sku'] != ''
               ? json['variants'][0]['sku']
               : '',
@@ -55,12 +65,17 @@ class ProductMapper {
     // debugPrint('responseData: $responseData');
     try {
       final json = responseData[0];
-      final dynamic oldPrice =
-          isProductPriceValid(json['variants'][0]['compare_at_price'])
-              ? priceFormatter(json['variants'][0]['compare_at_price'])
-              : 0.0;
-      final dynamic price = isProductPriceValid(json['variants'][0]['price'])
-          ? priceFormatter(json['variants'][0]['price'])
+      final dynamic oldPrice = isProductPriceValid(json['variants'].isNotEmpty
+              ? json['variants'][0]['compare_at_price']
+              : null)
+          ? priceFormatter(json['variants'].isNotEmpty
+              ? json['variants'][0]['compare_at_price']
+              : null)
+          : 0.0;
+      final dynamic price = isProductPriceValid(
+              json['variants'].isNotEmpty ? json['variants'][0]['price'] : null)
+          ? priceFormatter(
+              json['variants'].isNotEmpty ? json['variants'][0]['price'] : null)
           : 0.0;
       return ProductDealcardData(
         productId: json['id'],
@@ -80,8 +95,11 @@ class ProductMapper {
         productDealDescription: json['body_html'] != null
             ? json['body_html'].toString().trim()
             : '',
-        barcodeLink: json['variants'][0]['barcode'] ?? '',
-        sku: json['variants'][0]['sku'] != null &&
+        barcodeLink: json['variants'].isNotEmpty
+            ? json['variants'][0]['barcode'] ?? ''
+            : '',
+        sku: json['variants'].isNotEmpty &&
+                json['variants'][0]['sku'] != null &&
                 json['variants'][0]['sku'] != ''
             ? json['variants'][0]['sku']
             : '',

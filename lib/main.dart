@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -23,6 +24,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/services/firebase_messaging.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
+import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/bookmarks_provider.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
@@ -45,6 +47,7 @@ Future<void> _handleBackgroundMessage(RemoteMessage message) async {
       notifService.resetNotificationReceivedInfo();
     }
   } else {
+    debugPrint('add notif from main');
     notifService.addNotification(
         NotificationMapper.mapToNotificationData(message), 'notifications');
   }
@@ -54,22 +57,13 @@ const secureStorage = FlutterSecureStorage();
 
 Future<void> clearSecureStorage() async {
   await secureStorage.deleteAll();
-}
-
-Future<bool> isFirstLaunch() async {
-  final prefs = await SharedPreferences.getInstance();
-  final isFirstLaunch = prefs.getBool('is_first_launch') ?? true;
-  if (isFirstLaunch) {
-    await prefs.setBool('is_first_launch', false);
-  }
-  return isFirstLaunch;
+  final AuthService authService = AuthService();
+  await authService.signOutFirebaseAuth();
+  await authService.signOutGoogle();
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (await isFirstLaunch()) {
-    await clearSecureStorage();
-  }
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -100,6 +94,11 @@ void main() async {
   await firebaseMessagingApi.initNotifications();
   FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
 
+  final prefs = await SharedPreferences.getInstance();
+  if (!prefs.containsKey('hasRunBefore')) {
+    await clearSecureStorage();
+    await prefs.setBool('hasRunBefore', true);
+  }
   runApp(const ProviderScope(child: MainApp()));
 }
 

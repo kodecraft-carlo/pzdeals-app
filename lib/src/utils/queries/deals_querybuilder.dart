@@ -134,7 +134,7 @@ String getProductSpecificDetailsQuery(int productId) {
 }
 
 String getCreditCardsCollectionQuery(int pageNumber, int limit) {
-  return '/items/products'
+  String query = '/items/products'
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=body_html'
@@ -150,6 +150,8 @@ String getCreditCardsCollectionQuery(int pageNumber, int limit) {
       '&limit=$limit'
       '&page=$pageNumber'
       '&filter={"collection_ids":{"collection_id":{"collection_name":{"_eq":"Credit Cards"}}}}';
+  debugPrint('getCreditCardsCollectionQuery: $query');
+  return query;
 }
 
 String getProductsByTagQuery(String tagName, int pageNumber) {

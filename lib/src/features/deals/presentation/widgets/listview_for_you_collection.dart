@@ -7,6 +7,7 @@ import 'package:pzdeals/src/common_widgets/text_widget.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/for_you_collection_deal_card.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ForYouCollectionList extends StatefulWidget {
   const ForYouCollectionList(
@@ -43,23 +44,14 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
   }
 
   void _onScroll() {
-    if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
+    bool newIsScrollingRight = scrollController.position.userScrollDirection ==
+            ScrollDirection.reverse ||
+        scrollController.position.pixels ==
+            scrollController.position.maxScrollExtent;
+
+    if (newIsScrollingRight != _isScrollingRight) {
       setState(() {
-        _isScrollingRight = true;
-      });
-    }
-    //scrolling to right
-    if (scrollController.position.userScrollDirection ==
-        ScrollDirection.reverse) {
-      setState(() {
-        _isScrollingRight = true;
-      });
-    } else if (scrollController.position.userScrollDirection ==
-        ScrollDirection.forward) {
-      //scrolling to left
-      setState(() {
-        _isScrollingRight = false;
+        _isScrollingRight = newIsScrollingRight;
       });
     }
   }
@@ -74,6 +66,7 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double itemWidth = screenWidth / 2.8;
+
     return Container(
       key: ValueKey('foryoucollection_${widget.collectionId}'),
       height: 310,
@@ -91,6 +84,7 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
                   textDisplayType: TextDisplayType.sectionTitle),
               Flexible(
                 child: ListView.separated(
+                  addAutomaticKeepAlives: false,
                   controller: scrollController,
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
@@ -147,7 +141,7 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
               ),
             ],
           ),
-          showMore == true && !_isScrollingRight
+          showMore && !_isScrollingRight
               ? Align(
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
@@ -165,38 +159,47 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.easeOut);
                     },
-                    child: Transform.rotate(
-                      angle: -MathConstants.pi / 2,
-                      child: BouncingArrowIcon(
-                        height: 20,
-                        icon: Stack(
-                          children: [
-                            Container(
-                              width: 20,
-                              height: 20,
-                              decoration: const BoxDecoration(
-                                color: PZColors.pzOrange, // Background color
-                                shape: BoxShape.circle, // Circular shape
-                              ),
-                            ),
-                            const Positioned.fill(
-                              child: Center(
-                                child: Icon(
-                                  Icons.keyboard_arrow_down_rounded,
-                                  color: Colors.white, // Icon color
-                                  size: 20, // Icon size
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        color: Colors.orange,
-                      ),
-                    ),
+                    child: const Skeleton.ignore(child: ListArrowIcon()),
                   ),
                 )
               : const SizedBox.shrink(),
         ],
+      ),
+    );
+  }
+}
+
+class ListArrowIcon extends StatelessWidget {
+  const ListArrowIcon({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: -MathConstants.pi / 2,
+      child: BouncingArrowIcon(
+        height: 20,
+        icon: Stack(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: const BoxDecoration(
+                color: PZColors.pzOrange, // Background color
+                shape: BoxShape.circle, // Circular shape
+              ),
+            ),
+            const Positioned.fill(
+              child: Center(
+                child: Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: Colors.white, // Icon color
+                  size: 20, // Icon size
+                ),
+              ),
+            ),
+          ],
+        ),
+        color: Colors.orange,
       ),
     );
   }

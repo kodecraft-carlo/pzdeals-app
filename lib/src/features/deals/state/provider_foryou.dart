@@ -18,7 +18,7 @@ class TabForYouNotifier extends ChangeNotifier {
   bool _hasSelectedCollectionsFromCache = false;
   List<CollectionData> _collections = [];
   final List<Map<String, dynamic>> _selectedCollectionIds = [];
-  final List<Map<String, dynamic>> _collectionsMap = [];
+  List<Map<String, dynamic>> _collectionsMap = [];
   bool _isSelectionApplied = false;
   final List<Map<String, dynamic>> _defaultCollections = [
     {'collection_id': 4, 'collection_name': 'Flash'},
@@ -26,10 +26,10 @@ class TabForYouNotifier extends ChangeNotifier {
     {'collection_id': 10, 'collection_name': 'Home'}
   ];
   List<ProductDealcardData> _foryouProducts = [];
-  int _selectedCollectionsCount = 0;
+  final int _selectedCollectionsCount = 0;
 
   //List of collections with their respective products
-  final List<Map<String, dynamic>> _collectionProducts = [];
+  List<Map<String, dynamic>> _collectionProducts = [];
 
   bool get isLoading => _isLoading;
   bool get isForYouLoading => _isForYouLoading;
@@ -47,9 +47,9 @@ class TabForYouNotifier extends ChangeNotifier {
   int get selectedCollectionsCount => _selectedCollectionsCount;
 
   TabForYouNotifier() {
+    checkSelectedCollectionStatus();
     loadCollections();
     getProductsFromSelectedCollection();
-    checkSelectedCollectionStatus();
   }
 
   // Future<void> loadDataFromSelectedCollection() async {
@@ -134,6 +134,7 @@ class TabForYouNotifier extends ChangeNotifier {
     if (_selectedCollectionIds.isNotEmpty) {
       _collectionsMap.addAll(_selectedCollectionIds);
     }
+    _isForYouCollectionProductsLoading = false;
     notifyListeners();
   }
 
@@ -155,50 +156,72 @@ class TabForYouNotifier extends ChangeNotifier {
   }
 
   Future<void> getProductsFromSelectedCollection() async {
+    debugPrint('getProductsFromSelectedCollection called');
     _isForYouCollectionProductsLoading = true;
     notifyListeners();
 
-    if (_selectedCollectionIds.isEmpty) {
-      final selectedCollectionsfromcache = await _collectionService
-          .getCachedSelectedCollection('selectedcollections');
-      if (selectedCollectionsfromcache.isNotEmpty) {
-        _selectedCollectionIds.clear();
-        _selectedCollectionIds.addAll(selectedCollectionsfromcache);
-      } else {
-        _selectedCollectionIds.addAll(_defaultCollections);
-      }
-    }
     try {
-      _collectionProducts.clear();
-      //check first if there are cached products
+      if (_selectedCollectionIds.isEmpty) {
+        final selectedCollectionsfromcache = await _collectionService
+            .getCachedSelectedCollection('selectedcollections');
+        if (selectedCollectionsfromcache.isNotEmpty) {
+          _selectedCollectionIds.clear();
+          _selectedCollectionIds.addAll(selectedCollectionsfromcache);
+        } else {
+          _selectedCollectionIds.addAll(_defaultCollections);
+        }
+      }
+
+      final List<Map<String, dynamic>> newCollectionProducts = [];
       for (var collection in _selectedCollectionIds) {
-        final cachedProducts = _forYouService
-            .getCachedProductCollections(collection['collection_name']);
-        _collectionProducts.add({
+        newCollectionProducts.add({
           'collection_name': collection['collection_name'],
           'collection_id': collection['collection_id'],
-          'products': cachedProducts
         });
       }
-      _isForYouCollectionProductsLoading = false;
-      notifyListeners();
-      _collectionProducts.clear();
-      for (var collection in _selectedCollectionIds) {
-        final serverProducts = _forYouService.fetchForYouDeals(
-            collection['collection_id'], 30, collection['collection_name']);
-        _collectionProducts.add({
-          'collection_name': collection['collection_name'],
-          'collection_id': collection['collection_id'],
-          'products': serverProducts
-        });
-      }
-      notifyListeners();
+
+      _updateCollectionProducts(newCollectionProducts);
     } catch (e) {
       debugPrint("error loading getProductsFromSelectedCollection: $e");
-    } finally {
-      _isForYouCollectionProductsLoading = false;
-      notifyListeners();
     }
+    // try {
+    //   _collectionProducts.clear();
+    //   //check first if there are cached products
+    //   for (var collection in _selectedCollectionIds) {
+    //     final cachedProducts = _forYouService
+    //         .getCachedProductCollections(collection['collection_name']);
+    //     _collectionProducts.add({
+    //       'collection_name': collection['collection_name'],
+    //       'collection_id': collection['collection_id'],
+    //       'products': cachedProducts
+    //     });
+    //   }
+    //   _isForYouCollectionProductsLoading = false;
+    //   notifyListeners();
+    //   // _collectionProducts.clear();
+
+    //   final List<Map<String, dynamic>> serverProductsCollection = [];
+
+    //   for (var collection in _selectedCollectionIds) {
+    //     final serverProducts = _forYouService.fetchForYouDeals(
+    //         collection['collection_id'], 30, collection['collection_name']);
+    //     serverProductsCollection.add({
+    //       'collection_name': collection['collection_name'],
+    //       'collection_id': collection['collection_id'],
+    //       'products': serverProducts
+    //     });
+    //   }
+    //   if (serverProductsCollection.isNotEmpty) {
+    //     _collectionProducts.clear();
+    //     _collectionProducts.addAll(serverProductsCollection);
+    //     notifyListeners();
+    //   }
+    // } catch (e) {
+    //   debugPrint("error loading getProductsFromSelectedCollection: $e");
+    // } finally {
+    //   _isForYouCollectionProductsLoading = false;
+    //   notifyListeners();
+    // }
   }
 
   void checkSelectedCollectionStatus() async {
@@ -209,5 +232,10 @@ class TabForYouNotifier extends ChangeNotifier {
     } else {
       _hasSelectedCollectionsFromCache = false;
     }
+  }
+
+  void _updateCollectionProducts(List<Map<String, dynamic>> newProducts) {
+    _collectionProducts = List.from(newProducts); // Ensures a new instance
+    notifyListeners();
   }
 }

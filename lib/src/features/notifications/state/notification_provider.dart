@@ -5,10 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
 
-final notificationsProvider = ChangeNotifierProvider<NotificationListNotifier>(
-    (ref) => NotificationListNotifier());
+final notificationsProvider =
+    ChangeNotifierProvider<NotificationListNotifier>((ref) {
+  final authState = ref.watch(authUserDataProvider);
+  if (authState.isAuthenticated) {
+    return NotificationListNotifier(userUID: authState.userData?.uid ?? '');
+  } else {
+    return NotificationListNotifier();
+  }
+});
 
 class NotificationListNotifier extends ChangeNotifier {
   final NotificationService _notifService = NotificationService();
@@ -36,6 +44,14 @@ class NotificationListNotifier extends ChangeNotifier {
     // _loadBookmarks();
   }
 
+  NotificationListNotifier({String userUID = ''}) {
+    setUserUID(userUID);
+    if (_userUID.isNotEmpty) {
+      loadNotifications();
+      getUnreadNotificationsCountFromStream(_userUID);
+    }
+  }
+
   Future<void> refreshNotification() async {
     _notifications.clear();
     _notifData.clear();
@@ -52,7 +68,7 @@ class NotificationListNotifier extends ChangeNotifier {
                 imageUrl: doc["imageUrl"],
               ))
           .toList();
-      _unreadCount = await getUnreadNotificationsCount();
+      getUnreadNotificationsCountFromStream(_userUID);
       notifyListeners();
     } catch (e) {
       debugPrint("error loading notifications: $e");
@@ -80,7 +96,7 @@ class NotificationListNotifier extends ChangeNotifier {
                 imageUrl: doc["imageUrl"],
               ))
           .toList();
-      _unreadCount = await getUnreadNotificationsCount();
+      // _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
     } catch (e) {
       debugPrint("error loading notifications: $e");
@@ -110,7 +126,7 @@ class NotificationListNotifier extends ChangeNotifier {
                 imageUrl: doc["imageUrl"],
               ))
           .toList());
-      _unreadCount = await getUnreadNotificationsCount();
+      // _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
     } catch (e) {
       debugPrint('error loading more notifications: $e');
@@ -125,7 +141,7 @@ class NotificationListNotifier extends ChangeNotifier {
       _notificationForDeletion
           .add(_notifications.firstWhere((element) => element.id == notifId));
       _notifications.removeWhere((element) => element.id == notifId);
-      _unreadCount = await getUnreadNotificationsCount();
+      // _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
 
       await Future.delayed(const Duration(seconds: 5), () {
@@ -138,13 +154,21 @@ class NotificationListNotifier extends ChangeNotifier {
     }
   }
 
-  Future<void> removeNotificationFromFirestore() async {
+  Future<void> removeNotificationFromFirestore({bool isAll = false}) async {
     debugPrint('start removeNotificationFromFirestore');
     debugPrint('notifForDeletion: ${_notificationForDeletion.length}');
     if (_notificationForDeletion.isEmpty) return;
+
     try {
-      for (final element in _notificationForDeletion) {
-        await _notifService.deleteNotification(element.id, _boxName);
+      if (isAll) {
+        await _notifService.deleteAllNotifications(_boxName);
+        _notifications.clear();
+        _unreadCount = 0;
+        notifyListeners();
+      } else {
+        for (final element in _notificationForDeletion) {
+          await _notifService.deleteNotification(element.id, _boxName);
+        }
       }
       _notificationForDeletion.clear();
     } catch (e) {
@@ -164,15 +188,35 @@ class NotificationListNotifier extends ChangeNotifier {
         _notificationForDeletion.firstWhere((element) => element.id == notifId);
     _notifications.add(notif);
     debugPrint('notif count after: ${_notifications.length}');
-    _unreadCount = await getUnreadNotificationsCount();
+    // _unreadCount = await getUnreadNotificationsCount();
+  }
+
+  void reinsertAllNotificationToNotificationList() async {
+    debugPrint('reinsertAllNotificationToNotificationList');
+    debugPrint('notif count before: ${_notifications.length}');
+    _notifications.addAll(_notificationForDeletion);
+    _notificationForDeletion.clear();
+    getUnreadNotificationsCountFromStream(_userUID);
+    debugPrint('notif count after: ${_notifications.length}');
+    // _unreadCount = await getUnreadNotificationsCount();
   }
 
   Future<void> removeAllNotification() async {
     try {
-      await _notifService.deleteAllNotifications(_boxName);
+      _notificationForDeletion.addAll(_notifications);
       _notifications.clear();
       _unreadCount = 0;
+      // _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
+
+      await Future.delayed(const Duration(seconds: 5), () {
+        removeNotificationFromFirestore(isAll: true);
+      });
+
+      // await _notifService.deleteAllNotifications(_boxName);
+      // _notifications.clear();
+      // _unreadCount = 0;
+      // notifyListeners();
     } catch (e) {
       debugPrint('error removeAllNotification: $e');
     }
@@ -184,7 +228,7 @@ class NotificationListNotifier extends ChangeNotifier {
           _notifications.firstWhere((element) => element.id == notifId);
       notif.isRead = true;
 
-      _unreadCount = await getUnreadNotificationsCount();
+      // _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
       await _notifService.updateNotifications(notif, notifId, _boxName);
     } catch (e) {
@@ -239,4 +283,22 @@ class NotificationListNotifier extends ChangeNotifier {
   //     notifyListeners();
   //   });
   // }
+
+  void getUnreadNotificationsCountFromStream(String userId) {
+    FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(userId)
+        .collection('notification')
+        .snapshots()
+        .listen((QuerySnapshot snapshot) {
+      _unreadCount = 0;
+      snapshot.docs.forEach((doc) {
+        if (doc.exists && doc['isRead'] == false) {
+          _unreadCount++;
+        }
+      });
+      debugPrint('unread count: $_unreadCount');
+      notifyListeners();
+    });
+  }
 }

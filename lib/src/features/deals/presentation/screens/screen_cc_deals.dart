@@ -16,7 +16,7 @@ class CreditCardDealsScreen extends ConsumerStatefulWidget {
 class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
     with TickerProviderStateMixin {
   late final AnimationController _animationController;
-  final GlobalKey<NestedScrollViewState> globalKey =
+  final GlobalKey<NestedScrollViewState> globalKeyCreditCards =
       GlobalKey<NestedScrollViewState>();
 
   final _scrollController = ScrollController(keepScrollOffset: true);

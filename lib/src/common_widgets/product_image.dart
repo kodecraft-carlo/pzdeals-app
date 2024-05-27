@@ -100,17 +100,17 @@ class ProductImageWidget extends StatelessWidget {
           cacheManager: networkImageCacheManager,
           fadeInDuration: const Duration(milliseconds: 1),
           fit: fit,
-          placeholder: (context, url) => Skeletonizer(
-              effect: PulseEffect(
-                  from: Colors.white,
-                  to: Colors.grey[200]!,
-                  duration: const Duration(milliseconds: 1000)),
-              child: Image.asset(
-                'assets/images/placeholder_white.png',
-                width: width,
-                height: height,
-                fit: BoxFit.fitWidth,
-              )),
+          // placeholder: (context, url) => Skeleton.leaf(
+          //     // effect: PulseEffect(
+          //     //     from: Colors.white,
+          //     //     to: Colors.grey[200]!,
+          //     //     duration: const Duration(milliseconds: 1000)),
+          //     child: Image.asset(
+          //   'assets/images/placeholder_white.png',
+          //   width: width,
+          //   height: height,
+          //   fit: BoxFit.fitWidth,
+          // )),
           errorWidget: (context, url, error) {
             debugPrint('Error loading image: $error');
             return Image.asset(

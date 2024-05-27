@@ -7,13 +7,24 @@ import 'package:pzdeals/src/utils/http/http_client.dart';
 import 'package:pzdeals/src/utils/queries/index.dart';
 
 class FetchForYouService {
+  // Future<List<ProductDealcardData>> getCachedProductCollections(
+  //     String boxName) async {
+  //   debugPrint("getCachedProductCollections called for $boxName");
+  //   final box = await Hive.openBox<ProductDealcardData>(boxName);
+  //   final products = box.values.toList();
+  //   await box.close();
+  //   return products;
+  // }
+
   Future<List<ProductDealcardData>> getCachedProductCollections(
       String boxName) async {
-    debugPrint("getCachedProductCollections called for $boxName");
-    final box = await Hive.openBox<ProductDealcardData>(boxName);
-    final products = box.values.toList();
+    debugPrint("getCachedProducts called for $boxName");
+    final box = await Hive.openBox<List<dynamic>>(boxName);
+    List<dynamic> cachedProductsDynamic = box.get(boxName) ?? [];
     await box.close();
-    return products;
+    return cachedProductsDynamic
+        .map((item) => item as ProductDealcardData)
+        .toList();
   }
 
   Future<List<ProductDealcardData>> fetchForYouDeals(
@@ -99,14 +110,37 @@ class FetchForYouService {
   //   }
   // }
 
+  // Future<void> _cacheProductCollections(
+  //     List<ProductDealcardData> collections, String boxName) async {
+  //   debugPrint("Caching productcollections for $boxName");
+  //   final box = await Hive.openBox<ProductDealcardData>(boxName);
+  //   await box.clear();
+  //   for (final collection in collections) {
+  //     box.add(collection);
+  //   }
+  // }
+
   Future<void> _cacheProductCollections(
-      List<ProductDealcardData> collections, String boxName) async {
-    debugPrint("Caching productcollections for $boxName");
-    final box = await Hive.openBox<ProductDealcardData>(boxName);
-    await box.clear();
-    for (final collection in collections) {
-      box.add(collection);
+      List<ProductDealcardData> products, String boxName) async {
+    debugPrint("Caching products for $boxName");
+    final box = await Hive.openBox<dynamic>(boxName);
+
+    // Get the existing cached products.
+    List<ProductDealcardData> cachedProducts =
+        box.get(boxName)?.cast<ProductDealcardData>() ?? [];
+
+    // Append the new products to the cached products, if they're not already in the cache.
+    products = products.reversed.toList();
+    for (var product in products) {
+      if (!cachedProducts.any(
+          (cachedProduct) => cachedProduct.productId == product.productId)) {
+        cachedProducts.insert(0, product);
+      }
     }
+
+    // Store the combined list back in the cache.
+    await box.put(boxName, cachedProducts);
+    await box.close();
   }
 
   Future<void> cacheCollectionSelectionStatus(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
@@ -81,7 +82,10 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
               child: ProductsDisplay(
             productData: productData,
             layoutType: layoutType,
-            onRefresh: () => frontpageState.refreshDeals(),
+            onRefresh: () async {
+              HapticFeedback.mediumImpact();
+              frontpageState.refreshDeals();
+            },
           )),
           if (frontpageState.isLoading)
             const Padding(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/actions/navigate_screen.dart';
@@ -10,70 +9,69 @@ import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_collection_selection.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
+import 'package:pzdeals/src/features/deals/services/fetch_foryou.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ForYouWidget extends ConsumerStatefulWidget {
-  const ForYouWidget({super.key});
+  const ForYouWidget({super.key, required this.tabController});
+  final TabController tabController;
   @override
   ForYouWidgetState createState() => ForYouWidgetState();
 }
 
 class ForYouWidgetState extends ConsumerState<ForYouWidget>
-    with TickerProviderStateMixin {
-  late final AnimationController _animationController;
-
+    with AutomaticKeepAliveClientMixin {
+  final FetchForYouService forYouService = FetchForYouService();
   @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(vsync: this);
-    // Future(() {
-    //   ref.read(tabForYouProvider).loadDataFromSelectedCollection();
-    // });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    final foryouState = ref.watch(tabForYouProvider);
-    final List<Map<String, dynamic>> dataMap = foryouState.collectionProducts;
+    super.build(context);
+    final forYouState = ref
+        .watch(tabForYouProvider.select((value) => value.collectionProducts));
 
     List<Widget> sectionContent = [];
-    if (dataMap.isNotEmpty) {
-      //check each collection if it has products
-      sectionContent = dataMap.map((map) {
-        if (map['products'] != null) {
-          return FutureBuilder<List<ProductDealcardData>>(
-            future: map[
-                'products'], // Assuming map['products'] returns Future<List<ProductDealcardData>>
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                // While data is loading
-                return const SizedBox.shrink();
-              } else if (snapshot.hasError) {
-                // If any error occurs
-                return noForYouData(map['collection_name']);
-              } else {
-                if (snapshot.data == null || snapshot.data!.isEmpty) {
-                  return noForYouData(map['collection_name']);
-                }
-                // Data loaded successfully
-                final List<ProductDealcardData> productList = snapshot.data!;
-                return ForYouCollectionList(
-                  title: '${map['collection_name']} Deals',
-                  collectionId: map['collection_id'],
-                  productData: productList,
-                );
+    if (forYouState.isNotEmpty) {
+      sectionContent = forYouState.map((map) {
+        return FutureBuilder<List<ProductDealcardData>>(
+          future: forYouService.fetchForYouDeals(
+              map['collection_id'], 30, map['collection_name']),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Skeletonizer(
+                enabled: true,
+                child: ForYouCollectionList(
+                    collectionId: 0,
+                    title: 'Collection Title',
+                    productData: List.filled(
+                        5,
+                        ProductDealcardData(
+                            productId: 0,
+                            productName: 'Product Name In For You Collection',
+                            price: '0.00',
+                            storeAssetImage: 'assets/images/pzdeals_store.png',
+                            oldPrice: '0.00',
+                            imageAsset: 'assets/images/pzdeals.png',
+                            discountPercentage: 0,
+                            assetSourceType: 'asset',
+                            barcodeLink: 'loading'))),
+              );
+            } else if (snapshot.hasError) {
+              return NoForYouData(collectionName: map['collection_name']);
+            } else {
+              if (snapshot.data == null || snapshot.data!.isEmpty) {
+                return NoForYouData(collectionName: map['collection_name']);
               }
-            },
-          );
-        } else {
-          return noForYouData(map['collection_name']);
-        }
+              final List<ProductDealcardData> productList = snapshot.data!;
+              return ForYouCollectionList(
+                title: '${map['collection_name']} Deals',
+                collectionId: map['collection_id'],
+                productData: productList,
+              );
+            }
+          },
+        );
       }).toList();
     }
     return RefreshIndicator.adaptive(
@@ -102,38 +100,74 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
                         ),
                         const TextSpan(text: ' '),
                         WidgetSpan(
-                          child: foryouState.hasSelectedCollectionsFromCache
-                              ? customizeHereLink()
+                          child: ref.watch(tabForYouProvider.select((value) =>
+                                  value.hasSelectedCollectionsFromCache))
+                              ? const CustomizeHereLink()
                               : const SizedBox.shrink(),
                         )
                       ],
                     )),
               ),
-              !foryouState.hasSelectedCollectionsFromCache
+              !ref.watch(tabForYouProvider
+                      .select((value) => value.hasSelectedCollectionsFromCache))
                   ? const ForYouBannerWidget()
                   : const SizedBox.shrink(),
-              Skeletonizer.zone(
-                enabled: foryouState.isForYouCollectionProductsLoading,
-                child: Container(
-                  margin: const EdgeInsets.all(Sizes.paddingAll),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: sectionContent,
-                  ),
+              Container(
+                margin: const EdgeInsets.all(Sizes.paddingAll),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: sectionContent,
                 ),
-              ),
+              )
             ],
           ),
         ),
         onRefresh: () async {
-          await ref.read(tabForYouProvider).getProductsFromSelectedCollection();
+          await dealsScreenKey.currentState?.innerController.animateTo(
+            -10.0,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeOut,
+          );
+
+          if (widget.tabController.index == 0) {
+            HapticFeedback.mediumImpact();
+            await ref
+                .read(tabForYouProvider)
+                .getProductsFromSelectedCollection();
+          }
         });
   }
+}
 
-  Widget noForYouData(String collectionName) {
+class NoForYouData extends StatefulWidget {
+  const NoForYouData({super.key, required this.collectionName});
+
+  final String collectionName;
+  @override
+  _NoForYouDataState createState() => _NoForYouDataState();
+}
+
+class _NoForYouDataState extends State<NoForYouData>
+    with TickerProviderStateMixin {
+  late final AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       TextWidget(
-          text: '$collectionName Deals',
+          text: '${widget.collectionName} Deals',
           textDisplayType: TextDisplayType.sectionTitle),
       Row(
         children: [
@@ -168,7 +202,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
                     ),
                     const SizedBox(height: Sizes.spaceBetweenContentSmall),
                     Text(
-                      "There are no $collectionName Deals available at the moment. Please check back later.",
+                      "There are no ${widget.collectionName} Deals available at the moment. Please check back later.",
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontSize: Sizes.fontSizeMedium,
@@ -183,8 +217,13 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
       )
     ]);
   }
+}
 
-  Widget customizeHereLink() {
+class CustomizeHereLink extends StatelessWidget {
+  const CustomizeHereLink({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return const NavigateScreenWidget(
         destinationWidget: CollectionSelectionWidget(),
         animationDirection: 'bottomToTop',

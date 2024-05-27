@@ -14,6 +14,8 @@ class NotificationService {
 
   NotificationService() {
     FirebaseAuth.instance.authStateChanges().listen((User? currentUser) {
+      debugPrint(
+          'NotificationService: User is logged in ~ ${currentUser?.uid}');
       user = currentUser;
     });
   }

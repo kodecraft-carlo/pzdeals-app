@@ -193,8 +193,11 @@ class StaticProductDealCardWidgetState
                           child: widget.productData.isProductNoPrice != null &&
                                   widget.productData.isProductNoPrice ==
                                       false &&
-                                  widget.productData.price != '' &&
-                                  widget.productData.price != '0.00'
+                                  (widget.productData.oldPrice != null &&
+                                      double.parse(widget.productData.oldPrice
+                                              .replaceAll(',', '')) >
+                                          0 &&
+                                      widget.productData.oldPrice != '')
                               ? RichText(
                                   maxLines: 1,
                                   softWrap: false,

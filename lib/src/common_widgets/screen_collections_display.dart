@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
@@ -202,7 +203,10 @@ class CollectionDisplayScreenWidgetState
             scrollController: _scrollController,
             productData: productData,
             layoutType: layoutType,
-            onRefresh: () => productCollectionState.refreshDeals(),
+            onRefresh: () async {
+              HapticFeedback.mediumImpact();
+              productCollectionState.refreshDeals();
+            },
           )),
           if (productCollectionState.isLoading)
             const Padding(

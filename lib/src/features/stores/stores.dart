@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/sliver_appbar.dart';
@@ -136,7 +137,10 @@ class _StoresWidgetState extends ConsumerState<StoresWidget>
           child: DisplayStores(
             storedata: displayStores,
           ),
-          onRefresh: () => storescreenState.refreshStores());
+          onRefresh: () async {
+            HapticFeedback.mediumImpact();
+            storescreenState.refreshStores();
+          });
     }
     return PopScope(
         canPop: false,

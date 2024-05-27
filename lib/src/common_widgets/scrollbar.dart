@@ -12,7 +12,7 @@ class ScrollbarWidget extends StatelessWidget {
     return RawScrollbar(
       controller: scrollController,
       radius: const Radius.circular(5),
-      interactive: true,
+      interactive: false,
       minThumbLength: 50,
       thickness: 5,
       minOverscrollLength: 50,
