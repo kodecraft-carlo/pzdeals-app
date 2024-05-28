@@ -119,9 +119,9 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
           ));
     } else {
       final productData = bookmarkState.products;
-      body = Column(
+      body = Stack(
         children: [
-          Expanded(
+          Positioned.fill(
               child: ProductsDisplay(
             scrollController: _scrollController,
             productData: productData,
@@ -130,7 +130,9 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
           if (bookmarkState.isProductLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Center(child: CircularProgressIndicator.adaptive()),
+              child: Align(
+                  alignment: Alignment.topCenter,
+                  child: CircularProgressIndicator.adaptive()),
             ),
         ],
       );

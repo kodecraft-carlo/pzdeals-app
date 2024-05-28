@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
 
@@ -35,6 +36,7 @@ class _ListTileWithSwitchWidgetState extends State<ListTileWithSwitchWidget> {
       trailing: Switch(
         value: widget.value,
         onChanged: (bool? value) {
+          HapticFeedback.lightImpact();
           widget.onChanged(value!);
         },
         activeColor: PZColors.pzWhite,

@@ -73,25 +73,25 @@ class NotificationCardWidgetState
   Widget build(BuildContext context) {
     final data = widget.notificationData.data;
     final notificationData = widget.notificationData;
+    final notificationState = ref.read(notificationsProvider);
     return Dismissible(
       key: Key(notificationData.id),
       onDismissed: (direction) {
-        ref.read(notificationsProvider).removeNotification(notificationData.id);
-        ScaffoldMessenger.of(context).showSnackBar(
+        notificationState.removeNotification(notificationData.id);
+        final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: const Text('Notification cleared'),
             action: SnackBarAction(
               label: 'UNDO',
               onPressed: () async {
-                ref
-                    .read(notificationsProvider)
-                    .reinsertNotificationToNotificationList(
-                        notificationData.id);
-                ref
-                    .read(notificationsProvider)
+                notificationState.reinsertNotificationToNotificationList(
+                    notificationData.id);
+                notificationState
                     .removeNotificationIdFromDeletionList(notificationData.id);
 
-                ref.read(notificationsProvider).refreshNotification();
+                notificationState.refreshNotification();
               },
             ),
             duration: const Duration(seconds: 5),

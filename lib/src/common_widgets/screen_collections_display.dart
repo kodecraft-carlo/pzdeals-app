@@ -196,9 +196,9 @@ class CollectionDisplayScreenWidgetState
           ));
     } else {
       final productData = productCollectionState.products;
-      body = Column(
+      body = Stack(
         children: [
-          Expanded(
+          Positioned.fill(
               child: ProductsDisplay(
             scrollController: _scrollController,
             productData: productData,
@@ -211,7 +211,9 @@ class CollectionDisplayScreenWidgetState
           if (productCollectionState.isLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Center(child: CircularProgressIndicator.adaptive()),
+              child: Align(
+                  alignment: Alignment.topCenter,
+                  child: CircularProgressIndicator.adaptive()),
             ),
         ],
       );

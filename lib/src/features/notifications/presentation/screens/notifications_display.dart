@@ -123,15 +123,15 @@ class NotificationsDisplayState extends ConsumerState<NotificationsDisplay>
                   ref.read(notificationsProvider).refreshNotification();
                 }),
           ),
-          notificationState.isLoading
-              ? Container(
-                  color: Colors.transparent,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                  child:
-                      const Center(child: CircularProgressIndicator.adaptive()),
-                )
-              : const SizedBox.shrink()
+          // notificationState.isLoading
+          //     ? Container(
+          //         color: Colors.transparent,
+          //         padding:
+          //             const EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+          //         child:
+          //             const Center(child: CircularProgressIndicator.adaptive()),
+          //       )
+          //     : const SizedBox.shrink()
         ],
       ));
     }

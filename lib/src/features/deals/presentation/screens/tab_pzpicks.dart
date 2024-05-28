@@ -65,32 +65,39 @@ class PZPicksScreenWidgetState extends ConsumerState<PZPicksScreenWidget>
     } else {
       final productData = pzpicksState.products;
       final layoutType = ref.watch(layoutTypeProvider);
-      return Column(
+      return Stack(
         children: [
-          const SizedBox(
-            height: Sizes.paddingAllSmall,
-          ),
-          const Text(
-            Wordings.descFlashDeals,
-            textAlign: TextAlign.center,
-            style:
-                TextStyle(color: Colors.black54, fontSize: Sizes.bodyFontSize),
-          ),
-          Expanded(
-            child: ProductsDisplay(
-              productData: productData,
-              layoutType: layoutType,
-              scrollKey: 'tabPzpicks',
-              onRefresh: () async {
-                HapticFeedback.mediumImpact();
-                pzpicksState.refreshDeals();
-              },
-            ),
-          ),
+          Positioned.fill(
+              child: Column(
+            children: [
+              const SizedBox(
+                height: Sizes.paddingAllSmall,
+              ),
+              const Text(
+                Wordings.descFlashDeals,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.black54, fontSize: Sizes.bodyFontSize),
+              ),
+              Expanded(
+                child: ProductsDisplay(
+                  productData: productData,
+                  layoutType: layoutType,
+                  scrollKey: 'tabPzpicks',
+                  onRefresh: () async {
+                    HapticFeedback.mediumImpact();
+                    pzpicksState.refreshDeals();
+                  },
+                ),
+              ),
+            ],
+          )),
           if (pzpicksState.isLoading)
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Center(child: CircularProgressIndicator.adaptive()),
+              padding: EdgeInsets.only(top: 20),
+              child: Align(
+                  alignment: Alignment.topCenter,
+                  child: CircularProgressIndicator.adaptive()),
             ),
         ],
       );

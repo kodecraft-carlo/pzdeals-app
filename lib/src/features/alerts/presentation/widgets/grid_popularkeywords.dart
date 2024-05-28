@@ -3,20 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
+import 'package:pzdeals/src/features/alerts/models/keyword_data.dart';
 import 'package:pzdeals/src/features/alerts/state/keyword_provider.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
-class PopularKeywordsGrid extends StatelessWidget {
-  const PopularKeywordsGrid({super.key, required this.keywordsdata});
-
-  final List<KeywordData> keywordsdata;
+class PopularKeywordsGrid extends ConsumerWidget {
+  const PopularKeywordsGrid({
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final keywordState = ref.watch(keywordsProvider);
     double screenWidth = MediaQuery.of(context).size.width;
     double itemWidth = screenWidth / 3;
-
+    final List<KeywordData> keywordsdata = keywordState.popularKeywords;
     return GridView.builder(
       padding: const EdgeInsets.symmetric(vertical: Sizes.paddingAllSmall),
       shrinkWrap: true,
@@ -52,6 +54,7 @@ class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
 
   @override
   Widget build(BuildContext context) {
+    final keywordState = ref.watch(keywordsProvider);
     return Container(
       clipBehavior: Clip.hardEdge,
       padding: const EdgeInsets.all(Sizes.paddingAllSmall / 3),
@@ -68,9 +71,8 @@ class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
         children: [
           GestureDetector(
             onTap: () {
-              if (ref
-                  .read(keywordsProvider)
-                  .addKeywordLocally(widget.keywordData, 'popular')) {
+              if (keywordState.addKeywordLocally(
+                  widget.keywordData, 'popular')) {
                 setState(() {
                   _isAdded = true;
                 });

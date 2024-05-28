@@ -15,22 +15,22 @@ class CouponCodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          Clipboard.setData(ClipboardData(text: text));
-          showSnackbarWithMessage(
-              buildcontext ?? context, 'Coupon code copied');
-          if (url != null && url != '') openBrowser(url!);
-        },
-        child: DottedBorder(
-          borderType: BorderType.RRect,
-          radius: const Radius.circular(5),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(5)),
-            child: Container(
-              color: Colors.orange[200],
-              child: Text(text),
-            ),
+      onTap: () {
+        Clipboard.setData(ClipboardData(text: text));
+        showSnackbarWithMessage(buildcontext ?? context, 'Coupon code copied');
+        if (url != null && url != '') openBrowser(url!);
+      },
+      child: DottedBorder(
+        borderType: BorderType.RRect,
+        radius: const Radius.circular(5),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          child: Container(
+            color: Colors.orange[200],
+            child: Text(text),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

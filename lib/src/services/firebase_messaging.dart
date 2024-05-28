@@ -42,7 +42,8 @@ class FirebaseMessagingApi {
       {required int notificationId,
       required String title,
       required String body,
-      required String payload}) async {
+      required String payload,
+      required String fcmNotifId}) async {
     NotificationDetails notificationDetails = NotificationDetails(
       android: AndroidNotificationDetails(
           _androidChannel.id, _androidChannel.name,
@@ -55,6 +56,10 @@ class FirebaseMessagingApi {
           presentBanner: true,
           attachments: [DarwinNotificationAttachment('')]),
     );
+
+    //add fcmNotifId to payload
+    payload = jsonEncode({'fcmNotifId': fcmNotifId, 'payload': payload});
+
     await _localNotifications.show(
         notificationId, title, body, notificationDetails,
         payload: payload);
@@ -91,6 +96,7 @@ class FirebaseMessagingApi {
             title: newTitle,
             body: message.notification!.body ?? '',
             payload: jsonEncode(message.data),
+            fcmNotifId: message.messageId ?? '',
           );
         } else {
           if (_appLifecycleState != AppLifecycleState.resumed) {
@@ -100,6 +106,7 @@ class FirebaseMessagingApi {
               title: newTitle,
               body: message.notification!.body ?? '',
               payload: jsonEncode(message.data),
+              fcmNotifId: message.messageId ?? '',
             );
           }
         }
@@ -113,9 +120,12 @@ class FirebaseMessagingApi {
       requestSoundPermission: true,
       requestAlertPermission: true,
       onDidReceiveLocalNotification: (id, title, body, payload) {
-        debugPrint(
-            'Local Notification received -- onDidReceiveLocalNotification');
-        debugPrint('id: $id, title: $title, body: $body, payload: $payload');
+        debugPrint('onDidReceiveLocalNotification called');
+        // if (payload != null) {
+        //   final dynamic message = jsonDecode(payload);
+        //   debugPrint('MESSAGE RECEIVED: $message');
+        //   navigateToScreens(message);
+        // }
       },
     );
     const android = AndroidInitializationSettings('@drawable/ic_launcher');
@@ -125,9 +135,10 @@ class FirebaseMessagingApi {
         onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) async {
       final String? payload = notificationResponse.payload;
+
       if (notificationResponse.payload != null) {
         final dynamic message = jsonDecode(payload!);
-        navigateToScreens(message);
+        navigateToScreens(message, isForeground: true);
       }
     });
 
@@ -153,9 +164,21 @@ class FirebaseMessagingApi {
     debugPrint('Notification added');
   }
 
-  void navigateToScreens(dynamic message) {
+  void navigateToScreens(dynamic message, {bool isForeground = false}) {
     debugPrint('navigateToScreens called with message: $message');
-    final data = message["data"];
+    dynamic data;
+
+    if (isForeground) {
+      final payload = jsonDecode(message['payload']);
+      final newData = jsonEncode(
+          {"item_id": payload["item_id"], "messageId": message['fcmNotifId']});
+      data = jsonDecode(newData);
+    } else {
+      final itemId = message['data']['item_id'] ?? message['data']['id'];
+      final newData =
+          jsonEncode({"item_id": itemId, "messageId": message['messageId']});
+      data = jsonDecode(newData);
+    }
     if (navigatorKey.currentState != null) {
       // if (data['alert_type'] == 'keyword') {
       //   navigatorKey.currentState!
@@ -192,26 +215,27 @@ class FirebaseMessagingApi {
       // });
 
       //not working yet
-      // navigatorKey.currentState!.pushReplacement(
-      //   MaterialPageRoute(
-      //     builder: (context) =>
-      //         NavigationWidget(initialPageIndex: 2, arguments: {
-      //       'title': message["notification"]["title"],
-      //       'type': data['alert_type'],
-      //       'value': data['value'],
-      //       'product_id': data['item_id'] ?? '',
-      //       'notification_id': message["messageId"]
-      //     }),
-      //   ),
-      // );
-      //end
+
       navigatorKey.currentState!.pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const NavigationWidget(
-            initialPageIndex: 2,
-          ),
+          builder: (context) =>
+              NavigationWidget(initialPageIndex: 2, arguments: {
+            // 'title': message["notification"]["title"],
+            // 'type': data['alert_type'],
+            // 'value': data['value'],
+            'product_id': data['item_id'] ?? '',
+            'notification_id': data["messageId"]
+          }),
         ),
       );
+      //end
+      // navigatorKey.currentState!.pushReplacement(
+      //   MaterialPageRoute(
+      //     builder: (context) => const NavigationWidget(
+      //       initialPageIndex: 2,
+      //     ),
+      //   ),
+      // );
       // }
     }
   }

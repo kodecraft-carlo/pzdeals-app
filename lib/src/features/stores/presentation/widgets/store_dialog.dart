@@ -10,9 +10,15 @@ import 'package:pzdeals/src/common_widgets/coupon_code_widget.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
 class StoreDialog extends StatelessWidget {
-  const StoreDialog({super.key, required this.htmlData});
+  const StoreDialog(
+      {super.key,
+      required this.htmlData,
+      required this.storeName,
+      required this.storeImage});
 
   final String htmlData;
+  final String storeName;
+  final Widget storeImage;
   @override
   Widget build(BuildContext context) {
     return BackdropFilter(
@@ -33,6 +39,49 @@ class StoreDialog extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      margin: const EdgeInsets.only(
+                          bottom: Sizes.paddingBottomSmall),
+                      clipBehavior: Clip.hardEdge,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                            Sizes.cardBorderRadius / 1.65),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 3,
+                            blurRadius: 9,
+                          ),
+                        ],
+                      ),
+                      child: storeImage,
+                    ),
+                  ),
+                  Align(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: Sizes.paddingAll),
+                      child: Text(
+                        storeName,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            color: PZColors.pzBlack,
+                            fontSize: Sizes.bodyFontSize,
+                            fontWeight: FontWeight.w500),
+                        textScaler: MediaQuery.textScalerOf(context),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    color: PZColors.pzLightGrey,
+                    thickness: 1,
+                  ),
                   StoreCollectionList(
                     htmlData: htmlData,
                   ),
@@ -145,20 +194,8 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                               itemBuilder: (BuildContext context, int index) {
                                 final coupon = item.expandedValue[index];
 
-                                List<String> parts =
-                                    coupon.description.split(coupon.code);
-                                return GestureDetector(
-                                  onTap: () {
-                                    Clipboard.setData(
-                                        ClipboardData(text: coupon.code));
-                                    showSnackbarWithMessage(
-                                        context, 'Coupon code copied');
-                                    if (coupon.url != null &&
-                                        coupon.url != '') {
-                                      openBrowser(coupon.url!);
-                                    }
-                                  },
-                                  child: Container(
+                                if (coupon.code == '') {
+                                  return Container(
                                     margin:
                                         const EdgeInsets.symmetric(vertical: 4),
                                     padding: const EdgeInsets.all(10),
@@ -166,33 +203,63 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
                                       borderRadius: BorderRadius.circular(8),
                                       color: PZColors.pzLightGrey,
                                     ),
-                                    child: RichText(
-                                      text: TextSpan(children: [
-                                        TextSpan(
-                                          text: parts[0],
-                                          style: const TextStyle(
-                                            color: PZColors.pzBlack,
-                                            fontFamily: 'Poppins',
-                                          ),
-                                        ),
-                                        WidgetSpan(
-                                            alignment:
-                                                PlaceholderAlignment.middle,
-                                            child: CouponCodeWidget(
-                                              buildcontext: context,
-                                              text: coupon.code,
-                                              url: coupon.url,
-                                            )),
-                                        TextSpan(
-                                          text: parts[1],
-                                          style: const TextStyle(
-                                              color: PZColors.pzBlack,
-                                              fontFamily: 'Poppins'),
-                                        ),
-                                      ]),
+                                    child: Text(
+                                      coupon.description,
+                                      style: const TextStyle(
+                                          color: PZColors.pzBlack,
+                                          fontFamily: 'Poppins'),
                                     ),
-                                  ),
-                                );
+                                  );
+                                } else {
+                                  List<String> parts =
+                                      coupon.description.split(coupon.code);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Clipboard.setData(
+                                          ClipboardData(text: coupon.code));
+                                      showSnackbarWithMessage(
+                                          context, 'Coupon code copied');
+                                      if (coupon.url != null &&
+                                          coupon.url != '') {
+                                        openBrowser(coupon.url!);
+                                      }
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 4),
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: PZColors.pzLightGrey,
+                                      ),
+                                      child: RichText(
+                                        text: TextSpan(children: [
+                                          TextSpan(
+                                            text: parts[0],
+                                            style: const TextStyle(
+                                              color: PZColors.pzBlack,
+                                              fontFamily: 'Poppins',
+                                            ),
+                                          ),
+                                          WidgetSpan(
+                                              alignment:
+                                                  PlaceholderAlignment.middle,
+                                              child: CouponCodeWidget(
+                                                buildcontext: context,
+                                                text: coupon.code,
+                                                url: coupon.url,
+                                              )),
+                                          TextSpan(
+                                            text: parts[1],
+                                            style: const TextStyle(
+                                                color: PZColors.pzBlack,
+                                                fontFamily: 'Poppins'),
+                                          ),
+                                        ]),
+                                      ),
+                                    ),
+                                  );
+                                }
                               },
                             ),
                             isExpanded: _expandedIndex == index,
@@ -401,6 +468,12 @@ List<Coupon> extractCouponsFromHtml(String htmlString) {
     }
   }
 
+  if (coupons.isEmpty) {
+    coupons.add(Coupon(
+        code: '',
+        description: "Sorry. There's no available coupon for this store.",
+        url: ''));
+  }
   return coupons;
 }
 

@@ -108,6 +108,28 @@ class NotificationService {
     }
   }
 
+  Future<void> markAllNotificationsAsRead(String boxName) async {
+    try {
+      if (user != null) {
+        await _firestoreDb
+            .collection('notifications')
+            .doc(user?.uid)
+            .collection('notification')
+            .get()
+            .then((snapshot) {
+          for (DocumentSnapshot ds in snapshot.docs) {
+            ds.reference.update({'isRead': true});
+          }
+        });
+      } else {
+        debugPrint('markAllNotificationsAsRead: User is not logged in');
+      }
+    } catch (e) {
+      debugPrint("Error marking all notifications as read: $e");
+      throw Exception('Error marking all notifications as read');
+    }
+  }
+
   Future addNotification(NotificationData notification, String boxName) async {
     try {
       if (user != null) {

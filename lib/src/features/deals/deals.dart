@@ -60,6 +60,7 @@ class DealsTabControllerWidgetState
 
   @override
   void dispose() {
+    tabController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -207,7 +208,7 @@ class DealsTabControllerWidgetState
                   child: FrontPageDealsWidget(key: _frontpageKey),
                   onNotification: (ScrollNotification scrollInfo) {
                     if (scrollInfo.metrics.pixels >=
-                        scrollInfo.metrics.maxScrollExtent - 200) {
+                        scrollInfo.metrics.maxScrollExtent - 300) {
                       if (!_isAtBottomFrontPage) {
                         _isAtBottomFrontPage = true;
                         ref.read(tabFrontPageProvider).loadMoreProducts();
@@ -225,7 +226,7 @@ class DealsTabControllerWidgetState
                   child: PZPicksScreenWidget(key: _pzpicksKey),
                   onNotification: (ScrollNotification scrollInfo) {
                     if (scrollInfo.metrics.pixels >=
-                        scrollInfo.metrics.maxScrollExtent - 200) {
+                        scrollInfo.metrics.maxScrollExtent - 300) {
                       if (!_isAtBottomPzPicks) {
                         _isAtBottomPzPicks = true;
                         ref.read(tabPzPicksProvider).loadMoreProducts();

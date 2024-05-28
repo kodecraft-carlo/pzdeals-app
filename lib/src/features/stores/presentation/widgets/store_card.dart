@@ -33,6 +33,8 @@ class _StoreCardWidgetState extends ConsumerState<StoreCardWidget> {
                           child: GestureDetector(
                             onTap: () {},
                             child: StoreDialog(
+                              storeName: widget.storeData.storeName,
+                              storeImage: storeIcon(),
                               htmlData: widget.storeData.storeBody ?? '',
                             ),
                           ),

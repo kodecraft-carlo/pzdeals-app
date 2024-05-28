@@ -121,9 +121,9 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
       final productData = searchState.products;
       final layoutType = ref.watch(layoutTypeProvider);
       searchResultWidget = Flexible(
-        child: Column(
+        child: Stack(
           children: [
-            Expanded(
+            Positioned.fill(
                 child: ProductsDisplay(
               productData: productData,
               layoutType: layoutType,
@@ -133,7 +133,9 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
             if (searchState.isLoading)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                child: Center(child: CircularProgressIndicator.adaptive()),
+                child: Align(
+                    alignment: Alignment.topCenter,
+                    child: CircularProgressIndicator.adaptive()),
               ),
           ],
         ),

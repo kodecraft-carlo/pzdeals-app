@@ -10,7 +10,6 @@ import 'package:pzdeals/src/features/alerts/presentation/widgets/grid_popularkey
 import 'package:pzdeals/src/features/alerts/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/list_categorytoggles.dart';
 import 'package:pzdeals/src/features/alerts/state/keyword_provider.dart';
-import 'package:pzdeals/src/features/deals/deals.dart';
 
 class AlertsManagementScreen extends ConsumerStatefulWidget {
   const AlertsManagementScreen({super.key});
@@ -52,13 +51,14 @@ class _AlertsManagementScreenState
 
   @override
   Widget build(BuildContext context) {
-    final keywordState = ref.watch(keywordsProvider);
-    final foryouState = ref.watch(tabForYouProvider);
+    final savedKeywordData =
+        ref.watch(keywordsProvider.select((value) => value.savedkeywords));
     // SchedulerBinding.instance.addPostFrameCallback((_) {
     //   setState(() {
     //     _showMore = scrollController.position.maxScrollExtent > 0;
     //   });
     // });
+    debugPrint('screen alerts management build');
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -99,8 +99,7 @@ class _AlertsManagementScreenState
                                   fontSize: Sizes.fontSizeMedium,
                                   fontWeight: FontWeight.w600,
                                   color: PZColors.pzBlack)),
-                          !keywordState.isLoading &&
-                                  keywordState.savedkeywords.isNotEmpty
+                          savedKeywordData.isNotEmpty
                               ? GestureDetector(
                                   onTap: () {
                                     setState(() {
@@ -117,7 +116,7 @@ class _AlertsManagementScreenState
                         ],
                       ),
                       const SizedBox(height: Sizes.spaceBetweenContentSmall),
-                      keywordState.savedkeywords.isNotEmpty
+                      savedKeywordData.isNotEmpty
                           ? Row(children: [
                               Expanded(
                                   child: SizedBox(
@@ -234,9 +233,7 @@ class _AlertsManagementScreenState
                               ),
                               const SizedBox(
                                   height: Sizes.spaceBetweenSections),
-                              PopularKeywordsGrid(
-                                keywordsdata: keywordState.popularKeywords,
-                              ),
+                              const PopularKeywordsGrid(),
                             ],
                           ),
                         ),

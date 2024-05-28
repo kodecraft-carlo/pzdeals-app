@@ -65,32 +65,40 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
     } else {
       final productData = frontpageState.products;
       final layoutType = ref.watch(layoutTypeProvider);
-      return Column(
+      return Stack(
         children: [
-          const SizedBox(
-            height: Sizes.paddingAllSmall,
+          Positioned.fill(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: Sizes.paddingAllSmall,
+                ),
+                const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+                    child: Text(
+                      Wordings.descFrontPage,
+                      style: TextStyle(
+                          color: Colors.black54, fontSize: Sizes.bodyFontSize),
+                      textAlign: TextAlign.center,
+                    )),
+                Expanded(
+                    child: ProductsDisplay(
+                  productData: productData,
+                  layoutType: layoutType,
+                  onRefresh: () async {
+                    HapticFeedback.mediumImpact();
+                    frontpageState.refreshDeals();
+                  },
+                )),
+              ],
+            ),
           ),
-          const Padding(
-              padding: EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-              child: Text(
-                Wordings.descFrontPage,
-                style: TextStyle(
-                    color: Colors.black54, fontSize: Sizes.bodyFontSize),
-                textAlign: TextAlign.center,
-              )),
-          Expanded(
-              child: ProductsDisplay(
-            productData: productData,
-            layoutType: layoutType,
-            onRefresh: () async {
-              HapticFeedback.mediumImpact();
-              frontpageState.refreshDeals();
-            },
-          )),
           if (frontpageState.isLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Center(child: CircularProgressIndicator.adaptive()),
+              child: Align(
+                  alignment: Alignment.topCenter,
+                  child: CircularProgressIndicator.adaptive()),
             ),
         ],
       );

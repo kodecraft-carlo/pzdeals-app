@@ -26,6 +26,7 @@ class NotificationListNotifier extends ChangeNotifier {
   bool _isLoading = false;
   String _userUID = '';
   int _unreadCount = 0;
+  bool _hasNotification = false;
 
   List<NotificationData> _notifications = [];
   List<DocumentSnapshot> _notifData = [];
@@ -36,6 +37,7 @@ class NotificationListNotifier extends ChangeNotifier {
   int get unreadCount => _unreadCount;
   List<NotificationData> get notificationForDeletion =>
       _notificationForDeletion;
+  bool get hasNotification => _hasNotification;
 
   void setUserUID(String uid) {
     debugPrint('setUserUID called with $uid');
@@ -236,6 +238,19 @@ class NotificationListNotifier extends ChangeNotifier {
     }
   }
 
+  Future<void> markAllAsRead() async {
+    try {
+      await _notifService.markAllNotificationsAsRead(_boxName);
+      _unreadCount = 0;
+      for (var element in _notifications) {
+        element.isRead = true;
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('error marking all as read: $e');
+    }
+  }
+
   void resetNotifications() {
     notifyListeners();
   }
@@ -292,6 +307,9 @@ class NotificationListNotifier extends ChangeNotifier {
         .snapshots()
         .listen((QuerySnapshot snapshot) {
       _unreadCount = 0;
+      if (snapshot.docs.isNotEmpty) {
+        _hasNotification = true;
+      }
       snapshot.docs.forEach((doc) {
         if (doc.exists && doc['isRead'] == false) {
           _unreadCount++;

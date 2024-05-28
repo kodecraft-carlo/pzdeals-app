@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/badge.dart';
@@ -199,18 +198,18 @@ class ProductDealDescriptionState
             ? Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 9),
+                  padding: const EdgeInsets.only(left: 9, top: 10, bottom: 5),
                   child: RichText(
                     textAlign: TextAlign.start,
                     text: TextSpan(children: [
-                      const TextSpan(
-                        text: '•  ',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
+                      // const TextSpan(
+                      //   text: '•  ',
+                      //   style: TextStyle(
+                      //     color: Colors.black,
+                      //     fontWeight: FontWeight.w600,
+                      //     fontFamily: 'Poppins',
+                      //   ),
+                      // ),
                       const TextSpan(
                         text: 'Coupon code ',
                         style: TextStyle(
@@ -243,7 +242,10 @@ class ProductDealDescriptionState
                     padding: const EdgeInsets.symmetric(
                       horizontal: Sizes.paddingAllSmall,
                     ),
-                    child: HtmlContent(
+                    child:
+                        // HtmlWidget(
+                        //     widget.productData.productDealDescription!.trim())
+                        HtmlContent(
                       htmlContent:
                           widget.productData.productDealDescription!.trim(),
                     ),
@@ -268,7 +270,7 @@ class ProductDealDescriptionState
                       padding: const EdgeInsets.only(
                           left: Sizes.paddingAllSmall,
                           right: Sizes.paddingAllSmall,
-                          top: Sizes.paddingAll),
+                          top: Sizes.paddingAllSmall),
                       child: HtmlContent(
                         htmlContent:
                             widget.productData.tagDealDescription ?? '',
