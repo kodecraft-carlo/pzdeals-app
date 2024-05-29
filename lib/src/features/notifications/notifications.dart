@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
@@ -209,7 +207,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
       },
       child: RichText(
           text: const TextSpan(
-              text: 'Clear',
+              text: 'Clear All',
               style: TextStyle(
                   fontSize: Sizes.bodyFontSize,
                   color: PZColors.pzOrange,

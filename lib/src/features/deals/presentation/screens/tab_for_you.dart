@@ -13,8 +13,10 @@ import 'package:pzdeals/src/features/deals/services/fetch_foryou.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ForYouWidget extends ConsumerStatefulWidget {
-  const ForYouWidget({super.key, required this.tabController});
+  const ForYouWidget(
+      {super.key, required this.tabController, required this.dealsKey});
   final TabController tabController;
+  final GlobalKey<NestedScrollViewState> dealsKey;
   @override
   ForYouWidgetState createState() => ForYouWidgetState();
 }
@@ -123,7 +125,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
           ),
         ),
         onRefresh: () async {
-          await dealsScreenKey.currentState?.innerController.animateTo(
+          await widget.dealsKey.currentState?.innerController.animateTo(
             -10.0,
             duration: const Duration(milliseconds: 500),
             curve: Curves.easeOut,

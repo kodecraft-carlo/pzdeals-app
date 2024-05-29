@@ -31,7 +31,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
   bool _isScrollingDown = false;
   final scrollController = ScrollController();
   bool _showAffiliateLinkDescription = false;
-  final GlobalKey widgetKey = GlobalKey();
+  // final GlobalKey widgetKey = GlobalKey();
 
   @override
   void initState() {

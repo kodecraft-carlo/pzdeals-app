@@ -10,9 +10,6 @@ import 'package:pzdeals/src/features/deals/state/provider_foryou.dart';
 import 'package:pzdeals/src/features/deals/state/provider_frontpage.dart';
 import 'package:pzdeals/src/features/deals/state/provider_pzpicks.dart';
 
-final GlobalKey<NestedScrollViewState> dealsScreenKey =
-    GlobalKey<NestedScrollViewState>();
-
 final tabFrontPageProvider = ChangeNotifierProvider<TabFrontPageNotifier>(
     (ref) => TabFrontPageNotifier());
 final tabPzPicksProvider =
@@ -38,6 +35,8 @@ class DealsTabControllerWidgetState
       GlobalKey<FrontPageDealsWidgetState>();
   final GlobalKey<PZPicksScreenWidgetState> _pzpicksKey =
       GlobalKey<PZPicksScreenWidgetState>();
+  final GlobalKey<NestedScrollViewState> dealsScreenKey =
+      GlobalKey<NestedScrollViewState>();
 
   final _scrollController = ScrollController(keepScrollOffset: true);
   late TabController tabController;
@@ -203,7 +202,10 @@ class DealsTabControllerWidgetState
             body: TabBarView(
               controller: tabController,
               children: <Widget>[
-                ForYouWidget(key: _foryoupageKey, tabController: tabController),
+                ForYouWidget(
+                    key: _foryoupageKey,
+                    tabController: tabController,
+                    dealsKey: dealsScreenKey),
                 NotificationListener<ScrollNotification>(
                   child: FrontPageDealsWidget(key: _frontpageKey),
                   onNotification: (ScrollNotification scrollInfo) {

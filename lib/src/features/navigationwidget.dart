@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,8 +12,8 @@ import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/more/more.dart';
 import 'package:pzdeals/src/features/notifications/notifications.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
+import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/features/stores/stores.dart';
-import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/directus_auth_service.dart';
 import 'package:badges/badges.dart' as badges;
 
@@ -138,29 +136,6 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
       const DealAlertsScreen(),
       MoreScreen()
     ];
-  }
-
-  void updateNotificationsCount(String userId) {
-    FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(userId)
-        .collection('notification')
-        .snapshots()
-        .listen((QuerySnapshot snapshot) {
-      if (mounted) {
-        unreadNotificationCount = 0;
-        snapshot.docs.forEach((doc) {
-          if (doc.exists && doc['isRead'] == false) {
-            unreadNotificationCount++;
-          }
-        });
-        ref.read(notificationsProvider).refreshNotification();
-        setState(() {
-          debugPrint('unreadNotificationCount: $unreadNotificationCount');
-          unreadNotificationCount = unreadNotificationCount;
-        });
-      }
-    });
   }
 
   void showProductDeal(int productId) {

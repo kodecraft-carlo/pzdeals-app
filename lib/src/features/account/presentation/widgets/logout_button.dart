@@ -52,13 +52,13 @@ class LogoutButton extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
+        return AlertDialog.adaptive(
           surfaceTintColor: Colors.transparent,
           backgroundColor: PZColors.pzWhite,
           title: const Text(
             'Logout',
-            style: TextStyle(
-                fontSize: Sizes.fontSizeLarge, fontWeight: FontWeight.w600),
+            // style: TextStyle(
+            //     fontSize: Sizes.fontSizeLarge, fontWeight: FontWeight.w600),
           ),
           content: const Text('Are you sure you want to logout?'),
           actions: [

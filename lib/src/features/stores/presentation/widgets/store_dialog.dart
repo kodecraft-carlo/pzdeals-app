@@ -471,7 +471,8 @@ List<Coupon> extractCouponsFromHtml(String htmlString) {
   if (coupons.isEmpty) {
     coupons.add(Coupon(
         code: '',
-        description: "Sorry. There's no available coupon for this store.",
+        description:
+            "Sorry, there's no available coupons right now. Please check back later.",
         url: ''));
   }
   return coupons;

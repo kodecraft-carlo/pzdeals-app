@@ -198,7 +198,11 @@ class ProductDealDescriptionState
             ? Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 10, bottom: 5),
+                  padding: const EdgeInsets.only(
+                      left: Sizes.paddingAllSmall,
+                      top: 10,
+                      bottom: 5,
+                      right: Sizes.paddingAllSmall),
                   child: RichText(
                     textAlign: TextAlign.start,
                     text: TextSpan(children: [
@@ -240,14 +244,11 @@ class ProductDealDescriptionState
                   Expanded(
                       child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: Sizes.paddingAllSmall,
-                    ),
-                    child:
-                        // HtmlWidget(
-                        //     widget.productData.productDealDescription!.trim())
-                        HtmlContent(
+                        horizontal: Sizes.paddingAllSmall),
+                    child: HtmlContent(
                       htmlContent:
                           widget.productData.productDealDescription!.trim(),
+                      isProductDescription: true,
                     ),
                   ))
                 ],
@@ -274,6 +275,7 @@ class ProductDealDescriptionState
                       child: HtmlContent(
                         htmlContent:
                             widget.productData.tagDealDescription ?? '',
+                        isProductDescription: true,
                       ),
                     ),
                   ),

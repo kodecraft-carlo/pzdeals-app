@@ -7,12 +7,20 @@ import 'package:pzdeals/src/utils/http/http_client.dart';
 import 'package:pzdeals/src/utils/queries/index.dart';
 
 class StoreScreenService {
+  // Future<List<StoreData>> getCachedStores(String boxName) async {
+  //   debugPrint("getCachedStores called for $boxName");
+  //   final box = await Hive.openBox<StoreData>(boxName);
+  //   final stores = box.values.toList();
+  //   await box.close();
+  //   return stores;
+  // }
+
   Future<List<StoreData>> getCachedStores(String boxName) async {
     debugPrint("getCachedStores called for $boxName");
-    final box = await Hive.openBox<StoreData>(boxName);
-    final stores = box.values.toList();
+    final box = await Hive.openBox<List<dynamic>>(boxName);
+    List<dynamic> cachedStoresDynamic = box.get(boxName) ?? [];
     await box.close();
-    return stores;
+    return cachedStoresDynamic.map((item) => item as StoreData).toList();
   }
 
   Future<List<StoreData>> fetchStoreCollection(
@@ -46,13 +54,33 @@ class StoreScreenService {
     }
   }
 
+  // Future<void> _cacheStores(List<StoreData> stores, String boxName) async {
+  //   debugPrint("Caching stores for $boxName");
+  //   final box = await Hive.openBox<StoreData>(boxName);
+  //   await box.clear(); // Clear existing cache
+  //   for (final store in stores) {
+  //     box.put(store.id, store);
+  //   }
+  // }
+
   Future<void> _cacheStores(List<StoreData> stores, String boxName) async {
     debugPrint("Caching stores for $boxName");
-    final box = await Hive.openBox<StoreData>(boxName);
-    await box.clear(); // Clear existing cache
-    for (final store in stores) {
-      box.put(store.id, store);
+    final box = await Hive.openBox<dynamic>(boxName);
+
+    // Get the existing cached products.
+    List<StoreData> cachedStores = box.get(boxName)?.cast<StoreData>() ?? [];
+
+    // Append the new products to the cached products, if they're not already in the cache.
+    stores = stores.reversed.toList();
+    for (var store in stores) {
+      if (!cachedStores.any((cachedStore) => cachedStore.id == store.id)) {
+        cachedStores.insert(0, store);
+      }
     }
+
+    // Store the combined list back in the cache.
+    await box.put(boxName, cachedStores);
+    await box.close();
   }
 
   Future<StoreData> fetchStoreInfo(int storeId) async {
