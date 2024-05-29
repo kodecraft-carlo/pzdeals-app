@@ -64,7 +64,7 @@ class HtmlContent extends StatelessWidget {
                 return {'color': '#021BF9', 'text-decoration': 'none'};
               }
               if (element.localName == 'ol') {
-                return {'list-style-type': 'disc'};
+                return {'list-style-type': 'disc', 'padding-left': '15px'};
               }
               if (element.localName == 'ul') {
                 return {'padding-left': '15px', 'margin-bottom': '10px'};

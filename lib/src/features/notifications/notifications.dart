@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/actions/show_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
@@ -153,57 +154,27 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
   Widget clearNotifications() {
     return GestureDetector(
       onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog.adaptive(
-              title: const Text('Clear Notifications'),
-              content: const Text(
-                  'Are you sure you want to clear all notifications?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(color: PZColors.pzBlack),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    ref.read(notificationsProvider).removeAllNotification();
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Notification cleared'),
-                        action: SnackBarAction(
-                          label: 'UNDO',
-                          onPressed: () async {
-                            ref
-                                .read(notificationsProvider)
-                                .reinsertAllNotificationToNotificationList();
+        showAlertDialog(context, 'Clear Notifications',
+            'Are you sure you want to clear all notifications?', () {
+          ref.read(notificationsProvider).removeAllNotification();
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Notification cleared'),
+              action: SnackBarAction(
+                label: 'UNDO',
+                onPressed: () async {
+                  ref
+                      .read(notificationsProvider)
+                      .reinsertAllNotificationToNotificationList();
 
-                            ref
-                                .read(notificationsProvider)
-                                .refreshNotification();
-                          },
-                        ),
-                        duration: const Duration(seconds: 5),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Clear',
-                    style: TextStyle(
-                      color: PZColors.pzOrange,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
+                  ref.read(notificationsProvider).refreshNotification();
+                },
+              ),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }, 'Clear');
       },
       child: RichText(
           text: const TextSpan(
@@ -219,45 +190,18 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
   Widget markAllAsRead() {
     return GestureDetector(
         onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog.adaptive(
-                title: const Text('Read Notifications'),
-                content: const Text(
-                    'Are you sure you want to mark all notifications as read? This action cannot be undone.'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: PZColors.pzBlack),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      ref.read(notificationsProvider).markAllAsRead();
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Marked all notifications as read'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Confirm',
-                      style: TextStyle(
-                        color: PZColors.pzOrange,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
+          showAlertDialog(context, 'Read Notifications',
+              'Are you sure you want to mark all notifications as read? This action cannot be undone.',
+              () {
+            ref.read(notificationsProvider).markAllAsRead();
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Marked all notifications as read'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }, 'Confirm');
         },
         child: RichText(
           text: TextSpan(children: [

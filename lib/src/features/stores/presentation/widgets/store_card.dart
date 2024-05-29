@@ -16,7 +16,7 @@ class StoreCardWidget extends StatefulWidget {
 class _StoreCardWidgetState extends State<StoreCardWidget> {
   @override
   Widget build(BuildContext context) {
-    debugPrint('store card build ${widget.storeData.id}');
+    // debugPrint('store card build ${widget.storeData.id}');
     return GestureDetector(
       onTap: () {
         if (widget.storeData.id != 0) {
