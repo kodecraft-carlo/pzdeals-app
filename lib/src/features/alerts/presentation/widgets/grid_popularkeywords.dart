@@ -15,10 +15,50 @@ class PopularKeywordsGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final keywordState = ref.watch(keywordsProvider);
+    final popularKeywords =
+        ref.watch(keywordsProvider.select((value) => value.popularKeywords));
     double screenWidth = MediaQuery.of(context).size.width;
     double itemWidth = screenWidth / 3;
-    final List<KeywordData> keywordsdata = keywordState.popularKeywords;
+    final List<KeywordData> keywordsdata = popularKeywords;
+    if (popularKeywords.isEmpty && !ref.watch(keywordsProvider).isLoading) {
+      return SizedBox(
+        height: 200,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'No popular keywords found.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+            ),
+            const SizedBox(height: Sizes.spaceBetweenContentSmall),
+            FilledButton(
+                onPressed: () {
+                  ref.read(keywordsProvider).loadPopularKeywords();
+                },
+                style: ButtonStyle(
+                    backgroundColor:
+                        const MaterialStatePropertyAll(PZColors.pzOrange),
+                    shape: MaterialStateProperty.all<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        Sizes.buttonBorderRadius,
+                      ),
+                    ))),
+                child: const Text(
+                  'Refresh',
+                ))
+          ],
+        ),
+      );
+    }
+    if (ref.watch(keywordsProvider).isLoading && popularKeywords.isEmpty) {
+      return const SizedBox(
+        height: 200,
+        child: Center(child: CircularProgressIndicator.adaptive()),
+      );
+    }
     return GridView.builder(
       padding: const EdgeInsets.symmetric(vertical: Sizes.paddingAllSmall),
       shrinkWrap: true,
@@ -52,9 +92,27 @@ class PopularKeywordsCard extends ConsumerStatefulWidget {
 class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
   bool _isAdded = false;
 
+  void addKeyword(KeywordData keywordData, BuildContext context) {
+    if (ref
+        .read(keywordsProvider)
+        .addKeywordLocally(widget.keywordData, 'popular')) {
+      setState(() {
+        _isAdded = true;
+      });
+
+      showSnackbarWithMessage(context, 'Keyword added');
+      Future.delayed(const Duration(seconds: 1), () {
+        setState(() {
+          _isAdded = false;
+        });
+      });
+    } else {
+      showSnackbarWithMessage(context, 'Keyword already exists');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final keywordState = ref.watch(keywordsProvider);
     return Container(
       clipBehavior: Clip.hardEdge,
       padding: const EdgeInsets.all(Sizes.paddingAllSmall / 3),
@@ -71,21 +129,10 @@ class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
         children: [
           GestureDetector(
             onTap: () {
-              if (keywordState.addKeywordLocally(
-                  widget.keywordData, 'popular')) {
-                setState(() {
-                  _isAdded = true;
-                });
-
-                showSnackbarWithMessage(context, 'Keyword added');
-                Future.delayed(const Duration(seconds: 1), () {
-                  setState(() {
-                    _isAdded = false;
-                  });
-                });
-              } else {
-                showSnackbarWithMessage(context, 'Keyword already exists');
-              }
+              addKeyword(widget.keywordData, context);
+              // setState(() {
+              //   _isAdded = !_isAdded;
+              // });
             },
             child: Align(
                 alignment: Alignment.topRight,

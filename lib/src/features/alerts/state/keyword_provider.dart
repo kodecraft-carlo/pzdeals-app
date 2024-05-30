@@ -13,6 +13,9 @@ class KeywordsNotifier extends ChangeNotifier {
   Ref ref;
   KeywordsNotifier(this.ref) : super() {
     setUserUID();
+    if (ref.watch(authUserDataProvider).userData != null) {
+      loadSavedKeywords();
+    }
   }
   String _boxName = '';
   final String _boxNamePopular = 'popular_keywords';
@@ -154,6 +157,7 @@ class KeywordsNotifier extends ChangeNotifier {
   }
 
   bool addKeywordLocally(KeywordData keyword, String addType) {
+    debugPrint('addKeywordLocally called with ${keyword.keyword}');
     if (_savedkeywords.any((data) =>
         data.keyword.trim().toLowerCase() ==
         keyword.keyword.trim().toLowerCase())) {
@@ -169,6 +173,8 @@ class KeywordsNotifier extends ChangeNotifier {
         _popularKeywords.removeWhere((data) =>
             data.keyword.toLowerCase() == keyword.keyword.toLowerCase());
         _popularKeywords = _popularKeywords.toSet().toList();
+        _keywordService.removeKeywordFromCacheByKeywordName(
+            keyword.keyword, _boxNamePopular);
       }
       notifyListeners();
     });

@@ -6,8 +6,19 @@ import 'package:pzdeals/src/features/alerts/presentation/screens/screen_alerts_m
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
-class DealAlertsScreen extends StatelessWidget {
+class DealAlertsScreen extends StatefulWidget {
   const DealAlertsScreen({super.key});
+  @override
+  DealAlertsScreenState createState() => DealAlertsScreenState();
+}
+
+class DealAlertsScreenState extends State<DealAlertsScreen> {
+  final GlobalKey<AlertsManagementScreenState> globalKeyAlertsManagementScreen =
+      GlobalKey<AlertsManagementScreenState>();
+
+  void scrollToTop() {
+    globalKeyAlertsManagementScreen.currentState?.scrollToTop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +35,8 @@ class DealAlertsScreen extends StatelessWidget {
                             initialPageIndex: 0,
                           )));
             },
-            child: const AlertsManagementScreen());
+            child:
+                AlertsManagementScreen(key: globalKeyAlertsManagementScreen));
       } else {
         return const LoginRequiredScreen(
           hasCloseButton: false,

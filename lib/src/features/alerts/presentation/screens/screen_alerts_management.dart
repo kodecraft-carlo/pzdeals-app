@@ -3,8 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/common_widgets/textfield_button.dart';
-import 'package:pzdeals/src/constants/color_constants.dart';
-import 'package:pzdeals/src/constants/sizes.dart';
+import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/grid_popularkeywords.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/index.dart';
@@ -15,13 +14,15 @@ class AlertsManagementScreen extends ConsumerStatefulWidget {
   const AlertsManagementScreen({super.key});
 
   @override
-  _AlertsManagementScreenState createState() => _AlertsManagementScreenState();
+  AlertsManagementScreenState createState() => AlertsManagementScreenState();
 }
 
-class _AlertsManagementScreenState
+class AlertsManagementScreenState
     extends ConsumerState<AlertsManagementScreen> {
   TextEditingController textController = TextEditingController();
   ScrollController scrollController = ScrollController(keepScrollOffset: true);
+  final GlobalKey<NestedScrollViewState> _nestedScrollViewKey =
+      GlobalKey<NestedScrollViewState>();
   bool isEditMode = false;
   // bool _showMore = false;
 
@@ -30,7 +31,7 @@ class _AlertsManagementScreenState
     super.initState();
     // filteredStores = [];
     Future(() {
-      ref.read(keywordsProvider).loadSavedKeywords();
+      // ref.read(keywordsProvider).loadSavedKeywords();
       ref.read(keywordsProvider).loadPopularKeywords();
     });
   }
@@ -49,6 +50,22 @@ class _AlertsManagementScreenState
     }
   }
 
+  void scrollToTop() {
+    debugPrint('scrollToTop alerts');
+    _nestedScrollViewKey.currentState?.innerController.animateTo(
+      0.0, // Scroll to the top of the list
+      duration:
+          const Duration(milliseconds: 300), // Adjust the duration as needed
+      curve: Curves.easeInOut, // Adjust the curve as needed
+    );
+    _nestedScrollViewKey.currentState?.outerController.animateTo(
+      0.0, // Scroll to the top of the list
+      duration:
+          const Duration(milliseconds: 300), // Adjust the duration as needed
+      curve: Curves.easeInOut, // Adjust the curve as needed
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final savedKeywordData =
@@ -58,12 +75,16 @@ class _AlertsManagementScreenState
     //     _showMore = scrollController.position.maxScrollExtent > 0;
     //   });
     // });
+    if (savedKeywordData.isEmpty) {
+      isEditMode = false;
+    }
     debugPrint('screen alerts management build');
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: NestedScrollView(
+          key: _nestedScrollViewKey,
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               SliverToBoxAdapter(
@@ -255,7 +276,7 @@ class _AlertsManagementScreenState
                               fontWeight: FontWeight.w600,
                               color: PZColors.pzBlack)),
                       Text(
-                        "Toggle on category to get notified on new category deals",
+                        Wordings.descCategoryAlerts,
                         style: TextStyle(
                             fontSize: Sizes.bodyFontSize,
                             fontWeight: FontWeight.w400,

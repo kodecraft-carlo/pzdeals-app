@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/src/actions/material_navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/search_cancel.dart';
 import 'package:pzdeals/src/common_widgets/search_field.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/chips_saved_keywords.dart';
+import 'package:pzdeals/src/features/alerts/state/keyword_provider.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_search_result.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/search_discovery.dart';
 import 'package:pzdeals/src/features/deals/state/provider_search.dart';
@@ -88,7 +88,8 @@ class SearchDealScreenState extends ConsumerState<SearchDealScreen> {
           LayoutBuilder(
             builder: (context, constraints) {
               final authUserDataState = ref.watch(authUserDataProvider);
-              if (authUserDataState.isAuthenticated == true) {
+              if (authUserDataState.isAuthenticated == true &&
+                  ref.read(keywordsProvider).savedkeywords.isNotEmpty) {
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 8),

@@ -2,15 +2,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/alerts/alerts.dart';
+import 'package:pzdeals/src/features/alerts/presentation/screens/screen_alerts_management.dart';
 import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/product_deal_description.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/more/more.dart';
 import 'package:pzdeals/src/features/notifications/notifications.dart';
+import 'package:pzdeals/src/features/notifications/presentation/screens/notifications_display.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/features/stores/stores.dart';
@@ -37,6 +40,11 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   FetchProductDealService productDealService = FetchProductDealService();
   final GlobalKey<DealsTabControllerWidgetState> dealsKey =
       GlobalKey<DealsTabControllerWidgetState>();
+  final GlobalKey<StoresWidgetState> storesKey = GlobalKey<StoresWidgetState>();
+  final GlobalKey<NotificationScreenState> notificationKey =
+      GlobalKey<NotificationScreenState>();
+  final GlobalKey<DealAlertsScreenState> alertsKey =
+      GlobalKey<DealAlertsScreenState>();
   late List<Widget> _pages;
   // @override
   // void didChangeDependencies() {
@@ -131,9 +139,9 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
             }
           },
           child: DealsTabControllerWidget(key: dealsKey)),
-      const StoresWidget(),
-      const NotificationScreen(),
-      const DealAlertsScreen(),
+      StoresWidget(key: storesKey),
+      NotificationScreen(key: notificationKey),
+      DealAlertsScreen(key: alertsKey),
       MoreScreen()
     ];
   }
@@ -172,6 +180,21 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
         ),
       );
     });
+  }
+
+  void scrollChildrenToTop() {
+    if (currentPageIndex == 0) {
+      dealsKey.currentState?.scrollToTop();
+    }
+    if (currentPageIndex == 1) {
+      storesKey.currentState?.scrollToTop();
+    }
+    if (currentPageIndex == 2) {
+      notificationKey.currentState?.scrollToTop();
+    }
+    if (currentPageIndex == 3) {
+      alertsKey.currentState?.scrollToTop();
+    }
   }
 
   Future<ProductDealcardData> loadProduct(int productId) async {
@@ -238,118 +261,124 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Container(
-          height: 65,
-          decoration: BoxDecoration(
-            boxShadow: [
-              //borderside at the top if platform is ios and box shadow if platform is android
-              if (Theme.of(context).platform == TargetPlatform.android)
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-            ],
-            border: Theme.of(context).platform == TargetPlatform.iOS
-                ? const Border(
-                    top: BorderSide(color: Colors.black12, width: 0.5))
-                : null,
-          ),
-          child: Theme(
-            data: ThemeData(
-                fontFamily: 'Poppins',
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent),
-            child: SizedBox(
+    return CustomScaffoldWidget(
+        scaffold: Scaffold(
+          bottomNavigationBar: SafeArea(
+            top: false,
+            child: Container(
               height: 65,
-              child: SafeArea(
-                  child: BottomNavigationBar(
-                currentIndex: currentPageIndex,
-                elevation: 0,
-                onTap: destinationSelected,
-                selectedItemColor: Colors.black87,
-                unselectedItemColor: Colors.black54,
-                selectedIconTheme:
-                    const IconThemeData(size: 25, color: Colors.black87),
-                unselectedIconTheme:
-                    const IconThemeData(size: 25, color: Colors.black54),
-                selectedLabelStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-                showSelectedLabels: true,
-                showUnselectedLabels: true,
-                enableFeedback: true,
-                type: BottomNavigationBarType.fixed,
-                backgroundColor: Colors.white,
-                items: [
-                  BottomNavigationBarItem(
-                    icon: currentPageIndex == 0
-                        ? const Icon(Icons.local_offer_rounded)
-                        : const Icon(Icons.local_offer_outlined),
-                    label: 'Deals',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: currentPageIndex == 1
-                        ? const Icon(Icons.store_rounded)
-                        : const Icon(Icons.store_outlined),
-                    label: 'Stores',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: badges.Badge(
-                      showBadge:
-                          ref.watch(notificationsProvider).unreadCount > 0,
-                      badgeContent: Text(
-                        ref.watch(notificationsProvider).unreadCount.toString(),
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 10),
-                      ),
-                      position: badges.BadgePosition.topEnd(top: -9, end: -20),
-                      badgeStyle: const badges.BadgeStyle(
-                        badgeColor: PZColors.pzOrange,
-                        elevation: 0,
-                      ),
-                      badgeAnimation: const badges.BadgeAnimation.fade(
-                        animationDuration: Duration(milliseconds: 200),
-                        colorChangeAnimationDuration:
-                            Duration(milliseconds: 200),
-                        loopAnimation: false,
-                        curve: Curves.fastOutSlowIn,
-                        colorChangeAnimationCurve: Curves.easeInCubic,
-                      ),
-                      child: currentPageIndex == 2
-                          ? const Icon(Icons.notifications_active_rounded)
-                          : const Icon(Icons.notifications_outlined),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  //borderside at the top if platform is ios and box shadow if platform is android
+                  if (Theme.of(context).platform == TargetPlatform.android)
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
-                    label: 'Notification',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: currentPageIndex == 3
-                        ? const Icon(Icons.campaign_rounded)
-                        : const Icon(Icons.campaign_outlined),
-                    label: 'Deal Alert',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: currentPageIndex == 4
-                        ? const Icon(Icons.more_horiz)
-                        : const Icon(Icons.more_horiz),
-                    label: 'More',
-                  ),
                 ],
-              )),
+                border: Theme.of(context).platform == TargetPlatform.iOS
+                    ? const Border(
+                        top: BorderSide(color: Colors.black12, width: 0.5))
+                    : null,
+              ),
+              child: Theme(
+                data: ThemeData(
+                    fontFamily: 'Poppins',
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent),
+                child: SizedBox(
+                  height: 65,
+                  child: SafeArea(
+                      child: BottomNavigationBar(
+                    currentIndex: currentPageIndex,
+                    elevation: 0,
+                    onTap: destinationSelected,
+                    selectedItemColor: Colors.black87,
+                    unselectedItemColor: Colors.black54,
+                    selectedIconTheme:
+                        const IconThemeData(size: 25, color: Colors.black87),
+                    unselectedIconTheme:
+                        const IconThemeData(size: 25, color: Colors.black54),
+                    selectedLabelStyle: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    unselectedLabelStyle: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    showSelectedLabels: true,
+                    showUnselectedLabels: true,
+                    enableFeedback: true,
+                    type: BottomNavigationBarType.fixed,
+                    backgroundColor: Colors.white,
+                    items: [
+                      BottomNavigationBarItem(
+                        icon: currentPageIndex == 0
+                            ? const Icon(Icons.local_offer_rounded)
+                            : const Icon(Icons.local_offer_outlined),
+                        label: 'Deals',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: currentPageIndex == 1
+                            ? const Icon(Icons.store_rounded)
+                            : const Icon(Icons.store_outlined),
+                        label: 'Stores',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: badges.Badge(
+                          showBadge:
+                              ref.watch(notificationsProvider).unreadCount > 0,
+                          badgeContent: Text(
+                            ref
+                                .watch(notificationsProvider)
+                                .unreadCount
+                                .toString(),
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 10),
+                          ),
+                          position:
+                              badges.BadgePosition.topEnd(top: -9, end: -20),
+                          badgeStyle: const badges.BadgeStyle(
+                            badgeColor: PZColors.pzOrange,
+                            elevation: 0,
+                          ),
+                          badgeAnimation: const badges.BadgeAnimation.fade(
+                            animationDuration: Duration(milliseconds: 200),
+                            colorChangeAnimationDuration:
+                                Duration(milliseconds: 200),
+                            loopAnimation: false,
+                            curve: Curves.fastOutSlowIn,
+                            colorChangeAnimationCurve: Curves.easeInCubic,
+                          ),
+                          child: currentPageIndex == 2
+                              ? const Icon(Icons.notifications_active_rounded)
+                              : const Icon(Icons.notifications_outlined),
+                        ),
+                        label: 'Notification',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: currentPageIndex == 3
+                            ? const Icon(Icons.campaign_rounded)
+                            : const Icon(Icons.campaign_outlined),
+                        label: 'Deal Alert',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: currentPageIndex == 4
+                            ? const Icon(Icons.more_horiz)
+                            : const Icon(Icons.more_horiz),
+                        label: 'More',
+                      ),
+                    ],
+                  )),
+                ),
+              ),
             ),
           ),
+          body: SafeArea(child: _pages[currentPageIndex]),
         ),
-      ),
-      body: SafeArea(child: _pages[currentPageIndex]),
-    );
+        scrollAction: scrollChildrenToTop);
   }
 }

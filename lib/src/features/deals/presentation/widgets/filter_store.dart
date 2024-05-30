@@ -149,7 +149,7 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
       cacheKey: Key(imageUrl.trim()).toString(),
       height: 30,
       errorWidget: (context, url, error) {
-        debugPrint('Error loading image: $error');
+        debugPrint('CachedNetworkImage error loading image: $error');
         if (isSvgImage(imageUrl)) {
           try {
             return SvgPicture.network(
@@ -157,8 +157,9 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
               fit: BoxFit.contain,
               height: 30,
             );
-          } catch (e) {
+          } catch (e, stackTrace) {
             debugPrint('Error loading image: $e');
+            debugPrint('Error loading image: $stackTrace');
             return Image.asset(
               'assets/images/pzdeals.png',
               fit: BoxFit.fitHeight,

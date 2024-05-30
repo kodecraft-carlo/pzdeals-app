@@ -13,13 +13,15 @@ class StoresWidget extends ConsumerStatefulWidget {
   const StoresWidget({super.key});
 
   @override
-  _StoresWidgetState createState() => _StoresWidgetState();
+  StoresWidgetState createState() => StoresWidgetState();
 }
 
-class _StoresWidgetState extends ConsumerState<StoresWidget> {
+class StoresWidgetState extends ConsumerState<StoresWidget> {
   final searchController = TextEditingController();
   final _scrollController = ScrollController();
   final _debouncer = Debouncer(delay: const Duration(milliseconds: 300));
+  final GlobalKey<NestedScrollViewState> globalKeyStoresNestedScroll =
+      GlobalKey<NestedScrollViewState>();
 
   final StoreData pzDeals = StoreData(
       id: 0,
@@ -44,6 +46,21 @@ class _StoresWidgetState extends ConsumerState<StoresWidget> {
     super.dispose();
   }
 
+  void scrollToTop() {
+    globalKeyStoresNestedScroll.currentState?.innerController.animateTo(
+      0.0, // Scroll to the top of the list
+      duration:
+          const Duration(milliseconds: 300), // Adjust the duration as needed
+      curve: Curves.easeInOut, // Adjust the curve as needed
+    );
+    globalKeyStoresNestedScroll.currentState?.outerController.animateTo(
+      0.0, // Scroll to the top of the list
+      duration:
+          const Duration(milliseconds: 300), // Adjust the duration as needed
+      curve: Curves.easeInOut, // Adjust the curve as needed
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     debugPrint('store screen build');
@@ -60,6 +77,7 @@ class _StoresWidgetState extends ConsumerState<StoresWidget> {
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: NestedScrollView(
+            key: globalKeyStoresNestedScroll,
             controller: _scrollController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [

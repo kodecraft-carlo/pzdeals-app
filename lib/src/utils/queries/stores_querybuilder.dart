@@ -9,6 +9,8 @@ String getStoreCollectionQuery(int pageNumber) {
       '&fields[]=body'
       '&fields[]=tags.tags_id.tag_name'
       '&fields[]=handle'
+      '&fields[]=store_img'
+      '&fields[]=local_app_store_img'
       '&sort[]=title'
       '&limit=200'
       '&page=$pageNumber';

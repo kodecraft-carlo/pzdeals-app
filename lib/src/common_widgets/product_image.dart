@@ -95,6 +95,8 @@ class ProductImageWidget extends StatelessWidget {
           imageUrl: imageAsset,
           width: width,
           height: height,
+          memCacheHeight: 400,
+          memCacheWidth: 400,
           // memCacheHeight: height.toInt(),
           // memCacheWidth: width.toInt(),
           cacheManager: networkImageCacheManager,

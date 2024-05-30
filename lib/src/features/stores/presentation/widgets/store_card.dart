@@ -10,10 +10,10 @@ class StoreCardWidget extends StatefulWidget {
   final StoreData storeData;
   const StoreCardWidget({super.key, required this.storeData});
   @override
-  _StoreCardWidgetState createState() => _StoreCardWidgetState();
+  StoreCardWidgetState createState() => StoreCardWidgetState();
 }
 
-class _StoreCardWidgetState extends State<StoreCardWidget> {
+class StoreCardWidgetState extends State<StoreCardWidget> {
   @override
   Widget build(BuildContext context) {
     // debugPrint('store card build ${widget.storeData.id}');
@@ -97,10 +97,10 @@ class StoreIcon extends StatefulWidget {
   const StoreIcon({super.key, required this.storeData});
   final StoreData storeData;
   @override
-  _StoreIconState createState() => _StoreIconState();
+  StoreIconState createState() => StoreIconState();
 }
 
-class _StoreIconState extends State<StoreIcon> {
+class StoreIconState extends State<StoreIcon> {
   late ImageProvider imageProvider;
   double width = 80;
   double height = 80;
@@ -136,36 +136,34 @@ class _StoreIconState extends State<StoreIcon> {
     );
 
     if (widget.storeData.assetSourceType == 'network') {
-      if (_isSvgImage(widget.storeData.storeAssetImage)) {
-        imageWidget = SvgPicture.network(
-          widget.storeData.storeAssetImage,
-          width: width,
-          height: height,
-        );
-      } else {
-        imageWidget = CachedNetworkImage(
-          imageUrl:
-              widget.storeData.appStoreImg ?? widget.storeData.storeAssetImage,
-          width: width,
-          cacheManager: networkImageCacheManager,
-          height: height,
-          fadeInDuration: const Duration(milliseconds: 10),
-          fit: BoxFit.fitWidth,
-          errorWidget: (context, url, error) {
-            if (widget.storeData.storeAssetImage.isNotEmpty) {
-              return CachedNetworkImage(
-                imageUrl: widget.storeData.storeAssetImage,
-                fadeInDuration: const Duration(milliseconds: 10),
-                width: width,
-                height: height,
-                cacheManager: networkImageCacheManager,
-                fit: BoxFit.fitWidth,
-                errorWidget: (context, url, error) => defaultImage(),
-              );
-            }
-            return defaultImage();
-          },
-        );
+      try {
+        if (_isSvgImage(widget.storeData.storeAssetImage)) {
+          debugPrint('is svg image: ${widget.storeData.storeAssetImage}');
+          imageWidget = SvgPicture.network(
+            widget.storeData.storeAssetImage,
+            width: width,
+            height: height,
+          );
+        } else {
+          imageWidget = CachedNetworkImage(
+            imageUrl: widget.storeData.storeAssetImage,
+            width: width,
+            cacheManager: networkImageCacheManager,
+            height: height,
+            memCacheHeight: 300,
+            memCacheWidth: 300,
+            fadeInDuration: const Duration(milliseconds: 10),
+            fit: BoxFit.fitWidth,
+            errorWidget: (context, url, error) {
+              return defaultImage();
+            },
+          );
+        }
+      } catch (e, stackTrace) {
+        debugPrint(
+            'Error loading image: $e ~ ${widget.storeData.storeAssetImage}');
+        debugPrint('Error loading image: $stackTrace');
+        return defaultImage();
       }
     }
     return imageWidget;

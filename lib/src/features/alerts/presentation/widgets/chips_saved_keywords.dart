@@ -23,18 +23,19 @@ class ChipSavedKeywordsState extends ConsumerState<ChipSavedKeywords> {
   @override
   void initState() {
     super.initState();
-    Future(() {
-      ref.read(keywordsProvider).loadSavedKeywords();
-    });
+    // Future(() {
+    //   ref.read(keywordsProvider).loadSavedKeywords();
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    final keywordState = ref.watch(keywordsProvider);
+    final savedKeywords =
+        ref.watch(keywordsProvider.select((value) => value.savedkeywords));
     return Wrap(
       alignment: WrapAlignment.start,
       spacing: 5.0,
-      children: keywordState.savedkeywords.map(
+      children: savedKeywords.map(
         (KeywordData keyword) {
           return InputChip(
             key: ValueKey('InputChip${keyword.keyword}'),
@@ -87,7 +88,7 @@ class ChipSavedKeywordsState extends ConsumerState<ChipSavedKeywords> {
                 ? () {
                     debugPrint(
                         'Removing keyword: ${keyword.keyword} ~ ${keyword.id}');
-                    keywordState.removeKeywordLocally(keyword);
+                    ref.read(keywordsProvider).removeKeywordLocally(keyword);
                     // showSnackbarWithMessage(context, 'Keyword removed');
                   }
                 : null,

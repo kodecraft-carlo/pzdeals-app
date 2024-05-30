@@ -16,6 +16,7 @@ class CouponCodeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        HapticFeedback.lightImpact();
         Clipboard.setData(ClipboardData(text: text));
         showSnackbarWithMessage(buildcontext ?? context, 'Coupon code copied');
         if (url != null && url != '') openBrowser(url!);

@@ -5,6 +5,7 @@ String getStoresQuery(int pageNumber) {
       '?fields[]=id'
       '&fields[]=title'
       '&fields[]=image_src'
+      '&fields[]=store_img'
       '&fields[]=tags.tags_id.tag_name'
       '&fields[]=handle'
       '&sort[]=title'

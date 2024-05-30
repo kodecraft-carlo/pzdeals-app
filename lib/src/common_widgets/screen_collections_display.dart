@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/constants/index.dart';
@@ -218,39 +219,41 @@ class CollectionDisplayScreenWidgetState
         ],
       );
     }
-    return Scaffold(
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: GestureDetector(
-            onTap: () {
-              scrollToTop();
-            },
-            child: AppBar(
-              title: Text(
-                widget.collectionTitle != ''
-                    ? widget.collectionTitle == 'Toys Deals'
-                        ? 'Toy Deals'
-                        : widget.collectionTitle
-                    : paramcollectionName,
-                style: const TextStyle(
-                  color: PZColors.pzBlack,
-                  fontWeight: FontWeight.w700,
-                  fontSize: Sizes.appBarFontSize,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              centerTitle: true,
-              surfaceTintColor: PZColors.pzWhite,
-              backgroundColor: PZColors.pzWhite,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new),
-                onPressed: () {
-                  Navigator.of(context).pop();
+    return CustomScaffoldWidget(
+        scaffold: Scaffold(
+          appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(kToolbarHeight),
+              child: GestureDetector(
+                onTap: () {
+                  scrollToTop();
                 },
-              ),
-            ),
-          )),
-      body: body,
-    );
+                child: AppBar(
+                  title: Text(
+                    widget.collectionTitle != ''
+                        ? widget.collectionTitle == 'Toys Deals'
+                            ? 'Toy Deals'
+                            : widget.collectionTitle
+                        : paramcollectionName,
+                    style: const TextStyle(
+                      color: PZColors.pzBlack,
+                      fontWeight: FontWeight.w700,
+                      fontSize: Sizes.appBarFontSize,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  centerTitle: true,
+                  surfaceTintColor: PZColors.pzWhite,
+                  backgroundColor: PZColors.pzWhite,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              )),
+          body: body,
+        ),
+        scrollAction: scrollToTop);
   }
 }

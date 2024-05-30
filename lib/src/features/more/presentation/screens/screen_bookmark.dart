@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/main.dart';
+import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/screens/screen_login_required.dart';
@@ -139,37 +140,39 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
     }
 
     return authUserDataState.isAuthenticated
-        ? Scaffold(
-            appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(kToolbarHeight),
-              child: GestureDetector(
-                onTap: () {
-                  scrollToTop();
-                },
-                child: AppBar(
-                  title: const Text(
-                    'Bookmarked Deals',
-                    style: TextStyle(
-                      color: PZColors.pzBlack,
-                      fontWeight: FontWeight.w700,
-                      fontSize: Sizes.appBarFontSize,
+        ? CustomScaffoldWidget(
+            scaffold: Scaffold(
+              appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(kToolbarHeight),
+                child: GestureDetector(
+                  onTap: () {
+                    scrollToTop();
+                  },
+                  child: AppBar(
+                    title: const Text(
+                      'Bookmarked Deals',
+                      style: TextStyle(
+                        color: PZColors.pzBlack,
+                        fontWeight: FontWeight.w700,
+                        fontSize: Sizes.appBarFontSize,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  centerTitle: true,
-                  surfaceTintColor: PZColors.pzWhite,
-                  backgroundColor: PZColors.pzWhite,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+                    centerTitle: true,
+                    surfaceTintColor: PZColors.pzWhite,
+                    backgroundColor: PZColors.pzWhite,
+                    leading: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
                   ),
                 ),
               ),
+              body: body,
             ),
-            body: body,
-          )
+            scrollAction: scrollToTop)
         : const LoginRequiredScreen(
             message: "Login to unlock amazing ${Wordings.appName} features!",
           );

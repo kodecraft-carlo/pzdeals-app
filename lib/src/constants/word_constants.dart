@@ -8,4 +8,6 @@ class Wordings {
       'Handpicked deals with the biggest discounts, that are upvoted by our community.';
   static const String descStoreScreen =
       'Every coupon and sale from across the web, all curated and updated daily at your fingertips.';
+  static const String descCategoryAlerts =
+      "Select if you would like to get notified on all deals from a specific category.";
 }

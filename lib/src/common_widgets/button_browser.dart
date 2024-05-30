@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
@@ -22,6 +23,7 @@ class OpenBrowserButton extends StatelessWidget {
               backgroundColor: PZColors.pzGreen,
               elevation: Sizes.buttonElevation),
           onPressed: () {
+            HapticFeedback.mediumImpact();
             openBrowser(url);
           },
           child: Text(

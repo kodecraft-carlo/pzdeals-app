@@ -23,6 +23,10 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
   String productid = '';
   String notifId = '';
 
+  void scrollToTop() {
+    notificationDisplayKey.currentState!.scrollToTop();
+  }
+
   GlobalKey<NotificationsDisplayState> notificationDisplayKey =
       GlobalKey<NotificationsDisplayState>();
   @override
