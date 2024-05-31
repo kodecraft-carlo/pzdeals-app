@@ -96,7 +96,7 @@ class NotificationDealsNotifier extends ChangeNotifier {
       searchQuery =
           '${searchPercentageProductQuery(pageNumber)}&price_percentage_gt=$searchKey';
     } else if (_dealType == 'keyword') {
-      searchQuery = searchProductQuery(_searchKey, pageNumber);
+      searchQuery = searchProductQuery(_searchKey, pageNumber, searchKey);
     }
 
     return searchQuery;

@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:pzdeals/src/models/index.dart';
+import 'package:pzdeals/src/utils/formatter/index.dart';
 import 'package:pzdeals/src/utils/http/http_client.dart';
 
 class NotificationService {
@@ -20,7 +21,7 @@ class NotificationService {
     });
   }
 
-  Future<List<DocumentSnapshot>> getInitialNotifications(String boxName) async {
+  Future<List<NotificationData>> getInitialNotifications(String boxName) async {
     try {
       if (user != null) {
         debugPrint('getInitialNotifications: User is logged in ~ ${user?.uid}');
@@ -34,8 +35,18 @@ class NotificationService {
         if (snapshot.docs.isNotEmpty) {
           debugPrint(
               'getInitialNotifications: ${snapshot.docs.length} notifications');
-          // _cacheNotifications(snapshot.docs, boxName);
-          return snapshot.docs;
+          _cacheNotifications(snapshot.docs, boxName);
+          return snapshot.docs
+              .map((doc) => NotificationData(
+                    id: doc["id"],
+                    title: doc["title"],
+                    body: doc["body"],
+                    timestamp: timestampToDateTime(doc["timestamp"]),
+                    isRead: doc["isRead"] as bool,
+                    data: doc["data"],
+                    imageUrl: doc["imageUrl"],
+                  ))
+              .toList();
         } else {
           debugPrint('getInitialNotifications: No notifications found');
         }
@@ -50,7 +61,7 @@ class NotificationService {
     throw Exception('getInitialNotifications error');
   }
 
-  Future<List<DocumentSnapshot>> getMoreNotifications(
+  Future<List<NotificationData>> getMoreNotifications(
       String boxName, DocumentSnapshot lastDoc) async {
     try {
       if (user != null) {
@@ -64,7 +75,17 @@ class NotificationService {
             .get();
         if (snapshot.docs.isNotEmpty) {
           // _cacheNotifications(snapshot.docs, boxName);
-          return snapshot.docs;
+          return snapshot.docs
+              .map((doc) => NotificationData(
+                    id: doc["id"],
+                    title: doc["title"],
+                    body: doc["body"],
+                    timestamp: timestampToDateTime(doc["timestamp"]),
+                    isRead: doc["isRead"] as bool,
+                    data: doc["data"],
+                    imageUrl: doc["imageUrl"],
+                  ))
+              .toList();
         }
         return [];
       } else {
@@ -362,10 +383,55 @@ class NotificationService {
   Future<void> _cacheNotifications(
       List<DocumentSnapshot> notifications, String boxName) async {
     debugPrint("Caching notifications for $boxName");
-    final box = await Hive.openBox<DocumentSnapshot>(boxName);
-    await box.clear(); // Clear existing cache
-    for (final notif in notifications) {
-      box.put(notif['id'], notif);
+    List<NotificationData> notifications0 = notifications
+        .map((doc) => NotificationData(
+              id: doc["id"],
+              title: doc["title"],
+              body: doc["body"],
+              timestamp: timestampToDateTime(doc["timestamp"]),
+              isRead: doc["isRead"] as bool,
+              data: doc["data"],
+              imageUrl: doc["imageUrl"],
+            ))
+        .toList();
+    Box<NotificationData> box;
+    if (Hive.isBoxOpen(boxName)) {
+      box = Hive.box<NotificationData>(boxName);
+    } else {
+      box = await Hive.openBox<NotificationData>(boxName);
+    }
+    await box.clear();
+    box.addAll(notifications0);
+  }
+
+  Future<List<NotificationData>> getNotificationFromCache(
+      String boxName) async {
+    debugPrint("getNotificationFromCache called for $boxName");
+    Box<NotificationData> box;
+    if (Hive.isBoxOpen(boxName)) {
+      box = Hive.box<NotificationData>(boxName);
+    } else {
+      box = await Hive.openBox<NotificationData>(boxName);
+    }
+    List<NotificationData> cachedNotifications = box.values.toList();
+    return cachedNotifications;
+  }
+
+  Future removeAllNotificationFromCache(String boxName) async {
+    debugPrint("removeAllNotificationFromCache called for $boxName");
+    Box<NotificationData> box;
+    if (Hive.isBoxOpen(boxName)) {
+      box = Hive.box<NotificationData>(boxName);
+    } else {
+      box = await Hive.openBox<NotificationData>(boxName);
+    }
+    try {
+      await box.clear();
+      debugPrint('All notifications have been removed from the box.');
+    } catch (e) {
+      debugPrint('Error removing items: $e');
+    } finally {
+      await box.close();
     }
   }
 
@@ -390,6 +456,5 @@ class NotificationService {
       await box.close();
     }
   }
-
   //listen to notification changes
 }

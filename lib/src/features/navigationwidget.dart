@@ -357,13 +357,13 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
                               ? const Icon(Icons.notifications_active_rounded)
                               : const Icon(Icons.notifications_outlined),
                         ),
-                        label: 'Notification',
+                        label: 'Notifications',
                       ),
                       BottomNavigationBarItem(
                         icon: currentPageIndex == 3
                             ? const Icon(Icons.campaign_rounded)
                             : const Icon(Icons.campaign_outlined),
-                        label: 'Deal Alert',
+                        label: 'Deal Alerts',
                       ),
                       BottomNavigationBarItem(
                         icon: currentPageIndex == 4

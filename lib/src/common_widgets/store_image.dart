@@ -28,6 +28,7 @@ class StoreImageWidget extends ConsumerWidget {
         : CachedNetworkImage(
             imageUrl: storeAssetImage,
             height: imageHeight,
+            memCacheHeight: 70,
             cacheManager: networkImageCacheManager,
             fit: BoxFit.fitHeight,
             errorWidget: (context, url, error) {

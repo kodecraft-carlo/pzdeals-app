@@ -109,7 +109,10 @@ void showAlertDialog(BuildContext context, String title, String content,
                   ),
                 ),
                 CupertinoDialogAction(
-                  onPressed: onPrimaryActionPressed,
+                  onPressed: () {
+                    // Navigator.of(context).pop();
+                    onPrimaryActionPressed();
+                  },
                   child: Text(
                     primaryActionText,
                     style: TextStyle(
@@ -148,7 +151,10 @@ void showAlertDialog(BuildContext context, String title, String content,
                   ),
                 ),
                 TextButton(
-                  onPressed: onPrimaryActionPressed,
+                  onPressed: () {
+                    // Navigator.of(context).pop();
+                    onPrimaryActionPressed();
+                  },
                   child: Text(
                     primaryActionText,
                     style: const TextStyle(color: PZColors.pzOrange),

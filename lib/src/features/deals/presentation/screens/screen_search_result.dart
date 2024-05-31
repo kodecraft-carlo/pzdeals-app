@@ -173,20 +173,18 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
               Padding(
                   padding: const EdgeInsets.only(right: Sizes.paddingRight),
                   child: GestureDetector(
-                    onTap: searchState.products.isNotEmpty
-                        ? () {
-                            if (!searchFilterState.isFilterApplied) {
-                              ref.read(searchFilterProvider).resetFilter();
-                            }
-                            showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                enableDrag: true,
-                                showDragHandle: true,
-                                useSafeArea: true,
-                                builder: (context) => buildSheet(context));
-                          }
-                        : null,
+                    onTap: () {
+                      if (!searchFilterState.isFilterApplied) {
+                        ref.read(searchFilterProvider).resetFilter();
+                      }
+                      showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          enableDrag: true,
+                          showDragHandle: true,
+                          useSafeArea: true,
+                          builder: (context) => buildSheet(context));
+                    },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,

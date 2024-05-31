@@ -1,10 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/src/actions/show_snackbar.dart';
-import 'package:pzdeals/src/common_widgets/textfield_button.dart';
 import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/features/alerts/models/index.dart';
+import 'package:pzdeals/src/features/alerts/presentation/widgets/create_alert_field_button.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/grid_popularkeywords.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/list_categorytoggles.dart';
@@ -36,19 +35,19 @@ class AlertsManagementScreenState
     });
   }
 
-  void onButtonPressed() {
-    if (textController.text.isNotEmpty) {
-      if (ref.read(keywordsProvider).addKeywordLocally(
-          KeywordData(id: 0, keyword: textController.text.trim().toLowerCase()),
-          'input')) {
-        // showSnackbarWithMessage(context, 'Keyword added');
-        textController.clear();
-        SystemChannels.textInput.invokeMethod('TextInput.hide');
-      } else {
-        showSnackbarWithMessage(context, 'Keyword already exists');
-      }
-    }
-  }
+  // void onButtonPressed() {
+  //   if (textController.text.isNotEmpty) {
+  //     if (ref.read(keywordsProvider).addKeywordLocally(
+  //         KeywordData(id: 0, keyword: textController.text.trim().toLowerCase()),
+  //         'input')) {
+  //       // showSnackbarWithMessage(context, 'Keyword added');
+  //       textController.clear();
+  //       SystemChannels.textInput.invokeMethod('TextInput.hide');
+  //     } else {
+  //       showSnackbarWithMessage(context, 'Keyword already exists');
+  //     }
+  //   }
+  // }
 
   void scrollToTop() {
     debugPrint('scrollToTop alerts');
@@ -87,6 +86,140 @@ class AlertsManagementScreenState
           key: _nestedScrollViewKey,
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
+              // SliverToBoxAdapter(
+              //   child: Padding(
+              //     padding: const EdgeInsets.only(
+              //         top: Sizes.paddingTopSmall,
+              //         left: Sizes.paddingLeft,
+              //         right: Sizes.paddingRight),
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.start,
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         const Text(
+              //           "Create Deal Alert",
+              //           style: TextStyle(
+              //               fontSize: Sizes.headerFontSize,
+              //               fontWeight: FontWeight.w600,
+              //               color: PZColors.pzBlack),
+              //         ),
+              //         const Text(
+              //           "Subscribe to keyword alerts and get notified on new matching deals",
+              //           style: TextStyle(
+              //               fontSize: Sizes.bodyFontSize,
+              //               fontWeight: FontWeight.w400,
+              //               color: PZColors.pzBlack),
+              //         ),
+              //         const SizedBox(height: Sizes.spaceBetweenSectionsXL),
+              //         Row(
+              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //           children: [
+              //             const Text("Saved Keywords",
+              //                 style: TextStyle(
+              //                     fontSize: Sizes.fontSizeMedium,
+              //                     fontWeight: FontWeight.w600,
+              //                     color: PZColors.pzBlack)),
+              //             savedKeywordData.isNotEmpty
+              //                 ? GestureDetector(
+              //                     onTap: () {
+              //                       setState(() {
+              //                         isEditMode = !isEditMode;
+              //                       });
+              //                     },
+              //                     child: Text(isEditMode ? "Done" : "Edit",
+              //                         style: const TextStyle(
+              //                             fontSize: Sizes.fontSizeMedium,
+              //                             fontWeight: FontWeight.w600,
+              //                             color: PZColors.pzOrange)),
+              //                   )
+              //                 : const SizedBox.shrink()
+              //           ],
+              //         ),
+              //         const SizedBox(height: Sizes.spaceBetweenContentSmall),
+              //         savedKeywordData.isNotEmpty
+              //             ? Row(children: [
+              //                 Expanded(
+              //                     child: SizedBox(
+              //                   height: 120,
+              //                   child: RawScrollbar(
+              //                       controller: scrollController,
+              //                       thumbVisibility: true,
+              //                       child: SingleChildScrollView(
+              //                         controller: scrollController,
+              //                         child: ChipSavedKeywords(
+              //                           editMode: isEditMode
+              //                               ? EditMode.edit
+              //                               : EditMode.view,
+              //                         ),
+              //                       )),
+              //                 ))
+              //               ])
+              //             : const SizedBox(
+              //                 height: 120,
+              //                 child: Text(
+              //                   'You have no saved keywords yet.',
+              //                   style: TextStyle(
+              //                       color: PZColors.pzGrey,
+              //                       fontStyle: FontStyle.italic,
+              //                       fontSize: Sizes.fontSizeSmall),
+              //                   textAlign: TextAlign.center,
+              //                 ),
+              //               ),
+              //         const SizedBox(height: Sizes.spaceBetweenSectionsXL),
+              //         TextFieldButton(
+              //           textController: textController,
+              //           onButtonPressed: onButtonPressed,
+              //           buttonLabel: 'Create',
+              //           textFieldHint: 'Enter Keyword',
+              //           textfieldIcon: Icons.search,
+              //         ),
+              //         const SizedBox(height: Sizes.spaceBetweenSections),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+              SliverAppBar(
+                  pinned: true,
+                  backgroundColor: PZColors.pzWhite,
+                  floating: false,
+                  primary: false,
+                  forceElevated: innerBoxIsScrolled,
+                  titleSpacing: 0,
+                  automaticallyImplyLeading: false,
+                  flexibleSpace: FlexibleSpaceBar(
+                      background: Container(
+                        color: PZColors
+                            .pzWhite, // Set background color to transparent
+                      ),
+                      collapseMode: CollapseMode.pin),
+                  title: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                            left: Sizes.paddingLeft, right: Sizes.paddingRight),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Create Deal Alerts",
+                              style: TextStyle(
+                                  fontSize: Sizes.headerFontSize,
+                                  fontWeight: FontWeight.w600,
+                                  color: PZColors.pzBlack),
+                            ),
+                            Text(
+                              "Subscribe to keyword alerts and get notified on new matching deals",
+                              style: TextStyle(
+                                  fontSize: Sizes.bodyFontSize,
+                                  fontWeight: FontWeight.w400,
+                                  color: PZColors.pzBlack),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  )),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -97,21 +230,6 @@ class AlertsManagementScreenState
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Create Deal Alert",
-                        style: TextStyle(
-                            fontSize: Sizes.headerFontSize,
-                            fontWeight: FontWeight.w600,
-                            color: PZColors.pzBlack),
-                      ),
-                      const Text(
-                        "Subscribe to keyword alerts and get notified on new matching deals",
-                        style: TextStyle(
-                            fontSize: Sizes.bodyFontSize,
-                            fontWeight: FontWeight.w400,
-                            color: PZColors.pzBlack),
-                      ),
-                      const SizedBox(height: Sizes.spaceBetweenSectionsXL),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -167,18 +285,39 @@ class AlertsManagementScreenState
                               ),
                             ),
                       const SizedBox(height: Sizes.spaceBetweenSectionsXL),
-                      TextFieldButton(
-                        textController: textController,
-                        onButtonPressed: onButtonPressed,
-                        buttonLabel: 'Create',
-                        textFieldHint: 'Enter Keyword',
-                        textfieldIcon: Icons.search,
-                      ),
-                      const SizedBox(height: Sizes.spaceBetweenSections),
                     ],
                   ),
                 ),
               ),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _SliverAppBarDelegate(
+                  minHeight: 60,
+                  maxHeight: 60,
+                  child: Container(
+                    color: PZColors.pzWhite,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: Sizes.paddingTopSmall,
+                          left: Sizes.paddingLeft,
+                          right: Sizes.paddingRight),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CreateAlertFieldButton(
+                            textController: textController,
+                            buttonLabel: 'Create',
+                            textFieldHint: 'Enter Keyword',
+                            textfieldIcon: Icons.search,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
               SliverAppBar(
                 backgroundColor: PZColors.pzWhite,
                 floating: false,
@@ -216,51 +355,79 @@ class AlertsManagementScreenState
                 ),
                 titleSpacing: 0,
               ),
+              // SliverAppBar(
+              //   backgroundColor: PZColors.pzWhite,
+              //   floating: false,
+              //   pinned: true,
+              //   primary: false,
+              //   forceElevated: innerBoxIsScrolled,
+              //   automaticallyImplyLeading: false,
+              //   flexibleSpace: FlexibleSpaceBar(
+              //       background: Container(
+              //         color: PZColors
+              //             .pzWhite, // Set background color to transparent
+              //       ),
+              //       collapseMode: CollapseMode.pin),
+              //   title: TabBar(
+              //     indicatorWeight: 4,
+              //     indicatorColor: PZColors.pzOrange,
+              //     dividerColor: PZColors.pzOrange,
+              //     overlayColor: MaterialStateProperty.all(Colors.transparent),
+              //     labelStyle: const TextStyle(
+              //         fontWeight: FontWeight.bold,
+              //         color: PZColors.pzBlack,
+              //         fontFamily: 'Poppins'),
+              //     unselectedLabelStyle: const TextStyle(
+              //         fontWeight: FontWeight.bold,
+              //         color: PZColors.pzGrey,
+              //         fontFamily: 'Poppins'),
+              //     tabs: const <Widget>[
+              //       Tab(
+              //         text: 'Keyword Alerts',
+              //       ),
+              //       Tab(
+              //         text: 'Category Alerts',
+              //       ),
+              //     ],
+              //   ),
+              //   titleSpacing: 0,
+              // ),
             ];
           },
           body: TabBarView(
             // physics: const NeverScrollableScrollPhysics(),
             children: <Widget>[
-              Container(
+              SingleChildScrollView(
+                child: Container(
                   margin:
                       const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-                  child: CustomScrollView(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    slivers: <Widget>[
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: Sizes.spaceBetweenSections),
-                        sliver: SliverList(
-                          delegate: SliverChildListDelegate(
-                            <Widget>[
-                              const SizedBox(
-                                  height: Sizes.spaceBetweenSections),
-                              const Text(
-                                "Popular Keywords",
-                                style: TextStyle(
-                                  fontSize: Sizes.fontSizeMedium,
-                                  fontWeight: FontWeight.w600,
-                                  color: PZColors.pzBlack,
-                                ),
-                              ),
-                              const Text(
-                                "Click on the plus sign to subscribe",
-                                style: TextStyle(
-                                  fontSize: Sizes.bodyFontSize,
-                                  fontWeight: FontWeight.w400,
-                                  color: PZColors.pzBlack,
-                                ),
-                              ),
-                              const SizedBox(
-                                  height: Sizes.spaceBetweenSections),
-                              const PopularKeywordsGrid(),
-                            ],
-                          ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: Sizes.spaceBetweenSections),
+                      Text(
+                        "Popular Keywords",
+                        style: TextStyle(
+                          fontSize: Sizes.fontSizeMedium,
+                          fontWeight: FontWeight.w600,
+                          color: PZColors.pzBlack,
                         ),
                       ),
+                      Text(
+                        "Click on the plus sign to subscribe",
+                        style: TextStyle(
+                          fontSize: Sizes.bodyFontSize,
+                          fontWeight: FontWeight.w400,
+                          color: PZColors.pzBlack,
+                        ),
+                      ),
+                      SizedBox(height: Sizes.spaceBetweenSections),
+                      PopularKeywordsGrid(),
                     ],
-                  )),
+                  ),
+                ),
+              ),
               SingleChildScrollView(
                 child: Container(
                   margin:
@@ -295,5 +462,35 @@ class AlertsManagementScreenState
         ),
       ),
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  @override
+  double get minExtent => minHeight;
+  @override
+  double get maxExtent => max(maxHeight, minHeight);
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }

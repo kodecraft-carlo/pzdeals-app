@@ -90,6 +90,7 @@ class SquareLabeledIcon extends StatelessWidget {
         imageUrl: iconImage,
         width: width,
         cacheManager: networkImageCacheManager,
+        memCacheHeight: 200,
         fadeInDuration: const Duration(milliseconds: 10),
         height: height,
         fit: BoxFit.cover,

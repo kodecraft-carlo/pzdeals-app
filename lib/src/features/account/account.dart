@@ -31,7 +31,7 @@ class AccountWidget extends ConsumerWidget {
             fontFamily: 'Poppins'),
         tabs: const <Widget>[
           Tab(
-            text: 'Notification',
+            text: 'Notifications',
           ),
           Tab(
             text: 'Layout',

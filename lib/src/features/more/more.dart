@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/common_widgets/sliver_appbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/deals.dart';
+import 'package:pzdeals/src/features/deals/state/provider_foryou.dart';
 import 'package:pzdeals/src/features/more/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 

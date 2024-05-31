@@ -129,7 +129,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
                                   .scrollToTop();
                             },
                             child: const Text(
-                              "Notification",
+                              "Notifications",
                               style: TextStyle(
                                   fontSize: Sizes.headerFontSize,
                                   fontWeight: FontWeight.w600,
@@ -182,7 +182,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
       },
       child: RichText(
           text: const TextSpan(
-              text: 'Clear All',
+              text: 'Clear all',
               style: TextStyle(
                   fontSize: Sizes.bodyFontSize,
                   color: PZColors.pzOrange,
@@ -216,7 +216,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
               size: Sizes.smallIconSize,
             )),
             TextSpan(
-              text: 'Read (${ref.read(notificationsProvider).unreadCount})',
+              text: 'Read all(${ref.read(notificationsProvider).unreadCount})',
               style: const TextStyle(
                   fontSize: Sizes.bodyFontSize,
                   color: PZColors.pzOrange,

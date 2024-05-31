@@ -10,6 +10,8 @@ import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_collection_selection.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_foryou.dart';
+import 'package:pzdeals/src/features/deals/state/provider_foryou.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ForYouWidget extends ConsumerStatefulWidget {
@@ -103,15 +105,20 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
                         const TextSpan(text: ' '),
                         WidgetSpan(
                           child: ref.watch(tabForYouProvider.select((value) =>
-                                  value.hasSelectedCollectionsFromCache))
+                                      value.hasSelectedCollectionsFromCache)) &&
+                                  ref.watch(authUserDataProvider.select(
+                                          (value) => value.isAuthenticated)) ==
+                                      true
                               ? const CustomizeHereLink()
                               : const SizedBox.shrink(),
                         )
                       ],
                     )),
               ),
-              !ref.watch(tabForYouProvider
-                      .select((value) => value.hasSelectedCollectionsFromCache))
+              !ref.watch(tabForYouProvider.select(
+                          (value) => value.hasSelectedCollectionsFromCache)) ||
+                      !ref.watch(authUserDataProvider
+                          .select((value) => value.isAuthenticated))
                   ? const ForYouBannerWidget()
                   : const SizedBox.shrink(),
               Container(

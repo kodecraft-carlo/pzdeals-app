@@ -48,9 +48,9 @@ class SearchProductService {
 
     try {
       debugPrint(
-          'searchProductQuery w/ filters: ${searchProductQuery(searchKey, pageNumber)}$filters');
+          'searchProductQuery w/ filters: ${searchProductQuery(searchKey, pageNumber, filters)}');
       Response response = await apiClient.dio
-          .get(searchProductQuery(searchKey, pageNumber) + filters
+          .get(searchProductQuery(searchKey, pageNumber, filters)
               // options: Options(
               //   headers: {'Authorization': 'Bearer $accessToken'},
               // ),

@@ -4,9 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/category_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
+import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
 import 'package:pzdeals/src/features/deals/deals.dart';
 import 'dart:io' show Platform;
+
+import 'package:pzdeals/src/features/deals/state/provider_foryou.dart';
 
 class CollectionSelectionWidget extends ConsumerStatefulWidget {
   const CollectionSelectionWidget({super.key});
@@ -109,14 +112,17 @@ class _CollectionSelectionWidgetState
         appBar: AppBar(
           backgroundColor: PZColors.pzWhite,
           automaticallyImplyLeading: false,
-          title: const Text(
-            'Select Collection to show on \'For You\'',
-            style: TextStyle(
-              color: PZColors.pzBlack,
-              fontWeight: FontWeight.w600,
-              fontSize: Sizes.fontSizeMedium,
+          title: const FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              Wordings.descForYouSelection,
+              style: TextStyle(
+                color: PZColors.pzBlack,
+                fontWeight: FontWeight.w600,
+                fontSize: Sizes.fontSizeMedium,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
           actions: [
             foryouState.collections.isEmpty
@@ -242,6 +248,13 @@ class _GridItemWidgetState extends State<GridItemWidget>
 
   @override
   Widget build(BuildContext context) {
+    String title = '';
+    if (widget.categoryLabel.toLowerCase() == 'toys') {
+      title = 'Toy Deals';
+    } else {
+      title = '${widget.categoryLabel} Deals';
+    }
+
     return GestureDetector(
       onTap: () {
         widget.onTap();
@@ -316,8 +329,8 @@ class _GridItemWidgetState extends State<GridItemWidget>
                 height: Sizes.spaceBetweenContent,
               ),
               Text(
-                widget.categoryLabel,
-                maxLines: 1,
+                title,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,

@@ -194,7 +194,10 @@ String getCollections(String colType) {
   return query;
 }
 
-String searchProductQuery(String keyword, int pageNumber) {
+String searchProductQuery(String keyword, int pageNumber, String filters) {
+  if (filters.isEmpty) {
+    filters = '';
+  }
   String query = '/items/products'
       '?fields[]=id'
       '&fields[]=title'
@@ -216,7 +219,7 @@ String searchProductQuery(String keyword, int pageNumber) {
       '&limit=30'
       '&page=$pageNumber'
       '&filter={"_and":[{"title": { "_icontains": "${keyword.trim()}" }},'
-      '{"tag_ids":{"tags_id":{"tag_name":{"_neq":"price-mistake"}}}}]}';
+      '{"tag_ids":{"tags_id":{"tag_name":{"_neq":"price-mistake"}}}}$filters]}';
   return query;
 }
 

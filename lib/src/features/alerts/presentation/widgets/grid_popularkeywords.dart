@@ -166,6 +166,7 @@ class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
                 cacheManager: networkImageCacheManager,
                 fit: BoxFit.contain,
                 fadeInDuration: const Duration(milliseconds: 10),
+                memCacheHeight: 250,
                 errorWidget: (context, url, error) {
                   debugPrint('Error loading image: $error');
                   return Image.asset(

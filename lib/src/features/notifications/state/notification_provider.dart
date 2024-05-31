@@ -58,18 +58,9 @@ class NotificationListNotifier extends ChangeNotifier {
     _notifications.clear();
     _notifData.clear();
     try {
-      _notifData = await _notifService.getInitialNotifications(_boxName);
-      _notifications = _notifData
-          .map((doc) => NotificationData(
-                id: doc["id"],
-                title: doc["title"],
-                body: doc["body"],
-                timestamp: timestampToDateTime(doc["timestamp"]),
-                isRead: doc["isRead"] as bool,
-                data: doc["data"],
-                imageUrl: doc["imageUrl"],
-              ))
-          .toList();
+      _notifications = await _notifService.getNotificationFromCache(_boxName);
+      notifyListeners();
+      _notifications = await _notifService.getInitialNotifications(_boxName);
       getUnreadNotificationsCountFromStream(_userUID);
       notifyListeners();
     } catch (e) {
@@ -86,20 +77,15 @@ class NotificationListNotifier extends ChangeNotifier {
     _notifications.clear();
     _notifData.clear();
     try {
-      _notifData = await _notifService.getInitialNotifications(_boxName);
-      _notifications = _notifData
-          .map((doc) => NotificationData(
-                id: doc["id"],
-                title: doc["title"],
-                body: doc["body"],
-                timestamp: timestampToDateTime(doc["timestamp"]),
-                isRead: doc["isRead"] as bool,
-                data: doc["data"],
-                imageUrl: doc["imageUrl"],
-              ))
-          .toList();
-      // _unreadCount = await getUnreadNotificationsCount();
+      _notifications = await _notifService.getNotificationFromCache(_boxName);
       notifyListeners();
+
+      Future.delayed(const Duration(milliseconds: 1500), () async {
+        final serverNotifications =
+            await _notifService.getInitialNotifications(_boxName);
+        _notifications = serverNotifications;
+        notifyListeners();
+      });
     } catch (e) {
       debugPrint("error loading notifications: $e");
     } finally {
@@ -116,18 +102,7 @@ class NotificationListNotifier extends ChangeNotifier {
       DocumentSnapshot lastDocument = _notifData[_notifData.length - 1];
       final moreNotif =
           await _notifService.getMoreNotifications(_boxName, lastDocument);
-      _notifData.addAll(moreNotif);
-      _notifications.addAll(moreNotif
-          .map((doc) => NotificationData(
-                id: doc["id"],
-                title: doc["title"],
-                body: doc["body"],
-                timestamp: timestampToDateTime(doc["timestamp"]),
-                isRead: doc["isRead"] as bool,
-                data: doc["data"],
-                imageUrl: doc["imageUrl"],
-              ))
-          .toList());
+      _notifications.addAll(moreNotif);
       // _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
     } catch (e) {
@@ -166,7 +141,9 @@ class NotificationListNotifier extends ChangeNotifier {
         await _notifService.deleteAllNotifications(_boxName);
         _notifications.clear();
         _unreadCount = 0;
+        _hasNotification = false;
         notifyListeners();
+        _notifService.removeAllNotificationFromCache(_boxName);
       } else {
         for (final element in _notificationForDeletion) {
           await _notifService.deleteNotification(element.id, _boxName);
@@ -208,6 +185,7 @@ class NotificationListNotifier extends ChangeNotifier {
       _notificationForDeletion.addAll(_notifications);
       _notifications.clear();
       _unreadCount = 0;
+      _hasNotification = false;
       // _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
 
@@ -309,6 +287,8 @@ class NotificationListNotifier extends ChangeNotifier {
       _unreadCount = 0;
       if (snapshot.docs.isNotEmpty) {
         _hasNotification = true;
+      } else {
+        _hasNotification = false;
       }
       snapshot.docs.forEach((doc) {
         if (doc.exists && doc['isRead'] == false) {

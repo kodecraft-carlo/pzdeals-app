@@ -127,8 +127,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             // 04/04/2024 demo: Price mistake alert (turned on by default and remove on settings)
             ListTileWithSwitchWidget(
               title: 'Price Mistake & Glitches Notifications',
-              subtitle:
-                  'Get notified about significant drops in the price of a product',
+              subtitle: 'Notify me on all price mistakes and glitches',
               value:
                   !settingsState.isLoading && settingsState.settingsData != null
                       ? settingsState.settingsData!.priceMistake
@@ -136,8 +135,8 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
               onChanged: onPriceMistakeChanged,
             ),
             ListTileWithSwitchWidget(
-              title: 'Front Page Notifications',
-              subtitle: 'Get notified about front page deals',
+              title: 'PzPicks Notifications',
+              subtitle: 'Notify me on all PzPicks',
               value:
                   !settingsState.isLoading && settingsState.settingsData != null
                       ? settingsState.settingsData!.frontpageNotification
@@ -151,7 +150,8 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: Sizes.spaceBetweenSections),
-                          const Text("Number of alerts to receive daily",
+                          const Text(
+                              "Select how many PzPicks you’d like to receive daily",
                               style: TextStyle(
                                   fontSize: Sizes.listTitleFontSize,
                                   fontWeight: FontWeight.w500)),
@@ -165,8 +165,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                     : const SizedBox()),
             ListTileWithSwitchWidget(
               title: 'Percentage Off Notifications',
-              subtitle:
-                  'Get notified about significant drops in the price of a product',
+              subtitle: 'Notify me on deals by percent off',
               value: isPercentOff,
               onChanged: onPercentOffChanged,
             ),

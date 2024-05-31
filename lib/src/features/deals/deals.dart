@@ -6,7 +6,6 @@ import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/deals/state/provider_creditcards.dart';
-import 'package:pzdeals/src/features/deals/state/provider_foryou.dart';
 import 'package:pzdeals/src/features/deals/state/provider_frontpage.dart';
 import 'package:pzdeals/src/features/deals/state/provider_pzpicks.dart';
 
@@ -16,8 +15,6 @@ final tabPzPicksProvider =
     ChangeNotifierProvider<TabPzPicksNotifier>((ref) => TabPzPicksNotifier());
 final creditcardsProvider =
     ChangeNotifierProvider<CreditCardsNotifier>((ref) => CreditCardsNotifier());
-final tabForYouProvider =
-    ChangeNotifierProvider<TabForYouNotifier>((ref) => TabForYouNotifier());
 
 class DealsTabControllerWidget extends ConsumerStatefulWidget {
   const DealsTabControllerWidget({super.key});

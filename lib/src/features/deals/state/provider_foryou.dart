@@ -3,15 +3,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_collections.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_foryou.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 
-final tabForYouProvider =
-    ChangeNotifierProvider<TabForYouNotifier>((ref) => TabForYouNotifier());
+final tabForYouProvider = ChangeNotifierProvider<TabForYouNotifier>((ref) {
+  final authState =
+      ref.watch(authUserDataProvider.select((value) => value.isAuthenticated));
+  if (authState == true) {
+    return TabForYouNotifier(isAuthenticated: true);
+  } else {
+    return TabForYouNotifier();
+  }
+});
 
 class TabForYouNotifier extends ChangeNotifier {
   final FetchCollectionService _collectionService = FetchCollectionService();
   final FetchForYouService _forYouService = FetchForYouService();
 
   final String _boxName = 'foryoucollections';
+  bool isLoggedIn = false;
   bool _isLoading = false;
   bool _isForYouLoading = false;
   bool _isForYouCollectionProductsLoading = false;
@@ -46,7 +55,8 @@ class TabForYouNotifier extends ChangeNotifier {
   bool get hasSelectedCollectionsFromCache => _hasSelectedCollectionsFromCache;
   int get selectedCollectionsCount => _selectedCollectionsCount;
 
-  TabForYouNotifier() {
+  TabForYouNotifier({bool isAuthenticated = false}) {
+    isLoggedIn = isAuthenticated;
     checkSelectedCollectionStatus();
     loadCollections();
     getProductsFromSelectedCollection();
@@ -159,12 +169,11 @@ class TabForYouNotifier extends ChangeNotifier {
     debugPrint('getProductsFromSelectedCollection called');
     _isForYouCollectionProductsLoading = true;
     notifyListeners();
-
     try {
       if (_selectedCollectionIds.isEmpty) {
         final selectedCollectionsfromcache = await _collectionService
             .getCachedSelectedCollection('selectedcollections');
-        if (selectedCollectionsfromcache.isNotEmpty) {
+        if (selectedCollectionsfromcache.isNotEmpty && isLoggedIn == true) {
           _selectedCollectionIds.clear();
           _selectedCollectionIds.addAll(selectedCollectionsfromcache);
         } else {
@@ -181,8 +190,9 @@ class TabForYouNotifier extends ChangeNotifier {
       }
 
       _updateCollectionProducts(newCollectionProducts);
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint("error loading getProductsFromSelectedCollection: $e");
+      debugPrint('stackTrace: $stackTrace');
     }
     // try {
     //   _collectionProducts.clear();

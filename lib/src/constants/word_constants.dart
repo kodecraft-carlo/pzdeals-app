@@ -10,4 +10,6 @@ class Wordings {
       'Every coupon and sale from across the web, all curated and updated daily at your fingertips.';
   static const String descCategoryAlerts =
       "Select if you would like to get notified on all deals from a specific category.";
+  static const String descForYouSelection =
+      "Choose the categories you would like to see on your For You page.";
 }

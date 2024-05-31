@@ -148,9 +148,11 @@ class _FilterByStoresWidgetState extends ConsumerState<FilterByStoresWidget>
       fit: BoxFit.contain,
       cacheKey: Key(imageUrl.trim()).toString(),
       height: 30,
+      memCacheHeight: 70,
       errorWidget: (context, url, error) {
         debugPrint('CachedNetworkImage error loading image: $error');
         if (isSvgImage(imageUrl)) {
+          debugPrint('isSvgImage: $imageUrl');
           try {
             return SvgPicture.network(
               imageUrl,

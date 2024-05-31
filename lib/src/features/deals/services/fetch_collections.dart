@@ -88,18 +88,30 @@ class FetchCollectionService {
   Future<List<Map<String, dynamic>>> getCachedSelectedCollection(
       String boxName) async {
     debugPrint("getCachedSelectedCollection called for $boxName");
-    final box = await Hive.openBox<Map<dynamic, dynamic>>(boxName);
+
+    Box<Map<dynamic, dynamic>> box;
+    if (Hive.isBoxOpen(boxName)) {
+      box = Hive.box<Map<dynamic, dynamic>>(boxName);
+    } else {
+      box = await Hive.openBox<Map<dynamic, dynamic>>(boxName);
+    }
+
     final collections = box.values.toList();
     List<Map<String, dynamic>> data =
         collections.map((map) => Map<String, dynamic>.from(map)).toList();
-    await box.close();
+    // await box.close();
     return data;
   }
 
   Future<void> addSelectedCollectionToCache(
       List<Map<String, dynamic>> selectedCollections, String boxName) async {
     debugPrint("addSelectedCollectionToCache called for $boxName");
-    final box = await Hive.openBox<Map<String, dynamic>>(boxName);
+    Box<Map<dynamic, dynamic>> box;
+    if (Hive.isBoxOpen(boxName)) {
+      box = Hive.box<Map<dynamic, dynamic>>(boxName);
+    } else {
+      box = await Hive.openBox<Map<dynamic, dynamic>>(boxName);
+    }
     await box.clear();
     for (final collection in selectedCollections) {
       box.put(collection['collection_id'], collection);

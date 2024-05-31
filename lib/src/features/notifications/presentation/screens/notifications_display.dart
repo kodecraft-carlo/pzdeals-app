@@ -25,7 +25,7 @@ class NotificationsDisplayState extends ConsumerState<NotificationsDisplay>
     _scrollController.addListener(_onScroll);
 
     Future(() {
-      ref.read(notificationsProvider).loadNotifications();
+      // ref.read(notificationsProvider).loadNotifications();
     });
   }
 
