@@ -78,7 +78,7 @@ class TabFrontPageNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final serverProducts = await _productService.fetchProductDeals(
+      final serverProducts = await _productService.fetchMoreProductDeals(
           _collectionName, _boxName, pageNumber);
       _products.addAll(serverProducts);
       notifyListeners();

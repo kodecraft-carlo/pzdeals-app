@@ -259,6 +259,17 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
     return exitApp ?? false;
   }
 
+  double getFontSize(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth < 350) {
+      return 10.0;
+    } else if (screenWidth < 400) {
+      return 11.0;
+    } else {
+      return 12.0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffoldWidget(
@@ -285,9 +296,15 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
               ),
               child: Theme(
                 data: ThemeData(
-                    fontFamily: 'Poppins',
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent),
+                  fontFamily: 'Poppins',
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  textTheme: Theme.of(context).textTheme.copyWith(
+                        bodySmall: TextStyle(
+                            fontSize: getFontSize(
+                                context)), // Use the helper function from the previous response
+                      ),
+                ),
                 child: SizedBox(
                   height: 65,
                   child: SafeArea(
@@ -301,12 +318,12 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
                         const IconThemeData(size: 25, color: Colors.black87),
                     unselectedIconTheme:
                         const IconThemeData(size: 25, color: Colors.black54),
-                    selectedLabelStyle: const TextStyle(
-                      fontSize: 12,
+                    selectedLabelStyle: TextStyle(
+                      fontSize: getFontSize(context),
                       fontWeight: FontWeight.w600,
                     ),
-                    unselectedLabelStyle: const TextStyle(
-                      fontSize: 12,
+                    unselectedLabelStyle: TextStyle(
+                      fontSize: getFontSize(context),
                       fontWeight: FontWeight.w600,
                     ),
                     showSelectedLabels: true,
@@ -325,7 +342,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
                         icon: currentPageIndex == 1
                             ? const Icon(Icons.store_rounded)
                             : const Icon(Icons.store_outlined),
-                        label: 'Stores',
+                        label: 'Promos',
                       ),
                       BottomNavigationBarItem(
                         icon: badges.Badge(

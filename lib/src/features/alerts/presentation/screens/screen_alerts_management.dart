@@ -178,48 +178,66 @@ class AlertsManagementScreenState
               //     ),
               //   ),
               // ),
-              SliverAppBar(
-                  pinned: true,
-                  backgroundColor: PZColors.pzWhite,
-                  floating: false,
-                  primary: false,
-                  forceElevated: innerBoxIsScrolled,
-                  titleSpacing: 0,
-                  automaticallyImplyLeading: false,
-                  flexibleSpace: FlexibleSpaceBar(
-                      background: Container(
-                        color: PZColors
-                            .pzWhite, // Set background color to transparent
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _SliverAppBarDelegate(
+                    minHeight: 80,
+                    maxHeight: 80,
+                    child: Container(
+                      color: Colors.white,
+                      child: const Row(
+                        children: [
+                          Expanded(
+                            // Move Expanded here
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  top: Sizes.paddingTopSmall,
+                                  left: Sizes.paddingLeft,
+                                  right: Sizes.paddingRight),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Create Deal Alerts",
+                                    style: TextStyle(
+                                        fontSize: Sizes.headerFontSize,
+                                        fontWeight: FontWeight.w600,
+                                        color: PZColors.pzBlack),
+                                  ),
+                                  Text(
+                                    Wordings.descDealAlerts,
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                        fontSize: Sizes.bodyFontSize,
+                                        fontWeight: FontWeight.w400,
+                                        color: PZColors.pzBlack),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                      collapseMode: CollapseMode.pin),
-                  title: const Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            left: Sizes.paddingLeft, right: Sizes.paddingRight),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Create Deal Alerts",
-                              style: TextStyle(
-                                  fontSize: Sizes.headerFontSize,
-                                  fontWeight: FontWeight.w600,
-                                  color: PZColors.pzBlack),
-                            ),
-                            Text(
-                              "Subscribe to keyword alerts and get notified on new matching deals",
-                              style: TextStyle(
-                                  fontSize: Sizes.bodyFontSize,
-                                  fontWeight: FontWeight.w400,
-                                  color: PZColors.pzBlack),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  )),
+                    )),
+              ),
+
+              // SliverAppBar(
+              //   pinned: true,
+              //   backgroundColor: PZColors.pzWhite,
+              //   floating: false,
+              //   primary: false,
+              //   forceElevated: innerBoxIsScrolled,
+              //   titleSpacing: 0,
+              //   automaticallyImplyLeading: false,
+              //   flexibleSpace: FlexibleSpaceBar(
+              //       background: Container(
+              //         color: PZColors
+              //             .pzWhite, // Set background color to transparent
+              //       ),
+              //       collapseMode: CollapseMode.pin),
+              //   title:
+              // ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -415,7 +433,7 @@ class AlertsManagementScreenState
                         ),
                       ),
                       Text(
-                        "Click on the plus sign to subscribe",
+                        "Click on the plus sign to subscribe to that Deal Alert.",
                         style: TextStyle(
                           fontSize: Sizes.bodyFontSize,
                           fontWeight: FontWeight.w400,

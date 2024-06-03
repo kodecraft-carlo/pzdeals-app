@@ -90,6 +90,43 @@ class FetchProductDealService {
     }
   }
 
+  Future<List<ProductDealcardData>> fetchMoreProductDeals(
+      String pageName, String boxName, int pageNumber) async {
+    ApiClient apiClient = ApiClient();
+    // final authService = ref.watch(directusAuthServiceProvider);
+    debugPrint("fetchProduct Deals called for $pageName");
+
+    try {
+      Response response = await apiClient.dio
+          .get(getProductsByCollectionQuery(pageName, pageNumber)
+              // options: Options(
+              //   headers: {'Authorization': 'Bearer $accessToken'},
+              // ),
+              );
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        if (responseData == null || responseData.isEmpty) {
+          throw Exception('No Data Found');
+        }
+
+        final products =
+            ProductMapper.mapToProductDealcardDataList(responseData['data']);
+        // await _cacheProducts(products, boxName);
+        return products;
+      } else {
+        throw Exception(
+            'Failed to fetch directus product list ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioExceptionw: ${e.message}");
+      throw Exception('Failed to fetch directus product list');
+    } catch (e, stackTrace) {
+      debugPrint(stackTrace.toString());
+      debugPrint('Error fetching frontpage deals: $e');
+      throw Exception('Failed to fetch directus product list');
+    }
+  }
+
   Future<void> _cacheProducts(
       List<ProductDealcardData> products, String boxName) async {
     debugPrint("Caching products for $boxName");
@@ -109,6 +146,7 @@ class FetchProductDealService {
     }
 
     // Store the combined list back in the cache.
+    await box.clear(); // Clear existing cache
     await box.put(boxName, cachedProducts);
     await box.close();
   }

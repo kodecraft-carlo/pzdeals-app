@@ -12,4 +12,6 @@ class Wordings {
       "Select if you would like to get notified on all deals from a specific category.";
   static const String descForYouSelection =
       "Choose the categories you would like to see on your For You page.";
+  static const String descDealAlerts =
+      "Get notified about deals you care about most by creating custom Deal Alerts.";
 }

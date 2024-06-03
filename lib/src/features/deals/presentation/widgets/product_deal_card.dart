@@ -177,19 +177,19 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      !isProductNoPrice(productData)
-                          ? const Text('No price',
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.transparent))
-                          : Align(
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                height: 20,
-                                child: StoreImageWidget(
-                                    storeAssetImage:
-                                        productData.storeAssetImage),
-                              ),
-                            ),
+                      // !isProductNoPrice(productData)
+                      //     ? const Text('No price',
+                      //         style: TextStyle(
+                      //             fontSize: 18, color: Colors.transparent))
+                      //     :
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: SizedBox(
+                          height: 20,
+                          child: StoreImageWidget(
+                              storeAssetImage: productData.storeAssetImage),
+                        ),
+                      ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -248,17 +248,22 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                               ],
                             ),
                           )
-                        : Row(
+                        : const Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: SizedBox(
-                                  height: 20,
-                                  child: StoreImageWidget(
-                                      storeAssetImage:
-                                          productData.storeAssetImage),
-                                ),
+                                    height: 25,
+                                    child: Text(
+                                      'No price',
+                                      style:
+                                          TextStyle(color: Colors.transparent),
+                                    )
+                                    //   StoreImageWidget(
+                                    //       storeAssetImage:
+                                    //           productData.storeAssetImage),
+                                    ),
                               )
                             ],
                           ),
