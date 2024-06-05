@@ -83,17 +83,20 @@ class KeywordsNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _popularKeywords =
-          await _keywordService.getCachedKeywords(_boxNamePopular);
-      _popularKeywords = sortKeywordsDescending(_popularKeywords);
-      notifyListeners();
+      // _popularKeywords =
+      //     await _keywordService.getCachedKeywords(_boxNamePopular);
+      // _popularKeywords = sortKeywordsDescending(_popularKeywords);
+      // notifyListeners();
 
       final List<String> excludedKeywords =
           _savedkeywords.map((e) => e.keyword).toList();
 
       final serverKeywords = await _keywordService.fetchPopularKeyword(
           _boxNamePopular, 100, excludedKeywords, pageNumber);
-      _popularKeywords = sortKeywordsDescending(serverKeywords);
+
+      _popularKeywords =
+          removeSavedFromPopularList(_savedkeywords, serverKeywords);
+
       notifyListeners();
     } catch (e) {
       debugPrint("error loading popular keywords: $e");

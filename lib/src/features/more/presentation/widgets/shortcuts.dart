@@ -36,7 +36,7 @@ class MoreShortcutsWidget extends StatelessWidget {
           animationDirection: 'leftToRight',
         ),
         NavigateScreenWidget(
-          destinationWidget: BlogScreenWidget(),
+          destinationWidget: const BlogScreenWidget(),
           childWidget: SquareLabeledIcon(
             iconTitle: 'Blog',
             iconImage: 'assets/images/shortcuts/blogs.png',
@@ -64,7 +64,7 @@ class MoreShortcutsWidget extends StatelessWidget {
               ),
               child: const Padding(
                 padding: EdgeInsets.all(Sizes.paddingAll),
-                child: Text('Stay tuned! This feature is Coming Soon.'),
+                child: Text('Stay tuned! This feature is coming soon.'),
               ),
             ),
             childWidget: SquareLabeledIcon(

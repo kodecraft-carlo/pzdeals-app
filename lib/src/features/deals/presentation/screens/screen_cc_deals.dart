@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/common_widgets/bottomnavigationbar.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
 import 'package:pzdeals/src/common_widgets/scrollbar.dart';
 import 'package:pzdeals/src/common_widgets/text_widget.dart';
@@ -135,6 +136,9 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
               ),
             ),
             onRefresh: () => creditcardState.refreshCreditCards(),
+          ),
+          bottomNavigationBar: const BottomNavigationBarWidget(
+            currentPageIndex: 4,
           ),
         ),
         scrollAction: scrollToTop);

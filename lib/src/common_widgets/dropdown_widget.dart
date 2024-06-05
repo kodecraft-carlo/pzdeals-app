@@ -22,11 +22,12 @@ class DropdownWidget extends StatefulWidget {
       this.isPercentOff = false});
 
   @override
-  _DropdownWidgetState createState() => _DropdownWidgetState();
+  DropdownWidgetState createState() => DropdownWidgetState();
 }
 
-class _DropdownWidgetState extends State<DropdownWidget> {
+class DropdownWidgetState extends State<DropdownWidget> {
   String? _selectedValue;
+  GlobalKey? _dropdownButtonKey = GlobalKey();
 
   @override
   void initState() {
@@ -34,84 +35,153 @@ class _DropdownWidgetState extends State<DropdownWidget> {
     _selectedValue = widget.initialValue;
   }
 
+  void openDropdown() {
+    _dropdownButtonKey?.currentContext?.visitChildElements((element) {
+      if (element.widget is Semantics) {
+        element.visitChildElements((element) {
+          if (element.widget is Actions) {
+            element.visitChildElements((element) {
+              Actions.invoke(element, const ActivateIntent());
+            });
+          }
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return isIOS()
-        ? GestureDetector(
-            onTap: () => showCupertinoModalPopup(
-              context: context,
-              barrierDismissible: false,
-              builder: (BuildContext context) => Container(
-                height: 230,
-                padding: const EdgeInsets.only(top: 6.0),
-                margin: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                color: CupertinoColors.systemBackground.resolveFrom(context),
-                child: SafeArea(
-                  top: false,
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: CupertinoButton(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          onPressed: () {
-                            widget.onChanged(_selectedValue);
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Done',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  color: PZColors.pzOrange)),
-                        ),
-                      ),
-                      Expanded(
-                        child: CupertinoPicker(
-                          magnification: 1.22,
-                          squeeze: 1.2,
-                          useMagnifier: true,
-                          itemExtent: 32.0,
-                          selectionOverlay:
-                              CupertinoPickerDefaultSelectionOverlay(
-                            background: PZColors.pzOrange.withOpacity(0.1),
-                          ),
-                          onSelectedItemChanged: (int index) {
-                            setState(() {
-                              _selectedValue = widget.dropdownItems[index];
-                            });
-                          },
-                          scrollController: FixedExtentScrollController(
-                            initialItem: widget.dropdownItems
-                                .indexOf(_selectedValue ?? ''),
-                          ),
-                          children: widget.dropdownItems.map((String item) {
-                            return Center(
-                              child: Text(
-                                '$item${widget.isPercentOff ? '% off or more' : ''}',
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      )
-                    ],
+        ? Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  debugPrint('onTap');
+                  openDropdown();
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 45,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: PZColors.pzGrey.withOpacity(0.125),
+                    borderRadius:
+                        BorderRadius.circular(Sizes.textFieldCornerRadius),
                   ),
                 ),
               ),
-            ),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: PZColors.pzGrey.withOpacity(0.125),
-                borderRadius:
-                    BorderRadius.circular(Sizes.textFieldCornerRadius),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: DropdownButton<String>(
+                  key: _dropdownButtonKey,
+                  value: _selectedValue,
+                  isExpanded: false,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedValue = value;
+                      widget.onChanged(value);
+                    });
+                  },
+                  underline: Container(),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.transparent,
+                  ),
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: widget.isDense
+                        ? Sizes.fontSizeSmall
+                        : Sizes.fontSizeMedium,
+                    color: PZColors.pzBlack,
+                  ),
+                  items: widget.dropdownItems
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                          '$value${widget.isPercentOff ? '% off or more' : ''}'),
+                    );
+                  }).toList(),
+                ),
               ),
-              child: Text(
-                  '${_selectedValue ?? widget.dropdownLabel}${widget.isPercentOff ? '% off or more' : ''}'),
-            ),
+            ],
           )
+        // GestureDetector(
+        //     onTap: () => showCupertinoModalPopup(
+        //       context: context,
+        //       barrierDismissible: false,
+        //       builder: (BuildContext context) => Container(
+        //         height: 230,
+        //         padding: const EdgeInsets.only(top: 6.0),
+        //         margin: EdgeInsets.only(
+        //           bottom: MediaQuery.of(context).viewInsets.bottom,
+        //         ),
+        //         color: CupertinoColors.systemBackground.resolveFrom(context),
+        //         child: SafeArea(
+        //           top: false,
+        //           child: Column(
+        //             children: [
+        //               Align(
+        //                 alignment: Alignment.centerRight,
+        //                 child: CupertinoButton(
+        //                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        //                   onPressed: () {
+        //                     widget.onChanged(_selectedValue);
+        //                     Navigator.of(context).pop();
+        //                   },
+        //                   child: const Text('Done',
+        //                       style: TextStyle(
+        //                           fontSize: 18,
+        //                           fontWeight: FontWeight.w700,
+        //                           color: PZColors.pzOrange)),
+        //                 ),
+        //               ),
+        //               Expanded(
+        //                 child: CupertinoPicker(
+        //                   magnification: 1.22,
+        //                   squeeze: 1.2,
+        //                   useMagnifier: true,
+        //                   itemExtent: 32.0,
+        //                   selectionOverlay:
+        //                       CupertinoPickerDefaultSelectionOverlay(
+        //                     background: PZColors.pzOrange.withOpacity(0.1),
+        //                   ),
+        //                   onSelectedItemChanged: (int index) {
+        //                     setState(() {
+        //                       _selectedValue = widget.dropdownItems[index];
+        //                     });
+        //                   },
+        //                   scrollController: FixedExtentScrollController(
+        //                     initialItem: widget.dropdownItems
+        //                         .indexOf(_selectedValue ?? ''),
+        //                   ),
+        //                   children: widget.dropdownItems.map((String item) {
+        //                     return Center(
+        //                       child: Text(
+        //                         '$item${widget.isPercentOff ? '% off or more' : ''}',
+        //                       ),
+        //                     );
+        //                   }).toList(),
+        //                 ),
+        //               )
+        //             ],
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //     child: Container(
+        //       width: double.infinity,
+        //       padding: const EdgeInsets.all(16),
+        //       decoration: BoxDecoration(
+        //         color: PZColors.pzGrey.withOpacity(0.125),
+        //         borderRadius:
+        //             BorderRadius.circular(Sizes.textFieldCornerRadius),
+        //       ),
+        //       child: Text(
+        //           '${_selectedValue ?? widget.dropdownLabel}${widget.isPercentOff ? '% off or more' : ''}'),
+        //     ),
+        //   )
         : DropdownButtonFormField<String>(
             value: _selectedValue,
             isExpanded: false,

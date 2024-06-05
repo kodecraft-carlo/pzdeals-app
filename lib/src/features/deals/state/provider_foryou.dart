@@ -6,10 +6,11 @@ import 'package:pzdeals/src/features/deals/services/fetch_foryou.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
 final tabForYouProvider = ChangeNotifierProvider<TabForYouNotifier>((ref) {
-  final authState =
-      ref.watch(authUserDataProvider.select((value) => value.isAuthenticated));
-  if (authState == true) {
-    return TabForYouNotifier(isAuthenticated: true);
+  final authState = ref.watch(authUserDataProvider);
+  if (authState.isAuthenticated == true) {
+    debugPrint('tabForYouProvider: ${authState.userData!.uid}');
+    return TabForYouNotifier(
+        isAuthenticated: true, userID: authState.userData!.uid);
   } else {
     return TabForYouNotifier();
   }
@@ -21,7 +22,9 @@ class TabForYouNotifier extends ChangeNotifier {
 
   final String _boxName = 'foryoucollections';
   bool isLoggedIn = false;
+  String _userID;
   bool _isLoading = false;
+  bool _isFromApplySelection = false;
   bool _isForYouLoading = false;
   bool _isForYouCollectionProductsLoading = false;
   bool _hasSelectedCollectionsFromCache = false;
@@ -55,8 +58,10 @@ class TabForYouNotifier extends ChangeNotifier {
   bool get hasSelectedCollectionsFromCache => _hasSelectedCollectionsFromCache;
   int get selectedCollectionsCount => _selectedCollectionsCount;
 
-  TabForYouNotifier({bool isAuthenticated = false}) {
+  TabForYouNotifier({bool isAuthenticated = false, String userID = ''})
+      : _userID = userID {
     isLoggedIn = isAuthenticated;
+    _userID = userID;
     checkSelectedCollectionStatus();
     loadCollections();
     getProductsFromSelectedCollection();
@@ -155,12 +160,19 @@ class TabForYouNotifier extends ChangeNotifier {
         .sort((a, b) => a['collection_id'].compareTo(b['collection_id']));
 
     _selectedCollectionIds.addAll(_collectionsMap);
+    _isFromApplySelection = true;
+    if (_userID != '') {
+      _collectionService.updateForYouConfig(_selectedCollectionIds, _userID);
+    }
+    debugPrint(
+        'selectedCollectionIds from applySelectedCollections: $_selectedCollectionIds');
     _isSelectionApplied = true;
+    await _collectionService.addSelectedCollectionToCache(
+        _selectedCollectionIds, 'selectedcollections');
     await getProductsFromSelectedCollection();
     _hasSelectedCollectionsFromCache = true;
     notifyListeners();
-    _collectionService.addSelectedCollectionToCache(
-        _selectedCollectionIds, 'selectedcollections');
+
     _forYouService.cacheCollectionSelectionStatus(
         true, 'box_foryoucollectionstatus');
   }
@@ -170,16 +182,38 @@ class TabForYouNotifier extends ChangeNotifier {
     _isForYouCollectionProductsLoading = true;
     notifyListeners();
     try {
-      if (_selectedCollectionIds.isEmpty) {
-        final selectedCollectionsfromcache = await _collectionService
-            .getCachedSelectedCollection('selectedcollections');
-        if (selectedCollectionsfromcache.isNotEmpty && isLoggedIn == true) {
+      if (_userID != '' &&
+          isLoggedIn == true &&
+          _isFromApplySelection == false) {
+        final selectedCollectionsfromserver =
+            await _collectionService.getForYouConfig(_userID);
+        if (selectedCollectionsfromserver.isNotEmpty) {
+          debugPrint('pasok dito 1');
           _selectedCollectionIds.clear();
-          _selectedCollectionIds.addAll(selectedCollectionsfromcache);
+          _selectedCollectionIds.addAll(selectedCollectionsfromserver);
         } else {
+          debugPrint('pasok dito 1.2');
+          _selectedCollectionIds.clear();
           _selectedCollectionIds.addAll(_defaultCollections);
         }
+        _isFromApplySelection = false;
+      } else {
+        final selectedCollectionsfromcache = await _collectionService
+            .getCachedSelectedCollection('selectedcollections');
+        if (_selectedCollectionIds.isEmpty) {
+          debugPrint('pasok dito 2');
+          _selectedCollectionIds.clear();
+          _selectedCollectionIds.addAll(_defaultCollections);
+        } else if (selectedCollectionsfromcache.isNotEmpty) {
+          debugPrint('pasok dito 3');
+          debugPrint(
+              'selectedCollectionsfromcache: $selectedCollectionsfromcache');
+          _selectedCollectionIds.clear();
+          _selectedCollectionIds.addAll(selectedCollectionsfromcache);
+        }
       }
+
+      debugPrint('selectedCollectionIds: $_selectedCollectionIds');
 
       final List<Map<String, dynamic>> newCollectionProducts = [];
       for (var collection in _selectedCollectionIds) {

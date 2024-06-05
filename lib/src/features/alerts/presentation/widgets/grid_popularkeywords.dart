@@ -22,6 +22,7 @@ class PopularKeywordsGrid extends ConsumerWidget {
     final List<KeywordData> keywordsdata = popularKeywords;
     if (popularKeywords.isEmpty && !ref.watch(keywordsProvider).isLoading) {
       return SizedBox(
+        width: double.infinity,
         height: 200,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/common_widgets/bottomnavigationbar.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
 import 'package:pzdeals/src/common_widgets/scrollbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
@@ -201,6 +202,9 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
                 scrollController: _scrollController,
                 child: body,
               )),
+          bottomNavigationBar: const BottomNavigationBarWidget(
+            currentPageIndex: 4,
+          ),
         ),
         scrollAction: scrollToTop);
   }

@@ -5,7 +5,6 @@ import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/actions/navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/text_widget.dart';
 import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_collection_selection.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
@@ -105,20 +104,15 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
                         const TextSpan(text: ' '),
                         WidgetSpan(
                           child: ref.watch(tabForYouProvider.select((value) =>
-                                      value.hasSelectedCollectionsFromCache)) &&
-                                  ref.watch(authUserDataProvider.select(
-                                          (value) => value.isAuthenticated)) ==
-                                      true
+                                  value.hasSelectedCollectionsFromCache))
                               ? const CustomizeHereLink()
                               : const SizedBox.shrink(),
                         )
                       ],
                     )),
               ),
-              !ref.watch(tabForYouProvider.select(
-                          (value) => value.hasSelectedCollectionsFromCache)) ||
-                      !ref.watch(authUserDataProvider
-                          .select((value) => value.isAuthenticated))
+              !ref.watch(tabForYouProvider
+                      .select((value) => value.hasSelectedCollectionsFromCache))
                   ? const ForYouBannerWidget()
                   : const SizedBox.shrink(),
               Container(

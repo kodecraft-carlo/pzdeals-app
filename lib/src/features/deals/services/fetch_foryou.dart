@@ -151,9 +151,14 @@ class FetchForYouService {
   }
 
   Future<bool> getCachedCollectionSelectionStatus(String boxName) async {
-    final box = await Hive.openBox<bool>(boxName);
-    final hasCollection = box.values.first;
-    await box.close();
-    return hasCollection;
+    try {
+      final box = await Hive.openBox<bool>(boxName);
+      final hasCollection = box.values.first;
+      await box.close();
+      return hasCollection;
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching collection selection status: $stackTrace');
+      return false;
+    }
   }
 }

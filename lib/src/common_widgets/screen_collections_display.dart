@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/common_widgets/bottomnavigationbar.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
@@ -11,7 +12,6 @@ import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_collections.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/deals/state/provider_collections.dart';
-import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/layout_type_provider.dart';
 
 final productCollectionProvider =
@@ -45,6 +45,7 @@ class CollectionDisplayScreenWidgetState
   String paramcollectionId = '';
   String keyword = '';
   String productId = '';
+  double opacityLevel = 0.0;
 
   @override
   void initState() {
@@ -53,10 +54,15 @@ class CollectionDisplayScreenWidgetState
     _scrollController.addListener(_onScroll);
     Future(() {
       if (widget.collectionTitle != '' && widget.collectionId > 0) {
-        ref.watch(productCollectionProvider).setBoxCollectionName(
+        ref.read(productCollectionProvider).setBoxCollectionName(
             widget.collectionTitle,
             '${widget.collectionTitle.trim()}_${widget.collectionId}');
       }
+    });
+    Future.delayed(const Duration(milliseconds: 250), () {
+      setState(() {
+        opacityLevel = 1.0;
+      });
     });
 
     Future(() {
@@ -253,6 +259,13 @@ class CollectionDisplayScreenWidgetState
                 ),
               )),
           body: body,
+          bottomNavigationBar:
+              // AnimatedOpacity(
+              //   opacity: opacityLevel,
+              //   duration: const Duration(milliseconds: 50),
+              // child:
+              const BottomNavigationBarWidget(currentPageIndex: 4),
+          // ),
         ),
         scrollAction: scrollToTop);
   }

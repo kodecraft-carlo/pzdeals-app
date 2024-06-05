@@ -87,7 +87,7 @@ class _CollectionSelectionWidgetState
             maxCrossAxisExtent: itemWidth,
             crossAxisSpacing: 20,
             mainAxisSpacing: 20,
-            childAspectRatio: 2 / 2.5),
+            childAspectRatio: 2 / 2.6),
         itemBuilder: (BuildContext context, int index) {
           final collection = collectionData[index];
           return GridItemWidget(
