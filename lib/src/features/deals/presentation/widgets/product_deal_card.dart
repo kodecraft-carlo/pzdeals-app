@@ -430,7 +430,7 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
     double baseHeight =
         2.8; // The base height for the default text scale factor
     double multiplier = Platform.isIOS
-        ? 1.3
+        ? 1.2
         : 1.0; // The multiplier for the default text scale factor
     double scaleFactor =
         MediaQuery.textScalerOf(context).scale(Sizes.bodyFontSize * multiplier);

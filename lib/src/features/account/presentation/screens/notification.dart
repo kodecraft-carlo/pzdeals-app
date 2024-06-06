@@ -190,7 +190,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                     children: [
                       // KeywordAlertsSection(),
                       SizedBox(
-                        height: Sizes.spaceBetweenSectionsXL,
+                        height: Sizes.spaceBetweenSections,
                       ),
                       LogoutButton()
                     ],

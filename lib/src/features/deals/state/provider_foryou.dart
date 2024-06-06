@@ -191,6 +191,7 @@ class TabForYouNotifier extends ChangeNotifier {
           debugPrint('pasok dito 1');
           _selectedCollectionIds.clear();
           _selectedCollectionIds.addAll(selectedCollectionsfromserver);
+          _hasSelectedCollectionsFromCache = true;
         } else {
           debugPrint('pasok dito 1.2');
           _selectedCollectionIds.clear();

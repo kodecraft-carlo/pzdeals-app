@@ -33,6 +33,7 @@ class AppbarIcon extends StatelessWidget {
                         child: child,
                       );
                     },
+                    transitionDuration: const Duration(milliseconds: 100),
                   ),
                 );
         },

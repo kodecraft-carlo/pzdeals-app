@@ -72,39 +72,49 @@ class DropdownWidgetState extends State<DropdownWidget> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16),
-                child: DropdownButton<String>(
-                  key: _dropdownButtonKey,
-                  value: _selectedValue,
-                  isExpanded: false,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedValue = value;
-                      widget.onChanged(value);
-                    });
-                  },
-                  underline: Container(),
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down,
-                    color: Colors.transparent,
-                  ),
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: widget.isDense
-                        ? Sizes.fontSizeSmall
-                        : Sizes.fontSizeMedium,
-                    color: PZColors.pzBlack,
-                  ),
-                  items: widget.dropdownItems
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                          '$value${widget.isPercentOff ? '% off or more' : ''}'),
-                    );
-                  }).toList(),
-                ),
-              ),
+                  padding: const EdgeInsets.all(16),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width - 80,
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        canvasColor: Colors.white,
+                      ),
+                      child: DropdownButton<String>(
+                        key: _dropdownButtonKey,
+                        value: _selectedValue,
+                        borderRadius:
+                            BorderRadius.circular(Sizes.textFieldCornerRadius),
+                        isExpanded: true,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedValue = value;
+                            widget.onChanged(value);
+                          });
+                        },
+                        underline: const SizedBox.shrink(),
+                        icon: const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Colors.transparent,
+                        ),
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: widget.isDense
+                              ? Sizes.fontSizeSmall
+                              : Sizes.fontSizeMedium,
+                          color: PZColors.pzBlack,
+                        ),
+                        items: widget.dropdownItems
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              '$value${widget.isPercentOff ? '% off or more' : ''}',
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  )),
             ],
           )
         // GestureDetector(

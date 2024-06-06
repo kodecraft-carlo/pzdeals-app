@@ -33,7 +33,6 @@ class MoreShortcutsWidget extends StatelessWidget {
             iconAssetType: 'asset',
             borderColor: Colors.yellow.shade700,
           ),
-          animationDirection: 'leftToRight',
         ),
         NavigateScreenWidget(
           destinationWidget: const BlogScreenWidget(),
@@ -43,7 +42,6 @@ class MoreShortcutsWidget extends StatelessWidget {
             iconAssetType: 'asset',
             borderColor: Colors.blue.shade900,
           ),
-          animationDirection: 'leftToRight',
         ),
         const NavigateScreenWidget(
           destinationWidget: BookmarkedScreenWidget(),
@@ -53,7 +51,6 @@ class MoreShortcutsWidget extends StatelessWidget {
             iconAssetType: 'asset',
             borderColor: Colors.blue,
           ),
-          animationDirection: 'leftToRight',
         ),
         ShowDialogWidgetFromGesture(
             content: Dialog(

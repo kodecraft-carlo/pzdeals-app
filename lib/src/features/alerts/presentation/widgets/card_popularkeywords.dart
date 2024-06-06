@@ -49,7 +49,7 @@ class PopularKeywordsCard extends StatelessWidget {
                   child: CachedNetworkImage(
                     imageUrl: imagePath,
                     cacheManager: networkImageCacheManager,
-                    fadeInDuration: const Duration(milliseconds: 100),
+                    fadeInDuration: const Duration(milliseconds: 10),
                     fit: BoxFit.contain,
                     errorWidget: (context, url, error) {
                       debugPrint('Error loading image: $error');

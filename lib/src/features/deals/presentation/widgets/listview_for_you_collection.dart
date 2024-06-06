@@ -131,7 +131,6 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
                             ],
                           ),
                         ),
-                        animationDirection: 'leftToRight',
                       );
                     }
                   },

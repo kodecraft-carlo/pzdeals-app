@@ -342,7 +342,7 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
                     ),
                   ),
                 ),
-              const SizedBox(height: Sizes.spaceBetweenSections),
+              // const SizedBox(height: Sizes.spaceBetweenSections),
               searchResultWidget,
             ]),
           ),

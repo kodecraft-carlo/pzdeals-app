@@ -12,7 +12,8 @@ class NotificationService {
   final _firestoreDb = FirebaseFirestore.instance;
   User? user;
   final _firebaseMessaging = FirebaseMessaging.instance;
-
+  final _firebaseAuth = FirebaseAuth.instance.currentUser;
+  DocumentSnapshot? lastDoc;
   NotificationService() {
     FirebaseAuth.instance.authStateChanges().listen((User? currentUser) {
       debugPrint(
@@ -36,6 +37,7 @@ class NotificationService {
           debugPrint(
               'getInitialNotifications: ${snapshot.docs.length} notifications');
           _cacheNotifications(snapshot.docs, boxName);
+          lastDoc = snapshot.docs.last;
           return snapshot.docs
               .map((doc) => NotificationData(
                     id: doc["id"],
@@ -61,8 +63,8 @@ class NotificationService {
     throw Exception('getInitialNotifications error');
   }
 
-  Future<List<NotificationData>> getMoreNotifications(
-      String boxName, DocumentSnapshot lastDoc) async {
+  Future<List<NotificationData>> getMoreNotifications(String boxName) async {
+    debugPrint('getMoreNotifications called for $boxName');
     try {
       if (user != null) {
         final snapshot = await _firestoreDb
@@ -70,11 +72,12 @@ class NotificationService {
             .doc(user?.uid)
             .collection('notification')
             .orderBy('timestamp', descending: true)
-            .startAfterDocument(lastDoc)
+            .startAfterDocument(lastDoc as DocumentSnapshot)
             .limit(20)
             .get();
         if (snapshot.docs.isNotEmpty) {
           // _cacheNotifications(snapshot.docs, boxName);
+          lastDoc = snapshot.docs.last;
           return snapshot.docs
               .map((doc) => NotificationData(
                     id: doc["id"],
@@ -87,13 +90,14 @@ class NotificationService {
                   ))
               .toList();
         }
+        debugPrint('list is empty');
         return [];
       } else {
         debugPrint('getMoreNotifications: User is not logged in');
       }
       return [];
-    } catch (e) {
-      debugPrint("Error fetching getMoreNotifications data: $e");
+    } catch (e, stackTrace) {
+      debugPrint("Error fetching getMoreNotifications data: $stackTrace");
     }
     throw Exception('getMoreNotifications error');
   }
@@ -165,6 +169,19 @@ class NotificationService {
         if (notification.data['alert_type'] == 'front-page') {
           await updateFrontPageNotificationReceivedInfo(user?.uid);
         }
+      } else if (_firebaseAuth?.uid != null) {
+        await _firestoreDb
+            .collection('notifications')
+            .doc(_firebaseAuth?.uid)
+            .collection('notification')
+            .add(notification.toMap());
+
+        //update notification received info only when data['alert_type'] is 'front-page'
+        if (notification.data['alert_type'] == 'front-page') {
+          await updateFrontPageNotificationReceivedInfo(_firebaseAuth?.uid);
+        }
+        debugPrint(
+            'addNotification: User from snapshot is logged in ~ ${_firebaseAuth?.uid}');
       } else {
         debugPrint('addNotification: User is not logged in');
       }

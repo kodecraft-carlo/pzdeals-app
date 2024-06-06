@@ -99,14 +99,12 @@ class NotificationListNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      DocumentSnapshot lastDocument = _notifData[_notifData.length - 1];
-      final moreNotif =
-          await _notifService.getMoreNotifications(_boxName, lastDocument);
+      final moreNotif = await _notifService.getMoreNotifications(_boxName);
       _notifications.addAll(moreNotif);
       // _unreadCount = await getUnreadNotificationsCount();
       notifyListeners();
-    } catch (e) {
-      debugPrint('error loading more notifications: $e');
+    } catch (e, stackTrace) {
+      debugPrint('error loading more notifications: $stackTrace');
     } finally {
       _isLoading = false;
       notifyListeners();

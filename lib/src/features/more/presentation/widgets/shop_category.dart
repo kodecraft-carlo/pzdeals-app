@@ -36,7 +36,6 @@ class ShopCategory extends StatelessWidget {
               iconTitle: category.title,
               iconImage: category.imageAsset,
               iconAssetType: category.assetSourceType),
-          animationDirection: 'leftToRight',
         );
       },
     );

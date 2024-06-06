@@ -74,7 +74,10 @@ Widget buildSheet(context) => Padding(
                     SizedBox(
                       height: Sizes.spaceBetweenSectionsXL,
                     ),
-                    FilterActionButtonsWidget()
+                    SafeArea(
+                        top: false,
+                        bottom: true,
+                        child: FilterActionButtonsWidget())
                   ],
                 ),
               ),

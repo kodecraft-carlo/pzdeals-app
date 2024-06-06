@@ -220,19 +220,33 @@ class NotificationCardWidgetState
                       borderRadius: BorderRadius.circular(
                           Sizes.containerBorderRadius / 2),
                     ),
-                    child: CachedNetworkImage(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: CachedNetworkImage(
                         imageUrl: notificationData.imageUrl,
+                        memCacheHeight: 100,
                         cacheManager: networkImageCacheManager,
-                        errorWidget: (context, url, error) => CircleAvatar(
-                              backgroundColor: PZColors.pzOrange,
-                              child: Transform.rotate(
-                                angle: -7,
-                                child: const Icon(
-                                  Icons.campaign_rounded,
-                                  color: PZColors.pzWhite,
-                                ),
-                              ),
+                        placeholder: (context, url) => Skeletonizer(
+                            effect: const PulseEffect(),
+                            child: Image.asset(
+                              'assets/images/shortcuts/blogs_placeholder.png',
+                              width: 50.0,
+                              height: 50.0,
+                              fit: BoxFit.fitHeight,
                             )),
+                        fadeInDuration: const Duration(milliseconds: 10),
+                        errorWidget: (context, url, error) => CircleAvatar(
+                          backgroundColor: PZColors.pzOrange,
+                          child: Transform.rotate(
+                            angle: -7,
+                            child: const Icon(
+                              Icons.campaign_rounded,
+                              color: PZColors.pzWhite,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
             title: Text(
               notificationData.body,
