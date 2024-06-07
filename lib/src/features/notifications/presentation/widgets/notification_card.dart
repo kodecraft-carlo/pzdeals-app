@@ -108,8 +108,10 @@ class NotificationCardWidgetState
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(),
-              Text('Notification Cleared',
+              SizedBox(
+                width: 50,
+              ),
+              Text('Clear notification',
                   style: TextStyle(
                       color: PZColors.pzWhite,
                       fontSize: Sizes.fontSizeSmall,
@@ -121,6 +123,7 @@ class NotificationCardWidgetState
       direction: DismissDirection.endToStart,
       child: GestureDetector(
         onTap: () {
+          debugPrint('notif id from screen: ${notificationData.id}');
           ref.read(notificationsProvider).markAsRead(notificationData.id);
           if (notificationData.data != null || notificationData.data != {}) {
             debugPrint('Notification Data: $data');

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/common_widgets/list_tile_switch.dart';
 import 'package:pzdeals/src/features/alerts/state/categorynotif_provider.dart';
-import 'package:pzdeals/src/features/deals/models/collection_data.dart';
+import 'package:pzdeals/src/features/authentication/presentation/widgets/dialog_login_required.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class CategoryNotificationToggleList extends ConsumerStatefulWidget {
   const CategoryNotificationToggleList({
@@ -10,11 +11,11 @@ class CategoryNotificationToggleList extends ConsumerStatefulWidget {
   });
 
   @override
-  _CategoryNotificationToggleListState createState() =>
-      _CategoryNotificationToggleListState();
+  CategoryNotificationToggleListState createState() =>
+      CategoryNotificationToggleListState();
 }
 
-class _CategoryNotificationToggleListState
+class CategoryNotificationToggleListState
     extends ConsumerState<CategoryNotificationToggleList> {
   late List<bool> isSubscribedList;
 
@@ -27,6 +28,30 @@ class _CategoryNotificationToggleListState
   }
 
   void onSwitchChanged(bool value, String title, int index, String keyword) {
+    if (ref.read(authUserDataProvider).userData == null) {
+      debugPrint('User not authenticated');
+      showDialog(
+        context: context,
+        useRootNavigator: false,
+        barrierDismissible: true,
+        builder: (context) => ScaffoldMessenger(
+          child: Builder(
+            builder: (context) => Scaffold(
+              backgroundColor: Colors.transparent,
+              body: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                behavior: HitTestBehavior.opaque,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: const LoginRequiredDialog(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     ref
         .read(categorySettingsProvider)
         .updateSettingsLocally(value, title, keyword);

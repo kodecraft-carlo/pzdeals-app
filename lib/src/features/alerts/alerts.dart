@@ -22,21 +22,22 @@ class DealAlertsScreenState extends State<DealAlertsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //comment on tuesday
     return Consumer(builder: (context, ref, child) {
       final authUserState = ref.watch(authUserDataProvider);
       if (authUserState.isAuthenticated == true) {
         return PopScope(
-            canPop: false,
-            onPopInvoked: (didPop) {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const NavigationWidget(
-                            initialPageIndex: 0,
-                          )));
-            },
-            child:
-                AlertsManagementScreen(key: globalKeyAlertsManagementScreen));
+          canPop: false,
+          onPopInvoked: (didPop) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NavigationWidget(
+                          initialPageIndex: 0,
+                        )));
+          },
+          child: AlertsManagementScreen(key: globalKeyAlertsManagementScreen),
+        );
       } else {
         return const LoginRequiredScreen(
           hasCloseButton: false,

@@ -58,9 +58,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
           iconSize: Sizes.screenCloseIconSize,
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const LoginRequiredScreen();
-            }));
+            Navigator.pop(context);
           },
         ),
       ),

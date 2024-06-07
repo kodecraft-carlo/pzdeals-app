@@ -33,6 +33,7 @@ class CategorySettingsNotifier extends ChangeNotifier {
   bool get isCollectionLoading => _isCollectionLoading;
 
   void setUserUID(String uid) {
+    if (uid.isEmpty) return;
     debugPrint('SettingsNotifier setUserUID called with $uid');
     _userUID = uid;
     _boxName = '${_userUID}_user_category_settings';
@@ -79,6 +80,11 @@ class CategorySettingsNotifier extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     final authUserDataState = ref.watch(authUserDataProvider);
+    if (authUserDataState.userData == null) {
+      loadCollections();
+      return;
+    }
+
     final userId = authUserDataState.userData!.uid;
     _boxName = '${userId}_user_category_settings';
     try {

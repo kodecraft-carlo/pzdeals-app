@@ -6,14 +6,12 @@ import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/alerts/alerts.dart';
-import 'package:pzdeals/src/features/alerts/presentation/screens/screen_alerts_management.dart';
 import 'package:pzdeals/src/features/deals/deals.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/product_deal_description.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/more/more.dart';
 import 'package:pzdeals/src/features/notifications/notifications.dart';
-import 'package:pzdeals/src/features/notifications/presentation/screens/notifications_display.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/features/stores/stores.dart';
@@ -147,10 +145,13 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   }
 
   void showProductDeal(int productId) {
+    ref.read(notificationsProvider).refreshNotification();
     loadProduct(productId).then((product) {
       debugPrint('notifiId: $notifId');
       if (notifId != '') {
-        ref.read(notificationsProvider).markAsRead(notifId);
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          ref.read(notificationsProvider).markAsRead(notifId);
+        });
       }
 
       showDialog(

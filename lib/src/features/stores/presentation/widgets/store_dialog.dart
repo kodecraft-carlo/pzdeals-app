@@ -24,9 +24,9 @@ class StoreDialog extends StatelessWidget {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
-        surfaceTintColor: PZColors.pzWhite,
-        backgroundColor: PZColors.pzWhite,
-        shadowColor: PZColors.pzBlack,
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        // shadowColor: PZColors.pzBlack,
         clipBehavior: Clip.hardEdge,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Sizes.dialogBorderRadius),
@@ -34,59 +34,91 @@ class StoreDialog extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(bottom: Sizes.paddingBottomSmall),
           child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(Sizes.paddingAll),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      height: 50,
-                      width: 50,
-                      margin: const EdgeInsets.only(
-                          bottom: Sizes.paddingBottomSmall),
-                      clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                            Sizes.cardBorderRadius / 1.65),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 3,
-                            blurRadius: 9,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              margin: const EdgeInsets.only(
+                                  bottom: Sizes.paddingBottomSmall),
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(
+                                    Sizes.cardBorderRadius / 1.65),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    spreadRadius: 3,
+                                    blurRadius: 9,
+                                  ),
+                                ],
+                              ),
+                              child: storeImage,
+                            ),
+                          ),
+                          Align(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: Sizes.paddingAll),
+                              child: Text(
+                                storeName,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    color: PZColors.pzWhite,
+                                    shadows: [
+                                      Shadow(
+                                        offset: Offset(1.0, 1.0),
+                                        blurRadius: 15.0,
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                      ),
+                                      // Add more shadows here if needed
+                                    ],
+                                    fontSize: Sizes.fontSizeMedium,
+                                    fontWeight: FontWeight.w600),
+                                textScaler: MediaQuery.textScalerOf(context),
+                              ),
+                            ),
                           ),
                         ],
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: PZColors.pzWhite,
+                    borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 3,
+                        blurRadius: 9,
                       ),
-                      child: storeImage,
-                    ),
+                    ],
                   ),
-                  Align(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: Sizes.paddingAll),
-                      child: Text(
-                        storeName,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            color: PZColors.pzBlack,
-                            fontSize: Sizes.bodyFontSize,
-                            fontWeight: FontWeight.w500),
-                        textScaler: MediaQuery.textScalerOf(context),
-                      ),
-                    ),
-                  ),
-                  const Divider(
-                    color: PZColors.pzLightGrey,
-                    thickness: 1,
-                  ),
-                  StoreCollectionList(
+                  padding: const EdgeInsets.all(Sizes.paddingAll),
+                  child: StoreCollectionList(
                     htmlData: htmlData,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

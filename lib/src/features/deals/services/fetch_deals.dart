@@ -133,21 +133,21 @@ class FetchProductDealService {
     final box = await Hive.openBox<dynamic>(boxName);
 
     // Get the existing cached products.
-    List<ProductDealcardData> cachedProducts =
-        box.get(boxName)?.cast<ProductDealcardData>() ?? [];
+    // List<ProductDealcardData> cachedProducts =
+    //     box.get(boxName)?.cast<ProductDealcardData>() ?? [];
 
     // Append the new products to the cached products, if they're not already in the cache.
-    products = products.reversed.toList();
-    for (var product in products) {
-      if (!cachedProducts.any(
-          (cachedProduct) => cachedProduct.productId == product.productId)) {
-        cachedProducts.insert(0, product);
-      }
-    }
+    // products = products.reversed.toList();
+    // for (var product in products) {
+    //   if (!cachedProducts.any(
+    //       (cachedProduct) => cachedProduct.productId == product.productId)) {
+    //     cachedProducts.insert(0, product);
+    //   }
+    // }
 
     // Store the combined list back in the cache.
     await box.clear(); // Clear existing cache
-    await box.put(boxName, cachedProducts);
+    await box.put(boxName, products);
     await box.close();
   }
 

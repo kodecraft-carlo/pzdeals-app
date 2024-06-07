@@ -6,6 +6,8 @@ import 'package:pzdeals/src/features/alerts/models/index.dart';
 import 'package:pzdeals/src/features/alerts/models/keyword_data.dart';
 import 'package:pzdeals/src/features/alerts/state/keyword_provider.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
+import 'package:pzdeals/src/features/authentication/presentation/widgets/dialog_login_required.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 
 class PopularKeywordsGrid extends ConsumerWidget {
@@ -70,7 +72,7 @@ class PopularKeywordsGrid extends ConsumerWidget {
         mainAxisSpacing: 15,
         childAspectRatio: 2 / 2.6,
       ),
-      itemCount: keywordsdata.length > 12 ? 12 : keywordsdata.length,
+      itemCount: keywordsdata.length,
       itemBuilder: (context, index) {
         final keyword = keywordsdata[index];
         return PopularKeywordsCard(
@@ -94,6 +96,30 @@ class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
   bool _isAdded = false;
 
   void addKeyword(KeywordData keywordData, BuildContext context) {
+    if (ref.read(authUserDataProvider).userData == null) {
+      showDialog(
+        context: context,
+        useRootNavigator: false,
+        barrierDismissible: true,
+        builder: (context) => ScaffoldMessenger(
+          child: Builder(
+            builder: (context) => Scaffold(
+              backgroundColor: Colors.transparent,
+              body: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                behavior: HitTestBehavior.opaque,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: const LoginRequiredDialog(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      debugPrint('User not authenticated');
+      return;
+    }
     if (ref
         .read(keywordsProvider)
         .addKeywordLocally(widget.keywordData, 'popular')) {
@@ -179,8 +205,9 @@ class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: Sizes.paddingAllSmall),
+            padding: const EdgeInsets.symmetric(
+                vertical: Sizes.paddingAllSmall,
+                horizontal: Sizes.paddingAllSmall / 2),
             child: Text(
               widget.keywordData.keyword,
               style: const TextStyle(
@@ -188,6 +215,9 @@ class PopularKeywordsCardState extends ConsumerState<PopularKeywordsCard> {
                 fontWeight: FontWeight.w500,
                 fontSize: Sizes.bodyFontSize,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           )
         ],

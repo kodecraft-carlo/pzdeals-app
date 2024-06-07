@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/constants/index.dart';
@@ -66,6 +67,7 @@ class FirebaseMessagingApi {
   }
 
   Future initPushNotifications() async {
+    bool isBadgeAllowed = await FlutterAppBadger.isAppBadgeSupported();
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
         alert: true, badge: true, sound: true);
     _firebaseMessaging.subscribeToTopic('manual_alerts');
@@ -111,6 +113,9 @@ class FirebaseMessagingApi {
           }
         }
         storeNotification(message);
+        if (isBadgeAllowed) {
+          FlutterAppBadger.updateBadgeCount(1);
+        }
       }
     });
   }

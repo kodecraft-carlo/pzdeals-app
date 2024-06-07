@@ -34,6 +34,7 @@ class KeywordsNotifier extends ChangeNotifier {
 
   void setUserUID() {
     final authDataState = ref.watch(authUserDataProvider);
+    if (authDataState.userData == null) return;
     debugPrint('setUserUID called with ${authDataState.userData!.uid}');
     _userUID = authDataState.userData!.uid;
     _boxName = '${_userUID}_keywords';
@@ -43,6 +44,9 @@ class KeywordsNotifier extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
+    if (_userUID.isEmpty) {
+      return;
+    }
     try {
       _savedkeywords = sortKeywordsDescending(
           await _keywordService.getCachedKeywords(_boxName));
@@ -89,13 +93,17 @@ class KeywordsNotifier extends ChangeNotifier {
       // notifyListeners();
 
       final List<String> excludedKeywords =
-          _savedkeywords.map((e) => e.keyword).toList();
+          _userUID.isEmpty ? [] : _savedkeywords.map((e) => e.keyword).toList();
 
       final serverKeywords = await _keywordService.fetchPopularKeyword(
           _boxNamePopular, 100, excludedKeywords, pageNumber);
 
-      _popularKeywords =
-          removeSavedFromPopularList(_savedkeywords, serverKeywords);
+      if (_userUID.isEmpty) {
+        _popularKeywords = sortKeywordsDescending(serverKeywords);
+      } else {
+        _popularKeywords =
+            removeSavedFromPopularList(_savedkeywords, serverKeywords);
+      }
 
       notifyListeners();
     } catch (e) {

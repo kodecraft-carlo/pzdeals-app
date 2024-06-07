@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
@@ -55,6 +56,7 @@ class NotificationListNotifier extends ChangeNotifier {
   }
 
   Future<void> refreshNotification() async {
+    debugPrint('refreshNotification called');
     _notifications.clear();
     _notifData.clear();
     try {
@@ -189,6 +191,7 @@ class NotificationListNotifier extends ChangeNotifier {
 
       await Future.delayed(const Duration(seconds: 5), () {
         removeNotificationFromFirestore(isAll: true);
+        clearBadgeCount();
       });
 
       // await _notifService.deleteAllNotifications(_boxName);
@@ -222,6 +225,7 @@ class NotificationListNotifier extends ChangeNotifier {
         element.isRead = true;
       }
       notifyListeners();
+      clearBadgeCount();
     } catch (e) {
       debugPrint('error marking all as read: $e');
     }
@@ -293,8 +297,31 @@ class NotificationListNotifier extends ChangeNotifier {
           _unreadCount++;
         }
       });
+
+      updateBadgeCount(_unreadCount);
+
       debugPrint('unread count: $_unreadCount');
       notifyListeners();
     });
+  }
+
+  Future<void> updateBadgeCount(int count) async {
+    try {
+      final bool isSupported = await FlutterAppBadger.isAppBadgeSupported();
+      if (!isSupported) return;
+      await FlutterAppBadger.updateBadgeCount(count);
+    } catch (e) {
+      debugPrint('error updating badge count: $e');
+    }
+  }
+
+  Future<void> clearBadgeCount() async {
+    try {
+      final bool isSupported = await FlutterAppBadger.isAppBadgeSupported();
+      if (!isSupported) return;
+      await FlutterAppBadger.removeBadge();
+    } catch (e) {
+      debugPrint('error clearing badge count: $e');
+    }
   }
 }

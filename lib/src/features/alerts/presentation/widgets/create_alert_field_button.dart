@@ -5,6 +5,9 @@ import 'package:pzdeals/src/actions/show_snackbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
 import 'package:pzdeals/src/features/alerts/state/keyword_provider.dart';
+import 'package:pzdeals/src/features/authentication/presentation/widgets/dialog_login_required.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
+import 'package:pzdeals/src/state/authentication_provider.dart';
 
 class CreateAlertFieldButton extends ConsumerStatefulWidget {
   const CreateAlertFieldButton(
@@ -40,6 +43,30 @@ class CreateAlertFieldButtonState
 
   void onButtonPressed() {
     if (widget.textController.text.isNotEmpty) {
+      if (ref.read(authUserDataProvider).userData == null) {
+        showDialog(
+          context: context,
+          useRootNavigator: false,
+          barrierDismissible: true,
+          builder: (context) => ScaffoldMessenger(
+            child: Builder(
+              builder: (context) => Scaffold(
+                backgroundColor: Colors.transparent,
+                body: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  behavior: HitTestBehavior.opaque,
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: const LoginRequiredDialog(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        debugPrint('User not authenticated');
+        return;
+      }
       if (ref.read(keywordsProvider).addKeywordLocally(
           KeywordData(
               id: 0, keyword: widget.textController.text.trim().toLowerCase()),

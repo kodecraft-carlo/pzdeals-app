@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pzdeals/src/actions/show_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
@@ -137,12 +141,17 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
                             ),
                           )),
                     ),
-                    ref.read(notificationsProvider).unreadCount > 0
-                        ? markAllAsRead()
-                        : const SizedBox.shrink(),
-                    const SizedBox(width: Sizes.paddingAllSmall),
-                    ref.watch(notificationsProvider).hasNotification == true
-                        ? clearNotifications()
+                    // ref.read(notificationsProvider).unreadCount > 0
+                    //     ? markAllAsRead()
+                    //     : const SizedBox.shrink(),
+                    // const SizedBox(width: Sizes.paddingAllSmall),
+                    // ref.watch(notificationsProvider).hasNotification == true
+                    //     ? clearNotifications()
+                    //     : const SizedBox.shrink(),
+                    ref.read(notificationsProvider).unreadCount > 0 ||
+                            ref.watch(notificationsProvider).hasNotification ==
+                                true
+                        ? pullDownButtonWidget()
                         : const SizedBox.shrink(),
                   ],
                 ),
@@ -225,5 +234,75 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
             )
           ]),
         ));
+  }
+
+  Widget pullDownButtonWidget() {
+    return PullDownButton(
+      itemBuilder: (context) => [
+        PullDownMenuItem(
+          enabled: ref.read(notificationsProvider).unreadCount > 0,
+          title:
+              'Mark all as read (${ref.read(notificationsProvider).unreadCount})',
+          onTap: () {
+            showAlertDialog(context, 'Read Notifications',
+                'Are you sure you want to mark all notifications as read? This action cannot be undone.',
+                () {
+              ref.read(notificationsProvider).markAllAsRead();
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Marked all notifications as read'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }, 'Confirm');
+          },
+          icon: Platform.isIOS ? CupertinoIcons.check_mark_circled : Icons.done,
+        ),
+        PullDownMenuItem(
+          enabled: ref.watch(notificationsProvider).hasNotification,
+          title: 'Clear all',
+          onTap: () {
+            showAlertDialog(context, 'Clear Notifications',
+                'Are you sure you want to clear all notifications?', () {
+              ref.read(notificationsProvider).removeAllNotification();
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Notification cleared'),
+                  action: SnackBarAction(
+                    label: 'UNDO',
+                    onPressed: () async {
+                      ref
+                          .read(notificationsProvider)
+                          .reinsertAllNotificationToNotificationList();
+
+                      ref.read(notificationsProvider).refreshNotification();
+                    },
+                  ),
+                  duration: const Duration(seconds: 5),
+                ),
+              );
+            }, 'Clear');
+          },
+          itemTheme: PullDownMenuItemTheme(
+            textStyle: TextStyle(
+              color: Platform.isIOS
+                  ? CupertinoColors.systemRed
+                  : PZColors.pzOrange,
+            ),
+          ),
+          icon: Platform.isIOS ? CupertinoIcons.delete : Icons.delete_forever,
+        ),
+      ],
+      buttonBuilder: (context, showMenu) => GestureDetector(
+        onTap: showMenu,
+        child: Icon(
+          Platform.isIOS ? CupertinoIcons.ellipsis_circle : Icons.more_vert,
+          color:
+              Platform.isIOS ? CupertinoColors.systemBlue : PZColors.pzOrange,
+        ),
+      ),
+    );
   }
 }
