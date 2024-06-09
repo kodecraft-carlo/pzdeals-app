@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
 class DropdownWidget extends StatefulWidget {
@@ -52,71 +53,72 @@ class DropdownWidgetState extends State<DropdownWidget> {
   @override
   Widget build(BuildContext context) {
     return isIOS()
-        ? Stack(
-            alignment: Alignment.centerLeft,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  debugPrint('onTap');
-                  openDropdown();
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 45,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: PZColors.pzGrey.withOpacity(0.125),
-                    borderRadius:
-                        BorderRadius.circular(Sizes.textFieldCornerRadius),
-                  ),
-                ),
-              ),
-              Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width - 80,
-                    child: Theme(
-                      data: Theme.of(context).copyWith(
-                        canvasColor: Colors.white,
-                      ),
-                      child: DropdownButton<String>(
-                        key: _dropdownButtonKey,
-                        value: _selectedValue,
-                        borderRadius:
-                            BorderRadius.circular(Sizes.textFieldCornerRadius),
-                        isExpanded: true,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedValue = value;
-                            widget.onChanged(value);
-                          });
-                        },
-                        underline: const SizedBox.shrink(),
-                        icon: const Icon(
-                          Icons.keyboard_arrow_down,
-                          color: Colors.transparent,
-                        ),
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: widget.isDense
-                              ? Sizes.fontSizeSmall
-                              : Sizes.fontSizeMedium,
-                          color: PZColors.pzBlack,
-                        ),
-                        items: widget.dropdownItems
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              '$value${widget.isPercentOff ? '% off or more' : ''}',
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  )),
-            ],
-          )
+        ?
+        // Stack(
+        //     alignment: Alignment.centerLeft,
+        //     children: [
+        //       GestureDetector(
+        //         onTap: () {
+        //           debugPrint('onTap');
+        //           openDropdown();
+        //         },
+        //         child: Container(
+        //           width: double.infinity,
+        //           height: 45,
+        //           padding: const EdgeInsets.all(16),
+        //           decoration: BoxDecoration(
+        //             color: PZColors.pzGrey.withOpacity(0.125),
+        //             borderRadius:
+        //                 BorderRadius.circular(Sizes.textFieldCornerRadius),
+        //           ),
+        //         ),
+        //       ),
+        //       Padding(
+        //           padding: const EdgeInsets.all(16),
+        //           child: SizedBox(
+        //             width: MediaQuery.of(context).size.width - 80,
+        //             child: Theme(
+        //               data: Theme.of(context).copyWith(
+        //                 canvasColor: Colors.white,
+        //               ),
+        //               child: DropdownButton<String>(
+        //                 key: _dropdownButtonKey,
+        //                 value: _selectedValue,
+        //                 borderRadius:
+        //                     BorderRadius.circular(Sizes.textFieldCornerRadius),
+        //                 isExpanded: true,
+        //                 onChanged: (value) {
+        //                   setState(() {
+        //                     _selectedValue = value;
+        //                     widget.onChanged(value);
+        //                   });
+        //                 },
+        //                 underline: const SizedBox.shrink(),
+        //                 icon: const Icon(
+        //                   Icons.keyboard_arrow_down,
+        //                   color: Colors.transparent,
+        //                 ),
+        //                 style: TextStyle(
+        //                   fontFamily: 'Poppins',
+        //                   fontSize: widget.isDense
+        //                       ? Sizes.fontSizeSmall
+        //                       : Sizes.fontSizeMedium,
+        //                   color: PZColors.pzBlack,
+        //                 ),
+        //                 items: widget.dropdownItems
+        //                     .map<DropdownMenuItem<String>>((String value) {
+        //                   return DropdownMenuItem<String>(
+        //                     value: value,
+        //                     child: Text(
+        //                       '$value${widget.isPercentOff ? '% off or more' : ''}',
+        //                     ),
+        //                   );
+        //                 }).toList(),
+        //               ),
+        //             ),
+        //           )),
+        //     ],
+        //   )
         // GestureDetector(
         //     onTap: () => showCupertinoModalPopup(
         //       context: context,
@@ -192,6 +194,35 @@ class DropdownWidgetState extends State<DropdownWidget> {
         //           '${_selectedValue ?? widget.dropdownLabel}${widget.isPercentOff ? '% off or more' : ''}'),
         //     ),
         //   )
+        PullDownButton(
+            position: PullDownMenuPosition.over,
+            buttonAnchor: PullDownMenuAnchor.end,
+            itemBuilder: (context) => widget.dropdownItems.map((String item) {
+              return PullDownMenuItem(
+                title: '$item${widget.isPercentOff ? '% off or more' : ''}',
+                onTap: () {
+                  setState(() {
+                    _selectedValue = item;
+                    widget.onChanged(item);
+                  });
+                },
+              );
+            }).toList(),
+            buttonBuilder: (context, showMenu) => GestureDetector(
+              onTap: showMenu,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: PZColors.pzGrey.withOpacity(0.125),
+                  borderRadius:
+                      BorderRadius.circular(Sizes.textFieldCornerRadius),
+                ),
+                child: Text(
+                    '${_selectedValue ?? widget.dropdownLabel}${widget.isPercentOff ? '% off or more' : ''}'),
+              ),
+            ),
+          )
         : DropdownButtonFormField<String>(
             value: _selectedValue,
             isExpanded: false,

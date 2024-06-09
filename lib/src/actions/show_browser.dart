@@ -28,7 +28,7 @@ void openBrowser(String url) async {
   //   debugPrint('launching url: $uri');
   //   await launchUrl(uri, mode: LaunchMode.externalApplication);
   // } else {
-  debugPrint('Could not launch $uri');
+  //   debugPrint('Could not launch $uri');
   await browser.open(
       url: WebUri(url),
       settings: ChromeSafariBrowserSettings(
