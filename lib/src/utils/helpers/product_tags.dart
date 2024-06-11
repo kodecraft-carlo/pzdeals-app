@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pzdeals/config.dart';
 
 String getStoreImageUrlFromTags(List<dynamic> tagIds) {
   for (var tag in tagIds) {
@@ -7,8 +8,11 @@ String getStoreImageUrlFromTags(List<dynamic> tagIds) {
       continue;
     }
     final storeImage = tag['tags_id']['image'];
+    if (tag['tags_id']['tag_name'] == 'ac') {
+      return '${AppConfig.directusAssetsUrl}9307aaa4-25e0-4897-b555-a3279ca58802';
+    }
     if (storeImage != null) {
-      return 'https://backend.pzdeals.com/assets/$storeImage';
+      return '${AppConfig.directusAssetsUrl}$storeImage';
     }
   }
   return 'assets/images/pzdeals_store.png';

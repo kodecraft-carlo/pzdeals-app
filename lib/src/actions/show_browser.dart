@@ -22,50 +22,70 @@ class OpenChromeSafariBrowser extends ChromeSafariBrowser {
   }
 }
 
-void openBrowser(String url) async {
+Future<void> openBrowser(String url) async {
   debugPrint('openBrowser called with url: $url');
   final browser = OpenChromeSafariBrowser();
-  await browser.open(
-      url: WebUri(url),
-      settings: ChromeSafariBrowserSettings(
-          shareState: CustomTabsShareState.SHARE_STATE_OFF,
-          barCollapsingEnabled: true));
+  // await browser.open(
+  //     url: WebUri(url),
+  //     settings: ChromeSafariBrowserSettings(
+  //         shareState: CustomTabsShareState.SHARE_STATE_OFF,
+  //         barCollapsingEnabled: true));
 // UNCOMMENT ON TUESDAY
-  // final longUrl = await getUrl(url);
-  // final Uri uri;
-  // if (longUrl.contains('https://www.walmart.com') ||
-  //     longUrl.contains('https://www.amazon.com')) {
-  //   uri = Uri.parse(longUrl);
-  //   if (await canLaunchUrl(uri)) {
-  //     debugPrint('can launch url: $uri');
-  //     await launchUrl(uri, mode: LaunchMode.externalApplication);
-  //   } else {
-  //     await browser.open(
-  //         url: WebUri(url),
-  //         settings: ChromeSafariBrowserSettings(
-  //             shareState: CustomTabsShareState.SHARE_STATE_OFF,
-  //             barCollapsingEnabled: true));
-  //   }
-  // } else if (url.contains('https://www.walmart.com') ||
-  //     url.contains('https://www.amazon.com')) {
-  //   uri = Uri.parse(url);
-  //   if (await canLaunchUrl(uri)) {
-  //     debugPrint('can launch url: $uri');
-  //     await launchUrl(uri, mode: LaunchMode.externalApplication);
-  //   } else {
-  //     await browser.open(
-  //         url: WebUri(url),
-  //         settings: ChromeSafariBrowserSettings(
-  //             shareState: CustomTabsShareState.SHARE_STATE_OFF,
-  //             barCollapsingEnabled: true));
-  //   }
-  // } else {
-  //   await browser.open(
-  //       url: WebUri(url),
-  //       settings: ChromeSafariBrowserSettings(
-  //           shareState: CustomTabsShareState.SHARE_STATE_OFF,
-  //           barCollapsingEnabled: true));
-  // }
+
+  if (url.contains('https://pzdls.co')) {
+    await browser.open(
+        url: WebUri(url),
+        settings: ChromeSafariBrowserSettings(
+            shareState: CustomTabsShareState.SHARE_STATE_OFF,
+            barCollapsingEnabled: true));
+  } else {
+    final longUrl = await getUrl(url);
+    final Uri uri;
+    if (longUrl == null) {
+      if (url.contains('https://www.walmart.com') ||
+          url.contains('https://www.amazon.com')) {
+        uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          debugPrint('can launch url 0: $uri');
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          await browser.open(
+              url: WebUri(url),
+              settings: ChromeSafariBrowserSettings(
+                  shareState: CustomTabsShareState.SHARE_STATE_OFF,
+                  barCollapsingEnabled: true));
+        }
+      } else {
+        debugPrint('can launch url 1: $url');
+        await browser.open(
+            url: WebUri(url),
+            settings: ChromeSafariBrowserSettings(
+                shareState: CustomTabsShareState.SHARE_STATE_OFF,
+                barCollapsingEnabled: true));
+      }
+    } else if (longUrl.contains('https://www.walmart.com') ||
+        longUrl.contains('https://www.amazon.com')) {
+      uri = Uri.parse(longUrl);
+      if (await canLaunchUrl(uri)) {
+        debugPrint('can launch url 2: $uri');
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        debugPrint('chrome safari browser 1');
+        await browser.open(
+            url: WebUri(url),
+            settings: ChromeSafariBrowserSettings(
+                shareState: CustomTabsShareState.SHARE_STATE_OFF,
+                barCollapsingEnabled: true));
+      }
+    } else {
+      debugPrint('chrome safari browser 2');
+      await browser.open(
+          url: WebUri(url),
+          settings: ChromeSafariBrowserSettings(
+              shareState: CustomTabsShareState.SHARE_STATE_OFF,
+              barCollapsingEnabled: true));
+    }
+  }
 }
 
 getUrl(url) async {

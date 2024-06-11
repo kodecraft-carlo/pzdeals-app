@@ -3,10 +3,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/bouncing_arrow_down.dart';
 import 'package:pzdeals/src/common_widgets/button_browser.dart';
+import 'package:pzdeals/src/common_widgets/button_see_deal.dart';
+import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_deal_actions.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
@@ -31,6 +34,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
   bool _isScrollingDown = false;
   final scrollController = ScrollController();
   bool _showAffiliateLinkDescription = false;
+  bool isUrlLoading = false;
   // final GlobalKey widgetKey = GlobalKey();
 
   @override
@@ -195,10 +199,19 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: Sizes.paddingAll,
                               vertical: Sizes.paddingAllSmall),
-                          child: OpenBrowserButton(
+                          child: SeeDealButton(
                             buttonLabel: 'See Deal',
-                            url: widget.productData.barcodeLink ?? '',
-                          ))
+                            onPressed: () {
+                              HapticFeedback.mediumImpact();
+                              LoadingDialog.show(context);
+                              Future.wait([
+                                openBrowser(
+                                    widget.productData.barcodeLink ?? '')
+                              ]).whenComplete(
+                                  () => LoadingDialog.hide(context));
+                            },
+                          ),
+                        )
                       : const SizedBox(
                           height: Sizes.spaceBetweenSectionsXL,
                         ),

@@ -1,23 +1,30 @@
+import 'dart:io';
 import 'dart:ui';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LoadingDialog {
   static void show(BuildContext context, {String? message}) {
-    showDialog(
+    showAdaptiveDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: const AlertDialog.adaptive(
+            child: Dialog(
               backgroundColor: Colors.transparent,
               surfaceTintColor: Colors.transparent,
-              content: SizedBox(
-                height: 50,
-                width: 50,
+              // contentPadding: EdgeInsets.all(0),
+              child: SizedBox(
+                height: 100,
+                width: 100,
                 child: Center(
-                  child: CircularProgressIndicator.adaptive(),
+                  child: Transform.scale(
+                    scale: 1.5,
+                    child: Platform.isIOS
+                        ? const CupertinoActivityIndicator()
+                        : const CircularProgressIndicator(),
+                  ),
                 ),
               ),
             ));

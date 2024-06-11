@@ -112,19 +112,6 @@ class ProductDealDescriptionState
         const SizedBox(
           height: Sizes.spaceBetweenContent,
         ),
-        Align(
-          alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.only(
-                top: Sizes.paddingAllSmall, bottom: Sizes.paddingAllSmall),
-            child: StoreImageWidget(
-              storeAssetImage: widget.productData.storeAssetImage,
-              imageWidth: 30,
-              imageHeight: 30,
-              hasLayoutType: false,
-            ),
-          ),
-        ),
         Text(
           widget.productData.productName,
           style: const TextStyle(
@@ -133,14 +120,34 @@ class ProductDealDescriptionState
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
         ),
-        widget.productData.discountPercentage > 0
-            ? const SizedBox(height: Sizes.spaceBetweenContentSmall)
-            : const SizedBox.shrink(),
-        widget.productData.discountPercentage > 0
-            ? BadgeWidget(
-                discountPercentage: widget.productData.discountPercentage)
-            : const SizedBox.shrink(),
         const SizedBox(height: Sizes.spaceBetweenContentSmall),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            widget.productData.discountPercentage > 0
+                ? BadgeWidget(
+                    discountPercentage: widget.productData.discountPercentage)
+                : const SizedBox.shrink(),
+            widget.productData.discountPercentage > 0
+                ? const SizedBox(width: Sizes.paddingAllSmall)
+                : const SizedBox.shrink(),
+            Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    top: Sizes.paddingAllSmall / 2,
+                    bottom: Sizes.paddingAllSmall / 2),
+                child: StoreImageWidget(
+                  storeAssetImage: widget.productData.storeAssetImage,
+                  imageWidth: 30,
+                  imageHeight: 25,
+                  hasLayoutType: false,
+                ),
+              ),
+            ),
+          ],
+        ),
+        // const SizedBox(height: Sizes.spaceBetweenContentSmall),
         widget.productData.isProductNoPrice != null &&
                 widget.productData.isProductNoPrice == false &&
                 (widget.productData.oldPrice != null &&
