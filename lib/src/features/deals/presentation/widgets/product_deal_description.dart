@@ -137,12 +137,25 @@ class ProductDealDescriptionState
                 padding: const EdgeInsets.only(
                     top: Sizes.paddingAllSmall / 2,
                     bottom: Sizes.paddingAllSmall / 2),
-                child: StoreImageWidget(
-                  storeAssetImage: widget.productData.storeAssetImage,
-                  imageWidth: 30,
-                  imageHeight: 25,
-                  hasLayoutType: false,
-                ),
+                child: Container(
+                    //add red outline
+                    // decoration: BoxDecoration(
+                    //   border: Border.all(
+                    //     color: Colors.red,
+                    //     width: 1,
+                    //   ),
+                    //   borderRadius: BorderRadius.circular(5),
+                    // ),
+                    height: 21,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: StoreImageWidget(
+                        storeAssetImage: widget.productData.storeAssetImage,
+                        imageWidth: 30,
+                        imageHeight: 25,
+                        hasLayoutType: false,
+                      ),
+                    )),
               ),
             ),
           ],

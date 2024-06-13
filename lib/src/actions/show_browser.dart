@@ -32,45 +32,23 @@ Future<void> openBrowser(String url) async {
   //         barCollapsingEnabled: true));
 // UNCOMMENT ON TUESDAY
 
-  if (url.contains('https://pzdls.co')) {
-    await browser.open(
-        url: WebUri(url),
-        settings: ChromeSafariBrowserSettings(
-            shareState: CustomTabsShareState.SHARE_STATE_OFF,
-            barCollapsingEnabled: true));
-  } else {
-    final longUrl = await getUrl(url);
-    final Uri uri;
-    if (longUrl == null) {
-      if (url.contains('https://www.walmart.com') ||
-          url.contains('https://www.amazon.com')) {
-        uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          debugPrint('can launch url 0: $uri');
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        } else {
-          await browser.open(
-              url: WebUri(url),
-              settings: ChromeSafariBrowserSettings(
-                  shareState: CustomTabsShareState.SHARE_STATE_OFF,
-                  barCollapsingEnabled: true));
-        }
-      } else {
-        debugPrint('can launch url 1: $url');
-        await browser.open(
-            url: WebUri(url),
-            settings: ChromeSafariBrowserSettings(
-                shareState: CustomTabsShareState.SHARE_STATE_OFF,
-                barCollapsingEnabled: true));
-      }
-    } else if (longUrl.contains('https://www.walmart.com') ||
-        longUrl.contains('https://www.amazon.com')) {
-      uri = Uri.parse(longUrl);
+  // if (url.contains('https://pzdls.co')) {
+  //   await browser.open(
+  //       url: WebUri(url),
+  //       settings: ChromeSafariBrowserSettings(
+  //           shareState: CustomTabsShareState.SHARE_STATE_OFF,
+  //           barCollapsingEnabled: true));
+  // } else {
+  final longUrl = await getUrl(url);
+  final Uri uri;
+  if (longUrl == null || longUrl.isEmpty) {
+    if (url.contains('https://www.walmart.com') ||
+        url.contains('https://www.amazon.com')) {
+      uri = Uri.parse(url);
       if (await canLaunchUrl(uri)) {
-        debugPrint('can launch url 2: $uri');
+        debugPrint('can launch url 0: $uri');
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        debugPrint('chrome safari browser 1');
         await browser.open(
             url: WebUri(url),
             settings: ChromeSafariBrowserSettings(
@@ -78,36 +56,65 @@ Future<void> openBrowser(String url) async {
                 barCollapsingEnabled: true));
       }
     } else {
-      debugPrint('chrome safari browser 2');
+      debugPrint('can launch url 1: $url');
       await browser.open(
           url: WebUri(url),
           settings: ChromeSafariBrowserSettings(
               shareState: CustomTabsShareState.SHARE_STATE_OFF,
               barCollapsingEnabled: true));
     }
+  } else if (longUrl.contains('https://www.walmart.com') ||
+      longUrl.contains('https://www.amazon.com')) {
+    uri = Uri.parse(longUrl);
+    if (await canLaunchUrl(uri)) {
+      debugPrint('can launch url 2: $uri');
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint('chrome safari browser 1');
+      await browser.open(
+          url: WebUri(url),
+          settings: ChromeSafariBrowserSettings(
+              shareState: CustomTabsShareState.SHARE_STATE_OFF,
+              barCollapsingEnabled: true));
+    }
+  } else {
+    debugPrint('chrome safari browser 2');
+    await browser.open(
+        url: WebUri(url),
+        settings: ChromeSafariBrowserSettings(
+            shareState: CustomTabsShareState.SHARE_STATE_OFF,
+            barCollapsingEnabled: true));
   }
+  // }
 }
 
-getUrl(url) async {
+Future<String> getUrl(String url) async {
   final client = HttpClient();
   var uri = Uri.parse(url);
   var request = await client.getUrl(uri);
   request.followRedirects = false;
   var response = await request.close();
-  while (response.isRedirect) {
+  int redirectCount = 0;
+  const int maxRedirects = 3;
+
+  while (response.isRedirect && redirectCount < maxRedirects) {
     response.drain();
     final location = response.headers.value(HttpHeaders.locationHeader);
 
     if (location != null) {
       uri = uri.resolve(location);
-      request = await client.getUrl(uri);
-
-      if (location.toString().contains('https://www.amazon.com') ||
-          location.toString().contains('https://www.walmart.com')) {
-        return location.toString();
+      if (location.contains('https://www.amazon.com') ||
+          location.contains('https://www.walmart.com')) {
+        return location;
       }
+      request = await client.getUrl(uri);
       request.followRedirects = false;
       response = await request.close();
+      redirectCount++;
+      debugPrint('redirectCount: $redirectCount');
+    } else {
+      break;
     }
   }
+  return url;
 }

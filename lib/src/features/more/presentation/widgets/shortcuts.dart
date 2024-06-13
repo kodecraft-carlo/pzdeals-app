@@ -46,7 +46,7 @@ class MoreShortcutsWidget extends StatelessWidget {
         const NavigateScreenWidget(
           destinationWidget: BookmarkedScreenWidget(),
           childWidget: SquareLabeledIcon(
-            iconTitle: 'Bookmark',
+            iconTitle: 'Bookmarks',
             iconImage: 'assets/images/shortcuts/bookmark.png',
             iconAssetType: 'asset',
             borderColor: Colors.blue,
