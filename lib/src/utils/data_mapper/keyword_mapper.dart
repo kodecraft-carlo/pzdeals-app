@@ -13,6 +13,7 @@ class KeywordDataMapper {
           datecreated: keywordType == 'saved'
               ? json['date_subscribed'] ?? ''
               : json['date_created'] ?? '',
+          type: json['type'] ?? '',
         );
       }));
     } catch (e) {
@@ -30,6 +31,7 @@ class KeywordDataMapper {
         keyword: json['keyword'].toString().toLowerCase(),
         imageUrl: json['image_src'] ?? '',
         datecreated: json['date_created'] ?? '',
+        type: json['type'] ?? '',
       );
     } catch (e) {
       debugPrint('Error in mapToKeywordData: $e');

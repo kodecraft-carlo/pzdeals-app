@@ -21,13 +21,14 @@ class KeywordDataAdapter extends TypeAdapter<KeywordData> {
       id: fields[0] as int,
       imageUrl: fields[2] as String,
       datecreated: fields[3] as String,
+      type: fields[4] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, KeywordData obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class KeywordDataAdapter extends TypeAdapter<KeywordData> {
       ..writeByte(2)
       ..write(obj.imageUrl)
       ..writeByte(3)
-      ..write(obj.datecreated);
+      ..write(obj.datecreated)
+      ..writeByte(4)
+      ..write(obj.type);
   }
 
   @override

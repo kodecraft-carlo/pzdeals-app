@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 
-class SliderWidget extends StatefulWidget {
-  const SliderWidget({super.key});
+class CommonSliderWidget extends StatefulWidget {
+  const CommonSliderWidget({super.key});
 
   @override
-  State<SliderWidget> createState() => _SliderWidgetState();
+  State<CommonSliderWidget> createState() => CommonSliderWidgetState();
 }
 
-class _SliderWidgetState extends State<SliderWidget> {
+class CommonSliderWidgetState extends State<CommonSliderWidget> {
   double _currentSliderValue = 20;
 
   @override

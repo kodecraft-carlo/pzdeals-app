@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
@@ -10,9 +11,11 @@ final keywordsProvider =
 
 class KeywordsNotifier extends ChangeNotifier {
   final KeywordService _keywordService = KeywordService();
+  final _firebaseMessaging = FirebaseMessaging.instance;
   Ref ref;
   KeywordsNotifier(this.ref) : super() {
     setUserUID();
+    loadCategoryKeywords();
     if (ref.watch(authUserDataProvider).userData != null) {
       loadSavedKeywords();
     }
@@ -27,6 +30,7 @@ class KeywordsNotifier extends ChangeNotifier {
 
   List<KeywordData> _savedkeywords = [];
   List<KeywordData> _popularKeywords = [];
+  List<String> categoryKeywords = [];
 
   bool get isLoading => _isLoading;
   List<KeywordData> get savedkeywords => _savedkeywords;
@@ -38,6 +42,16 @@ class KeywordsNotifier extends ChangeNotifier {
     debugPrint('setUserUID called with ${authDataState.userData!.uid}');
     _userUID = authDataState.userData!.uid;
     _boxName = '${_userUID}_keywords';
+  }
+
+  Future<void> loadCategoryKeywords() async {
+    try {
+      final List<String> keywords =
+          await _keywordService.fetchCategoryKeywords();
+      categoryKeywords = keywords;
+    } catch (e) {
+      debugPrint('error loading category keywords: $e');
+    }
   }
 
   Future<void> loadSavedKeywords() async {
@@ -96,7 +110,7 @@ class KeywordsNotifier extends ChangeNotifier {
           _userUID.isEmpty ? [] : _savedkeywords.map((e) => e.keyword).toList();
 
       final serverKeywords = await _keywordService.fetchPopularKeyword(
-          _boxNamePopular, 100, excludedKeywords, pageNumber);
+          _boxNamePopular, 500, excludedKeywords, pageNumber);
 
       if (_userUID.isEmpty) {
         _popularKeywords = sortKeywordsDescending(serverKeywords);
@@ -127,7 +141,7 @@ class KeywordsNotifier extends ChangeNotifier {
       final List<String> excludedKeywords =
           _savedkeywords.map((e) => e.keyword).toList();
       final serverKeywords = await _keywordService.fetchPopularKeyword(
-          _boxNamePopular, 100, excludedKeywords, pageNumber);
+          _boxNamePopular, 500, excludedKeywords, pageNumber);
       _popularKeywords = sortKeywordsDescending(serverKeywords);
       notifyListeners();
     } catch (e) {
@@ -178,6 +192,15 @@ class KeywordsNotifier extends ChangeNotifier {
     _savedkeywords.insert(0, keyword);
     _savedkeywords = _savedkeywords.toSet().toList();
     notifyListeners();
+    //check first if the keyword is present in categorykeywords list:
+    if (categoryKeywords.any((element) =>
+        element.trim().toLowerCase() == keyword.keyword.trim().toLowerCase())) {
+      debugPrint(
+          'subscribing to ${keyword.keyword} ~ ${formatToValidTopic(keyword.keyword)}');
+      String topicName = formatToValidTopic(keyword.keyword);
+      _firebaseMessaging.subscribeToTopic(topicName);
+    }
+
     Future.delayed(const Duration(seconds: 1), () {
       if (_popularKeywords.any((data) =>
           data.keyword.toLowerCase() == keyword.keyword.toLowerCase())) {
@@ -200,6 +223,14 @@ class KeywordsNotifier extends ChangeNotifier {
         keyword.keyword, _boxNamePopular);
     _savedkeywords.remove(keyword);
     _savedkeywords = _savedkeywords.toSet().toList();
+    //check first if the keyword is present in categorykeywords list:
+    if (categoryKeywords.any((element) =>
+        element.trim().toLowerCase() == keyword.keyword.trim().toLowerCase())) {
+      debugPrint(
+          'unsubscribing from ${keyword.keyword} ~ ${formatToValidTopic(keyword.keyword)}');
+      String topicName = formatToValidTopic(keyword.keyword);
+      _firebaseMessaging.unsubscribeFromTopic(topicName);
+    }
     notifyListeners();
   }
 
@@ -215,8 +246,20 @@ class KeywordsNotifier extends ChangeNotifier {
   List<KeywordData> sortKeywordsDescending(List<KeywordData> keywords) {
     return keywords
       ..sort((a, b) {
+        // Compare by type first, 'category' keywords come first
+        int typeComparison =
+            _typePriority(a.type).compareTo(_typePriority(b.type));
+        if (typeComparison != 0) {
+          return typeComparison;
+        }
+        // If types are the same, then compare by id in descending order
         return b.id.compareTo(a.id);
       });
+  }
+
+// Helper function to prioritize 'category' type
+  int _typePriority(String type) {
+    return type == 'category' ? 0 : 1;
   }
 
   List<KeywordData> removeSavedFromPopularList(
@@ -227,5 +270,16 @@ class KeywordsNotifier extends ChangeNotifier {
         .toList();
 
     return sortKeywordsDescending(sortedKeywords);
+  }
+
+  String formatToValidTopic(String topic) {
+    //remove the word 'deals' from the topic
+    topic = topic.replaceAll(RegExp(r'deals'), '');
+    //remove trailing and leading spaces
+    topic = topic.trim();
+    //remove special characters and convert to lowercase
+    //convert home & kitchen to home_kitchen
+    topic = topic.replaceAll(RegExp(r'[\W\s]+'), '_');
+    return topic.toLowerCase();
   }
 }

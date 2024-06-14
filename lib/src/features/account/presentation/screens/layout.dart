@@ -2,35 +2,72 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
+import 'package:pzdeals/src/features/account/presentation/widgets/font_slider.dart';
 import 'package:pzdeals/src/state/layout_type_provider.dart';
+import 'package:pzdeals/src/state/media_query_provider.dart';
 
-class LayoutScreen extends StatelessWidget {
+class LayoutScreen extends ConsumerStatefulWidget {
   const LayoutScreen({super.key});
+  LayoutScreenState createState() => LayoutScreenState();
+}
+
+class LayoutScreenState extends ConsumerState<LayoutScreen> {
+  late double textScaleFactor =
+      ref.read(mediaqueryProvider.select((value) => value.textScaler));
+  void textScaleOnchange(double value) {
+    setState(() {
+      textScaleFactor = value;
+    });
+    ref.read(mediaqueryProvider).setTextScaler(textScaleFactor);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      physics: NeverScrollableScrollPhysics(),
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
       child: Padding(
-        padding: EdgeInsets.all(Sizes.paddingAll),
+        padding: const EdgeInsets.all(Sizes.paddingAll),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     const Text(
+            //       "Font Settings",
+            //       style: TextStyle(
+            //           fontSize: Sizes.sectionHeaderFontSize,
+            //           fontWeight: FontWeight.w600,
+            //           color: PZColors.pzBlack),
+            //     ),
+            //     const SizedBox(height: Sizes.spaceBetweenContentSmall),
+            //     const Text(
+            //       "Adjust the font slider to increase or decrease the font size",
+            //       style: TextStyle(fontSize: Sizes.bodyFontSize),
+            //     ),
+            //     const SizedBox(height: Sizes.spaceBetweenContent),
+            //     FontSliderWidget(
+            //       onChanged: textScaleOnchange,
+            //       initialValue:
+            //           textScaleFactor.round() == 0 ? 1 : textScaleFactor,
+            //     ),
+            //   ],
+            // ),
+            const Text(
               "Layout Settings",
               style: TextStyle(
                   fontSize: Sizes.sectionHeaderFontSize,
                   fontWeight: FontWeight.w600,
                   color: PZColors.pzBlack),
             ),
-            SizedBox(height: Sizes.spaceBetweenContentSmall),
-            Text(
+            const SizedBox(height: Sizes.spaceBetweenContentSmall),
+            const Text(
               "Toggle between grid and list view layout for the deals screen",
               style: TextStyle(fontSize: Sizes.bodyFontSize),
             ),
-            SizedBox(height: Sizes.spaceBetweenSectionsXL),
-            IconLayout(),
+            const SizedBox(height: Sizes.spaceBetweenSectionsXL),
+            const IconLayout(),
           ],
         ),
       ),

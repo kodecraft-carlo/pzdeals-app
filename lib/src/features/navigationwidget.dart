@@ -17,6 +17,7 @@ import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/features/stores/stores.dart';
 import 'package:pzdeals/src/state/directus_auth_service.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:pzdeals/src/state/media_query_provider.dart';
 
 class NavigationWidget extends ConsumerStatefulWidget {
   final int initialPageIndex;
@@ -273,130 +274,137 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScaffoldWidget(
-        scaffold: Scaffold(
-          bottomNavigationBar: SafeArea(
-            top: false,
-            child: Container(
-              height: 65,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  //borderside at the top if platform is ios and box shadow if platform is android
-                  if (Theme.of(context).platform == TargetPlatform.android)
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                ],
-                border: Theme.of(context).platform == TargetPlatform.iOS
-                    ? const Border(
-                        top: BorderSide(color: Colors.black12, width: 0.5))
-                    : null,
-              ),
-              child: Theme(
-                data: ThemeData(
-                  fontFamily: 'Poppins',
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  textTheme: Theme.of(context).textTheme.copyWith(
-                        bodySmall: TextStyle(
-                            fontSize: getFontSize(
-                                context)), // Use the helper function from the previous response
+    final mediaQueryState = ref.watch(mediaqueryProvider);
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        textScaler: TextScaler.linear(mediaQueryState.textScaler),
+      ),
+      child: CustomScaffoldWidget(
+          scaffold: Scaffold(
+            bottomNavigationBar: SafeArea(
+              top: false,
+              child: Container(
+                height: 65,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    //borderside at the top if platform is ios and box shadow if platform is android
+                    if (Theme.of(context).platform == TargetPlatform.android)
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
                       ),
+                  ],
+                  border: Theme.of(context).platform == TargetPlatform.iOS
+                      ? const Border(
+                          top: BorderSide(color: Colors.black12, width: 0.5))
+                      : null,
                 ),
-                child: SizedBox(
-                  height: 65,
-                  child: SafeArea(
-                      child: BottomNavigationBar(
-                    currentIndex: currentPageIndex,
-                    elevation: 0,
-                    onTap: destinationSelected,
-                    selectedItemColor: Colors.black87,
-                    unselectedItemColor: Colors.black54,
-                    selectedIconTheme:
-                        const IconThemeData(size: 25, color: Colors.black87),
-                    unselectedIconTheme:
-                        const IconThemeData(size: 25, color: Colors.black54),
-                    selectedLabelStyle: TextStyle(
-                      fontSize: getFontSize(context),
-                      fontWeight: FontWeight.w600,
-                    ),
-                    unselectedLabelStyle: TextStyle(
-                      fontSize: getFontSize(context),
-                      fontWeight: FontWeight.w600,
-                    ),
-                    showSelectedLabels: true,
-                    showUnselectedLabels: true,
-                    enableFeedback: true,
-                    type: BottomNavigationBarType.fixed,
-                    backgroundColor: Colors.white,
-                    items: [
-                      BottomNavigationBarItem(
-                        icon: currentPageIndex == 0
-                            ? const Icon(Icons.local_offer_rounded)
-                            : const Icon(Icons.local_offer_outlined),
-                        label: 'Deals',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: currentPageIndex == 1
-                            ? const Icon(Icons.store_rounded)
-                            : const Icon(Icons.store_outlined),
-                        label: 'Promos',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: badges.Badge(
-                          showBadge:
-                              ref.watch(notificationsProvider).unreadCount > 0,
-                          badgeContent: Text(
-                            ref
-                                .watch(notificationsProvider)
-                                .unreadCount
-                                .toString(),
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 10),
-                          ),
-                          position:
-                              badges.BadgePosition.topEnd(top: -9, end: -20),
-                          badgeStyle: const badges.BadgeStyle(
-                            badgeColor: PZColors.pzOrange,
-                            elevation: 0,
-                          ),
-                          badgeAnimation: const badges.BadgeAnimation.fade(
-                            animationDuration: Duration(milliseconds: 200),
-                            colorChangeAnimationDuration:
-                                Duration(milliseconds: 200),
-                            loopAnimation: false,
-                            curve: Curves.fastOutSlowIn,
-                            colorChangeAnimationCurve: Curves.easeInCubic,
-                          ),
-                          child: currentPageIndex == 2
-                              ? const Icon(Icons.notifications_active_rounded)
-                              : const Icon(Icons.notifications_outlined),
+                child: Theme(
+                  data: ThemeData(
+                    fontFamily: 'Poppins',
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    textTheme: Theme.of(context).textTheme.copyWith(
+                          bodySmall: TextStyle(
+                              fontSize: getFontSize(
+                                  context)), // Use the helper function from the previous response
                         ),
-                        label: 'Notifications',
+                  ),
+                  child: SizedBox(
+                    height: 65,
+                    child: SafeArea(
+                        child: BottomNavigationBar(
+                      currentIndex: currentPageIndex,
+                      elevation: 0,
+                      onTap: destinationSelected,
+                      selectedItemColor: Colors.black87,
+                      unselectedItemColor: Colors.black54,
+                      selectedIconTheme:
+                          const IconThemeData(size: 25, color: Colors.black87),
+                      unselectedIconTheme:
+                          const IconThemeData(size: 25, color: Colors.black54),
+                      selectedLabelStyle: TextStyle(
+                        fontSize: getFontSize(context),
+                        fontWeight: FontWeight.w600,
                       ),
-                      BottomNavigationBarItem(
-                        icon: currentPageIndex == 3
-                            ? const Icon(Icons.campaign_rounded)
-                            : const Icon(Icons.campaign_outlined),
-                        label: 'Deal Alerts',
+                      unselectedLabelStyle: TextStyle(
+                        fontSize: getFontSize(context),
+                        fontWeight: FontWeight.w600,
                       ),
-                      BottomNavigationBarItem(
-                        icon: currentPageIndex == 4
-                            ? const Icon(Icons.more_horiz)
-                            : const Icon(Icons.more_horiz),
-                        label: 'More',
-                      ),
-                    ],
-                  )),
+                      showSelectedLabels: true,
+                      showUnselectedLabels: true,
+                      enableFeedback: true,
+                      type: BottomNavigationBarType.fixed,
+                      backgroundColor: Colors.white,
+                      items: [
+                        BottomNavigationBarItem(
+                          icon: currentPageIndex == 0
+                              ? const Icon(Icons.local_offer_rounded)
+                              : const Icon(Icons.local_offer_outlined),
+                          label: 'Deals',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: currentPageIndex == 1
+                              ? const Icon(Icons.store_rounded)
+                              : const Icon(Icons.store_outlined),
+                          label: 'Promos',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: badges.Badge(
+                            showBadge:
+                                ref.watch(notificationsProvider).unreadCount >
+                                    0,
+                            badgeContent: Text(
+                              ref
+                                  .watch(notificationsProvider)
+                                  .unreadCount
+                                  .toString(),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10),
+                            ),
+                            position:
+                                badges.BadgePosition.topEnd(top: -9, end: -20),
+                            badgeStyle: const badges.BadgeStyle(
+                              badgeColor: PZColors.pzOrange,
+                              elevation: 0,
+                            ),
+                            badgeAnimation: const badges.BadgeAnimation.fade(
+                              animationDuration: Duration(milliseconds: 200),
+                              colorChangeAnimationDuration:
+                                  Duration(milliseconds: 200),
+                              loopAnimation: false,
+                              curve: Curves.fastOutSlowIn,
+                              colorChangeAnimationCurve: Curves.easeInCubic,
+                            ),
+                            child: currentPageIndex == 2
+                                ? const Icon(Icons.notifications_active_rounded)
+                                : const Icon(Icons.notifications_outlined),
+                          ),
+                          label: 'Notifications',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: currentPageIndex == 3
+                              ? const Icon(Icons.campaign_rounded)
+                              : const Icon(Icons.campaign_outlined),
+                          label: 'Deal Alerts',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: currentPageIndex == 4
+                              ? const Icon(Icons.more_horiz)
+                              : const Icon(Icons.more_horiz),
+                          label: 'More',
+                        ),
+                      ],
+                    )),
+                  ),
                 ),
               ),
             ),
+            body: SafeArea(child: _pages[currentPageIndex]),
           ),
-          body: SafeArea(child: _pages[currentPageIndex]),
-        ),
-        scrollAction: scrollChildrenToTop);
+          scrollAction: scrollChildrenToTop),
+    );
   }
 }

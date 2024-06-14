@@ -258,6 +258,11 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
             }, 'Confirm');
           },
           icon: Platform.isIOS ? CupertinoIcons.check_mark_circled : Icons.done,
+          itemTheme: const PullDownMenuItemTheme(
+            textStyle: TextStyle(
+              fontFamily: 'Poppins',
+            ),
+          ),
         ),
         PullDownMenuItem(
           enabled: ref.watch(notificationsProvider).hasNotification,
@@ -290,6 +295,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
               color: Platform.isIOS
                   ? CupertinoColors.systemRed
                   : PZColors.pzOrange,
+              fontFamily: 'Poppins',
             ),
           ),
           icon: Platform.isIOS ? CupertinoIcons.delete : Icons.delete_forever,

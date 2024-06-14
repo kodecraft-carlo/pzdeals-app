@@ -13,5 +13,5 @@ class Wordings {
   static const String descForYouSelection =
       "Choose the categories you would like to see on your For You page.";
   static const String descDealAlerts =
-      "Get notified about deals you care about most by creating custom Deal Alerts.";
+      "Click on the plus sign to subscribe and get notified about deals you care about most by creating custom Deal Alerts.";
 }

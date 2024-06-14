@@ -16,10 +16,14 @@ class KeywordData {
   @HiveField(3)
   final String datecreated;
 
+  @HiveField(4)
+  final String type;
+
   KeywordData({
     required this.keyword,
     required this.id,
     this.imageUrl = '',
     this.datecreated = '',
+    this.type = '',
   });
 }

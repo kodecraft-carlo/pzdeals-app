@@ -13,6 +13,7 @@ import 'package:pzdeals/src/features/deals/services/fetch_collections.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/deals/state/provider_collections.dart';
 import 'package:pzdeals/src/state/layout_type_provider.dart';
+import 'package:pzdeals/src/state/media_query_provider.dart';
 
 final productCollectionProvider =
     ChangeNotifierProvider<ProductCollectionNotifier>(
@@ -168,6 +169,7 @@ class CollectionDisplayScreenWidgetState
     debugPrint('paramcollectionName: $paramcollectionName');
     final layoutType = ref.watch(layoutTypeProvider);
     final productCollectionState = ref.watch(productCollectionProvider);
+    final mediaQueryState = ref.watch(mediaqueryProvider);
 
     Widget body;
     if (productCollectionState.isLoading &&
@@ -225,48 +227,53 @@ class CollectionDisplayScreenWidgetState
         ],
       );
     }
-    return CustomScaffoldWidget(
-        scaffold: Scaffold(
-          appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(kToolbarHeight),
-              child: GestureDetector(
-                onTap: () {
-                  scrollToTop();
-                },
-                child: AppBar(
-                  title: Text(
-                    widget.collectionTitle != ''
-                        ? widget.collectionTitle == 'Toys Deals'
-                            ? 'Toy Deals'
-                            : widget.collectionTitle
-                        : paramcollectionName,
-                    style: const TextStyle(
-                      color: PZColors.pzBlack,
-                      fontWeight: FontWeight.w700,
-                      fontSize: Sizes.appBarFontSize,
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        textScaler: TextScaler.linear(mediaQueryState.textScaler),
+      ),
+      child: CustomScaffoldWidget(
+          scaffold: Scaffold(
+            appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(kToolbarHeight),
+                child: GestureDetector(
+                  onTap: () {
+                    scrollToTop();
+                  },
+                  child: AppBar(
+                    title: Text(
+                      widget.collectionTitle != ''
+                          ? widget.collectionTitle == 'Toys Deals'
+                              ? 'Toy Deals'
+                              : widget.collectionTitle
+                          : paramcollectionName,
+                      style: const TextStyle(
+                        color: PZColors.pzBlack,
+                        fontWeight: FontWeight.w700,
+                        fontSize: Sizes.appBarFontSize,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
+                    centerTitle: true,
+                    surfaceTintColor: PZColors.pzWhite,
+                    backgroundColor: PZColors.pzWhite,
+                    leading: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
                   ),
-                  centerTitle: true,
-                  surfaceTintColor: PZColors.pzWhite,
-                  backgroundColor: PZColors.pzWhite,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-              )),
-          body: body,
-          bottomNavigationBar:
-              // AnimatedOpacity(
-              //   opacity: opacityLevel,
-              //   duration: const Duration(milliseconds: 50),
-              // child:
-              const BottomNavigationBarWidget(currentPageIndex: 4),
-          // ),
-        ),
-        scrollAction: scrollToTop);
+                )),
+            body: body,
+            bottomNavigationBar:
+                // AnimatedOpacity(
+                //   opacity: opacityLevel,
+                //   duration: const Duration(milliseconds: 50),
+                // child:
+                const BottomNavigationBarWidget(currentPageIndex: 4),
+            // ),
+          ),
+          scrollAction: scrollToTop),
+    );
   }
 }

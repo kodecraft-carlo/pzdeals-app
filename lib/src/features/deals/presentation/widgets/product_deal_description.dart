@@ -253,7 +253,25 @@ class ProductDealDescriptionState
                 ),
               )
             : const SizedBox.shrink(),
-        widget.productData.sku != null && widget.productData.sku!.isNotEmpty
+        //add divider line if there is a sku or product description
+
+        (widget.productData.productDealDescription != null &&
+                    widget.productData.productDealDescription?.trim() != '') ||
+                (widget.productData.tagDealDescription != null &&
+                    widget.productData.tagDealDescription != '')
+            ? SizedBox(
+                width: MediaQuery.of(context).size.width / 3,
+                child: Divider(
+                  color: Colors.grey[300],
+                  thickness: .75,
+                ))
+            : const SizedBox.shrink(),
+
+        widget.productData.sku != null && widget.productData.sku!.isNotEmpty ||
+                widget.productData.productDealDescription != null &&
+                    widget.productData.productDealDescription?.trim() != '' ||
+                widget.productData.tagDealDescription != null &&
+                    widget.productData.tagDealDescription != ''
             ? const SizedBox(height: Sizes.spaceBetweenContent)
             : const SizedBox.shrink(),
 
@@ -277,7 +295,7 @@ class ProductDealDescriptionState
         widget.productData.tagDealDescription != null &&
                 widget.productData.tagDealDescription != '' &&
                 widget.productData.productDealDescription != null &&
-                widget.productData.productDealDescription != ''
+                widget.productData.productDealDescription?.trim() != ''
             ? const SizedBox(
                 height: Sizes.spaceBetweenContent,
               )
@@ -289,9 +307,9 @@ class ProductDealDescriptionState
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: Sizes.paddingAllSmall,
-                          right: Sizes.paddingAllSmall,
-                          top: Sizes.paddingAllSmall),
+                        left: Sizes.paddingAllSmall,
+                        right: Sizes.paddingAllSmall,
+                      ),
                       child: HtmlContent(
                         htmlContent:
                             widget.productData.tagDealDescription ?? '',

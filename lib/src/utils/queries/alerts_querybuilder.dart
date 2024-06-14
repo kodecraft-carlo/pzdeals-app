@@ -11,12 +11,22 @@ String getPopularKeywordsQuery(
   String query = '/items/popular_keywords'
       '?fields[]=id'
       '&fields[]=keyword'
+      '&fields[]=type'
       '&fields[]=image_src'
       '&limit=$limit'
       '&page=$pageNumber'
       '&filter={"keyword":{"_nin":["${excludeKeywords.join('","')}"]}}'
       '&sort[]=-id';
   debugPrint('getPopularKeywordsQuery: $query ');
+  return query;
+}
+
+String getCategoryKeywordsQuery() {
+  String query = '/items/popular_keywords'
+      '?fields[]=keyword'
+      '&filter={"type":{"_eq":"category"}}'
+      '&sort[]=id';
+  debugPrint('getCategoryKeywords: $query ');
   return query;
 }
 

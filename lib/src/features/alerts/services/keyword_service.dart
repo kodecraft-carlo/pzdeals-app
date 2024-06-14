@@ -73,6 +73,38 @@ class KeywordService {
     }
   }
 
+  Future<List<String>> fetchCategoryKeywords() async {
+    ApiClient apiClient = ApiClient();
+    // final authService = ref.watch(directusAuthServiceProvider);
+    try {
+      Response response = await apiClient.dio.get(getCategoryKeywordsQuery()
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+          );
+      if (response.statusCode == 200) {
+        final responseData = response.data["data"];
+        if (responseData == null || responseData.isEmpty) {
+          throw Exception('No Data Found');
+        }
+
+        final List<String> categories = responseData
+            .map((e) => e["keyword"].toString())
+            .toList()
+            .cast<String>();
+        return categories;
+      } else {
+        throw Exception('Failed to fetch directus category keywords list');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioExceptionw: ${e.message}");
+      throw Exception('Failed to fetch directus category keywords list');
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching category keywords: $stackTrace ~ $e');
+      throw Exception('Failed to fetch directus category keywords list');
+    }
+  }
+
   Future<List<KeywordData>> getCachedKeywords(String boxName) async {
     debugPrint("getCachedKeywords called for $boxName");
     final box = await Hive.openBox<KeywordData>(boxName);

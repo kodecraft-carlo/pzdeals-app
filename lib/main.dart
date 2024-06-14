@@ -163,7 +163,11 @@ class MainAppState extends ConsumerState<MainApp>
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return
+        // MediaQuery(
+        //   data: const MediaQueryData(textScaler: TextScaler.linear(1.0)),
+        //   child:
+        MaterialApp(
       scaffoldMessengerKey: _scaffoldKey,
       navigatorKey: navigatorKey,
       routes: {
