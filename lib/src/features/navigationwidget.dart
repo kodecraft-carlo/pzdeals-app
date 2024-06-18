@@ -226,7 +226,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
       // ref.read(storescreenProvider).refresh();
     }
     if (index == 2) {
-      ref.read(notificationsProvider).refreshNotification();
+      // ref.read(notificationsProvider).refreshNotification();
     }
     setState(() {
       currentPageIndex = index;

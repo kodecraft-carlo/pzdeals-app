@@ -72,6 +72,7 @@ class NotificationCardWidgetState
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('notification card build');
     final data = widget.notificationData.data;
     final notificationData = widget.notificationData;
     final notificationState = ref.read(notificationsProvider);
@@ -229,17 +230,15 @@ class NotificationCardWidgetState
                         memCacheHeight: 100,
                         memCacheWidth: 100,
                         cacheManager: networkImageCacheManager,
-                        placeholder: (context, url) =>
-                            //  Skeletonizer(
-                            //   effect: const PulseEffect(),
-                            //   child:
-                            Image.asset(
-                          'assets/images/shortcuts/blogs_placeholder.png',
-                          width: 50.0,
-                          height: 50.0,
-                          fit: BoxFit.fitHeight,
+                        placeholder: (context, url) => Skeletonizer(
+                          effect: const PulseEffect(),
+                          child: Image.asset(
+                            'assets/images/shortcuts/blogs_placeholder.png',
+                            width: 50.0,
+                            height: 50.0,
+                            fit: BoxFit.fitHeight,
+                          ),
                         ),
-                        // ),
                         fadeInDuration: Duration.zero,
                         errorWidget: (context, url, error) => CircleAvatar(
                           backgroundColor: PZColors.pzOrange,

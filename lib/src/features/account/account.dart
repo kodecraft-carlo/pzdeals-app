@@ -91,7 +91,7 @@ class AccountWidget extends ConsumerWidget {
           child: Scaffold(
             backgroundColor: Colors.white,
             body: NestedScrollView(
-              // physics: const NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
                   SliverAppBar(

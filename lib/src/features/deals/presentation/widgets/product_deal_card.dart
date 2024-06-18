@@ -11,6 +11,7 @@ import 'package:pzdeals/src/constants/sizes.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
 import 'package:pzdeals/src/state/layout_type_provider.dart';
+import 'package:pzdeals/src/state/media_query_provider.dart';
 
 class ProductDealcard extends ConsumerStatefulWidget {
   const ProductDealcard({super.key, required this.productData});
@@ -247,14 +248,16 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
                               ],
                             ),
                           )
-                        : const Row(
+                        : Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: SizedBox(
-                                    height: 25,
-                                    child: Text(
+                                    height: 25 *
+                                        ref.read(mediaqueryProvider.select(
+                                            (value) => value.textScaler)),
+                                    child: const Text(
                                       'No price',
                                       style:
                                           TextStyle(color: Colors.transparent),
@@ -427,21 +430,24 @@ class ProductDealcardState extends ConsumerState<ProductDealcard> {
 
   Widget productName(String productName, BuildContext context) {
     double baseHeight =
-        2.8; // The base height for the default text scale factor
+        3.6; // The base height for the default text scale factor
+    double textScaleFactor =
+        ref.read(mediaqueryProvider.select((value) => value.textScaler));
     double multiplier = Platform.isIOS
-        ? 1.2
-        : 1.0; // The multiplier for the default text scale factor
-    double scaleFactor =
-        MediaQuery.textScalerOf(context).scale(Sizes.bodyFontSize * multiplier);
-
+        ? textScaleFactor + .075
+        : textScaleFactor; // The multiplier for the default text scale factor
+    // double scaleFactor =
+    //     MediaQuery.textScalerOf(context).scale(Sizes.bodyFontSize * multiplier);
+    // debugPrint(
+    //     'sizedbox: ${baseHeight * (Sizes.bodyFontSize * multiplier)} ~ textScaleFactor: $textScaleFactor ~ height: ${baseHeight * textScaleFactor}');
     return SizedBox(
-      height: baseHeight * scaleFactor,
+      height: baseHeight * (Sizes.bodyFontSize * multiplier),
       child: Align(
         alignment: Alignment.bottomLeft,
         child: Text(
           productName,
           style: TextStyle(
-            fontSize: scaleFactor,
+            fontSize: Sizes.bodyFontSize * multiplier,
             fontWeight: FontWeight.w500,
           ),
           textAlign: TextAlign.start,

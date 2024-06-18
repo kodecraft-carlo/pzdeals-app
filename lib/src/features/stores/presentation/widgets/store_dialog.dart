@@ -47,58 +47,61 @@ class StoreDialog extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Column(
-                            children: [
-                              Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  height: 50,
-                                  width: 50,
-                                  margin: const EdgeInsets.only(
-                                      bottom: Sizes.paddingBottomSmall),
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(
-                                        Sizes.cardBorderRadius / 1.65),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 3,
-                                        blurRadius: 9,
-                                      ),
-                                    ],
-                                  ),
-                                  child: storeImage,
-                                ),
-                              ),
-                              Align(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      bottom: Sizes.paddingAll),
-                                  child: Text(
-                                    storeName,
-                                    maxLines: 2,
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        color: PZColors.pzWhite,
-                                        shadows: [
-                                          Shadow(
-                                            offset: Offset(1.0, 1.0),
-                                            blurRadius: 15.0,
-                                            color: Color.fromARGB(255, 0, 0, 0),
-                                          ),
-                                          // Add more shadows here if needed
-                                        ],
-                                        fontSize: Sizes.fontSizeMedium,
-                                        fontWeight: FontWeight.w600),
-                                    textScaler:
-                                        MediaQuery.textScalerOf(context),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    height: 50,
+                                    width: 50,
+                                    margin: const EdgeInsets.only(
+                                        bottom: Sizes.paddingBottomSmall),
+                                    clipBehavior: Clip.hardEdge,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(
+                                          Sizes.cardBorderRadius / 1.65),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.2),
+                                          spreadRadius: 3,
+                                          blurRadius: 9,
+                                        ),
+                                      ],
+                                    ),
+                                    child: storeImage,
                                   ),
                                 ),
-                              ),
-                            ],
+                                Align(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: Sizes.paddingAll),
+                                    child: Text(
+                                      storeName,
+                                      maxLines: 2,
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          color: PZColors.pzWhite,
+                                          shadows: [
+                                            Shadow(
+                                              offset: Offset(1.0, 1.0),
+                                              blurRadius: 15.0,
+                                              color:
+                                                  Color.fromARGB(255, 0, 0, 0),
+                                            ),
+                                            // Add more shadows here if needed
+                                          ],
+                                          fontSize: Sizes.fontSizeMedium,
+                                          fontWeight: FontWeight.w600),
+                                      textScaler:
+                                          MediaQuery.textScalerOf(context),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           )
                         ],
                       ),

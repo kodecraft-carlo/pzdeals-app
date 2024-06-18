@@ -21,6 +21,25 @@ class _FontSliderWidgetState extends State<FontSliderWidget> {
     _currentSliderValue = widget.initialValue;
   }
 
+  String sliderLabel(double value) {
+    if (value == 1.0) {
+      return '1';
+    }
+    if (value == 1.075) {
+      return '2';
+    }
+    if (value == 1.15) {
+      return '3';
+    }
+    if (value == 1.225) {
+      return '4';
+    }
+    if (value == 1.3) {
+      return '5';
+    }
+    return value.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -36,7 +55,7 @@ class _FontSliderWidgetState extends State<FontSliderWidget> {
           max: 1.3,
           min: 1.0,
           divisions: 4,
-          label: "${_currentSliderValue == 1.3 ? 'Max' : _currentSliderValue}",
+          label: sliderLabel(_currentSliderValue),
           inactiveColor: PZColors.pzGrey.withOpacity(0.3),
           activeColor: PZColors.pzOrange,
           onChanged: (double value) {
