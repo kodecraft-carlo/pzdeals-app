@@ -5,7 +5,7 @@ class Wordings {
   static const String descFlashDeals =
       'These are the most exciting deals from across the web.';
   static const String descFrontPage =
-      'Handpicked deals with the biggest discounts, that are upvoted by our community.';
+      'Handpicked deals with the biggest discounts, that are upvoted by the Pz community.';
   static const String descStoreScreen =
       'Every coupon and sale from across the web, all curated and updated daily at your fingertips.';
   static const String descCategoryAlerts =

@@ -55,10 +55,11 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
   FetchProductDealService productDealService = FetchProductDealService();
   void showProductDeal(int productId) {
     debugPrint('mark as read: $notifId');
-    ref.read(notificationsProvider).markAsRead(notifId);
+
     // if (mounted) {
     // LoadingDialog.show(context);
     loadProduct(productId).then((product) {
+      ref.read(notificationsProvider).markAsRead(notifId);
       // if (mounted) {
       showDialog(
         context: context,

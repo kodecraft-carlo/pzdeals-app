@@ -213,6 +213,29 @@ class ProductDealDescriptionState
         if (widget.productData.isProductExpired != null &&
             widget.productData.isProductExpired == true)
           const SizedBox(height: Sizes.spaceBetweenContent),
+
+        //add divider line if there is a sku or product description
+        (widget.productData.productDealDescription != null &&
+                    widget.productData.productDealDescription?.trim() != '') ||
+                (widget.productData.tagDealDescription != null &&
+                    widget.productData.tagDealDescription != '') ||
+                (widget.productData.sku != null &&
+                    widget.productData.sku!.isNotEmpty)
+            ? SizedBox(
+                width: MediaQuery.of(context).size.width / 2.2,
+                child: Divider(
+                  color: Colors.grey[300],
+                  thickness: .75,
+                ))
+            : const SizedBox.shrink(),
+
+        widget.productData.sku != null && widget.productData.sku!.isNotEmpty ||
+                widget.productData.productDealDescription != null &&
+                    widget.productData.productDealDescription?.trim() != '' ||
+                widget.productData.tagDealDescription != null &&
+                    widget.productData.tagDealDescription != ''
+            ? const SizedBox(height: Sizes.spaceBetweenContent)
+            : const SizedBox.shrink(),
         //Added 05/08/2024 Tag Description
         widget.productData.sku != null && widget.productData.sku!.isNotEmpty
             ? Align(
@@ -220,7 +243,7 @@ class ProductDealDescriptionState
                 child: Padding(
                   padding: const EdgeInsets.only(
                       left: Sizes.paddingAllSmall,
-                      top: 10,
+                      top: 5,
                       bottom: 5,
                       right: Sizes.paddingAllSmall),
                   child: RichText(
@@ -252,27 +275,6 @@ class ProductDealDescriptionState
                   ),
                 ),
               )
-            : const SizedBox.shrink(),
-        //add divider line if there is a sku or product description
-
-        (widget.productData.productDealDescription != null &&
-                    widget.productData.productDealDescription?.trim() != '') ||
-                (widget.productData.tagDealDescription != null &&
-                    widget.productData.tagDealDescription != '')
-            ? SizedBox(
-                width: MediaQuery.of(context).size.width / 3,
-                child: Divider(
-                  color: Colors.grey[300],
-                  thickness: .75,
-                ))
-            : const SizedBox.shrink(),
-
-        widget.productData.sku != null && widget.productData.sku!.isNotEmpty ||
-                widget.productData.productDealDescription != null &&
-                    widget.productData.productDealDescription?.trim() != '' ||
-                widget.productData.tagDealDescription != null &&
-                    widget.productData.tagDealDescription != ''
-            ? const SizedBox(height: Sizes.spaceBetweenContent)
             : const SizedBox.shrink(),
 
         widget.productData.productDealDescription != null &&

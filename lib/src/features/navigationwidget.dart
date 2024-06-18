@@ -390,10 +390,14 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
                               : const Icon(Icons.campaign_outlined),
                           label: 'Deal Alerts',
                         ),
-                        BottomNavigationBarItem(
-                          icon: currentPageIndex == 4
-                              ? const Icon(Icons.more_horiz)
-                              : const Icon(Icons.more_horiz),
+                        // BottomNavigationBarItem(
+                        //   icon: currentPageIndex == 4
+                        //       ? const Icon(Icons.widgets_rounded)
+                        //       : const Icon(Icons.widgets_outlined),
+                        //   label: 'More',
+                        // ),
+                        const BottomNavigationBarItem(
+                          icon: Icon(Icons.more_horiz),
                           label: 'More',
                         ),
                       ],

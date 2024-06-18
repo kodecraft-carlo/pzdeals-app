@@ -1,15 +1,10 @@
-import 'dart:io';
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/alerts/presentation/screens/screen_manage_saved_keywords.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/create_alert_field_button.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/grid_popularkeywords.dart';
-import 'package:pzdeals/src/features/alerts/presentation/widgets/index.dart';
-import 'package:pzdeals/src/features/alerts/presentation/widgets/list_categorytoggles.dart';
 import 'package:pzdeals/src/features/alerts/state/keyword_provider.dart';
 
 class AlertsManagementScreen extends ConsumerStatefulWidget {
@@ -84,6 +79,9 @@ class AlertsManagementScreenState
                     onTap: () {
                       showModalBottomSheet(
                           context: context,
+                          constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.of(context).size.height / 1.8),
                           isScrollControlled: true,
                           enableDrag: true,
                           showDragHandle: true,
@@ -99,7 +97,7 @@ class AlertsManagementScreenState
                 ],
               ),
               const SizedBox(
-                height: 5,
+                height: Sizes.spaceBetweenSections,
               ),
               const Text(
                 Wordings.descDealAlerts,
@@ -112,7 +110,7 @@ class AlertsManagementScreenState
               CreateAlertFieldButton(
                 textController: textController,
                 buttonLabel: 'Create',
-                textFieldHint: 'Add keyword, store, category, brand..',
+                textFieldHint: 'Add keyword, store or category',
                 textfieldIcon: Icons.search,
               ),
               const SizedBox(height: Sizes.spaceBetweenSections),
@@ -133,15 +131,21 @@ class AlertsManagementScreenState
                 height: 1,
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: const Column(
-                    children: [
-                      SizedBox(height: Sizes.spaceBetweenContent),
-                      PopularKeywordsGrid()
-                    ],
-                  ),
-                ),
+                child: RefreshIndicator.adaptive(
+                    color: PZColors.pzOrange,
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: const Column(
+                        children: [
+                          SizedBox(height: Sizes.spaceBetweenContent),
+                          PopularKeywordsGrid()
+                        ],
+                      ),
+                    ),
+                    onRefresh: () async {
+                      HapticFeedback.mediumImpact();
+                      ref.read(keywordsProvider).loadPopularKeywords();
+                    }),
               )
             ]),
       ),

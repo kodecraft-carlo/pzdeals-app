@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
 import 'package:pzdeals/src/features/alerts/services/keyword_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
+import 'package:pzdeals/src/utils/helpers/convert_string.dart';
 
 final keywordsProvider =
     ChangeNotifierProvider<KeywordsNotifier>((ref) => KeywordsNotifier(ref));
@@ -106,8 +107,9 @@ class KeywordsNotifier extends ChangeNotifier {
       // _popularKeywords = sortKeywordsDescending(_popularKeywords);
       // notifyListeners();
 
-      final List<String> excludedKeywords =
-          _userUID.isEmpty ? [] : _savedkeywords.map((e) => e.keyword).toList();
+      final List<String> excludedKeywords = _userUID.isEmpty
+          ? []
+          : _savedkeywords.map((e) => urlEncodeAmpersand(e.keyword)).toList();
 
       final serverKeywords = await _keywordService.fetchPopularKeyword(
           _boxNamePopular, 500, excludedKeywords, pageNumber);
@@ -139,7 +141,7 @@ class KeywordsNotifier extends ChangeNotifier {
       notifyListeners();
 
       final List<String> excludedKeywords =
-          _savedkeywords.map((e) => e.keyword).toList();
+          _savedkeywords.map((e) => urlEncodeAmpersand(e.keyword)).toList();
       final serverKeywords = await _keywordService.fetchPopularKeyword(
           _boxNamePopular, 500, excludedKeywords, pageNumber);
       _popularKeywords = sortKeywordsDescending(serverKeywords);

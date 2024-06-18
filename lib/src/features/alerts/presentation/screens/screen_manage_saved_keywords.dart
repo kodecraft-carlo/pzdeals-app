@@ -35,79 +35,85 @@ class ManageSavedKeywordScreenState
               top: Sizes.paddingTopSmall,
               left: Sizes.paddingLeft,
               right: Sizes.paddingRight),
-          child: SingleChildScrollView(
-            child: Column(children: [
-              Row(
-                children: [
-                  const Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Manage Keywords",
-                          style: TextStyle(
-                              fontSize: Sizes.headerFontSize,
-                              fontWeight: FontWeight.w600,
-                              color: PZColors.pzBlack),
-                        ),
-                        Text(
-                          "Tap on edit to remove keywords",
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontSize: Sizes.bodyFontSize,
-                              fontWeight: FontWeight.w400,
-                              color: PZColors.pzBlack),
-                        ),
-                      ],
-                    ),
-                  ),
-                  savedKeywordData.isNotEmpty
-                      ? GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isEditMode = !isEditMode;
-                            });
-                          },
-                          child: Text(isEditMode ? "Done" : "Edit",
-                              style: const TextStyle(
-                                  fontSize: Sizes.fontSizeMedium,
-                                  fontWeight: FontWeight.w600,
-                                  color: PZColors.pzOrange)),
-                        )
-                      : const SizedBox.shrink()
-                ],
-              ),
-              const SizedBox(
-                height: Sizes.spaceBetweenSections,
-              ),
-              savedKeywordData.isNotEmpty
-                  ? Row(children: [
-                      Expanded(
-                        child: RawScrollbar(
-                            controller: scrollController,
-                            thumbVisibility: true,
-                            child: SingleChildScrollView(
-                              controller: scrollController,
-                              child: ChipSavedKeywords(
-                                editMode:
-                                    isEditMode ? EditMode.edit : EditMode.view,
-                              ),
-                            )),
-                      )
-                    ])
-                  : const Center(
-                      child: Text(
-                        'You have no saved keywords yet.',
+          child: Column(children: [
+            Row(
+              children: [
+                const Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Manage Keywords",
                         style: TextStyle(
-                            color: PZColors.pzGrey,
-                            fontStyle: FontStyle.italic,
-                            fontSize: Sizes.fontSizeSmall),
-                        textAlign: TextAlign.center,
+                            fontSize: Sizes.headerFontSize,
+                            fontWeight: FontWeight.w600,
+                            color: PZColors.pzBlack),
                       ),
-                    ),
-            ]),
-          ),
+                      Text(
+                        "Tap on edit to remove keywords",
+                        maxLines: 2,
+                        style: TextStyle(
+                            fontSize: Sizes.bodyFontSize,
+                            fontWeight: FontWeight.w400,
+                            color: PZColors.pzBlack),
+                      ),
+                    ],
+                  ),
+                ),
+                savedKeywordData.isNotEmpty
+                    ? GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isEditMode = !isEditMode;
+                          });
+                        },
+                        child: Text(isEditMode ? "Done" : "Edit",
+                            style: const TextStyle(
+                                fontSize: Sizes.fontSizeMedium,
+                                fontWeight: FontWeight.w600,
+                                color: PZColors.pzOrange)),
+                      )
+                    : const SizedBox.shrink()
+              ],
+            ),
+            const SizedBox(
+              height: Sizes.spaceBetweenSections,
+            ),
+            Expanded(
+                child: SafeArea(
+              top: false,
+              bottom: true,
+              child: SingleChildScrollView(
+                child: savedKeywordData.isNotEmpty
+                    ? Row(children: [
+                        Expanded(
+                          child: RawScrollbar(
+                              controller: scrollController,
+                              thumbVisibility: true,
+                              child: SingleChildScrollView(
+                                controller: scrollController,
+                                child: ChipSavedKeywords(
+                                  editMode: isEditMode
+                                      ? EditMode.edit
+                                      : EditMode.view,
+                                ),
+                              )),
+                        )
+                      ])
+                    : const Center(
+                        child: Text(
+                          'You have no saved keywords yet.',
+                          style: TextStyle(
+                              color: PZColors.pzGrey,
+                              fontStyle: FontStyle.italic,
+                              fontSize: Sizes.fontSizeSmall),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+              ),
+            )),
+          ]),
         ),
       ),
     );

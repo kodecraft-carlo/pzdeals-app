@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class ProductImageWidget extends StatelessWidget {
   const ProductImageWidget({

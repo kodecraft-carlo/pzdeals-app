@@ -25,7 +25,7 @@ class NotificationCardWidget extends ConsumerStatefulWidget {
 class NotificationCardWidgetState
     extends ConsumerState<NotificationCardWidget> {
   FetchProductDealService productDealService = FetchProductDealService();
-  void showProductDeal(int productId) {
+  void showProductDeal(int productId, String notificationId) {
     if (mounted) {
       // LoadingDialog.show(context);
       loadProduct(productId).then((product) {
@@ -58,6 +58,7 @@ class NotificationCardWidgetState
             ),
           ),
         );
+        ref.read(notificationsProvider).markAsRead(notificationId);
         // LoadingDialog.hide(context);
         // }
       });
@@ -123,19 +124,17 @@ class NotificationCardWidgetState
       direction: DismissDirection.endToStart,
       child: GestureDetector(
         onTap: () {
-          debugPrint('notif id from screen: ${notificationData.id}');
-          ref.read(notificationsProvider).markAsRead(notificationData.id);
           if (notificationData.data != null || notificationData.data != {}) {
             debugPrint('Notification Data: $data');
             if (data['alert_type'] == 'keyword') {
-              showProductDeal(int.parse(data['item_id']));
+              showProductDeal(int.parse(data['item_id']), notificationData.id);
               // Navigator.of(context).pushNamed('/keyword-deals', arguments: {
               //   'title': notificationData.title,
               //   'keyword': data['value'],
               //   'product_id': data['item_id'] ?? ''
               // });
             } else if (data['alert_type'] == 'percentage') {
-              showProductDeal(int.parse(data['item_id']));
+              showProductDeal(int.parse(data['item_id']), notificationData.id);
               // Navigator.of(context).pushNamed('/percentage-deals', arguments: {
               //   'title': notificationData.title,
               //   'value': data['value'],
@@ -145,13 +144,13 @@ class NotificationCardWidgetState
                 data['alert_type'] == 'front_page' ||
                 data['alert_type'] == 'front-page') {
               debugPrint('Notification Data: $data');
-              showProductDeal(int.parse(data['item_id']));
+              showProductDeal(int.parse(data['item_id']), notificationData.id);
               // Navigator.of(context).pushNamed('/deals', arguments: {
               //   'type': 'price_mistake',
               //   'product_id': data['id'] ?? ''
               // });
             } else if (data['alert_type'] == 'category') {
-              showProductDeal(int.parse(data['id']));
+              showProductDeal(int.parse(data['id']), notificationData.id);
               // Navigator.of(context).pushNamed('/deal-collections', arguments: {
               //   'value': data['value'],
               //   'product_id': data['id'] ?? ''
@@ -228,16 +227,20 @@ class NotificationCardWidgetState
                       child: CachedNetworkImage(
                         imageUrl: notificationData.imageUrl,
                         memCacheHeight: 100,
+                        memCacheWidth: 100,
                         cacheManager: networkImageCacheManager,
-                        placeholder: (context, url) => Skeletonizer(
-                            effect: const PulseEffect(),
-                            child: Image.asset(
-                              'assets/images/shortcuts/blogs_placeholder.png',
-                              width: 50.0,
-                              height: 50.0,
-                              fit: BoxFit.fitHeight,
-                            )),
-                        fadeInDuration: const Duration(milliseconds: 10),
+                        placeholder: (context, url) =>
+                            //  Skeletonizer(
+                            //   effect: const PulseEffect(),
+                            //   child:
+                            Image.asset(
+                          'assets/images/shortcuts/blogs_placeholder.png',
+                          width: 50.0,
+                          height: 50.0,
+                          fit: BoxFit.fitHeight,
+                        ),
+                        // ),
+                        fadeInDuration: Duration.zero,
                         errorWidget: (context, url, error) => CircleAvatar(
                           backgroundColor: PZColors.pzOrange,
                           child: Transform.rotate(

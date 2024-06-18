@@ -126,7 +126,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             const SizedBox(height: Sizes.spaceBetweenContent),
             // 04/04/2024 demo: Price mistake alert (turned on by default and remove on settings)
             ListTileWithSwitchWidget(
-              title: 'Price Mistake & Glitches Notifications',
+              title: 'Price Mistake & Glitch Notifications',
               subtitle: 'Notify me on all price mistakes and glitches',
               value:
                   !settingsState.isLoading && settingsState.settingsData != null
