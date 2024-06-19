@@ -12,6 +12,7 @@ import 'package:pzdeals/src/features/deals/state/provider_search.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'dart:io' show Platform;
 import 'package:pzdeals/src/state/auth_user_data.dart';
+import 'package:pzdeals/src/state/media_query_provider.dart';
 
 class SearchDealScreen extends ConsumerStatefulWidget {
   const SearchDealScreen({super.key});
@@ -48,121 +49,127 @@ class SearchDealScreenState extends ConsumerState<SearchDealScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: PZColors.pzWhite,
-        surfaceTintColor: PZColors.pzWhite,
-        title: Consumer(builder: (context, ref, child) {
-          final searchState = ref.watch(searchproductProvider);
-          return Row(
+    final mediaQueryState = ref.watch(mediaqueryProvider);
+    return MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: TextScaler.linear(mediaQueryState.textScaler),
+        ),
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: PZColors.pzWhite,
+            surfaceTintColor: PZColors.pzWhite,
+            title: Consumer(builder: (context, ref, child) {
+              final searchState = ref.watch(searchproductProvider);
+              return Row(
+                children: [
+                  Expanded(
+                    child: SearchFieldWidget(
+                      hintText: "Search deals",
+                      destinationScreen: const SearchResultScreen(),
+                      autoFocus: false,
+                      focusNode: focusNode,
+                      textValue: searchState.searchKey,
+                      onSubmitted: () {
+                        searchfieldSubmit(searchState.searchKey);
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }),
+            actions: const [
+              Padding(
+                  padding: EdgeInsets.only(right: Sizes.paddingRight),
+                  child: SearchCancelWidget(
+                      destinationWidget: NavigationWidget(
+                    initialPageIndex: 0,
+                  ))),
+            ],
+          ),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Expanded(
-                child: SearchFieldWidget(
-                  hintText: "Search deals",
-                  destinationScreen: const SearchResultScreen(),
-                  autoFocus: false,
-                  focusNode: focusNode,
-                  textValue: searchState.searchKey,
-                  onSubmitted: () {
-                    searchfieldSubmit(searchState.searchKey);
-                  },
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final authUserDataState = ref.watch(authUserDataProvider);
+                  if (authUserDataState.isAuthenticated == true &&
+                      ref.read(keywordsProvider).savedkeywords.isNotEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
+                      child: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Saved Keywords",
+                                style: TextStyle(
+                                    fontSize: Sizes.fontSizeMedium,
+                                    fontWeight: FontWeight.w600,
+                                    color: PZColors.pzBlack)),
+                            GestureDetector(
+                              child: const Text("Manage",
+                                  style: TextStyle(
+                                      fontSize: Sizes.fontSizeMedium,
+                                      fontWeight: FontWeight.w600,
+                                      color: PZColors.pzOrange)),
+                              onTap: () {
+                                SystemChannels.textInput
+                                    .invokeMethod('TextInput.hide');
+                                Future.delayed(
+                                    Duration(
+                                        milliseconds: Platform.isAndroid
+                                            ? 100
+                                            : 400), () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return const NavigationWidget(
+                                      initialPageIndex: 3,
+                                    );
+                                  }));
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        const Row(
+                          children: [
+                            Expanded(
+                              child: ChipSavedKeywords(
+                                editMode: EditMode.view,
+                                enableSearch: true,
+                              ),
+                            )
+                          ],
+                        )
+                      ]),
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                },
+              ),
+              const SizedBox(height: Sizes.spaceBetweenSections),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text("Search Discovery",
+                      style: TextStyle(
+                          fontSize: Sizes.fontSizeMedium,
+                          fontWeight: FontWeight.w600,
+                          color: PZColors.pzBlack)),
                 ),
               ),
+              const Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: SearchDiscoveryWidget(),
+                ),
+              )
             ],
-          );
-        }),
-        actions: const [
-          Padding(
-              padding: EdgeInsets.only(right: Sizes.paddingRight),
-              child: SearchCancelWidget(
-                  destinationWidget: NavigationWidget(
-                initialPageIndex: 0,
-              ))),
-        ],
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final authUserDataState = ref.watch(authUserDataProvider);
-              if (authUserDataState.isAuthenticated == true &&
-                  ref.read(keywordsProvider).savedkeywords.isNotEmpty) {
-                return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                  child: Column(children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("Saved Keywords",
-                            style: TextStyle(
-                                fontSize: Sizes.fontSizeMedium,
-                                fontWeight: FontWeight.w600,
-                                color: PZColors.pzBlack)),
-                        GestureDetector(
-                          child: const Text("Manage",
-                              style: TextStyle(
-                                  fontSize: Sizes.fontSizeMedium,
-                                  fontWeight: FontWeight.w600,
-                                  color: PZColors.pzOrange)),
-                          onTap: () {
-                            SystemChannels.textInput
-                                .invokeMethod('TextInput.hide');
-                            Future.delayed(
-                                Duration(
-                                    milliseconds:
-                                        Platform.isAndroid ? 100 : 400), () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return const NavigationWidget(
-                                  initialPageIndex: 3,
-                                );
-                              }));
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const Row(
-                      children: [
-                        Expanded(
-                          child: ChipSavedKeywords(
-                            editMode: EditMode.view,
-                            enableSearch: true,
-                          ),
-                        )
-                      ],
-                    )
-                  ]),
-                );
-              } else {
-                return const SizedBox();
-              }
-            },
           ),
-          const SizedBox(height: Sizes.spaceBetweenSections),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Text("Search Discovery",
-                  style: TextStyle(
-                      fontSize: Sizes.fontSizeMedium,
-                      fontWeight: FontWeight.w600,
-                      color: PZColors.pzBlack)),
-            ),
-          ),
-          const Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: SearchDiscoveryWidget(),
-            ),
-          )
-        ],
-      ),
-    );
+        ));
   }
 }

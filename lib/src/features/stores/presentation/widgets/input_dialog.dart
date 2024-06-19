@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
-import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/common_widgets/textfield_button.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/services/email_service.dart';
@@ -12,10 +11,10 @@ class StoreInputDialog extends ConsumerStatefulWidget {
   const StoreInputDialog({super.key});
 
   @override
-  _StoreInputDialogState createState() => _StoreInputDialogState();
+  StoreInputDialogState createState() => StoreInputDialogState();
 }
 
-class _StoreInputDialogState extends ConsumerState<StoreInputDialog> {
+class StoreInputDialogState extends ConsumerState<StoreInputDialog> {
   EmailService emailSvc = EmailService();
   GoogleSheetService googletSheetSvc = GoogleSheetService();
   String storeName = '';

@@ -1,13 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
-import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
+import 'package:pzdeals/src/utils/helpers/appbadge.dart';
 
 final notificationsProvider =
     ChangeNotifierProvider<NotificationListNotifier>((ref) {
@@ -303,25 +301,5 @@ class NotificationListNotifier extends ChangeNotifier {
       debugPrint('unread count: $_unreadCount');
       notifyListeners();
     });
-  }
-
-  Future<void> updateBadgeCount(int count) async {
-    try {
-      final bool isSupported = await FlutterAppBadger.isAppBadgeSupported();
-      if (!isSupported) return;
-      await FlutterAppBadger.updateBadgeCount(count);
-    } catch (e) {
-      debugPrint('error updating badge count: $e');
-    }
-  }
-
-  Future<void> clearBadgeCount() async {
-    try {
-      final bool isSupported = await FlutterAppBadger.isAppBadgeSupported();
-      if (!isSupported) return;
-      await FlutterAppBadger.removeBadge();
-    } catch (e) {
-      debugPrint('error clearing badge count: $e');
-    }
   }
 }

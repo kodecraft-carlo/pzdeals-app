@@ -44,7 +44,7 @@ class StoreDataMapper {
           storeAssetImage: getStoreIconsUrl(storeImg, json['image_src']),
           // storeAssetImage:
           //     json['image_src'] ?? 'assets/images/pzdeals_store.png',
-          appStoreImg: json['app_store_img'] ?? '',
+          appStoreImg: json['local_app_store_img'] ?? '',
           assetSourceType: 'network',
           tagName: json['tags'].length > 0
               ? json['tags'][0]['tags_id']['tag_name']
@@ -68,7 +68,7 @@ class StoreDataMapper {
         handle: json['handle'],
         storeAssetImage:
             getStoreIconsUrl(json['store_img'] ?? "", json['image_src']),
-        appStoreImg: json['app_store_img'] ?? '',
+        appStoreImg: json['local_app_store_img'] ?? '',
         assetSourceType: 'network',
         tagName: json['tags'].length > 0
             ? json['tags'][0]['tags_id']['tag_name']

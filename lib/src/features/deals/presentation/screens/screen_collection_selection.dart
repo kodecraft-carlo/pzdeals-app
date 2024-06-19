@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/category_image.dart';
-import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/index.dart';
-import 'package:pzdeals/src/constants/sizes.dart';
-import 'package:pzdeals/src/features/deals/deals.dart';
 import 'dart:io' show Platform;
 
 import 'package:pzdeals/src/features/deals/state/provider_foryou.dart';
@@ -15,11 +12,11 @@ class CollectionSelectionWidget extends ConsumerStatefulWidget {
   const CollectionSelectionWidget({super.key});
 
   @override
-  _CollectionSelectionWidgetState createState() =>
-      _CollectionSelectionWidgetState();
+  CollectionSelectionWidgetState createState() =>
+      CollectionSelectionWidgetState();
 }
 
-class _CollectionSelectionWidgetState
+class CollectionSelectionWidgetState
     extends ConsumerState<CollectionSelectionWidget>
     with TickerProviderStateMixin {
   late final AnimationController _animationController;

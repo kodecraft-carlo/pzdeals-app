@@ -31,29 +31,29 @@ class LayoutScreenState extends ConsumerState<LayoutScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Column(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     const Text(
-            //       "Font Settings",
-            //       style: TextStyle(
-            //           fontSize: Sizes.sectionHeaderFontSize,
-            //           fontWeight: FontWeight.w600,
-            //           color: PZColors.pzBlack),
-            //     ),
-            //     const SizedBox(height: Sizes.spaceBetweenContentSmall),
-            //     const Text(
-            //       "Adjust the font slider to increase or decrease the font size",
-            //       style: TextStyle(fontSize: Sizes.bodyFontSize),
-            //     ),
-            //     const SizedBox(height: Sizes.spaceBetweenContent),
-            //     FontSliderWidget(
-            //       onChanged: textScaleOnchange,
-            //       initialValue:
-            //           textScaleFactor.round() == 0 ? 1 : textScaleFactor,
-            //     ),
-            //   ],
-            // ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Font Settings",
+                  style: TextStyle(
+                      fontSize: Sizes.sectionHeaderFontSize,
+                      fontWeight: FontWeight.w600,
+                      color: PZColors.pzBlack),
+                ),
+                const SizedBox(height: Sizes.spaceBetweenContentSmall),
+                const Text(
+                  "Adjust the font slider to increase or decrease the font size",
+                  style: TextStyle(fontSize: Sizes.bodyFontSize),
+                ),
+                const SizedBox(height: Sizes.spaceBetweenContent),
+                FontSliderWidget(
+                  onChanged: textScaleOnchange,
+                  initialValue:
+                      textScaleFactor.round() == 0 ? 1 : textScaleFactor,
+                ),
+              ],
+            ),
             const Text(
               "Layout Settings",
               style: TextStyle(

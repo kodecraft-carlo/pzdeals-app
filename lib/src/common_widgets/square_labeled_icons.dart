@@ -45,8 +45,9 @@ class SquareLabeledIcon extends StatelessWidget {
               color: PZColors.pzBlack,
               fontSize: Sizes.fontSizeSmall,
               fontWeight: FontWeight.w500),
-          textScaler: MediaQuery.textScalerOf(context),
+          // textScaler: const TextScaler.linear(1.075),
           maxLines: 1,
+          textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
         )
       ],

@@ -109,6 +109,48 @@ class ProductDealDescriptionState
                 : const SizedBox(),
           ],
         ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: Sizes.paddingAll * 1.2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              widget.productData.discountPercentage > 0
+                  ? BadgeWidget(
+                      discountPercentage: widget.productData.discountPercentage)
+                  : const SizedBox.shrink(),
+              widget.productData.discountPercentage > 0
+                  ? const SizedBox(width: Sizes.paddingAllSmall)
+                  : const SizedBox.shrink(),
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      top: Sizes.paddingAllSmall / 2,
+                      bottom: Sizes.paddingAllSmall / 2),
+                  child: Container(
+                      //add red outline
+                      // decoration: BoxDecoration(
+                      //   border: Border.all(
+                      //     color: Colors.red,
+                      //     width: 1,
+                      //   ),
+                      //   borderRadius: BorderRadius.circular(5),
+                      // ),
+                      height: 21,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: StoreImageWidget(
+                          storeAssetImage: widget.productData.storeAssetImage,
+                          imageWidth: 30,
+                          imageHeight: 25,
+                          hasLayoutType: false,
+                        ),
+                      )),
+                ),
+              ),
+            ],
+          ),
+        ),
         const SizedBox(
           height: Sizes.spaceBetweenContent,
         ),
@@ -121,45 +163,45 @@ class ProductDealDescriptionState
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: Sizes.spaceBetweenContentSmall),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            widget.productData.discountPercentage > 0
-                ? BadgeWidget(
-                    discountPercentage: widget.productData.discountPercentage)
-                : const SizedBox.shrink(),
-            widget.productData.discountPercentage > 0
-                ? const SizedBox(width: Sizes.paddingAllSmall)
-                : const SizedBox.shrink(),
-            Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: Sizes.paddingAllSmall / 2,
-                    bottom: Sizes.paddingAllSmall / 2),
-                child: Container(
-                    //add red outline
-                    // decoration: BoxDecoration(
-                    //   border: Border.all(
-                    //     color: Colors.red,
-                    //     width: 1,
-                    //   ),
-                    //   borderRadius: BorderRadius.circular(5),
-                    // ),
-                    height: 21,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: StoreImageWidget(
-                        storeAssetImage: widget.productData.storeAssetImage,
-                        imageWidth: 30,
-                        imageHeight: 25,
-                        hasLayoutType: false,
-                      ),
-                    )),
-              ),
-            ),
-          ],
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     widget.productData.discountPercentage > 0
+        //         ? BadgeWidget(
+        //             discountPercentage: widget.productData.discountPercentage)
+        //         : const SizedBox.shrink(),
+        //     widget.productData.discountPercentage > 0
+        //         ? const SizedBox(width: Sizes.paddingAllSmall)
+        //         : const SizedBox.shrink(),
+        //     Align(
+        //       alignment: Alignment.center,
+        //       child: Padding(
+        //         padding: const EdgeInsets.only(
+        //             top: Sizes.paddingAllSmall / 2,
+        //             bottom: Sizes.paddingAllSmall / 2),
+        //         child: Container(
+        //             //add red outline
+        //             // decoration: BoxDecoration(
+        //             //   border: Border.all(
+        //             //     color: Colors.red,
+        //             //     width: 1,
+        //             //   ),
+        //             //   borderRadius: BorderRadius.circular(5),
+        //             // ),
+        //             height: 21,
+        //             child: Align(
+        //               alignment: Alignment.center,
+        //               child: StoreImageWidget(
+        //                 storeAssetImage: widget.productData.storeAssetImage,
+        //                 imageWidth: 30,
+        //                 imageHeight: 25,
+        //                 hasLayoutType: false,
+        //               ),
+        //             )),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         // const SizedBox(height: Sizes.spaceBetweenContentSmall),
         widget.productData.isProductNoPrice != null &&
                 widget.productData.isProductNoPrice == false &&
@@ -205,14 +247,14 @@ class ProductDealDescriptionState
                 ),
               )
             : const SizedBox.shrink(),
-        const SizedBox(height: Sizes.spaceBetweenContent),
+        // const SizedBox(height: Sizes.spaceBetweenContentSmall),
         if (widget.productData.isProductExpired != null &&
             widget.productData.isProductExpired == true)
           const ExpiredDealBannerWidget(
               message: 'Sorry, this deal has expired'),
         if (widget.productData.isProductExpired != null &&
             widget.productData.isProductExpired == true)
-          const SizedBox(height: Sizes.spaceBetweenContent),
+          const SizedBox(height: Sizes.spaceBetweenContentSmall),
 
         //add divider line if there is a sku or product description
         (widget.productData.productDealDescription != null &&
@@ -234,7 +276,7 @@ class ProductDealDescriptionState
                     widget.productData.productDealDescription?.trim() != '' ||
                 widget.productData.tagDealDescription != null &&
                     widget.productData.tagDealDescription != ''
-            ? const SizedBox(height: Sizes.spaceBetweenContent)
+            ? const SizedBox(height: Sizes.spaceBetweenContentSmall)
             : const SizedBox.shrink(),
         //Added 05/08/2024 Tag Description
         widget.productData.sku != null && widget.productData.sku!.isNotEmpty

@@ -28,6 +28,7 @@ import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/bookmarks_provider.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
+import 'package:pzdeals/src/utils/helpers/appbadge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -97,6 +98,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   if (!prefs.containsKey('hasRunBefore')) {
     await clearSecureStorage();
+    await clearBadgeCount();
     await prefs.setBool('hasRunBefore', true);
   }
   runApp(const ProviderScope(child: MainApp()));

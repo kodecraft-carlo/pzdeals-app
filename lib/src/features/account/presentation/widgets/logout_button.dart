@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
+import 'package:pzdeals/src/utils/helpers/appbadge.dart';
 
 class LogoutButton extends ConsumerWidget {
   const LogoutButton({super.key});
@@ -84,6 +85,7 @@ class LogoutButton extends ConsumerWidget {
                       final authService = ref.watch(authProvider);
                       await authService.signOutFirebaseAuth();
                       await authService.signOutGoogle();
+                      clearBadgeCount();
                       debugPrint('User logged out');
                       if (context.mounted) {
                         Navigator.pushReplacement(
