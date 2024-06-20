@@ -141,11 +141,18 @@ class NotificationCardWidgetState
               //   'value': data['value'],
               //   'product_id': data['item_id'] ?? ''
               // });
-            } else if (data['alert_type'] == 'price-mistake' ||
-                data['alert_type'] == 'front_page' ||
+            } else if (data['alert_type'] == 'front_page' ||
                 data['alert_type'] == 'front-page') {
               debugPrint('Notification Data: $data');
               showProductDeal(int.parse(data['item_id']), notificationData.id);
+              // Navigator.of(context).pushNamed('/deals', arguments: {
+              //   'type': 'price_mistake',
+              //   'product_id': data['id'] ?? ''
+              // });
+            } else if (data['alert_type'] == 'price_mistake') {
+              debugPrint('Notification Data: $data');
+              showProductDeal(
+                  int.parse(data['product_id']), notificationData.id);
               // Navigator.of(context).pushNamed('/deals', arguments: {
               //   'type': 'price_mistake',
               //   'product_id': data['id'] ?? ''
@@ -181,6 +188,7 @@ class NotificationCardWidgetState
                   ),
                 ),
               );
+              ref.read(notificationsProvider).markAsRead(notificationData.id);
             }
           }
         },

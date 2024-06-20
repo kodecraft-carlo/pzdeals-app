@@ -175,11 +175,15 @@ class FirebaseMessagingApi {
 
     if (isForeground) {
       final payload = jsonDecode(message['payload']);
+      final productId =
+          payload['item_id'] ?? payload['product_id'] ?? payload['id'];
       final newData = jsonEncode(
-          {"item_id": payload["item_id"], "messageId": message['fcmNotifId']});
+          {"item_id": productId, "messageId": message['fcmNotifId']});
       data = jsonDecode(newData);
     } else {
-      final itemId = message['data']['item_id'] ?? message['data']['id'];
+      final itemId = message['data']['item_id'] ??
+          message['data']['product_id'] ??
+          message['data']['id'];
       final newData =
           jsonEncode({"item_id": itemId, "messageId": message['messageId']});
       data = jsonDecode(newData);
@@ -199,7 +203,7 @@ class FirebaseMessagingApi {
       //     'value': data['value'],
       //     'product_id': data['item_id'] ?? ''
       //   });
-      // } else if (data['alert_type'] == 'price-mistake' ||
+      // } else if (data['alert_type'] == 'price_mistake' ||
       //     data['alert_type'] == 'front-page' ||
       //     data['alert_type'] == 'front_page') {
       //   navigatorKey.currentState!.pushReplacementNamed('/deals', arguments: {
