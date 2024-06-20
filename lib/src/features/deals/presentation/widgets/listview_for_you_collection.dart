@@ -67,6 +67,14 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
     double screenWidth = MediaQuery.of(context).size.width;
     double itemWidth = screenWidth / 2.8;
 
+    String sectionTitle = '';
+    if (widget.title == 'Toys Deals') {
+      sectionTitle = 'Toy Deals';
+    } else if (widget.title == 'Clothing Deals') {
+      sectionTitle = 'Clothing & Accessory Deals';
+    } else {
+      sectionTitle = widget.title;
+    }
     return Container(
       key: ValueKey('foryoucollection_${widget.collectionId}'),
       height: 313,
@@ -79,8 +87,7 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextWidget(
-                  text:
-                      widget.title == 'Toys Deals' ? 'Toy Deals' : widget.title,
+                  text: sectionTitle,
                   textDisplayType: TextDisplayType.sectionTitle),
               Flexible(
                 child: ListView.separated(

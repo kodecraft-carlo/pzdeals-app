@@ -26,6 +26,10 @@ class ShopCategory extends StatelessWidget {
       itemCount: categoryData.length,
       itemBuilder: (context, index) {
         final category = categoryData[index];
+        String iconTitle = category.title;
+        if (category.title == 'Clothing') {
+          iconTitle = 'Clothing & Accessories';
+        }
         return NavigateScreenWidget(
           destinationWidget: CollectionDisplayScreenWidget(
             collectionTitle: '${category.title} Deals',
@@ -33,7 +37,7 @@ class ShopCategory extends StatelessWidget {
             collectionId: category.id,
           ),
           childWidget: SquareLabeledIcon(
-              iconTitle: category.title,
+              iconTitle: iconTitle,
               iconImage: category.imageAsset,
               iconAssetType: category.assetSourceType),
         );

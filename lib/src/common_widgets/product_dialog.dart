@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -11,8 +12,10 @@ import 'package:pzdeals/src/common_widgets/button_browser.dart';
 import 'package:pzdeals/src/common_widgets/button_see_deal.dart';
 import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_deal_actions.dart';
+import 'package:pzdeals/src/common_widgets/store_icon.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
+import 'package:pzdeals/src/models/index.dart';
 
 class ProductContentDialog extends StatefulWidget {
   final Widget content;
@@ -36,11 +39,24 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
   bool _showAffiliateLinkDescription = false;
   bool isUrlLoading = false;
   // final GlobalKey widgetKey = GlobalKey();
+  bool _isCallbackAdded = false;
 
   @override
   void initState() {
     super.initState();
     scrollController.addListener(_onScroll);
+    if (!_isCallbackAdded) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        debugPrint('ProductContentDialog addPostFrameCallback');
+        if (mounted) {
+          setState(() {
+            showMore = scrollController.position.maxScrollExtent > 0;
+            // debugPrint('showMore: $showMore');
+          });
+        }
+        _isCallbackAdded = true; // Ensure the callback is not added again
+      });
+    }
   }
 
   void _onScroll() {
@@ -88,159 +104,256 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
 
   @override
   Widget build(BuildContext context) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        showMore = scrollController.position.maxScrollExtent > 0;
-        // debugPrint('showMore: $showMore');
-      });
-      // isMarkerVisible();
-    });
+    debugPrint('ProductContentDialog build');
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+    //   debugPrint('ProductContentDialog addPostFrameCallback');
+    //   setState(() {
+    //     showMore = scrollController.position.maxScrollExtent > 0;
+    //     // debugPrint('showMore: $showMore');
+    //   });
+    //   // isMarkerVisible();
+    // });
     double screenHeight = MediaQuery.of(context).size.height;
-    double dialogHeight = screenHeight / 1.32;
+    double dialogHeight = screenHeight / 1.3;
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
-        surfaceTintColor: PZColors.pzWhite,
-
-        // scrollable: true,
-        // contentPadding: EdgeInsets.zero,
-        // actionsPadding: const EdgeInsets.symmetric(
-        //     horizontal: Sizes.paddingAll, vertical: Sizes.paddingAllSmall),
-        backgroundColor: PZColors.pzWhite,
-        shadowColor: PZColors.pzBlack,
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         clipBehavior: Clip.hardEdge,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Sizes.dialogBorderRadius),
         ),
         child: SizedBox(
-          height: dialogHeight,
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  // Add some padding
-                  Expanded(
-                    child: ShaderMask(
-                      shaderCallback: (Rect bounds) {
-                        return const LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: <Color>[Colors.transparent, Colors.white],
-                          stops: <double>[0.85, 1.0],
-                        ).createShader(bounds);
-                      },
-                      blendMode: BlendMode.dstOut,
-                      child: Stack(
-                        children: [
-                          SingleChildScrollView(
-                            controller: scrollController,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: Sizes.paddingTop,
-                                left: Sizes.paddingLeft,
-                                right: Sizes.paddingRight,
-                                bottom: Sizes.paddingBottom,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  widget.content,
-                                  const SizedBox(
-                                    height: Sizes.spaceBetweenSectionsXL,
+          // height: dialogHeight,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(Sizes.dialogBorderRadius),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                  height: 50,
+                                  width: 50,
+                                  margin: const EdgeInsets.only(
+                                      bottom: Sizes.paddingBottomSmall / 1.75),
+                                  clipBehavior: Clip.hardEdge,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(
+                                        Sizes.cardBorderRadius / 1.65),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 3,
+                                        blurRadius: 9,
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                  child: StoreIcon(
+                                      storeData: StoreData(
+                                          assetSourceType: 'network',
+                                          storeAssetImage: widget
+                                              .productData.storeAssetImage,
+                                          storeName: 'Stores',
+                                          handle: 'pzdeals',
+                                          id: 1))),
+                            ),
+                            Align(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: Sizes.paddingAllSmall),
+                                child: Text(
+                                  widget.productData.storeName ?? 'PzDeals',
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      color: PZColors.pzWhite,
+                                      shadows: [
+                                        Shadow(
+                                          offset: Offset(1.0, 1.0),
+                                          blurRadius: 15.0,
+                                          color: Color.fromARGB(255, 0, 0, 0),
+                                        ),
+                                        // Add more shadows here if needed
+                                      ],
+                                      fontSize: Sizes.fontSizeMedium,
+                                      fontWeight: FontWeight.w600),
+                                  textScaler: MediaQuery.textScalerOf(context),
+                                ),
                               ),
                             ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: const BoxDecoration(
+                      color: PZColors.pzWhite,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(Sizes.cardBorderRadius),
+                          topRight: Radius.circular(Sizes.cardBorderRadius)),
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: Colors.grey.withOpacity(0.2),
+                      //     spreadRadius: 3,
+                      //     blurRadius: 9,
+                      //   ),
+                      // ],
+                    ),
+                    padding: const EdgeInsets.only(top: Sizes.paddingAllSmall),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Add some padding
+                        Flexible(
+                          child: ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return const LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: <Color>[
+                                  Colors.transparent,
+                                  Colors.white
+                                ],
+                                stops: <double>[0.85, 1.0],
+                              ).createShader(bounds);
+                            },
+                            blendMode: BlendMode.dstOut,
+                            child: Stack(
+                              children: [
+                                SingleChildScrollView(
+                                  controller: scrollController,
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: Sizes.paddingTop,
+                                      left: Sizes.paddingLeft,
+                                      right: Sizes.paddingRight,
+                                      bottom: Sizes.paddingBottom,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        widget.content,
+                                        const SizedBox(
+                                          height: Sizes.spaceBetweenSectionsXL,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                if (_showAffiliateLinkDescription)
+                                  Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: Sizes.paddingAll,
+                                            right: Sizes.paddingAll,
+                                            bottom: Sizes.paddingAll),
+                                        child: affiliateLinkDescription(),
+                                      ))
+                              ],
+                            ),
                           ),
-                          if (_showAffiliateLinkDescription)
-                            Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: Sizes.paddingAll,
-                                      right: Sizes.paddingAll,
-                                      bottom: Sizes.paddingAll),
-                                  child: affiliateLinkDescription(),
-                                ))
-                        ],
-                      ),
+                        ),
+                        showMore == true &&
+                                !_isScrollingDown &&
+                                (widget.hasDescription == true ||
+                                    (widget.hasDescription == false &&
+                                        widget.productData.tagDealDescription !=
+                                            '' &&
+                                        (widget.productData.sku != null &&
+                                            widget.productData.sku != '')))
+                            ? GestureDetector(
+                                onTap: () {
+                                  scrollController.animateTo(
+                                      scrollController.position.maxScrollExtent,
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeOut);
+                                  setState(() {
+                                    _isScrollingDown = true;
+                                  });
+                                },
+                                child: const BouncingArrowIcon(
+                                  height: 45,
+                                  bounceText: 'Scroll down for more',
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
                     ),
                   ),
-                  showMore == true &&
-                          !_isScrollingDown &&
-                          (widget.hasDescription == true ||
-                              (widget.hasDescription == false &&
-                                  widget.productData.tagDealDescription != '' &&
-                                  (widget.productData.sku != null &&
-                                      widget.productData.sku != '')))
-                      ? GestureDetector(
-                          onTap: () {
-                            scrollController.animateTo(
-                                scrollController.position.maxScrollExtent,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeOut);
-                            setState(() {
-                              _isScrollingDown = true;
-                            });
-                          },
-                          child: const BouncingArrowIcon(
-                            height: 45,
-                            bounceText: 'Scroll down for more',
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                  ProductDealActions(
-                    productData: widget.productData,
-                  ),
-                  widget.productData.barcodeLink != ''
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: Sizes.paddingAll,
-                              vertical: Sizes.paddingAllSmall),
-                          child: SeeDealButton(
-                            buttonLabel: 'See Deal',
-                            onPressed: () {
-                              HapticFeedback.mediumImpact();
-                              LoadingDialog.show(context);
-                              Future.wait([
-                                openBrowser(
-                                    widget.productData.barcodeLink ?? '')
-                              ]).whenComplete(
-                                  () => LoadingDialog.hide(context));
-                            },
-                          ),
-                        )
-                      : const SizedBox(
-                          height: Sizes.spaceBetweenSectionsXL,
-                        ),
-                ],
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.close,
-                    size: Sizes.largeIconSize,
-                  ),
-                  // style: ButtonStyle(
-                  //   shape: MaterialStateProperty.all<OutlinedBorder>(
-                  //     RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.circular(
-                  //           50), // Set a large value for circular shape
-                  //       side: BorderSide(
-                  //           color: Colors.white,
-                  //           width: 2), // Add a white stroke
-                  //     ),
-                  //   ),
-                  // ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
                 ),
-              ),
-            ],
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                    color: PZColors.pzWhite,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(Sizes.cardBorderRadius),
+                        bottomRight: Radius.circular(Sizes.cardBorderRadius)),
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //     color: Colors.grey.withOpacity(0.2),
+                    //     spreadRadius: 3,
+                    //     blurRadius: 9,
+                    //   ),
+                    // ],
+                  ),
+                  padding: const EdgeInsets.only(bottom: Sizes.paddingAllSmall),
+                  child: Column(
+                    children: [
+                      ProductDealActions(
+                        productData: widget.productData,
+                      ),
+                      widget.productData.barcodeLink != ''
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: Sizes.paddingAll,
+                                  vertical: Sizes.paddingAllSmall),
+                              child: SeeDealButton(
+                                buttonLabel: 'See Deal',
+                                onPressed: () {
+                                  HapticFeedback.mediumImpact();
+                                  LoadingDialog.show(context);
+                                  Future.wait([
+                                    openBrowser(
+                                        widget.productData.barcodeLink ?? '')
+                                  ]).whenComplete(
+                                      () => LoadingDialog.hide(context));
+                                },
+                              ),
+                            )
+                          : const SizedBox(
+                              height: Sizes.spaceBetweenSectionsXL,
+                            ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

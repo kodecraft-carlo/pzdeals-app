@@ -9,13 +9,29 @@ String getStoreImageUrlFromTags(List<dynamic> tagIds) {
     }
     final storeImage = tag['tags_id']['image'];
     if (tag['tags_id']['tag_name'] == 'ac') {
-      return '${AppConfig.directusAssetsUrl}9307aaa4-25e0-4897-b555-a3279ca58802';
+      return '${AppConfig.directusAssetsUrl}53ec2659-d1a7-4b64-807e-634089893364';
     }
     if (storeImage != null) {
       return '${AppConfig.directusAssetsUrl}$storeImage';
     }
   }
   return 'assets/images/pzdeals_store.png';
+}
+
+String getStoreNameFromTags(List<dynamic> tagIds) {
+  for (var tag in tagIds) {
+    if (tag == null || tag['tags_id'] == null) {
+      continue;
+    }
+    final storeTitle = tag['tags_id']['title'];
+    if (tag['tags_id']['tag_name'] == 'ac') {
+      return 'Amazon';
+    }
+    if (storeTitle != null) {
+      return storeTitle;
+    }
+  }
+  return 'PzDeals';
 }
 
 bool isProductExpired(List<dynamic> tagIds) {

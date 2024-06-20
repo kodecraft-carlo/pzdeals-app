@@ -51,6 +51,9 @@ class ProductMapper {
               : '',
           tagDealDescription: extractTagDealDescription(json['tag_ids']),
           handle: json['handle'] ?? '',
+          storeName: json['store'] != null
+              ? json['store']['title'] ?? getStoreNameFromTags(json['tag_ids'])
+              : getStoreNameFromTags(json['tag_ids']),
         );
       }));
     } catch (e, stackTrace) {
@@ -105,6 +108,9 @@ class ProductMapper {
             : '',
         tagDealDescription: extractTagDealDescription(json['tag_ids']),
         handle: json['handle'] ?? '',
+        storeName: json['store'] != null
+            ? json['store']['title'] ?? getStoreNameFromTags(json['tag_ids'])
+            : getStoreNameFromTags(json['tag_ids']),
       );
     } catch (e, stackTrace) {
       debugPrint('Error in mapToProductDealcardDataList: $e');

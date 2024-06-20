@@ -248,6 +248,8 @@ class _GridItemWidgetState extends State<GridItemWidget>
     String title = '';
     if (widget.categoryLabel.toLowerCase() == 'toys') {
       title = 'Toy Deals';
+    } else if (widget.categoryLabel.toLowerCase() == 'clothing') {
+      title = 'Clothing & Accessory Deals';
     } else {
       title = '${widget.categoryLabel} Deals';
     }

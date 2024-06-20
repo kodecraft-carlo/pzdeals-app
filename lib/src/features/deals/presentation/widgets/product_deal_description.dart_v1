@@ -109,32 +109,50 @@ class ProductDealDescriptionState
                 : const SizedBox(),
           ],
         ),
-        const SizedBox(
-          height: Sizes.spaceBetweenContentSmall,
-        ),
-        Center(
-          child: Container(
-              //add red outline
-              // decoration: BoxDecoration(
-              //   border: Border.all(
-              //     color: Colors.red,
-              //     width: 1,
-              //   ),
-              //   borderRadius: BorderRadius.circular(5),
-              // ),
-              height: 21,
-              child: Align(
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: Sizes.paddingAll * 1.2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              widget.productData.discountPercentage > 0
+                  ? BadgeWidget(
+                      discountPercentage: widget.productData.discountPercentage)
+                  : const SizedBox.shrink(),
+              widget.productData.discountPercentage > 0
+                  ? const SizedBox(width: Sizes.paddingAllSmall)
+                  : const SizedBox.shrink(),
+              Align(
                 alignment: Alignment.center,
-                child: StoreImageWidget(
-                  storeAssetImage: widget.productData.storeAssetImage,
-                  imageWidth: 30,
-                  imageHeight: 25,
-                  hasLayoutType: false,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      top: Sizes.paddingAllSmall / 2,
+                      bottom: Sizes.paddingAllSmall / 2),
+                  child: Container(
+                      //add red outline
+                      // decoration: BoxDecoration(
+                      //   border: Border.all(
+                      //     color: Colors.red,
+                      //     width: 1,
+                      //   ),
+                      //   borderRadius: BorderRadius.circular(5),
+                      // ),
+                      height: 21,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: StoreImageWidget(
+                          storeAssetImage: widget.productData.storeAssetImage,
+                          imageWidth: 30,
+                          imageHeight: 25,
+                          hasLayoutType: false,
+                        ),
+                      )),
                 ),
-              )),
+              ),
+            ],
+          ),
         ),
         const SizedBox(
-          height: Sizes.spaceBetweenContentSmall,
+          height: Sizes.spaceBetweenContent,
         ),
         Text(
           widget.productData.productName,
@@ -144,20 +162,7 @@ class ProductDealDescriptionState
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
         ),
-        const SizedBox(
-          height: Sizes.spaceBetweenContentSmall,
-        ),
-        Center(
-          child: widget.productData.discountPercentage > 0
-              ? Text(
-                  '-${widget.productData.discountPercentage}%',
-                  style: const TextStyle(
-                      fontSize: Sizes.fontSizeXXLarge,
-                      color: PZColors.amazonPercentOff),
-                )
-              : const SizedBox.shrink(),
-        ),
-        // const SizedBox(height: Sizes.spaceBetweenContentSmall),
+        const SizedBox(height: Sizes.spaceBetweenContentSmall),
         // Row(
         //   mainAxisAlignment: MainAxisAlignment.center,
         //   children: [
