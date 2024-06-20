@@ -11,6 +11,7 @@ import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_foryou.dart';
 import 'package:pzdeals/src/features/deals/state/provider_foryou.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
+import 'package:pzdeals/src/state/media_query_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ForYouWidget extends ConsumerStatefulWidget {
@@ -33,6 +34,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
     super.build(context);
     final forYouState = ref
         .watch(tabForYouProvider.select((value) => value.collectionProducts));
+    final mediaqueryState = ref.watch(mediaqueryProvider);
 
     List<Widget> sectionContent = [];
     if (forYouState.isNotEmpty) {
@@ -92,6 +94,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
                     const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
                 child: RichText(
                     textAlign: TextAlign.center,
+                    textScaler: TextScaler.linear(mediaqueryState.textScaler),
                     text: TextSpan(
                       children: [
                         const TextSpan(
@@ -238,6 +241,7 @@ class CustomizeHereLink extends StatelessWidget {
               fontSize: Sizes.bodyFontSize,
               fontStyle: FontStyle.italic),
           textAlign: TextAlign.center,
+          textScaler: TextScaler.linear(1),
         ));
   }
 }

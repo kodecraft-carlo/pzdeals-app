@@ -69,7 +69,7 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
 
     return Container(
       key: ValueKey('foryoucollection_${widget.collectionId}'),
-      height: 310,
+      height: 313,
       margin: const EdgeInsets.only(
         bottom: Sizes.marginBottom,
       ),

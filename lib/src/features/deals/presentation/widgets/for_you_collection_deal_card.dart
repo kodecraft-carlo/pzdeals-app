@@ -174,9 +174,13 @@ class StaticProductDealCardWidgetState
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               widget.productData.discountPercentage > 0
-                                  ? BadgeWidget(
-                                      discountPercentage:
-                                          widget.productData.discountPercentage)
+                                  ? MediaQuery(
+                                      data: MediaQuery.of(context).copyWith(
+                                        textScaler: const TextScaler.linear(1),
+                                      ),
+                                      child: BadgeWidget(
+                                          discountPercentage: widget
+                                              .productData.discountPercentage))
                                   : const SizedBox(),
                             ],
                           ),
