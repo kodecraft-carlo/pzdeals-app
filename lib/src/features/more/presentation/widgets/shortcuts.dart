@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/actions/navigate_screen.dart';
-import 'package:pzdeals/src/common_widgets/input_dialog.dart';
+import 'package:pzdeals/src/features/more/presentation/widgets/input_dialog.dart';
 import 'package:pzdeals/src/common_widgets/square_labeled_icons.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_cc_deals.dart';

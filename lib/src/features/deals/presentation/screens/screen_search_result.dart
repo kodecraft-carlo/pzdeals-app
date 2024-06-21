@@ -146,6 +146,14 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
       );
     }
     final mediaQueryState = ref.watch(mediaqueryProvider);
+
+    Size screenSize = MediaQuery.of(context).size;
+    EdgeInsets safeAreaInsets = MediaQuery.of(context).padding;
+
+    // Calculate dynamic spacing based on the screen height and safe area
+    double dynamicSpacing = (screenSize.height - safeAreaInsets.vertical) *
+        0.001; // Example: 1% of usable screen height
+
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
         textScaler: TextScaler.linear(mediaQueryState.textScaler),
@@ -354,7 +362,7 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
                           ),
                         ),
                       ),
-                    const SizedBox(height: Sizes.spaceBetweenSections),
+                    SizedBox(height: dynamicSpacing),
                     searchResultWidget,
                   ]),
             ),

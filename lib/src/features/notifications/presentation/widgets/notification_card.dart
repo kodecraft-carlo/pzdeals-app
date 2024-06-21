@@ -164,31 +164,36 @@ class NotificationCardWidgetState
               //   'product_id': data['id'] ?? ''
               // });
             } else {
-              showDialog(
-                context: context,
-                useRootNavigator: false,
-                barrierDismissible: true,
-                builder: (context) => ScaffoldMessenger(
-                  child: Builder(
-                    builder: (context) => Scaffold(
-                      backgroundColor: Colors.transparent,
-                      body: GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        behavior: HitTestBehavior.opaque,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                            child: NotificationDialog(
-                                notificationData: notificationData),
+              if (data['id'] != null || data['product_id'] != null) {
+                showProductDeal(int.parse(data['id'] ?? data['product_id']),
+                    notificationData.id);
+              } else {
+                showDialog(
+                  context: context,
+                  useRootNavigator: false,
+                  barrierDismissible: true,
+                  builder: (context) => ScaffoldMessenger(
+                    child: Builder(
+                      builder: (context) => Scaffold(
+                        backgroundColor: Colors.transparent,
+                        body: GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          behavior: HitTestBehavior.opaque,
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                              child: NotificationDialog(
+                                  notificationData: notificationData),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              );
-              ref.read(notificationsProvider).markAsRead(notificationData.id);
+                );
+                ref.read(notificationsProvider).markAsRead(notificationData.id);
+              }
             }
           }
         },
@@ -262,7 +267,7 @@ class NotificationCardWidgetState
                     ),
                   ),
             title: Text(
-              notificationData.body,
+              '${notificationData.title}: ${notificationData.body}',
               style: TextStyle(
                   color: notificationData.isRead
                       ? PZColors.pzGrey

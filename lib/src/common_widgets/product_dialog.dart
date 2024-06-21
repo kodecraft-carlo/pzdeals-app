@@ -114,11 +114,12 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
     //   // isMarkerVisible();
     // });
     double screenHeight = MediaQuery.of(context).size.height;
-    double dialogHeight = screenHeight / 1.3;
+    double dialogHeight = screenHeight / 1.25;
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
+        alignment: Alignment.topCenter,
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         clipBehavior: Clip.hardEdge,
@@ -126,7 +127,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
           borderRadius: BorderRadius.circular(Sizes.dialogBorderRadius),
         ),
         child: SizedBox(
-          // height: dialogHeight,
+          height: dialogHeight,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(Sizes.dialogBorderRadius),
             child: Column(

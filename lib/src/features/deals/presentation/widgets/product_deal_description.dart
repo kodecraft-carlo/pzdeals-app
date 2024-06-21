@@ -112,51 +112,52 @@ class ProductDealDescriptionState
         const SizedBox(
           height: Sizes.spaceBetweenContentSmall,
         ),
-        Center(
-          child: Container(
-              //add red outline
-              // decoration: BoxDecoration(
-              //   border: Border.all(
-              //     color: Colors.red,
-              //     width: 1,
-              //   ),
-              //   borderRadius: BorderRadius.circular(5),
-              // ),
-              height: 21,
-              child: Align(
-                alignment: Alignment.center,
-                child: StoreImageWidget(
-                  storeAssetImage: widget.productData.storeAssetImage,
-                  imageWidth: 30,
-                  imageHeight: 25,
-                  hasLayoutType: false,
-                ),
-              )),
+        // Center(
+        //   child: Container(
+        //       //add red outline
+        //       // decoration: BoxDecoration(
+        //       //   border: Border.all(
+        //       //     color: Colors.red,
+        //       //     width: 1,
+        //       //   ),
+        //       //   borderRadius: BorderRadius.circular(5),
+        //       // ),
+        //       height: 21,
+        //       child: Align(
+        //         alignment: Alignment.center,
+        //         child: StoreImageWidget(
+        //           storeAssetImage: widget.productData.storeAssetImage,
+        //           imageWidth: 30,
+        //           imageHeight: 25,
+        //           hasLayoutType: false,
+        //         ),
+        //       )),
+        // ),
+        // const SizedBox(
+        //   height: Sizes.spaceBetweenContentSmall,
+        // ),
+        GestureDetector(
+          child: Text(
+            widget.productData.productName,
+            style: const TextStyle(
+                fontSize: Sizes.fontSizeMedium, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+          onTap: () {
+            if (widget.productData.barcodeLink != null &&
+                widget.productData.barcodeLink!.isNotEmpty &&
+                widget.productData.barcodeLink != '') {
+              openBrowser(widget.productData.barcodeLink ?? '');
+            }
+          },
         ),
+
         const SizedBox(
           height: Sizes.spaceBetweenContentSmall,
         ),
-        Text(
-          widget.productData.productName,
-          style: const TextStyle(
-              fontSize: Sizes.fontSizeMedium, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(
-          height: Sizes.spaceBetweenContentSmall,
-        ),
-        Center(
-          child: widget.productData.discountPercentage > 0
-              ? Text(
-                  '-${widget.productData.discountPercentage}%',
-                  style: const TextStyle(
-                      fontSize: Sizes.fontSizeXXLarge,
-                      color: PZColors.amazonPercentOff),
-                )
-              : const SizedBox.shrink(),
-        ),
+
         // const SizedBox(height: Sizes.spaceBetweenContentSmall),
         // Row(
         //   mainAxisAlignment: MainAxisAlignment.center,
@@ -198,50 +199,64 @@ class ProductDealDescriptionState
         //   ],
         // ),
         // const SizedBox(height: Sizes.spaceBetweenContentSmall),
-        widget.productData.isProductNoPrice != null &&
-                widget.productData.isProductNoPrice == false &&
-                (widget.productData.oldPrice != null &&
-                    double.parse(widget.productData.oldPrice
-                            .toString()
-                            .replaceAll(',', '')) >
-                        0 &&
-                    widget.productData.oldPrice != '')
-            ? RichText(
-                text: TextSpan(
-                  children: [
-                    // Current Price
-                    TextSpan(
-                      text: '\$${widget.productData.price}',
-                      style: const TextStyle(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            widget.productData.discountPercentage > 0
+                ? Text(
+                    '-${widget.productData.discountPercentage}% ',
+                    style: const TextStyle(
                         fontSize: Sizes.fontSizeXXLarge,
-                        color: PZColors.pzGreen,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+                        color: PZColors.pzBadgeColor),
+                  )
+                : const SizedBox.shrink(),
+            widget.productData.isProductNoPrice != null &&
+                    widget.productData.isProductNoPrice == false &&
+                    (widget.productData.oldPrice != null &&
+                        double.parse(widget.productData.oldPrice
+                                .toString()
+                                .replaceAll(',', '')) >
+                            0 &&
+                        widget.productData.oldPrice != '')
+                ? RichText(
+                    text: TextSpan(
+                      children: [
+                        // Current Price
+                        TextSpan(
+                          text: '\$${widget.productData.price}',
+                          style: const TextStyle(
+                            fontSize: Sizes.fontSizeXXLarge,
+                            color: PZColors.pzGreen,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
 
-                    // Add some space between prices
-                    const TextSpan(
-                      text: '  ',
-                    ),
+                        // Add some space between prices
+                        const TextSpan(
+                          text: '  ',
+                        ),
 
-                    // Old Price with Strikethrough
-                    widget.productData.oldPrice != '0.00'
-                        ? TextSpan(
-                            text:
-                                '\$${widget.productData.oldPrice}', // Replace with your old price
-                            style: const TextStyle(
-                              fontSize: Sizes.fontSizeMedium,
-                              color: Colors.red,
-                              decoration: TextDecoration.lineThrough,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          )
-                        : const TextSpan(text: ''),
-                  ],
-                ),
-              )
-            : const SizedBox.shrink(),
+                        // Old Price with Strikethrough
+                        widget.productData.oldPrice != '0.00'
+                            ? TextSpan(
+                                text:
+                                    '\$${widget.productData.oldPrice}', // Replace with your old price
+                                style: const TextStyle(
+                                  fontSize: Sizes.fontSizeMedium,
+                                  color: Colors.red,
+                                  decoration: TextDecoration.lineThrough,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              )
+                            : const TextSpan(text: ''),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ],
+        ),
+
         // const SizedBox(height: Sizes.spaceBetweenContentSmall),
         if (widget.productData.isProductExpired != null &&
             widget.productData.isProductExpired == true)

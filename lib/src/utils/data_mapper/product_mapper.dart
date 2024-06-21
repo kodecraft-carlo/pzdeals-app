@@ -23,14 +23,12 @@ class ProductMapper {
                 ? json['variants'][0]['price']
                 : null)
             : 0.0;
+
         return ProductDealcardData(
           productId: json['id'],
           productName:
               json['title'] != null ? json['title'].toString().trim() : '',
           price: priceFormatterWithComma(price),
-          // storeAssetImage: json['store'] != null
-          //     ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
-          //     : 'assets/images/pzdeals_store.png',
           storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
           oldPrice: priceFormatterWithComma(oldPrice),
           imageAsset: json['image_src'],
@@ -52,7 +50,7 @@ class ProductMapper {
           tagDealDescription: extractTagDealDescription(json['tag_ids']),
           handle: json['handle'] ?? '',
           storeName: json['store'] != null
-              ? json['store']['title'] ?? getStoreNameFromTags(json['tag_ids'])
+              ? json['store']['title']
               : getStoreNameFromTags(json['tag_ids']),
         );
       }));
@@ -85,9 +83,6 @@ class ProductMapper {
         productName:
             json['title'] != null ? json['title'].toString().trim() : '',
         price: priceFormatterWithComma(price),
-        // storeAssetImage: json['store'] != null
-        //     ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
-        //     : 'assets/images/pzdeals_store.png',
         storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
         oldPrice: priceFormatterWithComma(oldPrice),
         imageAsset: json['image_src'],
@@ -109,7 +104,7 @@ class ProductMapper {
         tagDealDescription: extractTagDealDescription(json['tag_ids']),
         handle: json['handle'] ?? '',
         storeName: json['store'] != null
-            ? json['store']['title'] ?? getStoreNameFromTags(json['tag_ids'])
+            ? json['store']['title']
             : getStoreNameFromTags(json['tag_ids']),
       );
     } catch (e, stackTrace) {

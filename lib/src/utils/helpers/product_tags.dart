@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pzdeals/config.dart';
+import 'package:pzdeals/src/utils/helpers/convert_string.dart';
 
 String getStoreImageUrlFromTags(List<dynamic> tagIds) {
   for (var tag in tagIds) {
@@ -23,12 +24,12 @@ String getStoreNameFromTags(List<dynamic> tagIds) {
     if (tag == null || tag['tags_id'] == null) {
       continue;
     }
-    final storeTitle = tag['tags_id']['title'];
+    final storeImage = tag['tags_id']['image'];
     if (tag['tags_id']['tag_name'] == 'ac') {
       return 'Amazon';
     }
-    if (storeTitle != null) {
-      return storeTitle;
+    if (storeImage != null) {
+      return formatTagNameToCapitalizedWord(tag['tags_id']['tag_name']);
     }
   }
   return 'PzDeals';

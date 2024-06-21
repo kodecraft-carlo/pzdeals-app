@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/utils/field_validation/index.dart';
 
 class TextFieldButton extends StatefulWidget {
   const TextFieldButton(
@@ -11,6 +12,7 @@ class TextFieldButton extends StatefulWidget {
       this.textfieldIcon = Icons.search,
       this.hasIcon = true,
       this.isAutoFocus = false,
+      this.validateEmail = false,
       required this.textController});
 
   final VoidCallback onButtonPressed;
@@ -20,6 +22,7 @@ class TextFieldButton extends StatefulWidget {
   final bool hasIcon;
   final bool isAutoFocus;
   final TextEditingController textController;
+  final bool validateEmail;
 
   @override
   _TextFieldButtonState createState() => _TextFieldButtonState();
@@ -57,9 +60,15 @@ class _TextFieldButtonState extends State<TextFieldButton> {
               autofocus: widget.isAutoFocus,
               controller: widget.textController,
               onChanged: (value) {
-                setState(() {
-                  isActionEnabled = value.isNotEmpty;
-                });
+                if (widget.validateEmail) {
+                  setState(() {
+                    isActionEnabled = isEmailAddressValid(value) ? true : false;
+                  });
+                } else {
+                  setState(() {
+                    isActionEnabled = value.isNotEmpty;
+                  });
+                }
               },
               decoration: InputDecoration(
                 hintText: widget.textFieldHint,

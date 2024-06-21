@@ -3,11 +3,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
-import 'package:pzdeals/src/common_widgets/button_submit.dart';
 import 'package:pzdeals/src/common_widgets/textfield_button.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/utils/field_validation/index.dart';
 
 class CommonInputDialog extends StatefulWidget {
   const CommonInputDialog(
@@ -33,9 +32,9 @@ class CommonInputDialog extends StatefulWidget {
 }
 
 class CommonInputDialogState extends State<CommonInputDialog> {
+  bool isInputValid = false;
   void submitButton(BuildContext context) {
-    // if (mounted) LoadingDialog.show(context);
-
+    // if (mounted) LoadingDialog.sxhow(context);
     widget.onButtonPressed();
     showSnackbarWithMessage(context, widget.snackbarMessage);
     Navigator.of(context).pop();
@@ -70,7 +69,15 @@ class CommonInputDialogState extends State<CommonInputDialog> {
                         style: const TextStyle(fontSize: Sizes.fontSizeLarge),
                         textInputAction: TextInputAction.done,
                         onChanged: (value) {
-                          setState(() {});
+                          if (isEmailAddressValid(value)) {
+                            setState(() {
+                              isInputValid = true;
+                            });
+                          } else {
+                            setState(() {
+                              isInputValid = false;
+                            });
+                          }
                         },
                         inputFormatters: [
                           TextInputFormatter.withFunction(
@@ -96,10 +103,9 @@ class CommonInputDialogState extends State<CommonInputDialog> {
                                 child: CupertinoButton(
                               color: CupertinoColors.activeBlue,
                               padding: EdgeInsets.zero,
-                              onPressed:
-                                  widget.dialogFieldController.text.isEmpty
-                                      ? null
-                                      : () => submitButton(context),
+                              onPressed: isInputValid == false
+                                  ? null
+                                  : () => submitButton(context),
                               child: Text(
                                 widget.buttonText,
                                 style: const TextStyle(
@@ -142,6 +148,7 @@ class CommonInputDialogState extends State<CommonInputDialog> {
                         textFieldHint: widget.inputHint,
                         hasIcon: false,
                         isAutoFocus: true,
+                        validateEmail: false,
                       ),
               ],
             ),
