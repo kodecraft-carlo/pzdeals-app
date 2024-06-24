@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:pzdeals/src/actions/launch_url.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
+import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
 class HtmlContent extends StatelessWidget {
@@ -10,12 +12,14 @@ class HtmlContent extends StatelessWidget {
       required this.htmlContent,
       this.margin,
       this.padding,
-      this.isProductDescription = false});
+      this.isProductDescription = false,
+      this.isLaunchApp = false});
 
   final String htmlContent;
   final Margins? margin;
   final HtmlPaddings? padding;
   final bool isProductDescription;
+  final bool isLaunchApp;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +57,16 @@ class HtmlContent extends StatelessWidget {
                 margin: Margins.zero,
               ),
             },
-            onLinkTap: (url, attributes, element) => openBrowser(url ?? ''))
+            onLinkTap: (url, attributes, element) {
+              if (isLaunchApp) {
+                LoadingDialog.show(context);
+                Future.wait([launchDealUrl(url ?? '')])
+                    .whenComplete(() => LoadingDialog.hide(context));
+              } else {
+                openBrowser(url ?? '');
+              }
+            },
+          )
         : HtmlWidget(
             htmlContent,
             customStylesBuilder: (element) {
@@ -94,7 +107,13 @@ class HtmlContent extends StatelessWidget {
             renderMode: RenderMode.column,
             enableCaching: true,
             onTapUrl: (url) {
-              openBrowser(url);
+              if (isLaunchApp) {
+                LoadingDialog.show(context);
+                Future.wait([launchDealUrl(url)])
+                    .whenComplete(() => LoadingDialog.hide(context));
+              } else {
+                openBrowser(url);
+              }
               return true;
             },
           );

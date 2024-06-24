@@ -107,7 +107,7 @@ class NotificationsDisplayState extends ConsumerState<NotificationsDisplay>
                   physics: const AlwaysScrollableScrollPhysics(),
                   controller: _scrollController,
                   // physics: const BouncingScrollPhysics(),
-                  shrinkWrap: true,
+                  // shrinkWrap: true,
                   itemCount: notifData.length,
                   itemBuilder: (BuildContext context, int index) {
                     return NotificationCardWidget(

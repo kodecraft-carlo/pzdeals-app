@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pzdeals/src/actions/launch_url.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/bouncing_arrow_down.dart';
 import 'package:pzdeals/src/common_widgets/button_browser.dart';
@@ -114,7 +115,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
     //   // isMarkerVisible();
     // });
     double screenHeight = MediaQuery.of(context).size.height;
-    double dialogHeight = screenHeight / 1.25;
+    double dialogHeight = screenHeight / 1.22;
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
@@ -127,7 +128,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
           borderRadius: BorderRadius.circular(Sizes.dialogBorderRadius),
         ),
         child: SizedBox(
-          height: dialogHeight,
+          // height: dialogHeight,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(Sizes.dialogBorderRadius),
             child: Column(
@@ -150,7 +151,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                   height: 50,
                                   width: 50,
                                   margin: const EdgeInsets.only(
-                                      bottom: Sizes.paddingBottomSmall / 1.75),
+                                      bottom: Sizes.paddingBottom / 1.5),
                                   clipBehavior: Clip.hardEdge,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
@@ -173,31 +174,31 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                           handle: 'pzdeals',
                                           id: 1))),
                             ),
-                            Align(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: Sizes.paddingAllSmall),
-                                child: Text(
-                                  widget.productData.storeName ?? 'PzDeals',
-                                  maxLines: 2,
-                                  textAlign: TextAlign.center,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                      color: PZColors.pzWhite,
-                                      shadows: [
-                                        Shadow(
-                                          offset: Offset(1.0, 1.0),
-                                          blurRadius: 15.0,
-                                          color: Color.fromARGB(255, 0, 0, 0),
-                                        ),
-                                        // Add more shadows here if needed
-                                      ],
-                                      fontSize: Sizes.fontSizeMedium,
-                                      fontWeight: FontWeight.w600),
-                                  textScaler: MediaQuery.textScalerOf(context),
-                                ),
-                              ),
-                            ),
+                            // Align(
+                            //   child: Padding(
+                            //     padding: const EdgeInsets.only(
+                            //         bottom: Sizes.paddingAllSmall),
+                            //     child: Text(
+                            //       widget.productData.storeName ?? 'PzDeals',
+                            //       maxLines: 2,
+                            //       textAlign: TextAlign.center,
+                            //       overflow: TextOverflow.ellipsis,
+                            //       style: const TextStyle(
+                            //           color: PZColors.pzWhite,
+                            //           shadows: [
+                            //             Shadow(
+                            //               offset: Offset(1.0, 1.0),
+                            //               blurRadius: 15.0,
+                            //               color: Color.fromARGB(255, 0, 0, 0),
+                            //             ),
+                            //             // Add more shadows here if needed
+                            //           ],
+                            //           fontSize: Sizes.fontSizeMedium,
+                            //           fontWeight: FontWeight.w600),
+                            //       textScaler: MediaQuery.textScalerOf(context),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       )
@@ -220,7 +221,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                       //   ),
                       // ],
                     ),
-                    padding: const EdgeInsets.only(top: Sizes.paddingAllSmall),
+                    // padding: const EdgeInsets.only(top: Sizes.paddingAllSmall),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -247,10 +248,10 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                       const AlwaysScrollableScrollPhysics(),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
-                                      top: Sizes.paddingTop,
+                                      top: Sizes.paddingTopSmall,
                                       left: Sizes.paddingLeft,
                                       right: Sizes.paddingRight,
-                                      bottom: Sizes.paddingBottom,
+                                      // bottom: Sizes.paddingBottom,
                                     ),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
@@ -267,14 +268,28 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                 ),
                                 if (_showAffiliateLinkDescription)
                                   Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: Sizes.paddingAll,
-                                            right: Sizes.paddingAll,
-                                            bottom: Sizes.paddingAll),
-                                        child: affiliateLinkDescription(),
-                                      ))
+                                    alignment: Alignment.bottomCenter,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: Sizes.paddingAll,
+                                          right: Sizes.paddingAll,
+                                          bottom: Sizes.paddingAll),
+                                      child: affiliateLinkDescription(),
+                                    ),
+                                  ),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: IconButton(
+                                    highlightColor: Colors.transparent,
+                                    icon: const Icon(
+                                      Icons.close,
+                                      size: Sizes.largeIconSize,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -338,12 +353,22 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                 buttonLabel: 'See Deal',
                                 onPressed: () {
                                   HapticFeedback.mediumImpact();
-                                  LoadingDialog.show(context);
-                                  Future.wait([
+                                  if (widget.productData.storeName
+                                              ?.toLowerCase() ==
+                                          'amazon' ||
+                                      widget.productData.storeName
+                                              ?.toLowerCase() ==
+                                          'walmart') {
+                                    LoadingDialog.show(context);
+                                    Future.wait([
+                                      launchDealUrl(
+                                          widget.productData.barcodeLink ?? '')
+                                    ]).whenComplete(
+                                        () => LoadingDialog.hide(context));
+                                  } else {
                                     openBrowser(
-                                        widget.productData.barcodeLink ?? '')
-                                  ]).whenComplete(
-                                      () => LoadingDialog.hide(context));
+                                        widget.productData.barcodeLink ?? '');
+                                  }
                                 },
                               ),
                             )

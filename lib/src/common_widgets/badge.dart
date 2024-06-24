@@ -12,6 +12,7 @@ class BadgeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(
         horizontal: 8.0,
         vertical: 4.0,
@@ -29,6 +30,7 @@ class BadgeWidget extends StatelessWidget {
           fontSize: Sizes.bodySmallSize,
           fontWeight: FontWeight.bold,
         ),
+        // textAlign: TextAlign.center,
       ),
     );
   }

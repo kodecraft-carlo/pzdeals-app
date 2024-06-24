@@ -145,6 +145,7 @@ class NotificationListNotifier extends ChangeNotifier {
       } else {
         for (final element in _notificationForDeletion) {
           await _notifService.deleteNotification(element.id, _boxName);
+          _notifService.removeNotificationFromCache(_boxName, element.id);
         }
       }
       _notificationForDeletion.clear();
@@ -290,11 +291,11 @@ class NotificationListNotifier extends ChangeNotifier {
       } else {
         _hasNotification = false;
       }
-      snapshot.docs.forEach((doc) {
+      for (var doc in snapshot.docs) {
         if (doc.exists && doc['isRead'] == false) {
           _unreadCount++;
         }
-      });
+      }
 
       updateBadgeCount(_unreadCount);
 

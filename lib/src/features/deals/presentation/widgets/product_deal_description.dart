@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/actions/launch_url.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/common_widgets/badge.dart';
 import 'package:pzdeals/src/common_widgets/coupon_code_widget.dart';
 import 'package:pzdeals/src/common_widgets/expired_deal_banner.dart';
 import 'package:pzdeals/src/common_widgets/html_content.dart';
+import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_image.dart';
 import 'package:pzdeals/src/common_widgets/store_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
@@ -28,85 +31,134 @@ class ProductDealDescriptionState
     // RenderObject.debugCheckingIntrinsics = true;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
+      // mainAxisSize: MainAxisSize.min,
       children: [
-        Stack(
-          alignment: Alignment.center,
+        Row(
           children: [
-            //Commented as of 05/08/2024 - client requested to remove the image preview
-            // GestureDetector(
-            //   onTap: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => ProductImageDetailScreen(
-            //           imageUrl: widget.productData.imageAsset,
-            //           heroTag:
-            //               'imageHero${widget.productData.productId}', // Unique tag for this image within the screen
-            //         ),
-            //       ),
-            //     );
-            //   },
-            //   child: Hero(
-            //     tag: 'imageHero${widget.productData.productId}',
-            //     child: ProductImageWidget(
-            //       imageAsset: widget.productData.imageAsset,
-            //       sourceType: widget.productData.assetSourceType,
-            //       size: 'container',
-            //       fit: BoxFit.contain,
-            //       isExpired: widget.productData.isProductExpired != null &&
-            //           widget.productData.isProductExpired == true,
-            //     ),
-            //   ),
-            // ),
-            GestureDetector(
-              child: ProductImageWidget(
-                imageAsset: widget.productData.imageAsset,
-                sourceType: widget.productData.assetSourceType,
-                size: 'container',
-                fit: BoxFit.contain,
-                isExpired: widget.productData.isProductExpired != null &&
-                    widget.productData.isProductExpired == true,
-              ),
-              onTap: () {
-                if (widget.productData.barcodeLink != null &&
-                    widget.productData.barcodeLink!.isNotEmpty &&
-                    widget.productData.barcodeLink != '') {
-                  openBrowser(widget.productData.barcodeLink ?? '');
-                }
-              },
-            ),
-            widget.productData.isProductExpired != null &&
-                    widget.productData.isProductExpired == true
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: Sizes.paddingAllSmall),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: Container(
-                          padding: const EdgeInsets.all(Sizes.paddingAllSmall),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            border: Border.all(
-                              color: PZColors.pzOrange,
-                              width: 2,
-                            ),
-                          ),
-                          child: const Text(
-                            'EXPIRED',
-                            style: TextStyle(
-                              color: PZColors.pzOrange,
-                              fontSize: Sizes.fontSizeXLarge,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ))
-                      ],
+            Expanded(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  //Commented as of 05/08/2024 - client requested to remove the image preview
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => ProductImageDetailScreen(
+                  //           imageUrl: widget.productData.imageAsset,
+                  //           heroTag:
+                  //               'imageHero${widget.productData.productId}', // Unique tag for this image within the screen
+                  //         ),
+                  //       ),
+                  //     );
+                  //   },
+                  //   child: Hero(
+                  //     tag: 'imageHero${widget.productData.productId}',
+                  //     child: ProductImageWidget(
+                  //       imageAsset: widget.productData.imageAsset,
+                  //       sourceType: widget.productData.assetSourceType,
+                  //       size: 'container',
+                  //       fit: BoxFit.contain,
+                  //       isExpired: widget.productData.isProductExpired != null &&
+                  //           widget.productData.isProductExpired == true,
+                  //     ),
+                  //   ),
+                  // ),
+                  GestureDetector(
+                    child: ProductImageWidget(
+                      imageAsset: widget.productData.imageAsset,
+                      sourceType: widget.productData.assetSourceType,
+                      size: 'container',
+                      fit: BoxFit.contain,
+                      isExpired: widget.productData.isProductExpired != null &&
+                          widget.productData.isProductExpired == true,
                     ),
+                    onTap: () {
+                      if (widget.productData.barcodeLink != null &&
+                          widget.productData.barcodeLink!.isNotEmpty &&
+                          widget.productData.barcodeLink != '') {
+                        HapticFeedback.mediumImpact();
+                        if (widget.productData.storeName?.toLowerCase() ==
+                                'amazon' ||
+                            widget.productData.storeName?.toLowerCase() ==
+                                'walmart') {
+                          LoadingDialog.show(context);
+                          Future.wait([
+                            launchDealUrl(widget.productData.barcodeLink ?? '')
+                          ]).whenComplete(() => LoadingDialog.hide(context));
+                        } else {
+                          openBrowser(widget.productData.barcodeLink ?? '');
+                        }
+                      }
+                    },
+                  ),
+                  widget.productData.isProductExpired != null &&
+                          widget.productData.isProductExpired == true
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: Sizes.paddingAllSmall),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Container(
+                                padding:
+                                    const EdgeInsets.all(Sizes.paddingAllSmall),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  border: Border.all(
+                                    color: PZColors.pzOrange,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: const Text(
+                                  'EXPIRED',
+                                  style: TextStyle(
+                                    color: PZColors.pzOrange,
+                                    fontSize: Sizes.fontSizeXLarge,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ))
+                            ],
+                          ),
+                        )
+                      : const SizedBox(),
+                  Positioned(
+                    top: 7,
+                    left: 0,
+                    child: widget.productData.discountPercentage > 0
+                        ? Transform.scale(
+                            scale: 1.1,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 7,
+                                    offset: const Offset(
+                                        0, 3), // changes position of shadow
+                                  ),
+                                ],
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: .75,
+                                ),
+                                borderRadius: BorderRadius.circular(6.0),
+                              ),
+                              child: BadgeWidget(
+                                discountPercentage:
+                                    widget.productData.discountPercentage,
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
                   )
-                : const SizedBox(),
+                ],
+              ),
+            )
           ],
         ),
         const SizedBox(
@@ -149,7 +201,16 @@ class ProductDealDescriptionState
             if (widget.productData.barcodeLink != null &&
                 widget.productData.barcodeLink!.isNotEmpty &&
                 widget.productData.barcodeLink != '') {
-              openBrowser(widget.productData.barcodeLink ?? '');
+              HapticFeedback.mediumImpact();
+              if (widget.productData.storeName?.toLowerCase() == 'amazon' ||
+                  widget.productData.storeName?.toLowerCase() == 'walmart') {
+                LoadingDialog.show(context);
+                Future.wait(
+                        [launchDealUrl(widget.productData.barcodeLink ?? '')])
+                    .whenComplete(() => LoadingDialog.hide(context));
+              } else {
+                openBrowser(widget.productData.barcodeLink ?? '');
+              }
             }
           },
         ),
@@ -202,14 +263,14 @@ class ProductDealDescriptionState
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            widget.productData.discountPercentage > 0
-                ? Text(
-                    '-${widget.productData.discountPercentage}% ',
-                    style: const TextStyle(
-                        fontSize: Sizes.fontSizeXXLarge,
-                        color: PZColors.pzBadgeColor),
-                  )
-                : const SizedBox.shrink(),
+            // widget.productData.discountPercentage > 0
+            //     ? Text(
+            //         '-${widget.productData.discountPercentage}% ',
+            //         style: const TextStyle(
+            //             fontSize: Sizes.fontSizeXXLarge,
+            //             color: PZColors.pzBadgeColor),
+            //       )
+            //     : const SizedBox.shrink(),
             widget.productData.isProductNoPrice != null &&
                     widget.productData.isProductNoPrice == false &&
                     (widget.productData.oldPrice != null &&
@@ -294,7 +355,7 @@ class ProductDealDescriptionState
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: Sizes.paddingAllSmall,
+                      left: Sizes.paddingAllSmall * 1.35,
                       top: 5,
                       bottom: 5,
                       right: Sizes.paddingAllSmall),
@@ -341,6 +402,11 @@ class ProductDealDescriptionState
                       htmlContent:
                           widget.productData.productDealDescription!.trim(),
                       isProductDescription: true,
+                      isLaunchApp:
+                          widget.productData.storeName?.toLowerCase() ==
+                                  'amazon' ||
+                              widget.productData.storeName?.toLowerCase() ==
+                                  'walmart',
                     ),
                   ))
                 ],
@@ -360,10 +426,7 @@ class ProductDealDescriptionState
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: Sizes.paddingAllSmall,
-                        right: Sizes.paddingAllSmall,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: HtmlContent(
                         htmlContent:
                             widget.productData.tagDealDescription ?? '',

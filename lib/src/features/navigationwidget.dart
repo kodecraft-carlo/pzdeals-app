@@ -152,6 +152,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
       if (notifId != '') {
         Future.delayed(const Duration(milliseconds: 1000), () {
           ref.read(notificationsProvider).markAsRead(notifId);
+          //    ref.read(notificationsProvider).setAsRead(notifId);
         });
       }
 

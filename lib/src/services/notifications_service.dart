@@ -454,12 +454,12 @@ class NotificationService {
 
   Future removeNotificationFromCache(String boxName, String notifId) async {
     debugPrint("removeCachedProducts called for $boxName");
-    final box = await Hive.openBox<DocumentSnapshot>(boxName);
+    final box = await Hive.openBox<NotificationData>(boxName);
     try {
-      List<DocumentSnapshot> items = box.values.toList();
+      List<NotificationData> items = box.values.toList();
 
       for (var item in items) {
-        String itemId = item['id'];
+        String itemId = item.id;
 
         if (notifId == itemId) {
           await box.delete(item.id);
