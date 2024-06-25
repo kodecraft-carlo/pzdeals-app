@@ -236,7 +236,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                   Colors.transparent,
                                   Colors.white
                                 ],
-                                stops: <double>[0.85, 1.0],
+                                stops: <double>[0.90, 1.0],
                               ).createShader(bounds);
                             },
                             blendMode: BlendMode.dstOut,
@@ -273,7 +273,7 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                       padding: const EdgeInsets.only(
                                           left: Sizes.paddingAll,
                                           right: Sizes.paddingAll,
-                                          bottom: Sizes.paddingAll),
+                                          bottom: Sizes.paddingAllSmall),
                                       child: affiliateLinkDescription(),
                                     ),
                                   ),

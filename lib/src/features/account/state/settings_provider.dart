@@ -51,8 +51,8 @@ class SettingsNotifier extends ChangeNotifier {
         _settingsData = serverSettings;
         notifyListeners();
       }
-    } catch (e) {
-      debugPrint("error loading user settings: $e");
+    } catch (e, stackTrace) {
+      debugPrint("error loading user settings: $stackTrace");
     } finally {
       _isLoading = false;
       notifyListeners();

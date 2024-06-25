@@ -55,6 +55,7 @@ class HtmlContent extends StatelessWidget {
               ),
               "p": Style(
                 margin: Margins.zero,
+                padding: HtmlPaddings.only(bottom: 10),
               ),
             },
             onLinkTap: (url, attributes, element) {
@@ -68,10 +69,25 @@ class HtmlContent extends StatelessWidget {
             },
           )
         : HtmlWidget(
+            // buildAsync: false,
             htmlContent,
             customStylesBuilder: (element) {
               if (element.localName == 'body') {
-                return {'line-height': '1.42857143'};
+                return {
+                  'line-height': '1.42857143',
+                  'padding-left': '0',
+                  'padding-right': '0',
+                  'margin-left': '0',
+                  'margin-right': '0',
+                  'padding-inline-start': '0',
+                  'padding-inline-end': '0',
+                  'padding-block-start': '0',
+                  'padding-block-end': '0',
+                  'margin-block-start': '0',
+                  'margin-block-end': '0',
+                  'margin-inline-start': '0',
+                  'margin-inline-end': '0',
+                };
               }
               if (element.localName == 'a') {
                 return {'color': '#021BF9', 'text-decoration': 'none'};
@@ -94,7 +110,17 @@ class HtmlContent extends StatelessWidget {
                   'margin-top': '0',
                   'margin-left': '0',
                   'margin-right': '0',
-                  'margin-bottom': '10px'
+                  'margin-bottom': '10px',
+                  'padding-left': '0',
+                  'padding-right': '0',
+                  'padding-inline-start': '0',
+                  'padding-inline-end': '0',
+                  'padding-block-start': '0',
+                  'padding-block-end': '0',
+                  'margin-block-start': '0',
+                  'margin-block-end': '0',
+                  'margin-inline-start': '0',
+                  'margin-inline-end': '0',
                 };
               }
 

@@ -189,13 +189,17 @@ class ProductDealDescriptionState
         //   height: Sizes.spaceBetweenContentSmall,
         // ),
         GestureDetector(
-          child: Text(
-            widget.productData.productName,
-            style: const TextStyle(
-                fontSize: Sizes.fontSizeMedium, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: Sizes.paddingAllSmall),
+            child: Text(
+              widget.productData.productName,
+              style: const TextStyle(
+                  fontSize: Sizes.fontSizeMedium, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           onTap: () {
             if (widget.productData.barcodeLink != null &&
@@ -342,11 +346,12 @@ class ProductDealDescriptionState
                 ))
             : const SizedBox.shrink(),
 
-        widget.productData.sku != null && widget.productData.sku!.isNotEmpty ||
-                widget.productData.productDealDescription != null &&
-                    widget.productData.productDealDescription?.trim() != '' ||
-                widget.productData.tagDealDescription != null &&
-                    widget.productData.tagDealDescription != ''
+        (widget.productData.sku != null &&
+                    widget.productData.sku!.isNotEmpty) ||
+                (widget.productData.productDealDescription != null &&
+                    widget.productData.productDealDescription?.trim() != '') ||
+                (widget.productData.tagDealDescription != null &&
+                    widget.productData.tagDealDescription != '')
             ? const SizedBox(height: Sizes.spaceBetweenContentSmall)
             : const SizedBox.shrink(),
         //Added 05/08/2024 Tag Description
@@ -355,10 +360,10 @@ class ProductDealDescriptionState
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: Sizes.paddingAllSmall * 1.35,
-                      top: 5,
-                      bottom: 5,
-                      right: Sizes.paddingAllSmall),
+                    top: 5,
+                    bottom: 5,
+                    left: Sizes.paddingAllSmall,
+                  ),
                   child: RichText(
                     textAlign: TextAlign.start,
                     text: TextSpan(children: [
@@ -426,7 +431,8 @@ class ProductDealDescriptionState
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: Sizes.paddingAllSmall),
                       child: HtmlContent(
                         htmlContent:
                             widget.productData.tagDealDescription ?? '',

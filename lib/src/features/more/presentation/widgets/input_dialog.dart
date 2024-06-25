@@ -42,135 +42,142 @@ class CommonInputDialogState extends State<CommonInputDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Platform.isIOS
-        ? CupertinoAlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.dialogMessage,
-                  style: const TextStyle(
-                    fontSize: Sizes.fontSizeMedium,
-                  ),
+    return
+        // Platform.isIOS
+        //     ? CupertinoAlertDialog(
+        //         content: Column(
+        //           mainAxisSize: MainAxisSize.min,
+        //           crossAxisAlignment: CrossAxisAlignment.start,
+        //           children: [
+        //             Text(
+        //               widget.dialogMessage,
+        //               style: const TextStyle(
+        //                 fontSize: Sizes.fontSizeMedium,
+        //               ),
+        //             ),
+        //             const SizedBox(height: Sizes.paddingBottomSmall),
+        //             widget.isButtonOnly
+        //                 ? Center(
+        //                     child: notifyButton(),
+        //                   )
+        //                 : CupertinoTextField(
+        //                     controller: widget.dialogFieldController,
+        //                     clearButtonMode: OverlayVisibilityMode.editing,
+        //                     placeholder: widget.inputHint,
+        //                     keyboardType: TextInputType.emailAddress,
+        //                     autofocus: false,
+        //                     cursorColor: CupertinoColors.activeBlue,
+        //                     style: const TextStyle(fontSize: Sizes.fontSizeLarge),
+        //                     textInputAction: TextInputAction.done,
+        //                     onChanged: (value) {
+        //                       if (isEmailAddressValid(value)) {
+        //                         setState(() {
+        //                           isInputValid = true;
+        //                         });
+        //                       } else {
+        //                         setState(() {
+        //                           isInputValid = false;
+        //                         });
+        //                       }
+        //                     },
+        //                     inputFormatters: [
+        //                       TextInputFormatter.withFunction(
+        //                         (oldValue, newValue) {
+        //                           return newValue.copyWith(
+        //                             text: newValue.text.toLowerCase(),
+        //                           );
+        //                         },
+        //                       ),
+        //                     ],
+        //                     // onSubmitted: (value) {
+        //                     //   submitButton(context);
+        //                     // },
+        //                   ),
+        //             widget.isButtonOnly
+        //                 ? const SizedBox.shrink()
+        //                 : Padding(
+        //                     padding:
+        //                         const EdgeInsets.only(top: Sizes.paddingTopSmall),
+        //                     child: Row(
+        //                       children: [
+        //                         Expanded(
+        //                             child: CupertinoButton(
+        //                           color: CupertinoColors.activeBlue,
+        //                           padding: EdgeInsets.zero,
+        //                           onPressed: isInputValid == false
+        //                               ? null
+        //                               : () => submitButton(context),
+        //                           child: Text(
+        //                             widget.buttonText,
+        //                             style: const TextStyle(
+        //                                 fontSize: Sizes.fontSizeMedium),
+        //                           ),
+        //                         ))
+        //                       ],
+        //                     ),
+        //                   )
+        //           ],
+        //         ),
+        //       )
+        //     :
+
+        AlertDialog(
+      titlePadding: EdgeInsets.zero,
+      surfaceTintColor: Colors.transparent,
+      backgroundColor: PZColors.pzWhite,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
+      ),
+      contentPadding: const EdgeInsets.all(Sizes.paddingAll),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.dialogMessage,
+            style: const TextStyle(
+              fontSize: Sizes.fontSizeMedium,
+            ),
+          ),
+          const SizedBox(height: Sizes.paddingBottomSmall),
+          widget.isButtonOnly
+              ? Row(
+                  children: [Expanded(child: notifyButton())],
+                )
+              : TextFieldButton(
+                  textController: widget.dialogFieldController,
+                  onButtonPressed: () async {
+                    submitButton(context);
+                  },
+                  buttonLabel: widget.buttonText,
+                  textFieldHint: widget.inputHint,
+                  hasIcon: false,
+                  isAutoFocus: true,
+                  validateEmail: true,
                 ),
-                const SizedBox(height: Sizes.paddingBottomSmall),
-                widget.isButtonOnly
-                    ? Center(
-                        child: notifyButton(),
-                      )
-                    : CupertinoTextField(
-                        controller: widget.dialogFieldController,
-                        clearButtonMode: OverlayVisibilityMode.editing,
-                        placeholder: widget.inputHint,
-                        keyboardType: TextInputType.emailAddress,
-                        autofocus: false,
-                        cursorColor: CupertinoColors.activeBlue,
-                        style: const TextStyle(fontSize: Sizes.fontSizeLarge),
-                        textInputAction: TextInputAction.done,
-                        onChanged: (value) {
-                          if (isEmailAddressValid(value)) {
-                            setState(() {
-                              isInputValid = true;
-                            });
-                          } else {
-                            setState(() {
-                              isInputValid = false;
-                            });
-                          }
-                        },
-                        inputFormatters: [
-                          TextInputFormatter.withFunction(
-                            (oldValue, newValue) {
-                              return newValue.copyWith(
-                                text: newValue.text.toLowerCase(),
-                              );
-                            },
-                          ),
-                        ],
-                        // onSubmitted: (value) {
-                        //   submitButton(context);
-                        // },
-                      ),
-                widget.isButtonOnly
-                    ? const SizedBox.shrink()
-                    : Padding(
-                        padding:
-                            const EdgeInsets.only(top: Sizes.paddingTopSmall),
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: CupertinoButton(
-                              color: CupertinoColors.activeBlue,
-                              padding: EdgeInsets.zero,
-                              onPressed: isInputValid == false
-                                  ? null
-                                  : () => submitButton(context),
-                              child: Text(
-                                widget.buttonText,
-                                style: const TextStyle(
-                                    fontSize: Sizes.fontSizeMedium),
-                              ),
-                            ))
-                          ],
-                        ),
-                      )
-              ],
-            ),
-          )
-        : AlertDialog(
-            titlePadding: EdgeInsets.zero,
-            surfaceTintColor: Colors.transparent,
-            backgroundColor: PZColors.pzWhite,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
-            ),
-            contentPadding: const EdgeInsets.all(Sizes.paddingAll),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.dialogMessage,
-                  style: const TextStyle(
-                    fontSize: Sizes.fontSizeMedium,
-                  ),
-                ),
-                const SizedBox(height: Sizes.paddingBottomSmall),
-                widget.isButtonOnly
-                    ? Center(child: notifyButton())
-                    : TextFieldButton(
-                        textController: widget.dialogFieldController,
-                        onButtonPressed: () async {
-                          submitButton(context);
-                        },
-                        buttonLabel: widget.buttonText,
-                        textFieldHint: widget.inputHint,
-                        hasIcon: false,
-                        isAutoFocus: true,
-                        validateEmail: false,
-                      ),
-              ],
-            ),
-          );
+        ],
+      ),
+    );
   }
 
   Widget notifyButton() {
-    return Platform.isIOS
-        ? Row(
-            children: [
-              Expanded(
-                child: CupertinoButton(
-                    color: CupertinoColors.activeBlue,
-                    child: Text(
-                      widget.buttonText,
-                      style: const TextStyle(fontSize: Sizes.fontSizeMedium),
-                    ),
-                    onPressed: () => submitButton(context)),
-              )
-            ],
-          )
-        : MaterialButton(
+    return
+        // Platform.isIOS
+        //     ? Row(
+        //         children: [
+        //           Expanded(
+        //             child: CupertinoButton(
+        //                 color: CupertinoColors.activeBlue,
+        //                 child: Text(
+        //                   widget.buttonText,
+        //                   style: const TextStyle(fontSize: Sizes.fontSizeMedium),
+        //                 ),
+        //                 onPressed: () => submitButton(context)),
+        //           )
+        //         ],
+        //       )
+        //     :
+        MaterialButton(
             color: PZColors.pzOrange,
             textColor: PZColors.pzWhite,
             shape: RoundedRectangleBorder(

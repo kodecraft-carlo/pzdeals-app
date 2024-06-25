@@ -26,7 +26,7 @@ class BookmarkedProductsNotifier extends ChangeNotifier {
     _userUID = uid;
     _boxName = '${_userUID}_bookmarks';
     _bookmarkedProductsBox = '${_userUID}_bookmarked_products';
-    _loadBookmarks();
+    loadProducts();
   }
 
   Future<void> loadCachedBookmarks() async {
@@ -55,8 +55,8 @@ class BookmarkedProductsNotifier extends ChangeNotifier {
           await _bookmarkService.getBookmarks(_boxName, _userUID);
       _bookmarks = serverBookmarks;
       notifyListeners();
-    } catch (e) {
-      debugPrint("error loading bookmarks: $e");
+    } catch (e, stackTrace) {
+      debugPrint("error loading bookmarks: $stackTrace");
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -64,10 +64,12 @@ class BookmarkedProductsNotifier extends ChangeNotifier {
   }
 
   Future<void> loadProducts() async {
+    debugPrint('loadProducts called for bookmarks with userUID: $_userUID');
     _isProductLoading = true;
     notifyListeners();
     _products.clear();
     try {
+      debugPrint('loading bookmarks....');
       await _loadBookmarks();
 
       if (_bookmarks.isEmpty) {
@@ -75,6 +77,7 @@ class BookmarkedProductsNotifier extends ChangeNotifier {
             _bookmarkedProductsBox, _bookmarks);
         notifyListeners();
       }
+      debugPrint('NOT EMPTY..loading bookmarked products....');
       final serverProducts = await _bookmarkService.fetchProductDeals(
           _bookmarks, _bookmarkedProductsBox, pageNumber);
       _products = serverProducts;

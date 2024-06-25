@@ -185,7 +185,7 @@ class DealsTabControllerWidgetState
                                 }
                             },
                             child: const Tab(
-                              text: 'Flash Deals',
+                              text: 'Hot Deals',
                             ),
                           ),
                         ],

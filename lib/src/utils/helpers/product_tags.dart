@@ -84,5 +84,5 @@ String extractTagDealDescription(List<dynamic> tagIds) {
       }
     }
   }
-  return tagDealDescription != '' ? '<ul>$tagDealDescription</ul>' : '';
+  return tagDealDescription != '' ? tagDealDescription : '';
 }

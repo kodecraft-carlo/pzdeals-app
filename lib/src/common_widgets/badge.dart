@@ -19,7 +19,7 @@ class BadgeWidget extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: discountPercentage > 0
-            ? PZColors.pzBadgeColor
+            ? PZColors.amazonPercentOff
             : Colors.transparent, // Badge color
         borderRadius: BorderRadius.circular(6.0),
       ),

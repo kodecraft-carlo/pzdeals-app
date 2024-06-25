@@ -45,11 +45,23 @@ class BookmarksService {
 
   Future<List<int>> getCachedBookmarks(String boxName) async {
     debugPrint("getCachedBookmarks called for $boxName");
-    final box = await Hive.openBox<int>(boxName);
-    final bookmarks = box.values.toList();
-    await box.close();
-    debugPrint('cached bookmarks: $bookmarks');
-    return bookmarks;
+    Box<int> box;
+    if (Hive.isBoxOpen(boxName)) {
+      debugPrint('Box is already open');
+      box = Hive.box<int>(boxName);
+    } else {
+      debugPrint('Opening box');
+      box = await Hive.openBox<int>(boxName);
+    }
+    try {
+      final bookmarks = box.values.toList();
+      debugPrint('cached bookmarks: $bookmarks');
+      return bookmarks;
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching bookmarks: $e');
+      debugPrint('stackTrace: $stackTrace');
+      throw Exception('Error fetching bookmarks');
+    }
   }
 
   Future removeProducts(String boxName, List<int> bookmarkedIds) async {
@@ -75,7 +87,14 @@ class BookmarksService {
 
   Future removeBookmarkFromCache(String boxName, int productId) async {
     debugPrint("removeBookmarkFromCache called for $boxName");
-    final box = await Hive.openBox<int>(boxName);
+    Box<int> box;
+    if (Hive.isBoxOpen(boxName)) {
+      debugPrint('Box is already open');
+      box = Hive.box<int>(boxName);
+    } else {
+      debugPrint('Opening box');
+      box = await Hive.openBox<int>(boxName);
+    }
     try {
       List<int> items = box.values.toList();
 
@@ -109,7 +128,13 @@ class BookmarksService {
   }
 
   Future<void> _cacheBookmark(List<int> bookmarks, String boxName) async {
-    final box = await Hive.openBox<int>(boxName);
+    Box<int> box;
+    if (Hive.isBoxOpen(boxName)) {
+      box = Hive.box<int>(boxName);
+    } else {
+      box = await Hive.openBox<int>(boxName);
+    }
+    // final box = await Hive.openBox<int>(boxName);
     await box.clear(); // Clear existing cache
     for (final bookmark in bookmarks) {
       box.put(bookmark, bookmark);
@@ -120,6 +145,7 @@ class BookmarksService {
   }
 
   Future<List<int>> getBookmarks(String boxName, String uuid) async {
+    debugPrint('getBookmarks called for $boxName with uuid: $uuid');
     try {
       if (uuid.isNotEmpty) {
         final serverBookmarks = await FirebaseFirestore.instance
@@ -127,6 +153,7 @@ class BookmarksService {
             .doc(uuid)
             .get();
         if (serverBookmarks.exists) {
+          debugPrint('Server bookmarks data: ${serverBookmarks.data()}');
           final data = serverBookmarks.data() as Map<String, dynamic>;
           final productIds = List<int>.from(data['productIds'] ?? []);
           return productIds;
