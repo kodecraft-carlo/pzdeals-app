@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
-import 'package:pzdeals/src/common_widgets/textfield_button.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/utils/field_validation/index.dart';
 
@@ -144,16 +143,19 @@ class CommonInputDialogState extends State<CommonInputDialog> {
               ? Row(
                   children: [Expanded(child: notifyButton())],
                 )
-              : TextFieldButton(
-                  textController: widget.dialogFieldController,
-                  onButtonPressed: () async {
-                    submitButton(context);
-                  },
-                  buttonLabel: widget.buttonText,
-                  textFieldHint: widget.inputHint,
-                  hasIcon: false,
-                  isAutoFocus: true,
-                  validateEmail: true,
+              : SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: TextFieldButton(
+                    textController: widget.dialogFieldController,
+                    onButtonPressed: () async {
+                      submitButton(context);
+                    },
+                    buttonLabel: widget.buttonText,
+                    textFieldHint: widget.inputHint,
+                    hasIcon: false,
+                    isAutoFocus: true,
+                    validateEmail: true,
+                  ),
                 ),
         ],
       ),
@@ -185,5 +187,133 @@ class CommonInputDialogState extends State<CommonInputDialog> {
             ),
             onPressed: () => submitButton(context),
             child: Text(widget.buttonText));
+  }
+}
+
+class TextFieldButton extends StatefulWidget {
+  const TextFieldButton(
+      {super.key,
+      required this.onButtonPressed,
+      required this.buttonLabel,
+      required this.textFieldHint,
+      this.textfieldIcon = Icons.search,
+      this.hasIcon = true,
+      this.isAutoFocus = false,
+      this.validateEmail = false,
+      required this.textController});
+
+  final VoidCallback onButtonPressed;
+  final String buttonLabel;
+  final String textFieldHint;
+  final IconData textfieldIcon;
+  final bool hasIcon;
+  final bool isAutoFocus;
+  final TextEditingController textController;
+  final bool validateEmail;
+
+  @override
+  _TextFieldButtonState createState() => _TextFieldButtonState();
+}
+
+class _TextFieldButtonState extends State<TextFieldButton> {
+  bool isActionEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isActionEnabled = widget.textController.text.isNotEmpty;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.zero,
+      height: 44,
+      padding: const EdgeInsets.only(left: Sizes.paddingLeftSmall),
+      decoration: BoxDecoration(
+          border: Border.all(color: PZColors.pzGrey.withOpacity(0.3), width: 1),
+          borderRadius: BorderRadius.circular(Sizes.textFieldCornerRadius),
+          color: PZColors.pzLightGrey),
+      child: Row(
+        children: [
+          if (widget.hasIcon)
+            Icon(
+              widget.textfieldIcon,
+              color: PZColors.pzOrange,
+              size: Sizes.textFieldIconSize,
+            ),
+          Expanded(
+            child: TextField(
+              autofocus: widget.isAutoFocus,
+              controller: widget.textController,
+              onChanged: (value) {
+                if (widget.validateEmail) {
+                  setState(() {
+                    isActionEnabled = isEmailAddressValid(value) ? true : false;
+                  });
+                } else {
+                  setState(() {
+                    isActionEnabled = value.isNotEmpty;
+                  });
+                }
+              },
+              decoration: InputDecoration(
+                hintText: widget.textFieldHint,
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding:
+                    const EdgeInsets.only(left: Sizes.paddingAllSmall * .5),
+                suffixIcon: widget.textController.text.isNotEmpty
+                    ? GestureDetector(
+                        child: const Icon(Icons.cancel, color: PZColors.pzGrey),
+                        onTap: () {
+                          widget.textController.clear();
+                          setState(() {
+                            isActionEnabled = false;
+                          });
+                        },
+                      )
+                    : null,
+                suffixIconConstraints: const BoxConstraints(
+                  minWidth: 35,
+                ),
+              ),
+              style: const TextStyle(
+                  fontSize: Sizes.textFieldFontSize, color: PZColors.pzBlack),
+            ),
+          ),
+          TextButton(
+            style: ButtonStyle(
+              backgroundColor: !isActionEnabled
+                  ? MaterialStateProperty.all<Color>(PZColors.pzGrey)
+                  : MaterialStateProperty.all<Color>(PZColors.pzOrange),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                  const EdgeInsets.symmetric(horizontal: Sizes.paddingAll)),
+              shape: MaterialStateProperty.all<OutlinedBorder>(
+                  const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(Sizes.textFieldCornerRadius),
+                    bottomRight: Radius.circular(Sizes.textFieldCornerRadius)),
+              )),
+            ),
+            onPressed: !isActionEnabled || widget.textController.text.isEmpty
+                ? null
+                : () {
+                    widget.onButtonPressed();
+                    widget.textController.clear();
+                    setState(() {
+                      isActionEnabled = false;
+                    });
+                    SystemChannels.textInput.invokeMethod('TextInput.hide');
+                  },
+            child: Text(
+              widget.buttonLabel,
+              style: const TextStyle(color: PZColors.pzWhite),
+            ),
+          ),
+          const SizedBox(width: 1)
+        ],
+      ),
+    );
   }
 }

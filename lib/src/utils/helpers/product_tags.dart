@@ -19,6 +19,10 @@ String getStoreImageUrlFromTags(List<dynamic> tagIds) {
   return 'assets/images/pzdeals_store.png';
 }
 
+String getProductImage(String imageSrc) {
+  return '${AppConfig.directusAssetsUrl}$imageSrc';
+}
+
 String getStoreNameFromTags(List<dynamic> tagIds) {
   for (var tag in tagIds) {
     if (tag == null || tag['tags_id'] == null) {

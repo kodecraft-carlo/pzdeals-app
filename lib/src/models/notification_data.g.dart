@@ -24,13 +24,14 @@ class NotificationDataAdapter extends TypeAdapter<NotificationData> {
       isRead: fields[4] as bool,
       imageUrl: fields[5] as String,
       data: fields[6] as dynamic,
+      isDismissed: fields[7] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, NotificationData obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class NotificationDataAdapter extends TypeAdapter<NotificationData> {
       ..writeByte(5)
       ..write(obj.imageUrl)
       ..writeByte(6)
-      ..write(obj.data);
+      ..write(obj.data)
+      ..writeByte(7)
+      ..write(obj.isDismissed);
   }
 
   @override

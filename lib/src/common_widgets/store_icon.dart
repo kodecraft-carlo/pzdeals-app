@@ -46,8 +46,6 @@ class StoreIconState extends State<StoreIcon> {
       fit: BoxFit.fitWidth,
     );
 
-    debugPrint('store icon build called: ${widget.storeData.storeAssetImage}');
-
     if (widget.storeData.assetSourceType == 'network') {
       try {
         if (_isSvgImage(widget.storeData.storeAssetImage)) {

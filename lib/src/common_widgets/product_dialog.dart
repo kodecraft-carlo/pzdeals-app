@@ -148,31 +148,37 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                             Align(
                               alignment: Alignment.center,
                               child: Container(
-                                  height: 50,
-                                  width: 50,
-                                  margin: const EdgeInsets.only(
-                                      bottom: Sizes.paddingBottom / 1.5),
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(
-                                        Sizes.cardBorderRadius / 1.65),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 3,
-                                        blurRadius: 9,
-                                      ),
-                                    ],
-                                  ),
-                                  child: StoreIcon(
-                                      storeData: StoreData(
-                                          assetSourceType: 'network',
-                                          storeAssetImage: widget
-                                              .productData.storeAssetImage,
-                                          storeName: 'Stores',
-                                          handle: 'pzdeals',
-                                          id: 1))),
+                                height: 50,
+                                width: 50,
+                                padding:
+                                    widget.productData.storeName == 'Amazon'
+                                        ? const EdgeInsets.only(top: 5)
+                                        : const EdgeInsets.all(0),
+                                margin: const EdgeInsets.only(
+                                    bottom: Sizes.paddingBottom / 1.5),
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(
+                                      Sizes.cardBorderRadius / 1.65),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      spreadRadius: 3,
+                                      blurRadius: 9,
+                                    ),
+                                  ],
+                                ),
+                                child: StoreIcon(
+                                  storeData: StoreData(
+                                      assetSourceType: 'network',
+                                      storeAssetImage:
+                                          widget.productData.storeAssetImage,
+                                      storeName: 'Stores',
+                                      handle: 'pzdeals',
+                                      id: 1),
+                                ),
+                              ),
                             ),
                             // Align(
                             //   child: Padding(

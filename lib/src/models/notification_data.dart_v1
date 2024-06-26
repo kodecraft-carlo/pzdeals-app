@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'notification_data.g.dart_v2';
+part 'notification_data.g.dart_v1';
 
 @HiveType(typeId: 5)
 class NotificationData {
@@ -25,18 +25,15 @@ class NotificationData {
   @HiveField(6)
   final dynamic data;
 
-  @HiveField(7)
-  bool isDismissed;
-
-  NotificationData(
-      {required this.id,
-      required this.timestamp,
-      required this.title,
-      required this.body,
-      this.isRead = false,
-      this.imageUrl = '',
-      this.data,
-      this.isDismissed = false});
+  NotificationData({
+    required this.id,
+    required this.timestamp,
+    required this.title,
+    required this.body,
+    this.isRead = false,
+    this.imageUrl = '',
+    this.data,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -47,15 +44,10 @@ class NotificationData {
       'isRead': isRead,
       'imageUrl': imageUrl,
       'data': data,
-      'isDismissed': isDismissed
     };
   }
 
   set isReadStatus(bool status) {
     isRead = status;
-  }
-
-  set isDismissedStatus(bool status) {
-    isDismissed = status;
   }
 }

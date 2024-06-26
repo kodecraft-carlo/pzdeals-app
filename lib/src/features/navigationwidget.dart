@@ -146,14 +146,14 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   }
 
   void showProductDeal(int productId) {
-    ref.read(notificationsProvider).refreshNotification();
+    // ref.read(notificationsProvider).refreshNotification();
     loadProduct(productId).then((product) {
       debugPrint('notifiId: $notifId');
       if (notifId != '') {
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          ref.read(notificationsProvider).markAsRead(notifId);
-          //    ref.read(notificationsProvider).setAsRead(notifId);
-        });
+        // Future.delayed(const Duration(milliseconds: 1000), () {
+        // ref.read(notificationsProvider).markAsRead(notifId);
+        ref.read(notificationsProvider).setAsRead(notifId);
+        // });
       }
 
       showDialog(

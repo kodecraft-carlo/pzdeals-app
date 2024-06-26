@@ -58,7 +58,7 @@ class NotificationCardWidgetState
             ),
           ),
         );
-        ref.read(notificationsProvider).setAsRead(notificationId);
+        ref.read(notificationsProvider).markAsRead(notificationId);
         // LoadingDialog.hide(context);
         // }
       });
@@ -79,7 +79,7 @@ class NotificationCardWidgetState
     return Dismissible(
       key: Key(notificationData.id),
       onDismissed: (direction) {
-        notificationState.setDismissed(notificationData.id, true);
+        notificationState.removeNotification(notificationData.id);
         final scaffoldMessenger = ScaffoldMessenger.of(context);
 
         scaffoldMessenger.showSnackBar(
@@ -88,11 +88,12 @@ class NotificationCardWidgetState
             action: SnackBarAction(
               label: 'UNDO',
               onPressed: () async {
-                notificationState.setDismissed(notificationData.id, false);
-                // notificationState
-                //     .removeNotificationIdFromDeletionList(notificationData.id);
+                notificationState.reinsertNotificationToNotificationList(
+                    notificationData.id);
+                notificationState
+                    .removeNotificationIdFromDeletionList(notificationData.id);
 
-                // notificationState.refreshNotification();
+                notificationState.refreshNotification();
               },
             ),
             duration: const Duration(seconds: 5),
@@ -191,7 +192,7 @@ class NotificationCardWidgetState
                     ),
                   ),
                 );
-                ref.read(notificationsProvider).setAsRead(notificationData.id);
+                ref.read(notificationsProvider).markAsRead(notificationData.id);
               }
             }
           }

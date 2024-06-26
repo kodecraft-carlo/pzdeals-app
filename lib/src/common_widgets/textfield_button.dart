@@ -88,7 +88,7 @@ class _TextFieldButtonState extends State<TextFieldButton> {
                       )
                     : null,
                 suffixIconConstraints: const BoxConstraints(
-                  minWidth: 40,
+                  minWidth: 35,
                 ),
               ),
               style: const TextStyle(

@@ -31,7 +31,9 @@ class ProductMapper {
           price: priceFormatterWithComma(price),
           storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
           oldPrice: priceFormatterWithComma(oldPrice),
-          imageAsset: json['image_src'],
+          imageAsset: json['local_image'] != null
+              ? getProductImage(json['local_image'])
+              : json['image_src'],
           discountPercentage: calculateDiscountPercentage(oldPrice, price),
           assetSourceType: 'network',
           isProductNoPrice: isProductNoPrice(json['tag_ids']),
@@ -85,7 +87,9 @@ class ProductMapper {
         price: priceFormatterWithComma(price),
         storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
         oldPrice: priceFormatterWithComma(oldPrice),
-        imageAsset: json['image_src'],
+        imageAsset: json['local_image'] != null
+            ? getProductImage(json['local_image'])
+            : json['image_src'],
         discountPercentage: calculateDiscountPercentage(oldPrice, price),
         assetSourceType: 'network',
         isProductNoPrice: isProductNoPrice(json['tag_ids']),

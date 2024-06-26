@@ -190,8 +190,7 @@ class ProductDealDescriptionState
         // ),
         GestureDetector(
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: Sizes.paddingAllSmall),
+            padding: const EdgeInsets.symmetric(horizontal: 0),
             child: Text(
               widget.productData.productName,
               style: const TextStyle(
@@ -362,7 +361,7 @@ class ProductDealDescriptionState
                   padding: const EdgeInsets.only(
                     top: 5,
                     bottom: 5,
-                    left: Sizes.paddingAllSmall,
+                    // left: Sizes.paddingAllSmall,
                   ),
                   child: RichText(
                     textAlign: TextAlign.start,
@@ -401,8 +400,7 @@ class ProductDealDescriptionState
                 children: [
                   Expanded(
                       child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: Sizes.paddingAllSmall),
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
                     child: HtmlContent(
                       htmlContent:
                           widget.productData.productDealDescription!.trim(),
@@ -431,8 +429,7 @@ class ProductDealDescriptionState
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: Sizes.paddingAllSmall),
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: HtmlContent(
                         htmlContent:
                             widget.productData.tagDealDescription ?? '',

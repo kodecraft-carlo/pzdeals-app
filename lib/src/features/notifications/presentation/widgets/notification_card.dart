@@ -9,7 +9,7 @@ import 'package:pzdeals/src/features/deals/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/notifications/presentation/widgets/notification_dialog.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
-import 'package:pzdeals/src/models/index.dart';
+import 'package:pzdeals/src/models/notification_data.dart';
 import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -58,7 +58,7 @@ class NotificationCardWidgetState
             ),
           ),
         );
-        ref.read(notificationsProvider).markAsRead(notificationId);
+        ref.read(notificationsProvider).setAsRead(notificationId);
         // LoadingDialog.hide(context);
         // }
       });
@@ -79,7 +79,7 @@ class NotificationCardWidgetState
     return Dismissible(
       key: Key(notificationData.id),
       onDismissed: (direction) {
-        notificationState.removeNotification(notificationData.id);
+        notificationState.setDismissed(notificationData.id, true);
         final scaffoldMessenger = ScaffoldMessenger.of(context);
 
         scaffoldMessenger.showSnackBar(
@@ -88,12 +88,11 @@ class NotificationCardWidgetState
             action: SnackBarAction(
               label: 'UNDO',
               onPressed: () async {
-                notificationState.reinsertNotificationToNotificationList(
-                    notificationData.id);
-                notificationState
-                    .removeNotificationIdFromDeletionList(notificationData.id);
+                notificationState.setDismissed(notificationData.id, false);
+                // notificationState
+                //     .removeNotificationIdFromDeletionList(notificationData.id);
 
-                notificationState.refreshNotification();
+                // notificationState.refreshNotification();
               },
             ),
             duration: const Duration(seconds: 5),
@@ -192,7 +191,7 @@ class NotificationCardWidgetState
                     ),
                   ),
                 );
-                ref.read(notificationsProvider).markAsRead(notificationData.id);
+                ref.read(notificationsProvider).setAsRead(notificationData.id);
               }
             }
           }

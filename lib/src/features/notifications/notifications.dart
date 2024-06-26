@@ -59,7 +59,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
     // if (mounted) {
     // LoadingDialog.show(context);
     loadProduct(productId).then((product) {
-      ref.read(notificationsProvider).markAsRead(notifId);
+      ref.read(notificationsProvider).setAsRead(notifId);
       // if (mounted) {
       showDialog(
         context: context,
@@ -170,7 +170,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
       onTap: () {
         showAlertDialog(context, 'Clear Notifications',
             'Are you sure you want to clear all notifications?', () {
-          ref.read(notificationsProvider).removeAllNotification();
+          ref.read(notificationsProvider).dismissAll();
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -178,11 +178,9 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
               action: SnackBarAction(
                 label: 'UNDO',
                 onPressed: () async {
-                  ref
-                      .read(notificationsProvider)
-                      .reinsertAllNotificationToNotificationList();
+                  ref.read(notificationsProvider).undoDismissAll();
 
-                  ref.read(notificationsProvider).refreshNotification();
+                  // ref.read(notificationsProvider).refreshNotification();
                 },
               ),
               duration: const Duration(seconds: 5),
@@ -207,7 +205,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
           showAlertDialog(context, 'Read Notifications',
               'Are you sure you want to mark all notifications as read? This action cannot be undone.',
               () {
-            ref.read(notificationsProvider).markAllAsRead();
+            ref.read(notificationsProvider).setAllAsRead();
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -248,7 +246,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
             showAlertDialog(context, 'Read Notifications',
                 'Are you sure you want to mark all notifications as read? This action cannot be undone.',
                 () {
-              ref.read(notificationsProvider).markAllAsRead();
+              ref.read(notificationsProvider).setAllAsRead();
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -271,7 +269,7 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
           onTap: () {
             showAlertDialog(context, 'Clear Notifications',
                 'Are you sure you want to clear all notifications?', () {
-              ref.read(notificationsProvider).removeAllNotification();
+              ref.read(notificationsProvider).dismissAll();
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -279,11 +277,9 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
                   action: SnackBarAction(
                     label: 'UNDO',
                     onPressed: () async {
-                      ref
-                          .read(notificationsProvider)
-                          .reinsertAllNotificationToNotificationList();
+                      ref.read(notificationsProvider).undoDismissAll();
 
-                      ref.read(notificationsProvider).refreshNotification();
+                      // ref.read(notificationsProvider).refreshNotification();
                     },
                   ),
                   duration: const Duration(seconds: 5),

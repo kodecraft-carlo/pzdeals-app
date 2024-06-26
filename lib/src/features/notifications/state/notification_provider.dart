@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pzdeals/src/models/index.dart';
-import 'package:pzdeals/src/services/notifications_service.dart';
+import 'package:pzdeals/src/models/notification_data.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
+import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
 import 'package:pzdeals/src/utils/helpers/appbadge.dart';
 
 final notificationsProvider =
@@ -18,274 +18,219 @@ final notificationsProvider =
 });
 
 class NotificationListNotifier extends ChangeNotifier {
-  final NotificationService _notifService = NotificationService();
+  final _firestoreDb = FirebaseFirestore.instance;
 
-  String _boxName = 'notifications';
+  List<String> notificationIdsForDismissal = [];
+  List<NotificationData> _notificationList = [];
+
   int pageNumber = 1;
-  bool _isLoading = false;
   String _userUID = '';
   int _unreadCount = 0;
   bool _hasNotification = false;
+  bool _undoDismissAll = false;
 
-  List<NotificationData> _notifications = [];
-  List<DocumentSnapshot> _notifData = [];
-  List<NotificationData> _notificationForDeletion = [];
-
-  bool get isLoading => _isLoading;
-  List<NotificationData> get notifications => _notifications;
   int get unreadCount => _unreadCount;
-  List<NotificationData> get notificationForDeletion =>
-      _notificationForDeletion;
   bool get hasNotification => _hasNotification;
+  List<NotificationData> get notificationList => _notificationList;
 
   void setUserUID(String uid) {
     debugPrint('setUserUID called with $uid');
     _userUID = uid;
-    _boxName = '${_userUID}_notifications';
-    // _loadBookmarks();
   }
 
   NotificationListNotifier({String userUID = ''}) {
     setUserUID(userUID);
     if (_userUID.isNotEmpty) {
-      loadNotifications();
-      getUnreadNotificationsCountFromStream(_userUID);
+      // getUnreadNotificationsCountFromStream(_userUID);
+      getNotificationsFromStream(_userUID);
     }
   }
 
-  Future<void> refreshNotification() async {
-    debugPrint('refreshNotification called');
-    _notifications.clear();
-    _notifData.clear();
-    try {
-      _notifications = await _notifService.getNotificationFromCache(_boxName);
-      notifyListeners();
-      _notifications = await _notifService.getInitialNotifications(_boxName);
-      getUnreadNotificationsCountFromStream(_userUID);
-      notifyListeners();
-    } catch (e) {
-      debugPrint("error loading notifications: $e");
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> loadNotifications() async {
-    _isLoading = true;
-    notifyListeners();
-    _notifications.clear();
-    _notifData.clear();
-    try {
-      _notifications = await _notifService.getNotificationFromCache(_boxName);
-      notifyListeners();
-
-      Future.delayed(const Duration(milliseconds: 1500), () async {
-        final serverNotifications =
-            await _notifService.getInitialNotifications(_boxName);
-        _notifications = serverNotifications;
-        notifyListeners();
-      });
-    } catch (e) {
-      debugPrint("error loading notifications: $e");
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> loadMoreNotifications() async {
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      final moreNotif = await _notifService.getMoreNotifications(_boxName);
-      _notifications.addAll(moreNotif);
-      // _unreadCount = await getUnreadNotificationsCount();
-      notifyListeners();
-    } catch (e, stackTrace) {
-      debugPrint('error loading more notifications: $stackTrace');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> removeNotification(String notifId) async {
-    try {
-      _notificationForDeletion
-          .add(_notifications.firstWhere((element) => element.id == notifId));
-      _notifications.removeWhere((element) => element.id == notifId);
-      // _unreadCount = await getUnreadNotificationsCount();
-      notifyListeners();
-
+  Future<void> setDismissed(String notifId, bool isDismissed) async {
+    await _firestoreDb
+        .collection('notifications')
+        .doc(_userUID)
+        .collection('notification')
+        .where('id', isEqualTo: notifId)
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.set({'isDismissed': isDismissed}, SetOptions(merge: true));
+      }
+    });
+    if (isDismissed == true) {
+      notificationIdsForDismissal.add(notifId);
       await Future.delayed(const Duration(seconds: 5), () {
-        removeNotificationFromFirestore();
+        removeAllForDismissal();
       });
-      // await _notifService.deleteNotification(notifId, _boxName);
-    } catch (e, stackTrace) {
-      debugPrintStack(stackTrace: stackTrace);
-      debugPrint('error removeNotification: $e');
+    } else {
+      notificationIdsForDismissal.remove(notifId);
     }
   }
 
-  Future<void> removeNotificationFromFirestore({bool isAll = false}) async {
-    debugPrint('start removeNotificationFromFirestore');
-    debugPrint('notifForDeletion: ${_notificationForDeletion.length}');
-    if (_notificationForDeletion.isEmpty) return;
+  Future<void> dismissAll() async {
+    //set all notifications as dismissed
+    for (var element in _notificationList) {
+      notificationIdsForDismissal.add(element.id);
+      element.isDismissed = true;
+    }
+    notifyListeners();
+    _firestoreDb
+        .collection('notifications')
+        .doc(_userUID)
+        .collection('notification')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.set({'isDismissed': true}, SetOptions(merge: true));
+        notificationIdsForDismissal.add(ds['id']);
+      }
+    });
 
-    try {
-      if (isAll) {
-        await _notifService.deleteAllNotifications(_boxName);
-        _notifications.clear();
-        _unreadCount = 0;
-        _hasNotification = false;
-        notifyListeners();
-        _notifService.removeAllNotificationFromCache(_boxName);
-      } else {
-        for (final element in _notificationForDeletion) {
-          await _notifService.deleteNotification(element.id, _boxName);
-          _notifService.removeNotificationFromCache(_boxName, element.id);
+    await Future.delayed(const Duration(seconds: 5), () {
+      removeAllForDismissal();
+    });
+  }
+
+  Future<void> undoDismissAll() async {
+    _undoDismissAll = true;
+    for (var element in _notificationList) {
+      notificationIdsForDismissal.add(element.id);
+      element.isDismissed = false;
+    }
+    notifyListeners();
+    for (var notifId in notificationIdsForDismissal) {
+      _firestoreDb
+          .collection('notifications')
+          .doc(_userUID)
+          .collection('notification')
+          .where('id', isEqualTo: notifId)
+          .get()
+          .then((snapshot) {
+        for (DocumentSnapshot ds in snapshot.docs) {
+          ds.reference.set({'isDismissed': false}, SetOptions(merge: true));
         }
-      }
-      _notificationForDeletion.clear();
-    } catch (e) {
-      debugPrint('error removeNotificationFromFirestore: $e');
-    }
-  }
-
-  void removeNotificationIdFromDeletionList(String notifId) {
-    debugPrint('removeNotificationIdFromDeletionList');
-    _notificationForDeletion.removeWhere((element) => element.id == notifId);
-  }
-
-  void reinsertNotificationToNotificationList(String notifId) async {
-    debugPrint('reinsertNotificationToNotificationList');
-    debugPrint('notif count before: ${_notifications.length}');
-    final notif =
-        _notificationForDeletion.firstWhere((element) => element.id == notifId);
-    _notifications.add(notif);
-    debugPrint('notif count after: ${_notifications.length}');
-    // _unreadCount = await getUnreadNotificationsCount();
-  }
-
-  void reinsertAllNotificationToNotificationList() async {
-    debugPrint('reinsertAllNotificationToNotificationList');
-    debugPrint('notif count before: ${_notifications.length}');
-    _notifications.addAll(_notificationForDeletion);
-    _notificationForDeletion.clear();
-    getUnreadNotificationsCountFromStream(_userUID);
-    debugPrint('notif count after: ${_notifications.length}');
-    // _unreadCount = await getUnreadNotificationsCount();
-  }
-
-  Future<void> removeAllNotification() async {
-    try {
-      _notificationForDeletion.addAll(_notifications);
-      _notifications.clear();
-      _unreadCount = 0;
-      _hasNotification = false;
-      // _unreadCount = await getUnreadNotificationsCount();
-      notifyListeners();
-
-      await Future.delayed(const Duration(seconds: 5), () {
-        removeNotificationFromFirestore(isAll: true);
-        clearBadgeCount();
       });
-
-      // await _notifService.deleteAllNotifications(_boxName);
-      // _notifications.clear();
-      // _unreadCount = 0;
-      // notifyListeners();
-    } catch (e) {
-      debugPrint('error removeAllNotification: $e');
     }
+    notificationIdsForDismissal.clear();
   }
 
-  Future<void> markAsRead(String notifId) async {
-    try {
-      final notif =
-          _notifications.firstWhere((element) => element.id == notifId);
-      notif.isRead = true;
-
-      // _unreadCount = await getUnreadNotificationsCount();
-      notifyListeners();
-      await _notifService.updateNotifications(notif, notifId, _boxName);
-    } catch (e) {
-      debugPrint('error marking as read: $e');
-    }
-  }
-
-  Future<void> markAllAsRead() async {
-    try {
-      await _notifService.markAllNotificationsAsRead(_boxName);
-      _unreadCount = 0;
-      for (var element in _notifications) {
-        element.isRead = true;
+  Future<void> setAsRead(String notifId) async {
+    final notif =
+        _notificationList.firstWhere((element) => element.id == notifId);
+    notif.isRead = true;
+    notifyListeners();
+    _firestoreDb
+        .collection('notifications')
+        .doc(_userUID)
+        .collection('notification')
+        .where('id', isEqualTo: notifId)
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.set({'isRead': true}, SetOptions(merge: true));
       }
-      notifyListeners();
-      clearBadgeCount();
-    } catch (e) {
-      debugPrint('error marking all as read: $e');
+    });
+  }
+
+  Future<void> setAllAsRead() async {
+    for (var element in _notificationList) {
+      notificationIdsForDismissal.add(element.id);
+      element.isRead = true;
     }
-  }
-
-  void resetNotifications() {
     notifyListeners();
+    _firestoreDb
+        .collection('notifications')
+        .doc(_userUID)
+        .collection('notification')
+        .where('isRead', isEqualTo: false)
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.set({'isRead': true}, SetOptions(merge: true));
+      }
+    });
   }
 
-  Future<int> getUnreadNotificationsCount() async {
-    try {
-      final unreadNotif =
-          _notifications.where((element) => element.isRead == false).toList();
-      return unreadNotif.length;
-    } catch (e) {
-      debugPrint('error getting unread notifications count: $e');
-      return 0;
+  Future<void> removeAllForDismissal() async {
+    var idsToRemove =
+        _undoDismissAll ? [] : List.from(notificationIdsForDismissal);
+
+    debugPrint(
+        'removing all for dismissal called ~ ${idsToRemove.length} items');
+    _undoDismissAll = false;
+    if (idsToRemove.isEmpty) return;
+    for (var notifId in idsToRemove) {
+      await _firestoreDb
+          .collection('notifications')
+          .doc(_userUID)
+          .collection('notification')
+          .where('id', isEqualTo: notifId)
+          .get()
+          .then((snapshot) {
+        for (DocumentSnapshot ds in snapshot.docs) {
+          ds.reference.delete();
+        }
+      });
     }
+    notificationIdsForDismissal.clear();
+    clearBadgeCount();
+    _unreadCount = 0;
   }
 
-  void incrementNotificationCount() {
-    _unreadCount++;
-    notifyListeners();
-  }
+  // void getUnreadNotificationsCountFromStream(String userId) {
+  //   FirebaseFirestore.instance
+  //       .collection('notifications')
+  //       .doc(userId)
+  //       .collection('notification')
+  //       .snapshots()
+  //       .listen((QuerySnapshot snapshot) {
+  //     _unreadCount = 0;
+  //     if (snapshot.docs.isNotEmpty) {
+  //       _hasNotification = true;
+  //     } else {
+  //       _hasNotification = false;
+  //     }
+  //     for (var doc in snapshot.docs) {
+  //       if (doc.exists && doc['isRead'] == false) {
+  //         _unreadCount++;
+  //       }
+  //     }
 
-  void decrementNotificationCount() {
-    _unreadCount--;
-    notifyListeners();
-  }
+  //     updateBadgeCount(_unreadCount);
 
-  void setUnreadCount(int count) {
-    _unreadCount = count;
-    notifyListeners();
-  }
-
-  //listen to firestore notifications
-  // void listenToNotifications() {
-  //   _notifService.listenToNotifications(_boxName).listen((event) {
-  //     final notif = NotificationData(
-  //       id: event.id,
-  //       title: event["title"],
-  //       body: event["body"],
-  //       timestamp: timestampToDateTime(event["timestamp"]),
-  //       isRead: event["isRead"] as bool,
-  //       data: event["data"],
-  //       imageUrl: event["imageUrl"],
-  //     );
-  //     _notifications.insert(0, notif);
-  //     _unreadCount = _notifications.where((element) => element.isRead == false).length;
+  //     debugPrint('unread count: $_unreadCount');
   //     notifyListeners();
   //   });
   // }
 
-  void getUnreadNotificationsCountFromStream(String userId) {
+  void getNotificationsFromStream(String userId) {
+    debugPrint('getNotificationsFromStream called');
     FirebaseFirestore.instance
         .collection('notifications')
         .doc(userId)
         .collection('notification')
+        .orderBy('timestamp', descending: true)
         .snapshots()
         .listen((QuerySnapshot snapshot) {
       _unreadCount = 0;
+      debugPrint('snapshot length: ${snapshot.docs.length}');
+      _notificationList = snapshot.docs
+          .where((doc) =>
+              doc['isDismissed'] != null ? doc["isDismissed"] == false : true)
+          .map((doc) => NotificationData(
+                id: doc["id"],
+                title: doc["title"],
+                body: doc["body"],
+                timestamp: timestampToDateTime(doc["timestamp"]),
+                isRead: doc["isRead"] as bool,
+                data: doc["data"],
+                imageUrl: doc["imageUrl"],
+                isDismissed: doc['isDismissed'] != null
+                    ? doc["isDismissed"] as bool
+                    : false,
+              ))
+          .toList();
       if (snapshot.docs.isNotEmpty) {
         _hasNotification = true;
       } else {

@@ -6,6 +6,7 @@ import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
 import 'package:pzdeals/src/features/notifications/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
+import 'package:pzdeals/src/features/notifications/state/notifications_stream_provider.dart';
 
 class NotificationsDisplay extends ConsumerStatefulWidget {
   const NotificationsDisplay({super.key});
@@ -39,7 +40,7 @@ class NotificationsDisplayState extends ConsumerState<NotificationsDisplay>
   void _onScroll() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      ref.read(notificationsProvider).loadMoreNotifications();
+      // ref.read(notificationsProvider).loadMoreNotifications();
     }
   }
 
@@ -55,48 +56,43 @@ class NotificationsDisplayState extends ConsumerState<NotificationsDisplay>
   Widget build(BuildContext context) {
     // final message = ModalRoute.of(context)!.settings.arguments as String;
     // debugPrint('message: $message');
-    final notificationState = ref.watch(notificationsProvider);
-    Widget notificationWidget;
-    if (notificationState.isLoading &&
-        notificationState.notifications.isEmpty) {
-      notificationWidget = const Expanded(
-        child: Center(child: CircularProgressIndicator.adaptive()),
-      );
-    } else if (notificationState.notifications.isEmpty) {
-      notificationWidget = Expanded(
-          // padding: const EdgeInsets.all(Sizes.paddingAll),
-          child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Lottie.asset(
-              'assets/images/lottie/empty.json',
-              height: 200,
-              fit: BoxFit.fitHeight,
-              frameRate: FrameRate.max,
-              controller: _animationController,
-              onLoaded: (composition) {
-                _animationController
-                  ..duration = composition.duration
-                  ..forward();
-              },
-            ),
-            const SizedBox(height: Sizes.spaceBetweenSections),
-            const Text(
-              'No notifications yet',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
-            ),
-            const SizedBox(height: Sizes.spaceBetweenContentSmall),
-          ],
-        ),
-      ));
-    } else {
-      final notifData = notificationState.notifications;
-      notificationWidget = Expanded(
+    // final notificationState = ref.watch(notificationsProvider);
+    final notificationStream = ref
+        .watch(notificationsProvider.select((value) => value.notificationList));
+    if (notificationStream.isEmpty) {
+      return Expanded(
+        child: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Lottie.asset(
+                'assets/images/lottie/empty.json',
+                height: 200,
+                fit: BoxFit.fitHeight,
+                frameRate: FrameRate.max,
+                controller: _animationController,
+                onLoaded: (composition) {
+                  _animationController
+                    ..duration = composition.duration
+                    ..forward();
+                },
+              ),
+              const SizedBox(height: Sizes.spaceBetweenSections),
+              const Text(
+                'No notifications yet',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+              ),
+              const SizedBox(height: Sizes.spaceBetweenContentSmall),
+            ],
+          ),
+        ),
+      );
+    }
+    return Expanded(
+      child: Column(
         children: [
           Expanded(
             child: RefreshIndicator.adaptive(
@@ -108,10 +104,10 @@ class NotificationsDisplayState extends ConsumerState<NotificationsDisplay>
                   controller: _scrollController,
                   // physics: const BouncingScrollPhysics(),
                   // shrinkWrap: true,
-                  itemCount: notifData.length,
+                  itemCount: notificationStream.length,
                   itemBuilder: (BuildContext context, int index) {
                     return NotificationCardWidget(
-                      notificationData: notifData[index],
+                      notificationData: notificationStream[index],
                       // onCardTap: (int productId) {
                       //   showProductDeal(productId);
                       // },
@@ -120,7 +116,7 @@ class NotificationsDisplayState extends ConsumerState<NotificationsDisplay>
                 ),
                 onRefresh: () async {
                   HapticFeedback.mediumImpact();
-                  ref.read(notificationsProvider).refreshNotification();
+                  // ref.read(notificationsProvider).refreshNotification();
                 }),
           ),
           // notificationState.isLoading
@@ -133,9 +129,126 @@ class NotificationsDisplayState extends ConsumerState<NotificationsDisplay>
           //       )
           //     : const SizedBox.shrink()
         ],
-      ));
-    }
+      ),
+    );
+    // return notificationStream.when(
+    //   data: (notifData) {
+    //     if (notifData.isEmpty) {
+    //       return Expanded(
+    //         child: Center(
+    //           child: Column(
+    //             mainAxisAlignment: MainAxisAlignment.center,
+    //             crossAxisAlignment: CrossAxisAlignment.center,
+    //             children: [
+    //               Lottie.asset(
+    //                 'assets/images/lottie/empty.json',
+    //                 height: 200,
+    //                 fit: BoxFit.fitHeight,
+    //                 frameRate: FrameRate.max,
+    //                 controller: _animationController,
+    //                 onLoaded: (composition) {
+    //                   _animationController
+    //                     ..duration = composition.duration
+    //                     ..forward();
+    //                 },
+    //               ),
+    //               const SizedBox(height: Sizes.spaceBetweenSections),
+    //               const Text(
+    //                 'No notifications yet',
+    //                 textAlign: TextAlign.center,
+    //                 style: TextStyle(
+    //                     fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+    //               ),
+    //               const SizedBox(height: Sizes.spaceBetweenContentSmall),
+    //             ],
+    //           ),
+    //         ),
+    //       );
+    //     }
+    //     return Expanded(
+    //       child: Column(
+    //         children: [
+    //           Expanded(
+    //             child: RefreshIndicator.adaptive(
+    //                 displacement: 20,
+    //                 edgeOffset: 10,
+    //                 color: PZColors.pzOrange,
+    //                 child: ListView.builder(
+    //                   physics: const AlwaysScrollableScrollPhysics(),
+    //                   controller: _scrollController,
+    //                   // physics: const BouncingScrollPhysics(),
+    //                   // shrinkWrap: true,
+    //                   itemCount: notifData.length,
+    //                   itemBuilder: (BuildContext context, int index) {
+    //                     return NotificationCardWidget(
+    //                       notificationData: notifData[index],
+    //                       // onCardTap: (int productId) {
+    //                       //   showProductDeal(productId);
+    //                       // },
+    //                     );
+    //                   },
+    //                 ),
+    //                 onRefresh: () async {
+    //                   HapticFeedback.mediumImpact();
+    //                   // ref.read(notificationsProvider).refreshNotification();
+    //                 }),
+    //           ),
+    //           // notificationState.isLoading
+    //           //     ? Container(
+    //           //         color: Colors.transparent,
+    //           //         padding:
+    //           //             const EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+    //           //         child:
+    //           //             const Center(child: CircularProgressIndicator.adaptive()),
+    //           //       )
+    //           //     : const SizedBox.shrink()
+    //         ],
+    //       ),
+    //     );
+    //   },
 
-    return notificationWidget;
+    //   // ListView.builder(
+    //   //   itemCount: users.length,
+    //   //   itemBuilder: (context, index) {
+    //   //     final user = users[index];
+    //   //     return ListTile(
+    //   //       title: Text(user.name), // Assuming your User model has a name field
+    //   //     );
+    //   //   },
+    //   // ),
+    //   loading: () => const Expanded(
+    //     child: Center(child: CircularProgressIndicator.adaptive()),
+    //   ),
+    //   error: (error, stack) => Expanded(
+    //     child: Center(
+    //       child: Column(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         crossAxisAlignment: CrossAxisAlignment.center,
+    //         children: [
+    //           Lottie.asset(
+    //             'assets/images/lottie/empty.json',
+    //             height: 200,
+    //             fit: BoxFit.fitHeight,
+    //             frameRate: FrameRate.max,
+    //             controller: _animationController,
+    //             onLoaded: (composition) {
+    //               _animationController
+    //                 ..duration = composition.duration
+    //                 ..forward();
+    //             },
+    //           ),
+    //           const SizedBox(height: Sizes.spaceBetweenSections),
+    //           const Text(
+    //             'No notifications yet',
+    //             textAlign: TextAlign.center,
+    //             style: TextStyle(
+    //                 fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+    //           ),
+    //           const SizedBox(height: Sizes.spaceBetweenContentSmall),
+    //         ],
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 }

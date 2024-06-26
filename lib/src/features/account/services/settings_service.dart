@@ -156,10 +156,16 @@ class UserSettingsService {
 
   Future<SettingsData?> getCachedSettings(
       String boxName, String? userId) async {
-    final box = await Hive.openBox<SettingsData>(boxName);
+    Box<SettingsData> box;
+    if (Hive.isBoxOpen(boxName)) {
+      debugPrint('Box is already open');
+      box = Hive.box<SettingsData>(boxName);
+    } else {
+      debugPrint('Opening box');
+      box = await Hive.openBox<SettingsData>(boxName);
+    }
     final settings = box.get('settings_$userId');
-    debugPrint('cached settings: $settings');
-    await box.close();
+    // await box.close();
     return settings;
   }
 

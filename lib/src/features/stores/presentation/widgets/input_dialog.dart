@@ -67,32 +67,35 @@ class StoreInputDialogState extends ConsumerState<StoreInputDialog> {
             ),
           ),
           const SizedBox(height: Sizes.paddingBottomSmall),
-          TextFieldButton(
-            textController: dialogFieldController,
-            onButtonPressed: () async {
-              setState(() {
-                storeName = dialogFieldController.text.trim();
-              });
-              // if (mounted) LoadingDialog.show(context);
-              googletSheetSvc
-                  .requestStore('?timestamp=${DateTime.now()}'
-                      '&store=${dialogFieldController.text}'
-                      '&email=${authUserDataState.userData?.emailAddress}'
-                      '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
-                  .then((value) {
-                if (value == true) {
-                  emailSvc.sendEmailStoreSubmission(storeName);
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: TextFieldButton(
+              textController: dialogFieldController,
+              onButtonPressed: () async {
+                setState(() {
+                  storeName = dialogFieldController.text.trim();
+                });
+                // if (mounted) LoadingDialog.show(context);
+                googletSheetSvc
+                    .requestStore('?timestamp=${DateTime.now()}'
+                        '&store=${dialogFieldController.text}'
+                        '&email=${authUserDataState.userData?.emailAddress}'
+                        '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
+                    .then((value) {
+                  if (value == true) {
+                    emailSvc.sendEmailStoreSubmission(storeName);
+                    // if (mounted) LoadingDialog.hide(context);
+                  }
                   // if (mounted) LoadingDialog.hide(context);
-                }
-                // if (mounted) LoadingDialog.hide(context);
-              });
-              showSnackbarWithMessage(context, 'Store submitted. Thank you!');
-              Navigator.of(context).pop();
-            },
-            buttonLabel: 'Submit',
-            textFieldHint: 'Store name or website..',
-            hasIcon: false,
-            isAutoFocus: true,
+                });
+                showSnackbarWithMessage(context, 'Store submitted. Thank you!');
+                Navigator.of(context).pop();
+              },
+              buttonLabel: 'Submit',
+              textFieldHint: 'Store name or website..',
+              hasIcon: false,
+              isAutoFocus: true,
+            ),
           ),
         ],
       ),

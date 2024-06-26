@@ -25,15 +25,18 @@ class NotificationData {
   @HiveField(6)
   final dynamic data;
 
-  NotificationData({
-    required this.id,
-    required this.timestamp,
-    required this.title,
-    required this.body,
-    this.isRead = false,
-    this.imageUrl = '',
-    this.data,
-  });
+  @HiveField(7)
+  bool isDismissed;
+
+  NotificationData(
+      {required this.id,
+      required this.timestamp,
+      required this.title,
+      required this.body,
+      this.isRead = false,
+      this.imageUrl = '',
+      this.data,
+      this.isDismissed = false});
 
   Map<String, dynamic> toMap() {
     return {
@@ -44,10 +47,15 @@ class NotificationData {
       'isRead': isRead,
       'imageUrl': imageUrl,
       'data': data,
+      'isDismissed': isDismissed
     };
   }
 
   set isReadStatus(bool status) {
     isRead = status;
+  }
+
+  set isDismissedStatus(bool status) {
+    isDismissed = status;
   }
 }
