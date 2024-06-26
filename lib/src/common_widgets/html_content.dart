@@ -69,7 +69,7 @@ class HtmlContent extends StatelessWidget {
             },
           )
         : HtmlWidget(
-            // buildAsync: false,
+            buildAsync: false,
             htmlContent,
             customStylesBuilder: (element) {
               if (element.localName == 'body') {
