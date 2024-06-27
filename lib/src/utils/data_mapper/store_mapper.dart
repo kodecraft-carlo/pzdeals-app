@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/features/deals/models/pzstore_data.dart';
 import 'package:pzdeals/src/models/index.dart';
-import 'package:pzdeals/src/utils/helpers/store_image.dart';
+import 'package:pzdeals/src/utils/helpers/image_asset.dart';
 
 class StoreDataMapper {
   static List<PZStoreData> mapToStoreDataList(List<dynamic> responseData) {

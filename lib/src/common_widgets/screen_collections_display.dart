@@ -233,6 +233,8 @@ class CollectionDisplayScreenWidgetState
       collectionTitle = 'Toy Deals';
     } else if (widget.collectionTitle == 'Clothing Deals') {
       collectionTitle = 'Clothing & Accessory Deals';
+    } else if (widget.collectionTitle == 'Flash Deals') {
+      collectionTitle = 'Hot Deals';
     } else {
       collectionTitle = widget.collectionTitle;
     }

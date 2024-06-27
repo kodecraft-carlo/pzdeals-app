@@ -29,6 +29,8 @@ class ShopCategory extends StatelessWidget {
         String iconTitle = category.title;
         if (category.title == 'Clothing') {
           iconTitle = 'Clothing & Accessories';
+        } else if (category.title == 'Flash') {
+          iconTitle = 'Hot Deals';
         }
         return NavigateScreenWidget(
           destinationWidget: CollectionDisplayScreenWidget(

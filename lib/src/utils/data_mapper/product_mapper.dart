@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/utils/helpers/format_price.dart';
+import 'package:pzdeals/src/utils/helpers/image_asset.dart';
 import 'package:pzdeals/src/utils/helpers/index.dart';
 
 class ProductMapper {

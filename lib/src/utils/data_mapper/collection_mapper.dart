@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/features/deals/models/collection_data.dart';
+import 'package:pzdeals/src/utils/helpers/image_asset.dart';
 
 class CollectionDataMapper {
   static List<CollectionData> mapToCollectionDataList(
@@ -13,7 +14,8 @@ class CollectionDataMapper {
           id: json['id'],
           title: collectionTitle.trim(),
           assetSourceType: json['image_src'] == null ? 'asset' : 'network',
-          imageAsset: json['image_src'] ?? 'assets/images/pzdeals_store.png',
+          imageAsset:
+              getCollectionImage(json['local_image'] ?? '', json['image_src']),
           keyword: json['keywords'] ?? "",
         );
       }));

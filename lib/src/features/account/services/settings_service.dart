@@ -10,6 +10,7 @@ class UserSettingsService {
   Future<SettingsData> fetchUserSettings(String boxName, String? userId) async {
     ApiClient apiClient = ApiClient();
     // final authService = ref.watch(directusAuthServiceProvider);
+    debugPrint('fetchUserSettings called for $userId ~ $boxName');
     try {
       Response response = await apiClient.dio.get(getUserSettings(userId!)
           // options: Options(
@@ -154,6 +155,33 @@ class UserSettingsService {
     }
   }
 
+  Future<void> deleteInstanceSetting(String instanceId) async {
+    ApiClient apiClient = ApiClient();
+    try {
+      final int id = await getSettingsId(instanceId);
+      if (id == 0) {
+        return;
+      }
+
+      Response response =
+          await apiClient.dio.delete('/items/notification_settings/$id'
+              // options: Options(
+              //   headers: {'Authorization': 'Bearer $accessToken'},
+              // ),
+              );
+      if (response.statusCode != 204) {
+        throw Exception(
+            'Unable to delete user settings ${response.statusCode} ~ ${response.data}');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      throw Exception('Failed to delete user settings');
+    } catch (e) {
+      debugPrint('Error deleting user settings: $e');
+      throw Exception('Failed to delete user settings');
+    }
+  }
+
   Future<SettingsData?> getCachedSettings(
       String boxName, String? userId) async {
     Box<SettingsData> box;
@@ -167,6 +195,16 @@ class UserSettingsService {
     final settings = box.get('settings_$userId');
     // await box.close();
     return settings;
+  }
+
+  Future<void> clearCachedSettings(String boxName) async {
+    Box<SettingsData> box;
+    if (Hive.isBoxOpen(boxName)) {
+      box = Hive.box<SettingsData>(boxName);
+    } else {
+      box = await Hive.openBox<SettingsData>(boxName);
+    }
+    await box.clear();
   }
 
   Future<void> _cacheSettings(

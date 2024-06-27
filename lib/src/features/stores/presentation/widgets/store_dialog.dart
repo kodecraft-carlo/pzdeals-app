@@ -371,6 +371,8 @@ class _StoreCollectionListState extends State<StoreCollectionList> {
 List<Item> extractDataFromHtml(String htmlString) {
   List<Item> result = [];
 
+  htmlString = htmlString.replaceAll('""', '"');
+
   // Parse the HTML string
   htmlDom.Document document = htmlParser.parse(htmlString);
 
@@ -393,6 +395,7 @@ List<Item> extractDataFromHtml(String htmlString) {
         // If an anchor tag is present, treat it as a regular list item
         String listItemText = anchorElement.text.trim();
         String link = anchorElement.attributes['href'] ?? '';
+        //remove double quotes from the link
         listItems.add({'list_name': listItemText, 'link': link});
       } else {
         noHeaderList = liElement.text.trim();

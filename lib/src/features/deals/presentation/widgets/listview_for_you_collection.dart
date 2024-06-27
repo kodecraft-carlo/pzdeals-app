@@ -72,6 +72,8 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
       sectionTitle = 'Toy Deals';
     } else if (widget.title == 'Clothing Deals') {
       sectionTitle = 'Clothing & Accessory Deals';
+    } else if (widget.title == 'Flash Deals') {
+      sectionTitle = 'Hot Deals';
     } else {
       sectionTitle = widget.title;
     }
