@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pzdeals/config.dart';
+import 'package:pzdeals/src/utils/helpers/convert_string.dart';
 
-String getStoreImageUrlFromTags(List<dynamic> tagIds) {
+String getStoreNameFromTags(List<dynamic> tagIds) {
   for (var tag in tagIds) {
     if (tag == null || tag['tags_id'] == null) {
       continue;
     }
     final storeImage = tag['tags_id']['image'];
     if (tag['tags_id']['tag_name'] == 'ac') {
-      return '${AppConfig.directusAssetsUrl}9307aaa4-25e0-4897-b555-a3279ca58802';
+      return 'Amazon';
     }
     if (storeImage != null) {
-      return '${AppConfig.directusAssetsUrl}$storeImage';
+      return formatTagNameToCapitalizedWord(tag['tags_id']['tag_name']);
     }
   }
-  return 'assets/images/pzdeals_store.png';
+  return 'PzDeals';
 }
 
 bool isProductExpired(List<dynamic> tagIds) {
@@ -67,5 +68,5 @@ String extractTagDealDescription(List<dynamic> tagIds) {
       }
     }
   }
-  return tagDealDescription != '' ? '<ul>$tagDealDescription</ul>' : '';
+  return tagDealDescription != '' ? tagDealDescription : '';
 }

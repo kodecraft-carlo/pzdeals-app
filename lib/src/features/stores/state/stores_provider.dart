@@ -90,9 +90,14 @@ class StoreScreenProvider extends ChangeNotifier {
   }
 
   void filterStores(String query) {
+    // Helper function to remove apostrophes and other special characters
+    String sanitizeString(String str) {
+      return str.replaceAll(RegExp("[^a-zA-Z0-9]"), "").toLowerCase();
+    }
+
     _filteredStores = _stores
         .where((store) =>
-            store.storeName.toLowerCase().contains(query.toLowerCase()))
+            sanitizeString(store.storeName).contains(sanitizeString(query)))
         .toList();
     notifyListeners();
   }

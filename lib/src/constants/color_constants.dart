@@ -9,4 +9,5 @@ class PZColors {
   static const Color pzGreen = Color(0xFF008937);
   static const Color pzBadgeColor = Color(0xFFE80F77);
   static const Color hyperlinkColor = Color(0xFF021BF9);
+  static const Color amazonPercentOff = Color(0xFFcc0c39);
 }

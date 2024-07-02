@@ -227,6 +227,17 @@ class CollectionDisplayScreenWidgetState
         ],
       );
     }
+
+    String collectionTitle = '';
+    if (widget.collectionTitle == 'Toys Deals') {
+      collectionTitle = 'Toy Deals';
+    } else if (widget.collectionTitle == 'Clothing Deals') {
+      collectionTitle = 'Clothing & Accessory Deals';
+    } else if (widget.collectionTitle == 'Flash Deals') {
+      collectionTitle = 'Hot Deals';
+    } else {
+      collectionTitle = widget.collectionTitle;
+    }
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
         textScaler: TextScaler.linear(mediaQueryState.textScaler),
@@ -242,9 +253,7 @@ class CollectionDisplayScreenWidgetState
                   child: AppBar(
                     title: Text(
                       widget.collectionTitle != ''
-                          ? widget.collectionTitle == 'Toys Deals'
-                              ? 'Toy Deals'
-                              : widget.collectionTitle
+                          ? collectionTitle
                           : paramcollectionName,
                       style: const TextStyle(
                         color: PZColors.pzBlack,

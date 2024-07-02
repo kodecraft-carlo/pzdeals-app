@@ -3,7 +3,7 @@ class Wordings {
   static const String descForYou =
       'See only deals you love by personalizing the categories you shop most.';
   static const String descFlashDeals =
-      'These are the most exciting deals from across the web.';
+      'These are the hottest deals from across the web.';
   static const String descFrontPage =
       'Handpicked deals with the biggest discounts, that are upvoted by the Pz community.';
   static const String descStoreScreen =

@@ -987,6 +987,9 @@ PODS:
   - Firebase/InAppMessaging (10.24.0):
     - Firebase/CoreOnly
     - FirebaseInAppMessaging (~> 10.24.0-beta)
+  - Firebase/Installations (10.24.0):
+    - Firebase/CoreOnly
+    - FirebaseInstallations (~> 10.24.0)
   - Firebase/Messaging (10.24.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 10.24.0)
@@ -1011,6 +1014,10 @@ PODS:
     - Flutter
   - firebase_in_app_messaging (0.7.4-16):
     - Firebase/InAppMessaging (= 10.24.0)
+    - firebase_core
+    - Flutter
+  - firebase_installations (16.3.6):
+    - Firebase/Installations (= 10.24.0)
     - firebase_core
     - Flutter
   - firebase_messaging (14.7.18):
@@ -1090,7 +1097,7 @@ PODS:
     - FirebaseInstallations (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - nanopb (< 2.30911.0, >= 2.30908.0)
-  - FirebaseInstallations (10.25.0):
+  - FirebaseInstallations (10.24.0):
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
@@ -1324,6 +1331,7 @@ DEPENDENCIES:
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
   - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
   - firebase_in_app_messaging (from `.symlinks/plugins/firebase_in_app_messaging/ios`)
+  - firebase_installations (from `.symlinks/plugins/firebase_installations/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_app_badger (from `.symlinks/plugins/flutter_app_badger/ios`)
@@ -1394,6 +1402,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_dynamic_links/ios"
   firebase_in_app_messaging:
     :path: ".symlinks/plugins/firebase_in_app_messaging/ios"
+  firebase_installations:
+    :path: ".symlinks/plugins/firebase_installations/ios"
   firebase_messaging:
     :path: ".symlinks/plugins/firebase_messaging/ios"
   Flutter:
@@ -1434,6 +1444,7 @@ SPEC CHECKSUMS:
   firebase_crashlytics: ebdef8302c866c08f5de5d19ba2a566c68dd0a44
   firebase_dynamic_links: c557757c7a47702ea3bdcb71a92f34b29f9908cd
   firebase_in_app_messaging: bd4ecaf76b190c60285a4e9fbf168b091e565236
+  firebase_installations: 961e0e2aea04bfa51c94405e9ee47e662fae8b20
   firebase_messaging: 6670f82f4c721f82574028273a63bedd77d45f72
   FirebaseABTesting: e6e3c3e0e35813874f571d1b7bdae2aab319dd38
   FirebaseAnalytics: b5efc493eb0f40ec560b04a472e3e1a15d39ca13
@@ -1447,7 +1458,7 @@ SPEC CHECKSUMS:
   FirebaseFirestore: 6df1bc70a56c15921286ff2a3096fa2d350b8823
   FirebaseFirestoreInternal: d9a6e08e9bb4016ce7c0b3544f1cf7abcd7cf26f
   FirebaseInAppMessaging: a1374493c04fabef91f3ff54b818c5087b98fb67
-  FirebaseInstallations: 91950fe859846fff0fbd296180909dd273103b09
+  FirebaseInstallations: 8f581fca6478a50705d2bd2abd66d306e0f5736e
   FirebaseMessaging: 4d52717dd820707cc4eadec5eb981b4832ec8d5d
   FirebaseRemoteConfigInterop: b25018791b204c0d78a90e394d6c62d9b1f22da8
   FirebaseSessions: c0939656253a1fa0e94ecc266ccf770cc8b33732

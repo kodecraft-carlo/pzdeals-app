@@ -153,7 +153,10 @@ class FetchForYouService {
   Future<bool> getCachedCollectionSelectionStatus(String boxName) async {
     try {
       final box = await Hive.openBox<bool>(boxName);
-      final hasCollection = box.values.first;
+      // Check if the box is not empty before accessing the first value
+      final hasCollection = box.values.isNotEmpty
+          ? box.values.first
+          : false; // Assuming false as a default value
       await box.close();
       return hasCollection;
     } catch (e, stackTrace) {

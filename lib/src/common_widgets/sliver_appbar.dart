@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/actions/navigate_screen.dart';
 import 'package:pzdeals/src/common_widgets/appbar_icon.dart';
-import 'package:pzdeals/src/features/account/account.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
+import 'package:pzdeals/src/features/account/account.dart';
 
 class SliverAppBarWidget extends StatelessWidget {
   const SliverAppBarWidget(

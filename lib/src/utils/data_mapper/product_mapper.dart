@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/utils/helpers/format_price.dart';
+import 'package:pzdeals/src/utils/helpers/image_asset.dart';
 import 'package:pzdeals/src/utils/helpers/index.dart';
 
 class ProductMapper {
@@ -23,17 +24,17 @@ class ProductMapper {
                 ? json['variants'][0]['price']
                 : null)
             : 0.0;
+
         return ProductDealcardData(
           productId: json['id'],
           productName:
               json['title'] != null ? json['title'].toString().trim() : '',
           price: priceFormatterWithComma(price),
-          // storeAssetImage: json['store'] != null
-          //     ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
-          //     : 'assets/images/pzdeals_store.png',
           storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
           oldPrice: priceFormatterWithComma(oldPrice),
-          imageAsset: json['image_src'],
+          imageAsset: json['local_image'] != null
+              ? getProductImage(json['local_image'])
+              : json['image_src'],
           discountPercentage: calculateDiscountPercentage(oldPrice, price),
           assetSourceType: 'network',
           isProductNoPrice: isProductNoPrice(json['tag_ids']),
@@ -51,6 +52,9 @@ class ProductMapper {
               : '',
           tagDealDescription: extractTagDealDescription(json['tag_ids']),
           handle: json['handle'] ?? '',
+          storeName: json['store'] != null
+              ? json['store']['title']
+              : getStoreNameFromTags(json['tag_ids']),
         );
       }));
     } catch (e, stackTrace) {
@@ -82,12 +86,11 @@ class ProductMapper {
         productName:
             json['title'] != null ? json['title'].toString().trim() : '',
         price: priceFormatterWithComma(price),
-        // storeAssetImage: json['store'] != null
-        //     ? json['store']['image_src'] ?? 'assets/images/pzdeals_store.png'
-        //     : 'assets/images/pzdeals_store.png',
         storeAssetImage: getStoreImageUrlFromTags(json['tag_ids']),
         oldPrice: priceFormatterWithComma(oldPrice),
-        imageAsset: json['image_src'],
+        imageAsset: json['local_image'] != null
+            ? getProductImage(json['local_image'])
+            : json['image_src'],
         discountPercentage: calculateDiscountPercentage(oldPrice, price),
         assetSourceType: 'network',
         isProductNoPrice: isProductNoPrice(json['tag_ids']),
@@ -105,6 +108,9 @@ class ProductMapper {
             : '',
         tagDealDescription: extractTagDealDescription(json['tag_ids']),
         handle: json['handle'] ?? '',
+        storeName: json['store'] != null
+            ? json['store']['title']
+            : getStoreNameFromTags(json['tag_ids']),
       );
     } catch (e, stackTrace) {
       debugPrint('Error in mapToProductDealcardDataList: $e');

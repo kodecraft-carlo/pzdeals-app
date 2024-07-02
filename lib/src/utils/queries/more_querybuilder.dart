@@ -26,6 +26,8 @@ String getBlogByIdQuery(int blogId) {
       '&fields[]=published'
       '&fields[]=body_html'
       '&fields[]=status'
+      '&fields[]=local_image'
+      '&fields[]=local_image'
       '&filter[id][_eq]=$blogId'
       '&filter[collection_ids][collection_id][collection_name][_eq]=PzBlog';
 

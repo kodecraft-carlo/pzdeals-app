@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:pzdeals/src/actions/launch_url.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
+import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
 
 class HtmlContent extends StatelessWidget {
@@ -10,12 +12,14 @@ class HtmlContent extends StatelessWidget {
       required this.htmlContent,
       this.margin,
       this.padding,
-      this.isProductDescription = false});
+      this.isProductDescription = false,
+      this.isLaunchApp = false});
 
   final String htmlContent;
   final Margins? margin;
   final HtmlPaddings? padding;
   final bool isProductDescription;
+  final bool isLaunchApp;
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +55,39 @@ class HtmlContent extends StatelessWidget {
               ),
               "p": Style(
                 margin: Margins.zero,
+                padding: HtmlPaddings.only(bottom: 10),
               ),
             },
-            onLinkTap: (url, attributes, element) => openBrowser(url ?? ''))
+            onLinkTap: (url, attributes, element) {
+              if (isLaunchApp) {
+                LoadingDialog.show(context);
+                Future.wait([launchDealUrl(url ?? '')])
+                    .whenComplete(() => LoadingDialog.hide(context));
+              } else {
+                openBrowser(url ?? '');
+              }
+            },
+          )
         : HtmlWidget(
+            buildAsync: false,
             htmlContent,
             customStylesBuilder: (element) {
               if (element.localName == 'body') {
-                return {'line-height': '1.42857143'};
+                return {
+                  'line-height': '1.42857143',
+                  'padding-left': '0',
+                  'padding-right': '0',
+                  'margin-left': '0',
+                  'margin-right': '0',
+                  'padding-inline-start': '0',
+                  'padding-inline-end': '0',
+                  'padding-block-start': '0',
+                  'padding-block-end': '0',
+                  'margin-block-start': '0',
+                  'margin-block-end': '0',
+                  'margin-inline-start': '0',
+                  'margin-inline-end': '0',
+                };
               }
               if (element.localName == 'a') {
                 return {'color': '#021BF9', 'text-decoration': 'none'};
@@ -81,7 +110,17 @@ class HtmlContent extends StatelessWidget {
                   'margin-top': '0',
                   'margin-left': '0',
                   'margin-right': '0',
-                  'margin-bottom': '10px'
+                  'margin-bottom': '10px',
+                  'padding-left': '0',
+                  'padding-right': '0',
+                  'padding-inline-start': '0',
+                  'padding-inline-end': '0',
+                  'padding-block-start': '0',
+                  'padding-block-end': '0',
+                  'margin-block-start': '0',
+                  'margin-block-end': '0',
+                  'margin-inline-start': '0',
+                  'margin-inline-end': '0',
                 };
               }
 
@@ -94,7 +133,13 @@ class HtmlContent extends StatelessWidget {
             renderMode: RenderMode.column,
             enableCaching: true,
             onTapUrl: (url) {
-              openBrowser(url);
+              if (isLaunchApp) {
+                LoadingDialog.show(context);
+                Future.wait([launchDealUrl(url)])
+                    .whenComplete(() => LoadingDialog.hide(context));
+              } else {
+                openBrowser(url);
+              }
               return true;
             },
           );
