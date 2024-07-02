@@ -18,67 +18,35 @@ class AccountWidget extends ConsumerWidget {
     final mediaQueryState = ref.watch(mediaqueryProvider);
     Widget tabBars;
     Widget tabBarView;
-    if (authUserState.isAuthenticated) {
-      tabBars = TabBar(
-        indicatorWeight: 4,
-        indicatorColor: PZColors.pzOrange,
-        dividerColor: PZColors.pzOrange,
-        overlayColor: MaterialStateProperty.all(Colors.transparent),
-        labelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: PZColors.pzBlack,
-            fontFamily: 'Poppins'),
-        unselectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: PZColors.pzGrey,
-            fontFamily: 'Poppins'),
-        tabs: const <Widget>[
-          Tab(
-            text: 'Notifications',
-          ),
-          Tab(
-            text: 'Layout',
-          ),
-        ],
-      );
+    tabBars = TabBar(
+      indicatorWeight: 4,
+      indicatorColor: PZColors.pzOrange,
+      dividerColor: PZColors.pzOrange,
+      overlayColor: MaterialStateProperty.all(Colors.transparent),
+      labelStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: PZColors.pzBlack,
+          fontFamily: 'Poppins'),
+      unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: PZColors.pzGrey,
+          fontFamily: 'Poppins'),
+      tabs: const <Widget>[
+        Tab(
+          text: 'Notifications',
+        ),
+        Tab(
+          text: 'Layout',
+        ),
+      ],
+    );
 
-      tabBarView = TabBarView(
-        children: <Widget>[
-          authUserState.isAuthenticated == true
-              ? const NotificationScreen()
-              : const SizedBox(),
-          const LayoutScreen(),
-        ],
-      );
-    } else {
-      tabBars = TabBar(
-        indicatorWeight: 4,
-        tabAlignment: TabAlignment.start,
-        isScrollable: true,
-        indicatorColor: PZColors.pzOrange,
-        dividerColor: PZColors.pzOrange,
-        overlayColor: MaterialStateProperty.all(Colors.transparent),
-        labelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: PZColors.pzBlack,
-            fontFamily: 'Poppins'),
-        unselectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: PZColors.pzGrey,
-            fontFamily: 'Poppins'),
-        tabs: const <Widget>[
-          Tab(
-            text: 'Layout',
-          ),
-        ],
-      );
-
-      tabBarView = const TabBarView(
-        children: <Widget>[
-          LayoutScreen(),
-        ],
-      );
-    }
+    tabBarView = const TabBarView(
+      children: <Widget>[
+        NotificationScreen(),
+        LayoutScreen(),
+      ],
+    );
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
         textScaler: TextScaler.linear(mediaQueryState.textScaler),
@@ -87,7 +55,7 @@ class AccountWidget extends ConsumerWidget {
         top: false,
         bottom: Platform.isIOS ? false : true,
         child: DefaultTabController(
-          length: authUserState.isAuthenticated ? 2 : 1,
+          length: 2,
           child: Scaffold(
             backgroundColor: Colors.white,
             body: NestedScrollView(

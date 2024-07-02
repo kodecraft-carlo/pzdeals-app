@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_installations/firebase_installations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -14,21 +13,13 @@ class NotificationService {
   User? user;
   final _firebaseMessaging = FirebaseMessaging.instance;
   final _firebaseAuth = FirebaseAuth.instance.currentUser;
-  String? _instanceID = '';
-
   DocumentSnapshot? lastDoc;
   NotificationService() {
-    setInstanceId();
     FirebaseAuth.instance.authStateChanges().listen((User? currentUser) {
       debugPrint(
           'NotificationService: User is logged in ~ ${currentUser?.uid}');
       user = currentUser;
     });
-  }
-
-  void setInstanceId() async {
-    _instanceID = await FirebaseInstallations.id;
-    debugPrint('Instance ID: $_instanceID');
   }
 
   Future<List<NotificationData>> getInitialNotifications(String boxName) async {
@@ -178,19 +169,19 @@ class NotificationService {
         if (notification.data['alert_type'] == 'front-page') {
           await updateFrontPageNotificationReceivedInfo(user?.uid);
         }
-      } else if (_instanceID != null && _instanceID!.isNotEmpty) {
+      } else if (_firebaseAuth?.uid != null) {
         await _firestoreDb
             .collection('notifications')
-            .doc(_instanceID)
+            .doc(_firebaseAuth?.uid)
             .collection('notification')
             .add(notification.toMap());
 
         //update notification received info only when data['alert_type'] is 'front-page'
         if (notification.data['alert_type'] == 'front-page') {
-          await updateFrontPageNotificationReceivedInfo(_instanceID);
+          await updateFrontPageNotificationReceivedInfo(_firebaseAuth?.uid);
         }
         debugPrint(
-            'addNotification: User is not logged in instance ID used~ $_instanceID');
+            'addNotification: User from snapshot is logged in ~ ${_firebaseAuth?.uid}');
       } else {
         debugPrint('addNotification: User is not logged in');
       }
@@ -278,30 +269,8 @@ class NotificationService {
           throw Exception(
               'Unable to update user settings ${response.statusCode} ~ ${response.data}');
         }
-      } else if (_instanceID != null && _instanceID!.isNotEmpty) {
-        final userId = _instanceID;
-        final int id = await getSettingsId(userId!);
-        if (id == 0) return;
-
-        final Response response = await apiClient.dio.patch(
-          '/items/notification_settings/$id',
-          data: {
-            'deliveredNotificationCount': 0,
-            'lastNotificationReceivedOn': DateTime.now().toIso8601String()
-          },
-          // options: Options(
-          //   headers: {'Authorization': 'Bearer $accessToken'},
-          // ),
-        );
-        _firebaseMessaging.subscribeToTopic('front_page');
-
-        if (response.statusCode != 200) {
-          throw Exception(
-              'Unable to update user settings ${response.statusCode} ~ ${response.data}');
-        }
       } else {
-        debugPrint(
-            'addNotification: User is not logged in. using instance ID instead ~ $_instanceID');
+        debugPrint('addNotification: User is not logged in');
       }
     } on DioException catch (e) {
       debugPrint("DioException: ${e.message}");

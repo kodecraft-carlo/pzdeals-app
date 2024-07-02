@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:firebase_installations/firebase_installations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,29 +11,13 @@ final settingsProvider =
 
 class SettingsNotifier extends ChangeNotifier {
   Ref ref;
-  SettingsNotifier(this.ref) : super() {
-    debugPrint('SettingsNotifier initialized');
-    // Listen to changes in authUserDataProvider
-    ref.listen<AuthUserData?>(authUserDataProvider, (_, authUserData) async {
-      if (authUserData?.userData?.uid != null) {
-        // User logged in, use UID as unique identifier
-        setUserUID(authUserData!.userData!.uid);
-        // Attempt to link settings from Firebase Instance ID to UID
-        await linkSettingsToUID(authUserData.userData!.uid);
-      } else {
-        // User not logged in, use Firebase Instance ID
-        setUserUID("");
-        setFirebaseInstanceIdAsIdentifier();
-      }
-    });
-  }
+  SettingsNotifier(this.ref) : super();
   final UserSettingsService _settingsService = UserSettingsService();
   final _firebaseMessaging = FirebaseMessaging.instance;
 
   String _boxName = '';
   bool _isLoading = false;
   String _userUID = '';
-  String? _instanceID = '';
   int _numberOfAlerts = 0;
 
   SettingsData? _settingsData;
@@ -44,59 +27,26 @@ class SettingsNotifier extends ChangeNotifier {
   int get numberOfAlerts => _numberOfAlerts;
 
   void setUserUID(String uid) {
-    if (_userUID.isNotEmpty) {
-      _boxName = '${_userUID}_user_settings';
-    }
     debugPrint('SettingsNotifier setUserUID called with $uid');
     _userUID = uid;
-
+    _boxName = '${_userUID}_user_settings';
     loadUserSettings();
-  }
-
-  Future<void> setFirebaseInstanceIdAsIdentifier() async {
-    _instanceID = await FirebaseInstallations.id;
-    debugPrint('instanceID: $_instanceID');
-    _boxName = '${_instanceID}_user_settings';
-    loadUserSettings();
-  }
-
-  Future<void> linkSettingsToUID(String uid) async {
-    _instanceID = await FirebaseInstallations.id;
-    final instanceIdBoxName = '${_instanceID}_user_settings';
-    final uidBoxName = '${uid}_user_settings';
-
-    // Fetch settings by Firebase Instance ID
-    final instanceIdSettings = await _settingsService.getCachedSettings(
-        instanceIdBoxName, _instanceID!);
-    if (instanceIdSettings != null) {
-      // Update settings with UID and clear cached settings associated with Firebase Instance ID
-      await _settingsService.updateUserSettings(
-          uidBoxName, uid, instanceIdSettings);
-      await _settingsService.clearCachedSettings(instanceIdBoxName);
-      await _settingsService.deleteInstanceSetting(_instanceID!);
-      // Load the newly linked settings
-      _boxName = uidBoxName;
-      loadUserSettings();
-    }
   }
 
   Future<void> loadUserSettings() async {
     _isLoading = true;
     notifyListeners();
-    _instanceID = await FirebaseInstallations.id;
-    if (_userUID.isEmpty) {
-      _userUID = _instanceID!;
-    }
-
-    _boxName = '${_userUID}_user_settings';
+    final authUserDataState = ref.watch(authUserDataProvider);
+    final userId = authUserDataState.userData!.uid;
+    _boxName = '${userId}_user_settings';
     try {
       _settingsData =
-          await _settingsService.getCachedSettings(_boxName, _userUID);
+          await _settingsService.getCachedSettings(_boxName, userId);
       if (_settingsData != null) {
         notifyListeners();
       } else {
         final serverSettings =
-            await _settingsService.fetchUserSettings(_boxName, _userUID);
+            await _settingsService.fetchUserSettings(_boxName, userId);
 
         _settingsData = serverSettings;
         notifyListeners();
@@ -110,12 +60,9 @@ class SettingsNotifier extends ChangeNotifier {
   }
 
   void updateSettingsLocally(dynamic setting, String settingType) async {
-    if (_userUID.isEmpty) {
-      _userUID = _instanceID!;
-    }
-    // final authUserDataState = ref.watch(authUserDataProvider);
-    // final userId = authUserDataState.userData!.uid;
-    _boxName = '${_userUID}_user_settings';
+    final authUserDataState = ref.watch(authUserDataProvider);
+    final userId = authUserDataState.userData!.uid;
+    _boxName = '${userId}_user_settings';
     _isLoading = true;
     notifyListeners();
     _settingsData ??= SettingsData(
@@ -160,7 +107,7 @@ class SettingsNotifier extends ChangeNotifier {
           _settingsData?.setPercentageNotification = setting['percentOff'];
           break;
       }
-      _settingsService.updateUserSettings(_boxName, _userUID, _settingsData!);
+      _settingsService.updateUserSettings(_boxName, userId, _settingsData!);
 
       notifyListeners();
     } catch (e) {
