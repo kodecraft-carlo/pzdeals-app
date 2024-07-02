@@ -7,7 +7,8 @@ import 'package:pzdeals/src/utils/http/http_client.dart';
 import 'package:pzdeals/src/utils/queries/index.dart';
 
 class UserSettingsService {
-  Future<SettingsData> fetchUserSettings(String boxName, String? userId) async {
+  Future<SettingsData?> fetchUserSettings(
+      String boxName, String? userId) async {
     ApiClient apiClient = ApiClient();
     // final authService = ref.watch(directusAuthServiceProvider);
     debugPrint('fetchUserSettings called for $userId ~ $boxName');
@@ -20,7 +21,7 @@ class UserSettingsService {
       if (response.statusCode == 200) {
         final responseData = response.data["data"];
         if (responseData == null || responseData.isEmpty) {
-          throw Exception('No Data Found');
+          return null;
         }
 
         final settings = UserSettingsMapper.mapToSettingsData(responseData);
@@ -33,7 +34,7 @@ class UserSettingsService {
       debugPrint("DioExceptionw: ${e.message}");
       throw Exception('Failed to fetch user settings');
     } catch (e) {
-      debugPrint('Error fetching stores: $e');
+      debugPrint('Error fetching settings: $e');
       throw Exception('Failed to fetch user settings');
     }
   }
@@ -64,8 +65,8 @@ class UserSettingsService {
     } on DioException catch (e) {
       debugPrint("DioException: ${e.message}");
       throw Exception('Failed to update user settings');
-    } catch (e) {
-      debugPrint('Error updating user settings: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error updating user settings: $stackTrace');
       throw Exception('Failed to update user settings');
     }
   }
@@ -211,15 +212,32 @@ class UserSettingsService {
       SettingsData userSetting, String boxName, String userId) async {
     debugPrint(
         'Caching settings for $boxName ~ settings: ${userSetting.toMap()}');
-    final box = await Hive.openBox<SettingsData>(boxName);
+    String key = 'settings_$userId';
+    debugPrint('key: $key');
+    Box<SettingsData> box;
+    if (Hive.isBoxOpen(boxName)) {
+      box = Hive.box<SettingsData>(boxName);
+    } else {
+      box = await Hive.openBox<SettingsData>(boxName);
+    }
     await box.clear();
-    box.put('settings_$userId', userSetting);
+    try {
+      await box.put(key, userSetting);
+    } catch (e, stackTrace) {
+      debugPrint('Error getting cached settings: $stackTrace');
+    }
   }
 
   Future<void> _cacheNumberOfAlerts(int numberOfAlerts) async {
-    Hive.openBox('notificationSettingsBox').then((box) {
-      box.clear();
-      box.put('numberOfAlerts', numberOfAlerts);
-    });
+    Box<dynamic> box;
+    String boxName = 'notificationSettingsBox';
+    String key = 'numberOfAlerts';
+    if (Hive.isBoxOpen(boxName)) {
+      box = Hive.box<dynamic>(boxName);
+    } else {
+      box = await Hive.openBox<dynamic>(boxName);
+    }
+    await box.clear();
+    box.put(key, numberOfAlerts);
   }
 }

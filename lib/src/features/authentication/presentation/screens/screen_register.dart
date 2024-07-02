@@ -172,11 +172,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 setState(() {
                   _isSubmitting = true;
                 });
-                final authService = ref.watch(authProvider);
                 String email = emailController.text.trim();
                 String password = passwordController.text;
-                Map<String, String> result =
-                    await authService.registerFirebaseUser(email, password);
+                Map<String, String> result = await ref
+                    .read(authProvider)
+                    .registerFirebaseUser(email, password);
                 if (result['code'] == 'success') {
                   setState(() {
                     _currentStep++;
@@ -291,7 +291,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       setState(() {
                         _isSubmitting = true;
                       });
-                      final authService = ref.watch(authProvider);
                       final userInfo = <String, dynamic>{
                         "firstName": firstNameController.text.trim(),
                         "lastName": lastNameController.text.trim(),
@@ -300,7 +299,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         "phoneNumber": phoneController.text.trim(),
                         "uID": userUID,
                       };
-                      Map<String, String> result = await authService
+                      Map<String, String> result = await ref
+                          .read(authProvider)
                           .registerAccountInfo(userInfo, userUID!);
 
                       if (result['code'] == 'success') {

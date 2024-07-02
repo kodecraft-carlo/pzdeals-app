@@ -82,9 +82,8 @@ class LogoutButton extends ConsumerWidget {
                   ),
                   CupertinoDialogAction(
                     onPressed: () async {
-                      final authService = ref.watch(authProvider);
-                      await authService.signOutFirebaseAuth();
-                      await authService.signOutGoogle();
+                      await ref.read(authProvider).signOutFirebaseAuth();
+                      await ref.read(authProvider).signOutGoogle();
                       clearBadgeCount();
                       debugPrint('User logged out');
                       if (context.mounted) {
@@ -134,9 +133,8 @@ class LogoutButton extends ConsumerWidget {
                   ),
                   TextButton(
                     onPressed: () async {
-                      final authService = ref.watch(authProvider);
-                      await authService.signOutFirebaseAuth();
-                      await authService.signOutGoogle();
+                      await ref.read(authProvider).signOutFirebaseAuth();
+                      await ref.read(authProvider).signOutGoogle();
                       debugPrint('User logged out');
                       if (context.mounted) {
                         Navigator.pushReplacement(

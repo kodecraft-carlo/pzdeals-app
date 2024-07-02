@@ -48,6 +48,9 @@ class ProductImageWidget extends StatelessWidget {
         width = containerWidth / 1.75;
         height = containerWidth / 1.75;
         break;
+      case 'full-width':
+        width = containerWidth;
+        break;
       case 'fullscreen':
         width = containerWidth;
         height = containerWidth;
@@ -92,8 +95,8 @@ class ProductImageWidget extends StatelessWidget {
         imageWidget = CachedNetworkImage(
           imageUrl: imageAsset,
           width: width,
-          height: height,
-          memCacheHeight: 400,
+          height: size == 'full-width' ? null : height,
+          // memCacheHeight: 400,
           memCacheWidth: 400,
           // memCacheHeight: height.toInt(),
           // memCacheWidth: width.toInt(),

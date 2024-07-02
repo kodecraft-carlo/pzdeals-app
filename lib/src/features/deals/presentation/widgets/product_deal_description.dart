@@ -70,7 +70,7 @@ class ProductDealDescriptionState
                       imageAsset: widget.productData.imageAsset,
                       sourceType: widget.productData.assetSourceType,
                       size: 'container',
-                      fit: BoxFit.contain,
+                      fit: BoxFit.fitWidth,
                       isExpired: widget.productData.isProductExpired != null &&
                           widget.productData.isProductExpired == true,
                     ),

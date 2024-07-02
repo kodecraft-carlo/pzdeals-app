@@ -109,11 +109,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Expanded(
                   child: SubmitButtonWidget(onSubmit: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      final authService = ref.watch(authProvider);
                       String email = emailController.text.trim();
                       String password = passwordController.text;
 
-                      Map<String, String> result = await authService
+                      Map<String, String> result = await ref
+                          .read(authProvider)
                           .signInEmailPassword(email, password);
                       if (result['code'] == 'success') {
                         debugPrint('User logged in successfully');

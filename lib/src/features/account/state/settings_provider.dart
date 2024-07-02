@@ -42,6 +42,7 @@ class SettingsNotifier extends ChangeNotifier {
   int _numberOfAlerts = 0;
   String? _fcmToken = '';
   bool isUserLoggedIn = false;
+  bool _isMergeNotificationsCalled = false;
 
   SettingsData? _settingsData;
 
@@ -53,11 +54,11 @@ class SettingsNotifier extends ChangeNotifier {
     if (_userUID.isNotEmpty) {
       _boxName = '${_userUID}_user_settings';
       isUserLoggedIn = true;
+      loadUserSettings();
     }
     debugPrint('SettingsNotifier setUserUID called with $uid');
     _userUID = uid;
-
-    loadUserSettings();
+    _isMergeNotificationsCalled = false;
   }
 
   Future<void> setFirebaseInstanceIdAsIdentifier() async {
@@ -89,7 +90,7 @@ class SettingsNotifier extends ChangeNotifier {
       _boxName = uidBoxName;
       loadUserSettings();
     }
-    ref.read(notificationsProvider).mergeNotifications(uid, _instanceID!);
+    mergeNotificationsOnce(uid, _instanceID!);
   }
 
   Future<void> loadUserSettings() async {
@@ -208,6 +209,14 @@ class SettingsNotifier extends ChangeNotifier {
     if (_settingsData?.percentageNotification == true) {
       _firebaseMessaging.subscribeToTopic('percent_off');
       debugPrint('Subscribed to percent_off topic');
+    }
+  }
+
+  void mergeNotificationsOnce(String uid, String instanceID) {
+    if (!_isMergeNotificationsCalled) {
+      // Assuming ref.read(notificationsProvider) is accessible here
+      ref.read(notificationsProvider).mergeNotifications(uid, instanceID);
+      _isMergeNotificationsCalled = true; // Update the flag
     }
   }
 }

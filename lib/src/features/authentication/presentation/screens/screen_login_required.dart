@@ -73,8 +73,8 @@ class LoginRequiredScreen extends StatelessWidget {
                       buttonLabel: 'Login via Google',
                       imageAsset: 'assets/images/logins/google.png',
                       onButtonPressed: () async {
-                        final authService = ref.watch(authProvider);
-                        final User? user = await authService.signInWithGoogle();
+                        final User? user =
+                            await ref.read(authProvider).signInWithGoogle();
                         if (user != null) {
                           debugPrint(
                               'Signed in with Google: ${user.displayName}');

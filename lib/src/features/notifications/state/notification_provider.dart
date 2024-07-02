@@ -270,49 +270,42 @@ class NotificationListNotifier extends ChangeNotifier {
   Future<void> mergeNotifications(String userDoc, String instanceDoc) async {
     debugPrint(
         'mergeNotifications called userDoc: $userDoc, instanceDoc: $instanceDoc');
-    // final collectionRef =
-    //     FirebaseFirestore.instance.collection('notifications');
+    final collectionRef =
+        FirebaseFirestore.instance.collection('notifications');
 
-    // // Fetch both documents
-    // final userDocSnapshot =
-    //     await collectionRef.doc(userDoc).collection('notification').get();
-    // final instanceDocSnapshot =
-    //     await collectionRef.doc(instanceDoc).collection('notification').get();
+    final instanceDocSnapshot =
+        await collectionRef.doc(instanceDoc).collection('notification').get();
 
-    // debugPrint('userDataSnapshot exists: ${userDocSnapshot.docs.isNotEmpty}');
-    // debugPrint(
-    //     'instanceDataSnapshot exists: ${instanceDocSnapshot.docs.isNotEmpty}');
-    // if (!userDocSnapshot.docs.isNotEmpty ||
-    //     !instanceDocSnapshot.docs.isNotEmpty) {
-    //   debugPrint('One or both documents do not exist');
-    //   return;
-    // }
+    if (!instanceDocSnapshot.docs.isNotEmpty) {
+      debugPrint('instanceDocSnapshot do not exist');
+      return;
+    }
 
-    // // Assuming you want to merge all notifications from both users into a single user's document
-    // List<Map<String, dynamic>> combinedNotifications = [];
+    // Assuming you want to merge all notifications from both users into a single user's document
+    List<Map<String, dynamic>> instanceNotifications = [];
 
-    // // Iterate over the documents in the first user's notification collection
-    // for (var doc in userDocSnapshot.docs) {
-    //   combinedNotifications.add(doc.data());
-    // }
+    // Iterate over the documents in the second user's notification collection
+    for (var doc in instanceDocSnapshot.docs) {
+      instanceNotifications.add(doc.data());
+    }
+    for (var notification in instanceNotifications) {
+      await collectionRef
+          .doc(userDoc)
+          .collection('notification')
+          .doc()
+          .set(notification);
+    }
 
-    // // Iterate over the documents in the second user's notification collection
-    // for (var doc in instanceDocSnapshot.docs) {
-    //   combinedNotifications.add(doc.data());
-    // }
-    // for (var notification in combinedNotifications) {
-    //   await collectionRef
-    //       .doc(userDoc)
-    //       .collection('notification')
-    //       .doc()
-    //       .set(notification);
-    // }
-
-    // // Optionally, delete the other document if it's no longer needed
-    // await collectionRef.doc(instanceDoc).get().then((doc) {
-    //   if (doc.exists) {
-    //     doc.reference.delete();
-    //   }
-    // });
+    // Optionally, delete the other document if it's no longer needed
+    await _firestoreDb
+        .collection('notifications')
+        .doc(instanceDoc)
+        .collection('notification')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.delete();
+      }
+    });
   }
 }

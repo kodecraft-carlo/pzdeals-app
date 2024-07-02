@@ -103,9 +103,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 Expanded(
                   child: SubmitButtonWidget(onSubmit: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      final authService = ref.watch(authProvider);
-                      Map<String, String> result =
-                          await authService.resetFirebaseUserPassword(
+                      Map<String, String> result = await ref
+                          .read(authProvider)
+                          .resetFirebaseUserPassword(
                               emailController.text.trim());
                       if (result['code'] == 'success') {
                         if (mounted) {
