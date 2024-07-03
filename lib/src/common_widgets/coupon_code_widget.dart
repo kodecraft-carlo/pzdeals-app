@@ -3,14 +3,20 @@ import 'package:flutter/services.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:pzdeals/src/actions/show_browser.dart';
 import 'package:pzdeals/src/actions/show_snackbar.dart';
+import 'package:pzdeals/src/constants/index.dart';
 
 class CouponCodeWidget extends StatelessWidget {
   final String text;
   final String? url;
   final BuildContext? buildcontext;
+  final String couponType;
 
   const CouponCodeWidget(
-      {super.key, required this.text, this.url, this.buildcontext});
+      {super.key,
+      required this.text,
+      this.url,
+      this.buildcontext,
+      this.couponType = 'store'});
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +33,16 @@ class CouponCodeWidget extends StatelessWidget {
         child: ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(5)),
           child: Container(
-            color: Colors.orange[200],
-            child: Text(text),
+            color: couponType == 'store' ? Colors.orange[200] : Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: Text(text,
+                style: TextStyle(
+                  color:
+                      couponType == 'store' ? Colors.black : PZColors.pzOrange,
+                  fontWeight: couponType == 'store'
+                      ? FontWeight.normal
+                      : FontWeight.bold,
+                )),
           ),
         ),
       ),

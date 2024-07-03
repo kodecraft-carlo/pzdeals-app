@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:pzdeals/src/models/index.dart';
 import 'package:pzdeals/src/utils/formatter/index.dart';
 import 'package:pzdeals/src/utils/http/http_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationService {
   final _firestoreDb = FirebaseFirestore.instance;
@@ -15,15 +16,50 @@ class NotificationService {
   final _firebaseMessaging = FirebaseMessaging.instance;
   final _firebaseAuth = FirebaseAuth.instance.currentUser;
   String? _instanceID = '';
+  SharedPreferences? prefs;
 
   DocumentSnapshot? lastDoc;
   NotificationService() {
+    debugPrint('NotificationService: Constructor called');
+    initSharedPrefs();
     setInstanceId();
-    FirebaseAuth.instance.authStateChanges().listen((User? currentUser) {
+
+    FirebaseAuth.instance.authStateChanges().listen((User? currentUser) async {
       debugPrint(
           'NotificationService: User is logged in ~ ${currentUser?.uid}');
       user = currentUser;
+      if (prefs == null) {
+        await initSharedPrefs();
+      }
+      setUserUIDPrefs(currentUser?.uid ?? '');
     });
+  }
+
+  Future<void> initSharedPrefs() async {
+    debugPrint('NotificationService: initSharedPrefs called');
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void setUserUIDPrefs(String uid) {
+    debugPrint('set user uid prefs: $uid');
+    prefs!.setString('uid', uid);
+  }
+
+  String getUserUIDPrefs() {
+    try {
+      if (user != null) {
+        debugPrint('user uid from user: ${user!.uid}');
+        return user!.uid;
+      } else if (prefs!.getString('uid') != null &&
+          prefs!.getString('uid')!.isNotEmpty) {
+        return prefs!.getString('uid')!;
+      }
+      return '';
+    } catch (e, stackTrace) {
+      debugPrint('Error getting user uid from prefs: $stackTrace');
+
+      return _firebaseAuth?.uid ?? '';
+    }
   }
 
   void setInstanceId() async {
@@ -166,17 +202,19 @@ class NotificationService {
 
   Future addNotification(NotificationData notification, String boxName) async {
     try {
-      if (user != null) {
-        debugPrint('addNotification: User is logged in ~ ${user?.uid}');
+      debugPrint('user uid prefs: ${getUserUIDPrefs()}');
+      final userUID = getUserUIDPrefs();
+      if (userUID.isNotEmpty) {
+        debugPrint('addNotification: User is logged in ~ $userUID');
         await _firestoreDb
             .collection('notifications')
-            .doc(user?.uid)
+            .doc(userUID)
             .collection('notification')
             .add(notification.toMap());
 
         //update notification received info only when data['alert_type'] is 'front-page'
         if (notification.data['alert_type'] == 'front-page') {
-          await updateFrontPageNotificationReceivedInfo(user?.uid);
+          await updateFrontPageNotificationReceivedInfo(userUID);
         }
       } else if (_instanceID != null && _instanceID!.isNotEmpty) {
         await _firestoreDb
@@ -194,8 +232,8 @@ class NotificationService {
       } else {
         debugPrint('addNotification: User is not logged in');
       }
-    } catch (e) {
-      debugPrint("Error adding notification data: $e");
+    } catch (e, stackTrace) {
+      debugPrint("Error adding notification data: $stackTrace");
       throw Exception('Error adding notification data');
     }
   }

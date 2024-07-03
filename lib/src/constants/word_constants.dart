@@ -14,4 +14,8 @@ class Wordings {
       "Choose the categories you would like to see on your For You page.";
   static const String descDealAlerts =
       "Click on the plus sign to subscribe and get notified about deals you care about most by creating custom Deal Alerts.";
+
+  static const String stayTuned = 'Stay tuned! This feature is coming soon.';
+  static const String stayTunedNotified =
+      'Thanks! You\'ll be the first to know.';
 }

@@ -19,14 +19,16 @@ class SettingsNotifier extends ChangeNotifier {
     // Listen to changes in authUserDataProvider
     ref.listen<AuthUserData?>(authUserDataProvider, (_, authUserData) async {
       if (authUserData?.userData?.uid != null) {
+        debugPrint('User logged in');
         // User logged in, use UID as unique identifier
         setUserUID(authUserData!.userData!.uid);
         // Attempt to link settings from Firebase Instance ID to UID
         await linkSettingsToUID(authUserData.userData!.uid);
       } else {
+        debugPrint('User not logged in');
         // User not logged in, use Firebase Instance ID
         setUserUID("");
-        updateTopicSubscriptions();
+        resetTopics();
         setFirebaseInstanceIdAsIdentifier();
       }
     });
@@ -67,7 +69,33 @@ class SettingsNotifier extends ChangeNotifier {
     _fcmToken = await _firebaseMessaging.getToken();
     debugPrint('instanceID: $_instanceID');
     _boxName = '${_instanceID}_user_settings';
+    await saveDefaultSettings();
     loadUserSettings();
+  }
+
+  Future<void> saveDefaultSettings() async {
+    debugPrint('saveDefaultSettings called');
+    _userUID = _instanceID!;
+    _boxName = '${_userUID}_user_settings';
+    final defaultSettings = SettingsData(
+        priceMistake: true,
+        frontpageNotification: true,
+        percentageNotification: false,
+        percentageThreshold: 0,
+        numberOfAlerts: 10);
+    try {
+      _settingsService.updateUserSettings(_boxName, _userUID, defaultSettings);
+      _firebaseMessaging.subscribeToTopic('price_mistake');
+      _firebaseMessaging.subscribeToTopic('front_page');
+      if (!isUserLoggedIn) {
+        _fcmToken = await _firebaseMessaging.getToken();
+        _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
+      }
+      _settingsData = defaultSettings;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('error updating settings: $e');
+    }
   }
 
   Future<void> linkSettingsToUID(String uid) async {
@@ -108,10 +136,12 @@ class SettingsNotifier extends ChangeNotifier {
       if (_settingsData != null) {
         notifyListeners();
       } else {
+        debugPrint('Settings not found in cache. Fetching from server');
         final serverSettings =
             await _settingsService.fetchUserSettings(_boxName, _userUID);
-
+        debugPrint('serverSettings null: ${serverSettings == null}');
         _settingsData = serverSettings;
+
         notifyListeners();
       }
       updateTopicSubscriptions();
@@ -130,8 +160,8 @@ class SettingsNotifier extends ChangeNotifier {
     // final authUserDataState = ref.watch(authUserDataProvider);
     // final userId = authUserDataState.userData!.uid;
     _boxName = '${_userUID}_user_settings';
-    _isLoading = true;
-    notifyListeners();
+    // _isLoading = true;
+    // notifyListeners();
     _settingsData ??= SettingsData(
         priceMistake: false,
         frontpageNotification: false,
@@ -174,8 +204,9 @@ class SettingsNotifier extends ChangeNotifier {
           _settingsData?.setPercentageNotification = setting['percentOff'];
           break;
       }
-      _settingsService.updateUserSettings(_boxName, _userUID, _settingsData!);
       notifyListeners();
+      _settingsService.updateUserSettings(_boxName, _userUID, _settingsData!);
+
       if (!isUserLoggedIn) {
         _fcmToken = await _firebaseMessaging.getToken();
         _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
@@ -183,15 +214,15 @@ class SettingsNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('error updating settings: $e');
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      // _isLoading = false;
+      // notifyListeners();
     }
   }
 
   void resetTopics() {
     debugPrint('resetTopics called');
-    _firebaseMessaging.unsubscribeFromTopic('price_mistake');
-    _firebaseMessaging.unsubscribeFromTopic('front_page');
+    // _firebaseMessaging.unsubscribeFromTopic('price_mistake');
+    // _firebaseMessaging.unsubscribeFromTopic('front_page');
     _firebaseMessaging.unsubscribeFromTopic('percent_off');
   }
 

@@ -266,7 +266,7 @@ class NotificationCardWidgetState
                     ),
                   ),
             title: Text(
-              '${notificationData.title}: ${notificationData.body}',
+              '${notificationData.title.toLowerCase() == "percentage off" ? "" : "${notificationData.title}: "}${notificationData.body}',
               style: TextStyle(
                   color: notificationData.isRead
                       ? PZColors.pzGrey

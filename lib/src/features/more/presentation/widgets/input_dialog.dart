@@ -16,7 +16,8 @@ class CommonInputDialog extends StatefulWidget {
       required this.dialogFieldController,
       required this.onButtonPressed,
       this.buttonText = 'Submit',
-      this.isButtonOnly = false});
+      this.isButtonOnly = false,
+      this.showActions = true});
 
   final String dialogMessage;
   final String inputHint;
@@ -25,6 +26,7 @@ class CommonInputDialog extends StatefulWidget {
   final Function onButtonPressed;
   final String buttonText;
   final bool isButtonOnly;
+  final bool showActions;
 
   @override
   CommonInputDialogState createState() => CommonInputDialogState();
@@ -41,6 +43,24 @@ class CommonInputDialogState extends State<CommonInputDialog> {
 
   @override
   Widget build(BuildContext context) {
+    Widget actions = widget.isButtonOnly
+        ? Row(
+            children: [Expanded(child: notifyButton())],
+          )
+        : SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: TextFieldButton(
+              textController: widget.dialogFieldController,
+              onButtonPressed: () async {
+                submitButton(context);
+              },
+              buttonLabel: widget.buttonText,
+              textFieldHint: widget.inputHint,
+              hasIcon: false,
+              isAutoFocus: true,
+              validateEmail: true,
+            ),
+          );
     return
         // Platform.isIOS
         //     ? CupertinoAlertDialog(
@@ -139,24 +159,7 @@ class CommonInputDialogState extends State<CommonInputDialog> {
             ),
           ),
           const SizedBox(height: Sizes.paddingBottomSmall),
-          widget.isButtonOnly
-              ? Row(
-                  children: [Expanded(child: notifyButton())],
-                )
-              : SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: TextFieldButton(
-                    textController: widget.dialogFieldController,
-                    onButtonPressed: () async {
-                      submitButton(context);
-                    },
-                    buttonLabel: widget.buttonText,
-                    textFieldHint: widget.inputHint,
-                    hasIcon: false,
-                    isAutoFocus: true,
-                    validateEmail: true,
-                  ),
-                ),
+          widget.showActions ? actions : const SizedBox.shrink(),
         ],
       ),
     );

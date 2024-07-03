@@ -360,7 +360,7 @@ class ProductDealDescriptionState
                 child: Padding(
                   padding: const EdgeInsets.only(
                     top: 5,
-                    bottom: 5,
+                    bottom: 15,
                     // left: Sizes.paddingAllSmall,
                   ),
                   child: RichText(
@@ -387,6 +387,7 @@ class ProductDealDescriptionState
                           child: CouponCodeWidget(
                             text: widget.productData.sku ?? '',
                             url: widget.productData.barcodeLink ?? '',
+                            couponType: 'deal',
                           )),
                     ]),
                   ),

@@ -71,7 +71,10 @@ class FirebaseMessagingApi {
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
         alert: true, badge: true, sound: true);
     _firebaseMessaging.subscribeToTopic('manual_alerts');
-    // _firebaseMessaging.subscribeToTopic('price_mistake');
+    //on by default as per Ben 07/03/2024
+    _firebaseMessaging.subscribeToTopic('price_mistake');
+    _firebaseMessaging.subscribeToTopic('front_page');
+    //end
     _firebaseMessaging.subscribeToTopic(
         'scheduled_reminder'); //for resetting notification received info
     _firebaseMessaging.getInitialMessage().then(handleMessage);

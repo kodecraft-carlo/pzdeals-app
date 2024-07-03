@@ -9,6 +9,7 @@ import 'package:pzdeals/src/common_widgets/square_labeled_icons.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_cc_deals.dart';
 import 'package:pzdeals/src/features/more/presentation/screens/index.dart';
+import 'package:pzdeals/src/features/more/state/coming_soon_provider.dart';
 import 'package:pzdeals/src/services/google_sheet_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
@@ -34,6 +35,7 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
       googletSheetSvc.notifyFlights('?timestamp=${DateTime.now()}'
           '&email=${email ?? dialogFieldController.text}');
     }
+    ref.read(comingSoonProvider).setNotifyStatus(true, requestType);
   }
 
   @override
@@ -41,6 +43,7 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
     double screenWidth = MediaQuery.of(context).size.width;
     double itemWidth = screenWidth / 4;
     final authUserDataState = ref.watch(authUserDataProvider);
+    final comingSoonState = ref.watch(comingSoonProvider);
     return GridView.count(
       padding: const EdgeInsets.all(Sizes.paddingAll),
       crossAxisCount: 4,
@@ -87,7 +90,9 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
                     builder: (BuildContext context) {
                       return CommonInputDialog(
                         dialogMessage:
-                            "Stay tuned! This feature is coming soon.",
+                            comingSoonState.notifyStatusWishLisht == true
+                                ? Wordings.stayTunedNotified
+                                : Wordings.stayTuned,
                         inputHint: "Email address",
                         snackbarMessage:
                             "Thank you for your interest! We'll keep you updated.",
@@ -96,6 +101,8 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
                             authUserDataState.userData?.emailAddress),
                         buttonText: 'Notify me',
                         isButtonOnly: authUserDataState.isAuthenticated,
+                        showActions:
+                            comingSoonState.notifyStatusWishLisht == false,
                       );
                     },
                   )
@@ -104,7 +111,9 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
                     builder: (BuildContext context) {
                       return CommonInputDialog(
                         dialogMessage:
-                            "Stay tuned! This feature is coming soon.",
+                            comingSoonState.notifyStatusWishLisht == true
+                                ? Wordings.stayTunedNotified
+                                : Wordings.stayTuned,
                         inputHint: "Email address",
                         snackbarMessage:
                             "Thank you for your interest! We'll keep you updated.",
@@ -113,6 +122,8 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
                             authUserDataState.userData?.emailAddress),
                         buttonText: 'Notify me',
                         isButtonOnly: authUserDataState.isAuthenticated,
+                        showActions:
+                            comingSoonState.notifyStatusWishLisht == false,
                       );
                     },
                   );
@@ -134,7 +145,9 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
                     builder: (BuildContext context) {
                       return CommonInputDialog(
                         dialogMessage:
-                            "Stay tuned! This feature is coming soon.",
+                            comingSoonState.notifyStatusFlights == true
+                                ? Wordings.stayTunedNotified
+                                : Wordings.stayTuned,
                         inputHint: "Email address",
                         snackbarMessage:
                             "Thank you for your interest! We'll keep you updated.",
@@ -143,6 +156,8 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
                             authUserDataState.userData?.emailAddress),
                         buttonText: 'Notify me',
                         isButtonOnly: authUserDataState.isAuthenticated,
+                        showActions:
+                            comingSoonState.notifyStatusFlights == false,
                       );
                     },
                   )
@@ -151,7 +166,9 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
                     builder: (BuildContext context) {
                       return CommonInputDialog(
                         dialogMessage:
-                            "Stay tuned! This feature is coming soon.",
+                            comingSoonState.notifyStatusFlights == true
+                                ? Wordings.stayTunedNotified
+                                : Wordings.stayTuned,
                         inputHint: "Email address",
                         snackbarMessage:
                             "Thank you for your interest! We'll keep you updated.",
@@ -160,6 +177,8 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
                             authUserDataState.userData?.emailAddress),
                         buttonText: 'Notify me',
                         isButtonOnly: authUserDataState.isAuthenticated,
+                        showActions:
+                            comingSoonState.notifyStatusFlights == false,
                       );
                     },
                   );

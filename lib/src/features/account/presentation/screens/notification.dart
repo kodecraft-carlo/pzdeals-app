@@ -20,7 +20,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   double alertsCount = 10;
 
   bool isPriceMistake = false;
-  bool isFrontPage = false;
+  bool isFrontPage = true;
   bool isPercentOff = false;
 
   void onPriceMistakeChanged(bool value) {
@@ -99,7 +99,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
     isFrontPage = !settingsState.isLoading && settingsState.settingsData != null
         ? settingsState.settingsData!.frontpageNotification
-        : false;
+        : true;
 
     alertsCount = !settingsState.isLoading && settingsState.settingsData != null
         ? settingsState.settingsData!.numberOfAlerts.toDouble()
@@ -131,7 +131,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
               value:
                   !settingsState.isLoading && settingsState.settingsData != null
                       ? settingsState.settingsData!.priceMistake
-                      : false,
+                      : true,
               onChanged: onPriceMistakeChanged,
             ),
             ListTileWithSwitchWidget(
@@ -140,7 +140,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
               value:
                   !settingsState.isLoading && settingsState.settingsData != null
                       ? settingsState.settingsData!.frontpageNotification
-                      : false,
+                      : true,
               onChanged: onFrontPageChanged,
             ),
             AnimatedSwitcher(

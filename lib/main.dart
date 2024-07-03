@@ -13,6 +13,7 @@ import 'package:pzdeals/firebase_options.dart';
 import 'package:pzdeals/src/common_widgets/screen_collections_display.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/features/account/models/settings_data.dart';
+import 'package:pzdeals/src/features/account/state/settings_provider.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/screens/screen_keyword_deals.dart';
@@ -132,6 +133,8 @@ class MainAppState extends ConsumerState<MainApp>
   void initState() {
     super.initState();
     handleDynamicLinks();
+    debugPrint('first launch.. loading user Settings');
+    ref.read(settingsProvider.notifier).saveDefaultSettings();
   }
 
   Future<void> handleDynamicLinks() async {
