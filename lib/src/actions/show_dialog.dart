@@ -10,13 +10,13 @@ void showMessageDialog(BuildContext context, String title, String content,
     String? secondaryActionText,
     bool hasSecondaryAction = false,
     bool isDismissable = false}) {
-  showDialog(
-    context: context,
-    barrierDismissible: isDismissable,
-    useRootNavigator: false,
-    builder: (BuildContext context) {
-      return Platform.isAndroid
-          ? AlertDialog.adaptive(
+  Platform.isAndroid
+      ? showDialog(
+          context: context,
+          barrierDismissible: isDismissable,
+          useRootNavigator: false,
+          builder: (BuildContext context) {
+            return AlertDialog.adaptive(
               surfaceTintColor: Colors.transparent,
               backgroundColor: PZColors.pzWhite,
               title: Text(
@@ -45,8 +45,14 @@ void showMessageDialog(BuildContext context, String title, String content,
                       )
                     : const SizedBox(),
               ],
-            )
-          : CupertinoAlertDialog(
+            );
+          },
+        )
+      : showCupertinoDialog(
+          context: context,
+          barrierDismissible: isDismissable,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
               title: Text(
                 title,
                 style: const TextStyle(
@@ -76,8 +82,7 @@ void showMessageDialog(BuildContext context, String title, String content,
                 //     : const SizedBox(),
               ],
             );
-    },
-  );
+          });
 }
 
 void showAlertDialog(BuildContext context, String title, String content,
