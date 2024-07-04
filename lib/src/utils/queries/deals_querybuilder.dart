@@ -140,6 +140,7 @@ String getProductSpecificDetailsQuery(int productId) {
       '&fields[]=store.title'
       '&fields[]=local_image'
       '&sort=-created_at,-id';
+  debugPrint('getProductSpecificDetailsQuery: $query');
   return query;
 }
 

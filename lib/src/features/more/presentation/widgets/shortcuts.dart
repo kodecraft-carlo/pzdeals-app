@@ -44,6 +44,7 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
     double itemWidth = screenWidth / 4;
     final authUserDataState = ref.watch(authUserDataProvider);
     final comingSoonState = ref.watch(comingSoonProvider);
+
     return GridView.count(
       padding: const EdgeInsets.all(Sizes.paddingAll),
       crossAxisCount: 4,
@@ -83,6 +84,7 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
         GestureDetector(
           onTap: () {
             dialogFieldController.clear();
+
             Platform.isIOS
                 ? showCupertinoDialog(
                     context: context,

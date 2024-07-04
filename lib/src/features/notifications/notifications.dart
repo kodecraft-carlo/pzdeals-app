@@ -60,42 +60,46 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
     // LoadingDialog.show(context);
     loadProduct(productId).then((product) {
       ref.read(notificationsProvider).setAsRead(notifId);
-      // if (mounted) {
-      showDialog(
-        context: context,
-        useRootNavigator: false,
-        barrierDismissible: true,
-        builder: (context) => ScaffoldMessenger(
-          child: Builder(
-            builder: (context) => Scaffold(
-              backgroundColor: Colors.transparent,
-              body: GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                behavior: HitTestBehavior.opaque,
-                child: GestureDetector(
-                  onTap: () {},
-                  child: ProductContentDialog(
-                    hasDescription: product.productDealDescription != null &&
-                        product.productDealDescription != '',
-                    productData: product,
-                    content: ProductDealDescription(
-                      snackbarContext: context,
+      if (product != null) {
+        showDialog(
+          context: context,
+          useRootNavigator: false,
+          barrierDismissible: true,
+          builder: (context) => ScaffoldMessenger(
+            child: Builder(
+              builder: (context) => Scaffold(
+                backgroundColor: Colors.transparent,
+                body: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  behavior: HitTestBehavior.opaque,
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: ProductContentDialog(
+                      hasDescription: product.productDealDescription != null &&
+                          product.productDealDescription != '',
                       productData: product,
+                      content: ProductDealDescription(
+                        snackbarContext: context,
+                        productData: product,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-      // LoadingDialog.hide(context);
-      // }
+        );
+        // LoadingDialog.hide(context);
+      } else {
+        showMessageDialog(context, 'Message', 'Product no longer exist', () {
+          Navigator.of(context).pop();
+        }, "OK");
+      }
     });
     // }
   }
 
-  Future<ProductDealcardData> loadProduct(int productId) async {
+  Future<ProductDealcardData?> loadProduct(int productId) async {
     final product = await productDealService.fetchProductInfo(productId);
     return product;
   }

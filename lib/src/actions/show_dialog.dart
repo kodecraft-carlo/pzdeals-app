@@ -8,10 +8,11 @@ void showMessageDialog(BuildContext context, String title, String content,
     VoidCallback onPrimaryActionPressed, String primaryActionText,
     {VoidCallback? onSecondaryActionPressed,
     String? secondaryActionText,
-    bool hasSecondaryAction = false}) {
+    bool hasSecondaryAction = false,
+    bool isDismissable = false}) {
   showDialog(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: isDismissable,
     useRootNavigator: false,
     builder: (BuildContext context) {
       return Platform.isAndroid

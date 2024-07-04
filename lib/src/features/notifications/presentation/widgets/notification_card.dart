@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/actions/show_dialog.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
@@ -29,43 +30,49 @@ class NotificationCardWidgetState
     if (mounted) {
       // LoadingDialog.show(context);
       loadProduct(productId).then((product) {
-        // if (mounted) {
-        showDialog(
-          context: context,
-          useRootNavigator: false,
-          barrierDismissible: true,
-          builder: (context) => ScaffoldMessenger(
-            child: Builder(
-              builder: (context) => Scaffold(
-                backgroundColor: Colors.transparent,
-                body: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  behavior: HitTestBehavior.opaque,
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: ProductContentDialog(
-                      hasDescription: product.productDealDescription != null &&
-                          product.productDealDescription != '',
-                      productData: product,
-                      content: ProductDealDescription(
-                        snackbarContext: context,
+        if (product != null) {
+          showDialog(
+            context: context,
+            useRootNavigator: false,
+            barrierDismissible: true,
+            builder: (context) => ScaffoldMessenger(
+              child: Builder(
+                builder: (context) => Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    behavior: HitTestBehavior.opaque,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: ProductContentDialog(
+                        hasDescription:
+                            product.productDealDescription != null &&
+                                product.productDealDescription != '',
                         productData: product,
+                        content: ProductDealDescription(
+                          snackbarContext: context,
+                          productData: product,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-        ref.read(notificationsProvider).setAsRead(notificationId);
-        // LoadingDialog.hide(context);
-        // }
+          );
+          ref.read(notificationsProvider).setAsRead(notificationId);
+          // LoadingDialog.hide(context);
+        } else {
+          showMessageDialog(
+              context, 'Message', 'This deal is no longer available', () {
+            Navigator.of(context).pop();
+          }, "OK", isDismissable: true);
+        }
       });
     }
   }
 
-  Future<ProductDealcardData> loadProduct(int productId) async {
+  Future<ProductDealcardData?> loadProduct(int productId) async {
     final product = await productDealService.fetchProductInfo(productId);
     return product;
   }

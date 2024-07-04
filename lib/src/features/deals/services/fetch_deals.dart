@@ -160,7 +160,7 @@ class FetchProductDealService {
     return productInfo;
   }
 
-  Future<ProductDealcardData> fetchProductInfo(int productId) async {
+  Future<ProductDealcardData?> fetchProductInfo(int productId) async {
     ApiClient apiClient = ApiClient();
     // final authService = ref.watch(directusAuthServiceProvider);
     debugPrint("fetchProductInfo Deals called for $productId");
@@ -174,8 +174,10 @@ class FetchProductDealService {
               );
       if (response.statusCode == 200) {
         final responseData = response.data;
-        if (responseData == null || responseData.isEmpty) {
-          throw Exception('No Data Found');
+        if (responseData == null ||
+            responseData.isEmpty ||
+            responseData["data"].isEmpty) {
+          return null;
         }
 
         final products =

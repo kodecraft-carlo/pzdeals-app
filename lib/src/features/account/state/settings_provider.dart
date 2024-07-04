@@ -220,7 +220,6 @@ class SettingsNotifier extends ChangeNotifier {
   }
 
   void resetTopics() {
-    debugPrint('resetTopics called');
     // _firebaseMessaging.unsubscribeFromTopic('price_mistake');
     // _firebaseMessaging.unsubscribeFromTopic('front_page');
     _firebaseMessaging.unsubscribeFromTopic('percent_off');
@@ -228,18 +227,14 @@ class SettingsNotifier extends ChangeNotifier {
 
   void updateTopicSubscriptions() {
     resetTopics();
-    debugPrint('updateTopicSubscriptions called');
     if (_settingsData?.priceMistake == true) {
       _firebaseMessaging.subscribeToTopic('price_mistake');
-      debugPrint('Subscribed to price_mistake topic');
     }
     if (_settingsData?.frontpageNotification == true) {
       _firebaseMessaging.subscribeToTopic('front_page');
-      debugPrint('Subscribed to front_page topic');
     }
     if (_settingsData?.percentageNotification == true) {
       _firebaseMessaging.subscribeToTopic('percent_off');
-      debugPrint('Subscribed to percent_off topic');
     }
   }
 

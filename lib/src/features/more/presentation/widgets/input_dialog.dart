@@ -150,7 +150,9 @@ class CommonInputDialogState extends State<CommonInputDialog> {
       contentPadding: const EdgeInsets.all(Sizes.paddingAll),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: !widget.showActions
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
         children: [
           Text(
             widget.dialogMessage,
@@ -158,7 +160,9 @@ class CommonInputDialogState extends State<CommonInputDialog> {
               fontSize: Sizes.fontSizeMedium,
             ),
           ),
-          const SizedBox(height: Sizes.paddingBottomSmall),
+          !widget.showActions
+              ? const SizedBox.shrink()
+              : const SizedBox(height: Sizes.paddingBottomSmall),
           widget.showActions ? actions : const SizedBox.shrink(),
         ],
       ),

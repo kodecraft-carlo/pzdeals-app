@@ -56,38 +56,40 @@ class KeywordDealsScreenState extends ConsumerState<KeywordDealsScreen>
 
   void showProductDeal(int productId) {
     loadProduct(productId).then((product) {
-      showDialog(
-        context: context,
-        useRootNavigator: false,
-        barrierDismissible: true,
-        builder: (context) => ScaffoldMessenger(
-          child: Builder(
-            builder: (context) => Scaffold(
-              backgroundColor: Colors.transparent,
-              body: GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                behavior: HitTestBehavior.opaque,
-                child: GestureDetector(
-                  onTap: () {},
-                  child: ProductContentDialog(
-                    hasDescription: product.productDealDescription != null &&
-                        product.productDealDescription != '',
-                    productData: product,
-                    content: ProductDealDescription(
-                      snackbarContext: context,
+      if (product != null) {
+        showDialog(
+          context: context,
+          useRootNavigator: false,
+          barrierDismissible: true,
+          builder: (context) => ScaffoldMessenger(
+            child: Builder(
+              builder: (context) => Scaffold(
+                backgroundColor: Colors.transparent,
+                body: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  behavior: HitTestBehavior.opaque,
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: ProductContentDialog(
+                      hasDescription: product.productDealDescription != null &&
+                          product.productDealDescription != '',
                       productData: product,
+                      content: ProductDealDescription(
+                        snackbarContext: context,
+                        productData: product,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      );
+        );
+      }
     });
   }
 
-  Future<ProductDealcardData> loadProduct(int productId) async {
+  Future<ProductDealcardData?> loadProduct(int productId) async {
     final product = await productDealService.fetchProductInfo(productId);
     return product;
   }
