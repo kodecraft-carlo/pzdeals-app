@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_installations/firebase_installations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
+import 'package:pzdeals/src/services/fcmtoken_service.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -16,6 +18,7 @@ import 'package:timezone/timezone.dart' as tz;
 class FirebaseMessagingApi {
   final _firebaseMessaging = FirebaseMessaging.instance;
   NotificationService notifService = NotificationService();
+  FcmTokenService fcmTokenService = FcmTokenService();
 
   final _androidChannel = const AndroidNotificationChannel(
     'high_importance_channel',
@@ -163,6 +166,21 @@ class FirebaseMessagingApi {
     await _firebaseMessaging.requestPermission();
     initPushNotifications();
     initLocalNotifications();
+    initFcmToken();
+  }
+
+  Future<void> initFcmToken() async {
+    debugPrint('initFcmToken and refresh listener...');
+    final instanceId = await FirebaseInstallations.id;
+    _firebaseMessaging.getToken().then((token) {
+      fcmTokenService.updateUserFcmToken(instanceId ?? '', token ?? '');
+      debugPrint("FCM Token: $token ~ $instanceId");
+    });
+
+    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+      debugPrint("FCM Token Refreshed: $newToken");
+      // Send the new token to your server or update it locally
+    });
   }
 
   Future<void> storeNotification(dynamic message) async {

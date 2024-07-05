@@ -43,7 +43,8 @@ class UserSettingsService {
       String boxName, String? userId, SettingsData settings) async {
     ApiClient apiClient = ApiClient();
     try {
-      final int id = await getSettingsId(userId!);
+      if (userId == null || userId.isEmpty) return;
+      final int id = await getSettingsId(userId);
       if (id == 0) {
         await addUserSettings(boxName, userId, settings);
         return;
@@ -90,8 +91,9 @@ class UserSettingsService {
         }
         return responseData[0]["id"];
       } else {
-        throw Exception(
+        debugPrint(
             'Failed to fetch directus settings id ${response.statusCode} ~ ${response.data}');
+        return 0;
       }
     } on DioException catch (e) {
       debugPrint("DioExceptionw: ${e.message}");

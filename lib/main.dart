@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:firebase_installations/firebase_installations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -70,7 +71,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  await firebaseMessagingApi.initNotifications();
+  FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
@@ -92,9 +94,6 @@ void main() async {
   Hive.registerAdapter(KeywordDataAdapter());
   Hive.registerAdapter(SettingsDataAdapter());
   Hive.registerAdapter(SearchDiscoveryDataAdapter());
-
-  await firebaseMessagingApi.initNotifications();
-  FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
 
   final prefs = await SharedPreferences.getInstance();
   if (!prefs.containsKey('hasRunBefore')) {
@@ -134,7 +133,9 @@ class MainAppState extends ConsumerState<MainApp>
     super.initState();
     handleDynamicLinks();
     debugPrint('first launch.. loading user Settings');
-    ref.read(settingsProvider.notifier).saveDefaultSettings();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(settingsProvider.notifier).saveDefaultSettings();
+    });
   }
 
   Future<void> handleDynamicLinks() async {

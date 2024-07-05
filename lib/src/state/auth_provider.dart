@@ -263,6 +263,7 @@ class AuthService {
         .collection('users')
         .doc(userUID)
         .update({'fcmToken': fcmToken});
+    debugPrint('authProvider: calling updateUserFcmToken');
     await fcmTokenService.updateUserFcmToken(userUID, fcmToken!);
   }
 }

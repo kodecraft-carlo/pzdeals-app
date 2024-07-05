@@ -7,12 +7,12 @@ class InstanceFcmService {
     ApiClient apiClient = ApiClient();
     // final authService = ref.watch(directusAuthServiceProvider);
     try {
-      Response response =
-          await apiClient.dio.get('/items/users/?filter[user_id]=$userId'
-              // options: Options(
-              //   headers: {'Authorization': 'Bearer $accessToken'},
-              // ),
-              );
+      Response response = await apiClient.dio.get(
+          '/items/users/?filter[user_id]=$userId&filter[instance_id]=$userId&fields[]=id'
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+          );
       if (response.statusCode == 200) {
         final responseData = response.data["data"];
         if (responseData == null ||
@@ -22,8 +22,9 @@ class InstanceFcmService {
         }
         return responseData[0]["id"];
       } else {
-        throw Exception(
+        debugPrint(
             'Failed to fetch directus fcm id ${response.statusCode} ~ ${response.data}');
+        return 0;
       }
     } on DioException catch (e) {
       debugPrint("DioExceptionw: ${e.message}");
@@ -85,8 +86,8 @@ class InstanceFcmService {
     } on DioException catch (e) {
       debugPrint("DioException: ${e.message}");
       throw Exception('Failed to update instance fcm token');
-    } catch (e) {
-      debugPrint('Error updating instance fcm tokens: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error updating instance fcm tokens: $stackTrace');
       throw Exception('Failed to instance fcm tokens');
     }
   }

@@ -7,6 +7,7 @@ import 'package:pzdeals/src/features/account/models/settings_data.dart';
 import 'package:pzdeals/src/features/account/services/instance_fcm_service.dart';
 import 'package:pzdeals/src/features/account/services/settings_service.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
+import 'package:pzdeals/src/services/fcmtoken_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
 final settingsProvider =
@@ -35,6 +36,7 @@ class SettingsNotifier extends ChangeNotifier {
   }
   final UserSettingsService _settingsService = UserSettingsService();
   final InstanceFcmService _instanceFcmService = InstanceFcmService();
+  final FcmTokenService _fcmTokenService = FcmTokenService();
   final _firebaseMessaging = FirebaseMessaging.instance;
 
   String _boxName = '';
@@ -73,10 +75,16 @@ class SettingsNotifier extends ChangeNotifier {
     loadUserSettings();
   }
 
+  Future<String> getInstanceId() async {
+    _instanceID ??= await FirebaseInstallations.id;
+    return _instanceID!;
+  }
+
   Future<void> saveDefaultSettings() async {
-    debugPrint('saveDefaultSettings called');
-    _userUID = _instanceID!;
-    _boxName = '${_userUID}_user_settings';
+    _instanceID = await FirebaseInstallations.id;
+    debugPrint('saveDefaultSettings called ~ instanceID: $_instanceID');
+    _boxName = '${_instanceID}_user_settings';
+    debugPrint('saveDefaultSettings boxName: $_boxName');
     final defaultSettings = SettingsData(
         priceMistake: true,
         frontpageNotification: true,
@@ -84,13 +92,14 @@ class SettingsNotifier extends ChangeNotifier {
         percentageThreshold: 0,
         numberOfAlerts: 10);
     try {
-      _settingsService.updateUserSettings(_boxName, _userUID, defaultSettings);
+      _settingsService.updateUserSettings(
+          _boxName, _instanceID, defaultSettings);
       _firebaseMessaging.subscribeToTopic('price_mistake');
       _firebaseMessaging.subscribeToTopic('front_page');
-      if (!isUserLoggedIn) {
-        _fcmToken = await _firebaseMessaging.getToken();
-        _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
-      }
+      // if (!isUserLoggedIn && _userUID.isNotEmpty) {
+      //   _fcmToken = await _firebaseMessaging.getToken();
+      //   _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
+      // }
       _settingsData = defaultSettings;
       notifyListeners();
     } catch (e) {
@@ -113,7 +122,9 @@ class SettingsNotifier extends ChangeNotifier {
           uidBoxName, uid, instanceIdSettings);
       await _settingsService.clearCachedSettings(instanceIdBoxName);
       await _settingsService.deleteInstanceSetting(_instanceID!);
-      await _instanceFcmService.deleteFcmToken(_instanceID!);
+      // await _instanceFcmService.deleteFcmToken(_instanceID!);
+      _fcmToken = await _firebaseMessaging.getToken();
+      await _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!);
       // Load the newly linked settings
       _boxName = uidBoxName;
       loadUserSettings();
@@ -207,10 +218,10 @@ class SettingsNotifier extends ChangeNotifier {
       notifyListeners();
       _settingsService.updateUserSettings(_boxName, _userUID, _settingsData!);
 
-      if (!isUserLoggedIn) {
-        _fcmToken = await _firebaseMessaging.getToken();
-        _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
-      }
+      // if (!isUserLoggedIn) {
+      //   _fcmToken = await _firebaseMessaging.getToken();
+      //   _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
+      // }
     } catch (e) {
       debugPrint('error updating settings: $e');
     } finally {
@@ -220,8 +231,8 @@ class SettingsNotifier extends ChangeNotifier {
   }
 
   void resetTopics() {
-    // _firebaseMessaging.unsubscribeFromTopic('price_mistake');
-    // _firebaseMessaging.unsubscribeFromTopic('front_page');
+    _firebaseMessaging.unsubscribeFromTopic('price_mistake');
+    _firebaseMessaging.unsubscribeFromTopic('front_page');
     _firebaseMessaging.unsubscribeFromTopic('percent_off');
   }
 

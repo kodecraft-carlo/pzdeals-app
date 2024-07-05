@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:googleapis/keep/v1.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/bottomnavigationbar.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
 import 'package:pzdeals/src/common_widgets/scrollbar.dart';
@@ -92,27 +94,63 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
               scrollController: _scrollController,
               child: SingleChildScrollView(
                 controller: _scrollController,
-                child: Padding(
+                physics: creditcardState.creditcards.isEmpty
+                    ? const NeverScrollableScrollPhysics()
+                    : const AlwaysScrollableScrollPhysics(),
+                child: Container(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height -
+                        kToolbarHeight -
+                        kBottomNavigationBarHeight,
+                  ),
                   padding: const EdgeInsets.only(
                     left: Sizes.paddingLeft,
                     right: Sizes.paddingRight,
                     bottom: Sizes.paddingBottom,
                   ),
                   child: Column(
+                    mainAxisAlignment: creditcardState.creditcards.isEmpty
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.start,
                     children: [
                       if (creditcardState.isLoading &&
                           creditcardState.creditcards.isEmpty)
                         const Center(
                             child: CircularProgressIndicator.adaptive())
                       else if (creditcardState.creditcards.isEmpty)
-                        const Center(
-                            child: Text(
-                          'There are no credit card deals available at the moment. Please check back later.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: Sizes.fontSizeMedium,
-                              color: PZColors.pzGrey),
-                        ))
+                        Container(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: Sizes.paddingAll),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Lottie.asset(
+                                  'assets/images/lottie/empty.json',
+                                  height: 200,
+                                  fit: BoxFit.fitHeight,
+                                  frameRate: FrameRate.max,
+                                  controller: _animationController,
+                                  onLoaded: (composition) {
+                                    _animationController
+                                      ..duration = composition.duration
+                                      ..forward();
+                                  },
+                                ),
+                                const SizedBox(
+                                    height: Sizes.spaceBetweenSections),
+                                const Text(
+                                  'There are no credit card deals available at the moment. Please check back later.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: Sizes.fontSizeMedium,
+                                      color: PZColors.pzGrey),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                       else
                         for (int i = 0;
                             i < creditcardState.creditcards.length;
