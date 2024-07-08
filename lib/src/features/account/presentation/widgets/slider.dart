@@ -22,6 +22,16 @@ class _SliderWidgetState extends State<SliderWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant SliderWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue) {
+      setState(() {
+        _currentSliderValue = widget.initialValue;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: Sizes.paddingAll),

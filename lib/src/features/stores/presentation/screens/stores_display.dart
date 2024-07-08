@@ -30,6 +30,14 @@ class _DisplayStoresState extends ConsumerState<DisplayStores>
   @override
   void initState() {
     super.initState();
+    if (ref.read(storescreenProvider).stores.isEmpty) {
+      debugPrint('stores is empty');
+      Future(
+        () {
+          ref.read(storescreenProvider).loadStores();
+        },
+      );
+    }
 
     _scrollController.addListener(_onScroll);
     _animationController = AnimationController(vsync: this);
@@ -71,33 +79,40 @@ class _DisplayStoresState extends ConsumerState<DisplayStores>
         child: CircularProgressIndicator.adaptive(),
       );
     } else if (storeState.stores.isEmpty) {
-      body = Padding(
-          padding: const EdgeInsets.all(Sizes.paddingAll),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Lottie.asset(
-                'assets/images/lottie/empty.json',
-                height: 200,
-                fit: BoxFit.fitHeight,
-                frameRate: FrameRate.max,
-                controller: _animationController,
-                onLoaded: (composition) {
-                  _animationController
-                    ..duration = composition.duration
-                    ..forward();
-                },
-              ),
-              const SizedBox(height: Sizes.spaceBetweenSections),
-              const Text(
-                'There are no stores available at the moment. Please check back later.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
-              ),
-            ],
-          ));
+      body = RefreshIndicator.adaptive(
+          color: PZColors.pzOrange,
+          child: Padding(
+            padding: const EdgeInsets.all(Sizes.paddingAll),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Lottie.asset(
+                  'assets/images/lottie/empty.json',
+                  height: 200,
+                  fit: BoxFit.fitHeight,
+                  frameRate: FrameRate.max,
+                  controller: _animationController,
+                  onLoaded: (composition) {
+                    _animationController
+                      ..duration = composition.duration
+                      ..forward();
+                  },
+                ),
+                const SizedBox(height: Sizes.spaceBetweenSections),
+                const Text(
+                  'There are no stores available at the moment. Please check back later.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+                ),
+              ],
+            ),
+          ),
+          onRefresh: () async {
+            HapticFeedback.mediumImpact();
+            ref.read(storescreenProvider).refreshStores();
+          });
     } else {
       final displayStores = storeState.filteredStores.isNotEmpty
           ? storeState.filteredStores

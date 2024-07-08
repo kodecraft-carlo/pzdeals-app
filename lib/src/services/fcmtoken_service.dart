@@ -47,6 +47,7 @@ class FcmTokenService {
     ApiClient apiClient = ApiClient();
     try {
       final int id = await getUserId(userUID);
+      debugPrint('updateUserFcmToken id: $id');
       if (id == 0) {
         await addUserFcmToken(userUID, fcmToken);
         return;
@@ -73,13 +74,13 @@ class FcmTokenService {
     }
   }
 
-  Future<int> getIdWithInstanceId(String userUID) async {
+  Future<int> getIdWithInstanceId(String instanceID) async {
     ApiClient apiClient = ApiClient();
     // final authService = ref.watch(directusAuthServiceProvider);
-    debugPrint('fcmTokenService: getId called with $userUID and $instanceId');
+    debugPrint('fcmTokenService: getIdWithInstanceId instance ID: $instanceID');
     try {
-      Response response = await apiClient.dio
-          .get(getDirectusUserIdWithInstanceId(userUID, instanceId ?? '')
+      Response response =
+          await apiClient.dio.get(getUserIdFromInstanceId(instanceID)
               // options: Options(
               //   headers: {'Authorization': 'Bearer $accessToken'},
               // ),
@@ -89,13 +90,10 @@ class FcmTokenService {
         if (responseData == null ||
             responseData.isEmpty ||
             responseData.length <= 0) {
-          debugPrint('getDirectusUserIdWithInstanceId0 false');
           return 0;
         }
-        debugPrint('getDirectusUserIdWithInstanceId true');
         return responseData[0]["id"];
       } else {
-        debugPrint('getDirectusUserIdWithInstanceId1 false');
         debugPrint(
             'Failed to fetch directus user id ${response.statusCode} ~ ${response.data}');
         return 0;
@@ -124,15 +122,12 @@ class FcmTokenService {
         if (responseData == null ||
             responseData.isEmpty ||
             responseData.length <= 0) {
-          debugPrint('getDirectusUserId false');
           return 0;
         }
-        debugPrint('getDirectusUserId true');
         return responseData[0]["id"];
       } else {
         debugPrint(
             'Failed to fetch directus user id ${response.statusCode} ~ ${response.data}');
-        debugPrint('getDirectusUserId1 false');
         return 0;
       }
     } on DioException catch (e) {
@@ -145,22 +140,16 @@ class FcmTokenService {
   }
 
   Future<int> getUserId(String userUID) async {
-    final int id1 = await getIdWithInstanceId(userUID);
+    final int id1 = await getIdWithInstanceId(instanceId ?? '');
     if (id1 != 0) {
+      debugPrint('has instance id');
       return id1;
     }
 
-    // return 0;
-
-    //get id with same user and instance id
-    final int id2 = await getIdWithInstanceId(instanceId ?? '');
+    final int id2 = await getId(userUID);
     if (id2 != 0) {
+      debugPrint('has user ID');
       return id2;
-    }
-
-    final int id3 = await getId(userUID);
-    if (id3 != 0) {
-      return id3;
     }
 
     return 0;

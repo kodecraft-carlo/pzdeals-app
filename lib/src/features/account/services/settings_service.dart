@@ -159,6 +159,7 @@ class UserSettingsService {
   }
 
   Future<void> deleteInstanceSetting(String instanceId) async {
+    debugPrint('deleteInstanceSetting called for $instanceId');
     ApiClient apiClient = ApiClient();
     try {
       final int id = await getSettingsId(instanceId);
@@ -212,10 +213,7 @@ class UserSettingsService {
 
   Future<void> _cacheSettings(
       SettingsData userSetting, String boxName, String userId) async {
-    debugPrint(
-        'Caching settings for $boxName ~ settings: ${userSetting.toMap()}');
     String key = 'settings_$userId';
-    debugPrint('key: $key');
     Box<SettingsData> box;
     if (Hive.isBoxOpen(boxName)) {
       box = Hive.box<SettingsData>(boxName);
@@ -225,6 +223,7 @@ class UserSettingsService {
     await box.clear();
     try {
       await box.put(key, userSetting);
+      debugPrint('Settings cached successfully');
     } catch (e, stackTrace) {
       debugPrint('Error getting cached settings: $stackTrace');
     }

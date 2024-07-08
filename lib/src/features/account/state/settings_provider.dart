@@ -66,12 +66,14 @@ class SettingsNotifier extends ChangeNotifier {
   }
 
   Future<void> setFirebaseInstanceIdAsIdentifier() async {
+    debugPrint('setFirebaseInstanceIdAsIdentifier called');
     isUserLoggedIn = false;
     _instanceID = await FirebaseInstallations.id;
     _fcmToken = await _firebaseMessaging.getToken();
     debugPrint('instanceID: $_instanceID');
     _boxName = '${_instanceID}_user_settings';
     await saveDefaultSettings();
+    _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!);
     loadUserSettings();
   }
 
@@ -123,8 +125,8 @@ class SettingsNotifier extends ChangeNotifier {
       await _settingsService.clearCachedSettings(instanceIdBoxName);
       await _settingsService.deleteInstanceSetting(_instanceID!);
       // await _instanceFcmService.deleteFcmToken(_instanceID!);
-      _fcmToken = await _firebaseMessaging.getToken();
-      await _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!);
+      // _fcmToken = await _firebaseMessaging.getToken();
+      // await _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!);
       // Load the newly linked settings
       _boxName = uidBoxName;
       loadUserSettings();
@@ -133,24 +135,33 @@ class SettingsNotifier extends ChangeNotifier {
   }
 
   Future<void> loadUserSettings() async {
+    debugPrint('loadUserSettings called');
     _isLoading = true;
-    notifyListeners();
     _instanceID = await FirebaseInstallations.id;
     if (_userUID.isEmpty) {
       _userUID = _instanceID!;
     }
-
     _boxName = '${_userUID}_user_settings';
     try {
       _settingsData =
           await _settingsService.getCachedSettings(_boxName, _userUID);
+
       if (_settingsData != null) {
         notifyListeners();
+        final serverSettings =
+            await _settingsService.fetchUserSettings(_boxName, _userUID);
+
+        if (serverSettings != null &&
+            isIdenticalSettings(_settingsData!, serverSettings) == false) {
+          debugPrint(
+              'Cached settings & server settings mismatch. Updating cache');
+          _settingsData = serverSettings;
+          notifyListeners();
+        }
       } else {
         debugPrint('Settings not found in cache. Fetching from server');
         final serverSettings =
             await _settingsService.fetchUserSettings(_boxName, _userUID);
-        debugPrint('serverSettings null: ${serverSettings == null}');
         _settingsData = serverSettings;
 
         notifyListeners();
@@ -160,7 +171,6 @@ class SettingsNotifier extends ChangeNotifier {
       debugPrint("error loading user settings: $stackTrace");
     } finally {
       _isLoading = false;
-      notifyListeners();
     }
   }
 
@@ -255,5 +265,17 @@ class SettingsNotifier extends ChangeNotifier {
       ref.read(notificationsProvider).mergeNotifications(uid, instanceID);
       _isMergeNotificationsCalled = true; // Update the flag
     }
+  }
+
+  bool isIdenticalSettings(
+      SettingsData cachedSettings, SettingsData serverSettings) {
+    return cachedSettings.priceMistake == serverSettings.priceMistake &&
+        cachedSettings.frontpageNotification ==
+            serverSettings.frontpageNotification &&
+        cachedSettings.percentageNotification ==
+            serverSettings.percentageNotification &&
+        cachedSettings.percentageThreshold ==
+            serverSettings.percentageThreshold &&
+        cachedSettings.numberOfAlerts == serverSettings.numberOfAlerts;
   }
 }

@@ -90,25 +90,25 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     final authUserState = ref.watch(authUserDataProvider);
-    final settingsState = ref.watch(settingsProvider);
+    final settingsState =
+        ref.watch(settingsProvider.select((value) => value.settingsData));
+
     List<String> dropdownItems = ['50', '60', '70', '80', '90'];
     isPercentOff =
-        !settingsState.isLoading && settingsState.settingsData != null
-            ? settingsState.settingsData!.percentageNotification
-            : false;
+        settingsState != null ? settingsState.percentageNotification : false;
 
-    isFrontPage = !settingsState.isLoading && settingsState.settingsData != null
-        ? settingsState.settingsData!.frontpageNotification
-        : true;
+    isFrontPage =
+        settingsState != null ? settingsState.frontpageNotification : true;
 
-    alertsCount = !settingsState.isLoading && settingsState.settingsData != null
-        ? settingsState.settingsData!.numberOfAlerts.toDouble()
-        : 10;
+    alertsCount =
+        settingsState != null ? settingsState.numberOfAlerts.toDouble() : 10;
 
-    _selectedThreshold =
-        !settingsState.isLoading && settingsState.settingsData != null
-            ? settingsState.settingsData!.percentageThreshold.toString()
-            : '50';
+    _selectedThreshold = settingsState != null
+        ? settingsState.percentageThreshold.toString()
+        : '50';
+
+    isPriceMistake = settingsState != null ? settingsState.priceMistake : true;
+
     return SingleChildScrollView(
       // physics: const NeverScrollableScrollPhysics(),
       child: Padding(
@@ -128,19 +128,13 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             ListTileWithSwitchWidget(
               title: 'Price Mistake & Glitch Notifications',
               subtitle: 'Notify me on all price mistakes and glitches',
-              value:
-                  !settingsState.isLoading && settingsState.settingsData != null
-                      ? settingsState.settingsData!.priceMistake
-                      : true,
+              value: isPriceMistake,
               onChanged: onPriceMistakeChanged,
             ),
             ListTileWithSwitchWidget(
               title: 'PzPicks Notifications',
               subtitle: 'Notify me on all PzPicks',
-              value:
-                  !settingsState.isLoading && settingsState.settingsData != null
-                      ? settingsState.settingsData!.frontpageNotification
-                      : true,
+              value: isFrontPage,
               onChanged: onFrontPageChanged,
             ),
             AnimatedSwitcher(

@@ -36,6 +36,16 @@ class DropdownWidgetState extends State<DropdownWidget> {
     _selectedValue = widget.initialValue;
   }
 
+  @override
+  void didUpdateWidget(covariant DropdownWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue) {
+      setState(() {
+        _selectedValue = widget.initialValue;
+      });
+    }
+  }
+
   void openDropdown() {
     _dropdownButtonKey?.currentContext?.visitChildElements((element) {
       if (element.widget is Semantics) {

@@ -17,6 +17,14 @@ String getDirectusUserIdWithInstanceId(String userUID, String instanceID) {
   return query;
 }
 
+String getUserIdFromInstanceId(String instanceID) {
+  String query = '/items/users'
+      '?filter[instance_id][_eq]=$instanceID'
+      '&fields[]=id';
+  debugPrint('getUserIdFromInstanceId: $query');
+  return query;
+}
+
 String getDirectusFcmToken(String userUID) {
   return '/items/users'
       '?filter[user_id][_eq]=$userUID'

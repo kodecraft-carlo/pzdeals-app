@@ -77,9 +77,9 @@ class AuthService {
           'uID': user.uid,
         });
 
-        if (await isFcmTokenChanged(user.uid)) {
-          updateFcmToken(user.uid);
-        }
+        // if (await isFcmTokenChanged(user.uid)) {
+        updateFcmToken(user.uid);
+        // }
 
         setIsUserAuthenticated(true);
         setUserUID(user.uid);
@@ -120,9 +120,9 @@ class AuthService {
       debugPrint('User logged in: ${userCredential.user!.uid}');
       setIsUserAuthenticated(true);
       setUserUID(userCredential.user!.uid);
-      if (await isFcmTokenChanged(userCredential.user!.uid)) {
-        updateFcmToken(userCredential.user!.uid);
-      }
+      // if (await isFcmTokenChanged(userCredential.user!.uid)) {
+      updateFcmToken(userCredential.user!.uid);
+      // }
       return {'code': 'success', 'message': 'User logged in'};
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Login failed';

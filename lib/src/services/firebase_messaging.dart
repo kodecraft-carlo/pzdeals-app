@@ -172,14 +172,18 @@ class FirebaseMessagingApi {
   Future<void> initFcmToken() async {
     debugPrint('initFcmToken and refresh listener...');
     final instanceId = await FirebaseInstallations.id;
+    String? fcmToken;
     _firebaseMessaging.getToken().then((token) {
       fcmTokenService.updateUserFcmToken(instanceId ?? '', token ?? '');
       debugPrint("FCM Token: $token ~ $instanceId");
+      fcmToken = token;
     });
 
     _firebaseMessaging.onTokenRefresh.listen((newToken) {
       debugPrint("FCM Token Refreshed: $newToken");
-      // Send the new token to your server or update it locally
+      if (fcmToken != newToken) {
+        fcmTokenService.updateUserFcmToken(instanceId ?? '', newToken);
+      }
     });
   }
 
