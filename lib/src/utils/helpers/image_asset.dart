@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:pzdeals/config.dart';
 
 String getStoreImageUrlFromTags(List<dynamic> tagIds) {
@@ -21,12 +22,14 @@ String getProductImage(String imageSrc) {
 }
 
 String getStoreIconsUrl(String assetId, String imageUrl) {
+  debugPrint('getStoreIconsUrl: $assetId, $imageUrl');
   if (assetId.isEmpty) {
     if (imageUrl.isNotEmpty) {
       return imageUrl;
     }
     return 'assets/images/pzdeals_store.png';
   }
+  debugPrint('getStoreIconsUrl: ${AppConfig.directusAssetsUrl}$assetId');
   return '${AppConfig.directusAssetsUrl}$assetId';
 }
 

@@ -63,10 +63,7 @@ class AuthService {
         _email = email!;
 
         // Save the additional user information to Firestore
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user!.uid)
-            .set({
+        FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
           'firstName': additionalUserInfo?.profile!['given_name'],
           'lastName': additionalUserInfo?.profile!['family_name'],
           'email': email,

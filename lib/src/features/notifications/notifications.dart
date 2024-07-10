@@ -146,13 +146,6 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
                             ),
                           )),
                     ),
-                    // ref.read(notificationsProvider).unreadCount > 0
-                    //     ? markAllAsRead()
-                    //     : const SizedBox.shrink(),
-                    // const SizedBox(width: Sizes.paddingAllSmall),
-                    // ref.watch(notificationsProvider).hasNotification == true
-                    //     ? clearNotifications()
-                    //     : const SizedBox.shrink(),
                     ref.read(notificationsProvider).unreadCount > 0 ||
                             ref.watch(notificationsProvider).hasNotification ==
                                 true
@@ -166,76 +159,6 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
               ],
             ),
           ),
-        ));
-  }
-
-  Widget clearNotifications() {
-    return GestureDetector(
-      onTap: () {
-        showAlertDialog(context, 'Clear Notifications',
-            'Are you sure you want to clear all notifications?', () {
-          ref.read(notificationsProvider).dismissAll();
-          Navigator.of(context).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Notification cleared'),
-              action: SnackBarAction(
-                label: 'UNDO',
-                onPressed: () async {
-                  ref.read(notificationsProvider).undoDismissAll();
-
-                  // ref.read(notificationsProvider).refreshNotification();
-                },
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
-        }, 'Clear');
-      },
-      child: RichText(
-          text: const TextSpan(
-              text: 'Clear all',
-              style: TextStyle(
-                  fontSize: Sizes.bodyFontSize,
-                  color: PZColors.pzOrange,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600))),
-    );
-  }
-
-  Widget markAllAsRead() {
-    return GestureDetector(
-        onTap: () {
-          showAlertDialog(context, 'Read Notifications',
-              'Are you sure you want to mark all notifications as read? This action cannot be undone.',
-              () {
-            ref.read(notificationsProvider).setAllAsRead();
-            Navigator.of(context).pop();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Marked all notifications as read'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }, 'Confirm');
-        },
-        child: RichText(
-          text: TextSpan(children: [
-            const WidgetSpan(
-                child: Icon(
-              Icons.done_all,
-              color: PZColors.pzOrange,
-              size: Sizes.smallIconSize,
-            )),
-            TextSpan(
-              text: 'Read all(${ref.read(notificationsProvider).unreadCount})',
-              style: const TextStyle(
-                  fontSize: Sizes.bodyFontSize,
-                  color: PZColors.pzOrange,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins'),
-            )
-          ]),
         ));
   }
 
@@ -272,7 +195,8 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
           title: 'Clear all',
           onTap: () {
             showAlertDialog(context, 'Clear Notifications',
-                'Are you sure you want to clear all notifications?', () {
+                'Are you sure you want to clear all ${ref.read(notificationsProvider).notificationList.length} notifications?',
+                () {
               ref.read(notificationsProvider).dismissAll();
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(

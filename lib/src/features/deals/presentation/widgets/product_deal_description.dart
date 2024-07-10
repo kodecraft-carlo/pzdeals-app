@@ -13,6 +13,7 @@ import 'package:pzdeals/src/common_widgets/store_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
+import 'package:pzdeals/src/utils/helpers/launch_external_app_check.dart';
 
 class ProductDealDescription extends ConsumerStatefulWidget {
   const ProductDealDescription(
@@ -29,6 +30,8 @@ class ProductDealDescriptionState
   @override
   Widget build(BuildContext context) {
     // RenderObject.debugCheckingIntrinsics = true;
+    debugPrint(
+        'widget.productData.storeName?.toLowerCase(): ${widget.productData.storeName?.toLowerCase()} ~ ${widget.productData.productId}');
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       // mainAxisSize: MainAxisSize.min,
@@ -79,10 +82,10 @@ class ProductDealDescriptionState
                           widget.productData.barcodeLink!.isNotEmpty &&
                           widget.productData.barcodeLink != '') {
                         HapticFeedback.mediumImpact();
-                        if (widget.productData.storeName?.toLowerCase() ==
-                                'amazon' ||
-                            widget.productData.storeName?.toLowerCase() ==
-                                'walmart') {
+                        if (isLaunchExternalApp(
+                                widget.productData.storeName!) ||
+                            isLaunchExternalApp(
+                                widget.productData.barcodeLink!)) {
                           LoadingDialog.show(context);
                           Future.wait([
                             launchDealUrl(widget.productData.barcodeLink ?? '')
@@ -205,8 +208,8 @@ class ProductDealDescriptionState
                 widget.productData.barcodeLink!.isNotEmpty &&
                 widget.productData.barcodeLink != '') {
               HapticFeedback.mediumImpact();
-              if (widget.productData.storeName?.toLowerCase() == 'amazon' ||
-                  widget.productData.storeName?.toLowerCase() == 'walmart') {
+              if (isLaunchExternalApp(widget.productData.storeName!) ||
+                  isLaunchExternalApp(widget.productData.barcodeLink!)) {
                 LoadingDialog.show(context);
                 Future.wait(
                         [launchDealUrl(widget.productData.barcodeLink ?? '')])
@@ -407,10 +410,7 @@ class ProductDealDescriptionState
                           widget.productData.productDealDescription!.trim(),
                       isProductDescription: true,
                       isLaunchApp:
-                          widget.productData.storeName?.toLowerCase() ==
-                                  'amazon' ||
-                              widget.productData.storeName?.toLowerCase() ==
-                                  'walmart',
+                          isLaunchExternalApp(widget.productData.storeName!),
                     ),
                   ))
                 ],

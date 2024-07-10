@@ -19,11 +19,11 @@ final notificationsProvider =
 });
 
 class NotificationListNotifier extends ChangeNotifier {
-  bool _disposed = false; // Step 1: Track the disposal state
+  bool _disposed = false;
 
   @override
   void dispose() {
-    _disposed = true; // Set the disposed flag to true when disposed
+    _disposed = true;
     super.dispose();
   }
 
@@ -31,12 +31,15 @@ class NotificationListNotifier extends ChangeNotifier {
 
   List<String> notificationIdsForDismissal = [];
   List<NotificationData> _notificationList = [];
+  List<NotificationData> _allDismissedNotifications = [];
 
   int pageNumber = 1;
   String _userUID = '';
   int _unreadCount = 0;
+  int _unreadAllDismissedCount = 0;
   bool _hasNotification = false;
   bool _undoDismissAll = false;
+  bool _isRemoveAllOngoing = false;
   String? _instanceID = '';
 
   int get unreadCount => _unreadCount;
@@ -89,22 +92,26 @@ class NotificationListNotifier extends ChangeNotifier {
 
   Future<void> dismissAll() async {
     //set all notifications as dismissed
+    _allDismissedNotifications = List.from(_notificationList);
+    _unreadAllDismissedCount = _unreadCount;
     for (var element in _notificationList) {
       notificationIdsForDismissal.add(element.id);
       element.isDismissed = true;
     }
+    _notificationList.clear();
+    _unreadCount = 0;
     notifyListeners();
-    _firestoreDb
-        .collection('notifications')
-        .doc(_userUID)
-        .collection('notification')
-        .get()
-        .then((snapshot) {
-      for (DocumentSnapshot ds in snapshot.docs) {
-        ds.reference.set({'isDismissed': true}, SetOptions(merge: true));
-        notificationIdsForDismissal.add(ds['id']);
-      }
-    });
+    // _firestoreDb
+    //     .collection('notifications')
+    //     .doc(_userUID)
+    //     .collection('notification')
+    //     .get()
+    //     .then((snapshot) {
+    //   for (DocumentSnapshot ds in snapshot.docs) {
+    //     ds.reference.set({'isDismissed': true}, SetOptions(merge: true));
+    //     notificationIdsForDismissal.add(ds['id']);
+    //   }
+    // });
 
     await Future.delayed(const Duration(seconds: 5), () {
       removeAllForDismissal();
@@ -113,24 +120,28 @@ class NotificationListNotifier extends ChangeNotifier {
 
   Future<void> undoDismissAll() async {
     _undoDismissAll = true;
+    _notificationList = List.from(_allDismissedNotifications);
+    _unreadCount = _unreadAllDismissedCount;
+    _allDismissedNotifications.clear();
+    _unreadAllDismissedCount = 0;
     for (var element in _notificationList) {
       notificationIdsForDismissal.add(element.id);
       element.isDismissed = false;
     }
     notifyListeners();
-    for (var notifId in notificationIdsForDismissal) {
-      _firestoreDb
-          .collection('notifications')
-          .doc(_userUID)
-          .collection('notification')
-          .where('id', isEqualTo: notifId)
-          .get()
-          .then((snapshot) {
-        for (DocumentSnapshot ds in snapshot.docs) {
-          ds.reference.set({'isDismissed': false}, SetOptions(merge: true));
-        }
-      });
-    }
+    // for (var notifId in notificationIdsForDismissal) {
+    //   _firestoreDb
+    //       .collection('notifications')
+    //       .doc(_userUID)
+    //       .collection('notification')
+    //       .where('id', isEqualTo: notifId)
+    //       .get()
+    //       .then((snapshot) {
+    //     for (DocumentSnapshot ds in snapshot.docs) {
+    //       ds.reference.set({'isDismissed': false}, SetOptions(merge: true));
+    //     }
+    //   });
+    // }
     notificationIdsForDismissal.clear();
   }
 
@@ -172,13 +183,18 @@ class NotificationListNotifier extends ChangeNotifier {
   }
 
   Future<void> removeAllForDismissal() async {
+    if (_isRemoveAllOngoing) return;
+    _isRemoveAllOngoing = true;
     var idsToRemove =
         _undoDismissAll ? [] : List.from(notificationIdsForDismissal);
 
     debugPrint(
         'removing all for dismissal called ~ ${idsToRemove.length} items');
     _undoDismissAll = false;
-    if (idsToRemove.isEmpty) return;
+    if (idsToRemove.isEmpty) {
+      _isRemoveAllOngoing = false;
+      return;
+    }
     for (var notifId in idsToRemove) {
       await _firestoreDb
           .collection('notifications')
@@ -192,36 +208,11 @@ class NotificationListNotifier extends ChangeNotifier {
         }
       });
     }
+    _isRemoveAllOngoing = false;
     notificationIdsForDismissal.clear();
     clearBadgeCount();
     _unreadCount = 0;
   }
-
-  // void getUnreadNotificationsCountFromStream(String userId) {
-  //   FirebaseFirestore.instance
-  //       .collection('notifications')
-  //       .doc(userId)
-  //       .collection('notification')
-  //       .snapshots()
-  //       .listen((QuerySnapshot snapshot) {
-  //     _unreadCount = 0;
-  //     if (snapshot.docs.isNotEmpty) {
-  //       _hasNotification = true;
-  //     } else {
-  //       _hasNotification = false;
-  //     }
-  //     for (var doc in snapshot.docs) {
-  //       if (doc.exists && doc['isRead'] == false) {
-  //         _unreadCount++;
-  //       }
-  //     }
-
-  //     updateBadgeCount(_unreadCount);
-
-  //     debugPrint('unread count: $_unreadCount');
-  //     notifyListeners();
-  //   });
-  // }
 
   void getNotificationsFromStream(String userId) {
     debugPrint('getNotificationsFromStream called');
@@ -233,11 +224,13 @@ class NotificationListNotifier extends ChangeNotifier {
         .snapshots()
         .listen((QuerySnapshot snapshot) {
       if (_disposed) return;
+      if (_isRemoveAllOngoing) return;
       _unreadCount = 0;
       debugPrint('snapshot length: ${snapshot.docs.length}');
       _notificationList = snapshot.docs
           .map((doc) {
             final data = doc.data() as Map<String, dynamic>? ?? {};
+            // debugPrint('notification data: $data');
             final bool isDismissed = data['isDismissed'] == true;
             final bool isRead = data['isRead'] == true;
             return NotificationData(
@@ -267,6 +260,7 @@ class NotificationListNotifier extends ChangeNotifier {
     });
   }
 
+  //Merge notifications from instance id to logged in user
   Future<void> mergeNotifications(String userDoc, String instanceDoc) async {
     debugPrint(
         'mergeNotifications called userDoc: $userDoc, instanceDoc: $instanceDoc');
@@ -281,10 +275,7 @@ class NotificationListNotifier extends ChangeNotifier {
       return;
     }
 
-    // Assuming you want to merge all notifications from both users into a single user's document
     List<Map<String, dynamic>> instanceNotifications = [];
-
-    // Iterate over the documents in the second user's notification collection
     for (var doc in instanceDocSnapshot.docs) {
       instanceNotifications.add(doc.data());
     }
@@ -296,7 +287,7 @@ class NotificationListNotifier extends ChangeNotifier {
           .set(notification);
     }
 
-    // Optionally, delete the other document if it's no longer needed
+    //delete the instance id notifications after merging
     await _firestoreDb
         .collection('notifications')
         .doc(instanceDoc)

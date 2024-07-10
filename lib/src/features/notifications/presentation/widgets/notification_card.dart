@@ -273,7 +273,7 @@ class NotificationCardWidgetState
                     ),
                   ),
             title: Text(
-              '${notificationData.title.toLowerCase() == "percentage off" ? "" : "${notificationData.title}: "}${notificationData.body}',
+              '${notificationData.title.toLowerCase() != "pzdeal alert" ? "" : "${notificationData.title}: "}${notificationData.body.toLowerCase() == "this deal matches front page alert!" ? "This deal matches your PzPicks alert!" : notificationData.body}',
               style: TextStyle(
                   color: notificationData.isRead
                       ? PZColors.pzGrey

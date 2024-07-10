@@ -87,7 +87,7 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
   Widget build(BuildContext context) {
     final layoutType = ref.watch(layoutTypeProvider);
     double screenHeight = MediaQuery.of(context).size.height;
-    double itemHeight = screenHeight / 2.7;
+    double itemHeight = screenHeight / 3;
     return Column(
       children: [
         Row(

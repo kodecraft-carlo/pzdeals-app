@@ -17,6 +17,7 @@ import 'package:pzdeals/src/common_widgets/store_icon.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/models/index.dart';
+import 'package:pzdeals/src/utils/helpers/launch_external_app_check.dart';
 
 class ProductContentDialog extends StatefulWidget {
   final Widget content;
@@ -359,12 +360,10 @@ class _ProductContentDialogState extends State<ProductContentDialog> {
                                 buttonLabel: 'See Deal',
                                 onPressed: () {
                                   HapticFeedback.mediumImpact();
-                                  if (widget.productData.storeName
-                                              ?.toLowerCase() ==
-                                          'amazon' ||
-                                      widget.productData.storeName
-                                              ?.toLowerCase() ==
-                                          'walmart') {
+                                  if (isLaunchExternalApp(
+                                          widget.productData.storeName!) ||
+                                      isLaunchExternalApp(
+                                          widget.productData.barcodeLink!)) {
                                     LoadingDialog.show(context);
                                     Future.wait([
                                       launchDealUrl(
