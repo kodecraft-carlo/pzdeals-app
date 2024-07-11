@@ -33,7 +33,7 @@ class TabForYouNotifier extends ChangeNotifier {
   List<Map<String, dynamic>> _collectionsMap = [];
   bool _isSelectionApplied = false;
   final List<Map<String, dynamic>> _defaultCollections = [
-    {'collection_id': 4, 'collection_name': 'Flash', 'keywords': 'flash'},
+    {'collection_id': 4, 'collection_name': 'Hot', 'keywords': 'flash'},
     {'collection_id': 8, 'collection_name': 'Tech', 'keywords': 'tech'},
     {'collection_id': 10, 'collection_name': 'Home', 'keywords': 'home'}
   ];
