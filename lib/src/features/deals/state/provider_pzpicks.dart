@@ -8,7 +8,7 @@ final tabPzPicksProvider =
 
 class TabPzPicksNotifier extends ChangeNotifier {
   final FetchProductDealService _productService = FetchProductDealService();
-  final String _collectionName = 'Flash Deals';
+  final String _collectionName = 'flash';
   final String _boxName = 'flashdeals';
   bool _isLoading = false;
   int pageNumber = 1;

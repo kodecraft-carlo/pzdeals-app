@@ -14,10 +14,12 @@ class ForYouCollectionList extends StatefulWidget {
       {super.key,
       required this.title,
       required this.productData,
-      required this.collectionId});
+      required this.collectionId,
+      required this.collectionKeyword});
 
   final String title;
   final int collectionId;
+  final String collectionKeyword;
   final List<ProductDealcardData> productData;
 
   @override
@@ -70,10 +72,6 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
     String sectionTitle = '';
     if (widget.title == 'Toys Deals') {
       sectionTitle = 'Toy Deals';
-    } else if (widget.title == 'Clothing Deals') {
-      sectionTitle = 'Clothing & Accessory Deals';
-    } else if (widget.title == 'Flash Deals') {
-      sectionTitle = 'Hot Deals';
     } else {
       sectionTitle = widget.title;
     }
@@ -114,6 +112,7 @@ class ForYouCollectionListState extends State<ForYouCollectionList> {
                         destinationWidget: CollectionDisplayScreenWidget(
                           collectionTitle: widget.title,
                           collectionId: widget.collectionId,
+                          keyword: widget.collectionKeyword,
                         ),
                         childWidget: Container(
                           width: itemWidth,

@@ -7,7 +7,7 @@ String getBlogsByCollectionNameQuery(int pageNumber) {
       '&fields[]=image_src'
       '&fields[]=published'
       '&fields[]=status'
-      '&filter[collection_ids][collection_id][collection_name][_eq]=PzBlog'
+      '&filter[collection_ids][collection_id][keywords][_eq]=pz_blog'
       '&limit[]=15'
       '&page[]=$pageNumber'
       '&sort=-created_at,-id'
@@ -29,7 +29,7 @@ String getBlogByIdQuery(int blogId) {
       '&fields[]=local_image'
       '&fields[]=local_image'
       '&filter[id][_eq]=$blogId'
-      '&filter[collection_ids][collection_id][collection_name][_eq]=PzBlog';
+      '&filter[collection_ids][collection_id][keywords][_eq]=pz_blog';
 
   debugPrint('getBlogByIdQuery: $query');
   return query;

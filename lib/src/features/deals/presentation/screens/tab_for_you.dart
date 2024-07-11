@@ -35,7 +35,6 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
     final forYouState = ref
         .watch(tabForYouProvider.select((value) => value.collectionProducts));
     final mediaqueryState = ref.watch(mediaqueryProvider);
-
     List<Widget> sectionContent = [];
     if (forYouState.isNotEmpty) {
       sectionContent = forYouState.map((map) {
@@ -49,6 +48,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
                 child: ForYouCollectionList(
                     collectionId: 0,
                     title: 'Collection Title',
+                    collectionKeyword: '',
                     productData: List.filled(
                         5,
                         ProductDealcardData(
@@ -72,6 +72,7 @@ class ForYouWidgetState extends ConsumerState<ForYouWidget>
               return ForYouCollectionList(
                 title: '${map['collection_name']} Deals',
                 collectionId: map['collection_id'],
+                collectionKeyword: map['keywords'],
                 productData: productList,
               );
             }

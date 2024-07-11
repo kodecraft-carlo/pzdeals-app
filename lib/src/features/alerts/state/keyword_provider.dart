@@ -282,6 +282,6 @@ class KeywordsNotifier extends ChangeNotifier {
     //remove special characters and convert to lowercase
     //convert home & kitchen to home_kitchen
     topic = topic.replaceAll(RegExp(r'[\W\s]+'), '_');
-    return topic.toLowerCase();
+    return topic == 'hot' ? 'flash' : topic.toLowerCase();
   }
 }

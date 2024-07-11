@@ -13,6 +13,7 @@ String getPopularKeywordsQuery(
       '&fields[]=keyword'
       '&fields[]=type'
       '&fields[]=image_src'
+      '&fields[]=local_img'
       '&limit=$limit'
       '&page=$pageNumber'
       '&filter={"keyword":{"_nin":["${excludeKeywords.join('","')}"]}}'

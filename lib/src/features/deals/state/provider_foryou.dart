@@ -33,9 +33,9 @@ class TabForYouNotifier extends ChangeNotifier {
   List<Map<String, dynamic>> _collectionsMap = [];
   bool _isSelectionApplied = false;
   final List<Map<String, dynamic>> _defaultCollections = [
-    {'collection_id': 4, 'collection_name': 'Flash'},
-    {'collection_id': 8, 'collection_name': 'Tech'},
-    {'collection_id': 10, 'collection_name': 'Home'}
+    {'collection_id': 4, 'collection_name': 'Flash', 'keywords': 'flash'},
+    {'collection_id': 8, 'collection_name': 'Tech', 'keywords': 'tech'},
+    {'collection_id': 10, 'collection_name': 'Home', 'keywords': 'home'}
   ];
   List<ProductDealcardData> _foryouProducts = [];
   final int _selectedCollectionsCount = 0;
@@ -122,7 +122,8 @@ class TabForYouNotifier extends ChangeNotifier {
     }
   }
 
-  void toggleCollectionMap(int collectionId, String collectionName) {
+  void toggleCollectionMap(
+      int collectionId, String collectionName, String keywords) {
     _isSelectionApplied = false;
     int index = _collectionsMap
         .indexWhere((map) => map['collection_id'] == collectionId);
@@ -133,6 +134,7 @@ class TabForYouNotifier extends ChangeNotifier {
       _collectionsMap.add({
         'collection_id': collectionId,
         'collection_name': collectionName,
+        'keywords': keywords
       });
     }
     notifyListeners();
@@ -221,6 +223,7 @@ class TabForYouNotifier extends ChangeNotifier {
         newCollectionProducts.add({
           'collection_name': collection['collection_name'],
           'collection_id': collection['collection_id'],
+          'keywords': collection['keywords'],
         });
       }
 

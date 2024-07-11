@@ -8,7 +8,7 @@ final tabFrontPageProvider = ChangeNotifierProvider<TabFrontPageNotifier>(
 
 class TabFrontPageNotifier extends ChangeNotifier {
   final FetchProductDealService _productService = FetchProductDealService();
-  final String _collectionName = 'Front Page';
+  final String _collectionName = 'front_page';
   final String _boxName = 'frontpage'; // collection: front page
   // final String _boxName = 'alldeals';
   int pageNumber = 1;

@@ -17,7 +17,7 @@ String getStoresQuery(int pageNumber) {
 
 String getCollectionsQuery() {
   return '/items/collection'
-      '?filter[collection_name][_nin]=PzBlog,Credit Cards,Featured,PzStyles,noprice,Unknown,Front Page';
+      '?filter[keywords][_nin]=pz_blog,credit_cards,featured,pz_styles,no-price,unknown,front_page';
 }
 
 String filterByStoresQuery(List storeTagNames) {

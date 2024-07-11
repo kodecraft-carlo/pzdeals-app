@@ -96,7 +96,7 @@ class CollectionSelectionWidgetState
               isSelected: foryouState.isCollectionIdExisting(collection.id),
               onTap: () {
                 foryouState.toggleCollectionMap(
-                    collection.id, collection.title);
+                    collection.id, collection.title, collection.keyword ?? '');
               });
         },
       );
@@ -248,10 +248,6 @@ class _GridItemWidgetState extends State<GridItemWidget>
     String title = '';
     if (widget.categoryLabel.toLowerCase() == 'toys') {
       title = 'Toy Deals';
-    } else if (widget.categoryLabel.toLowerCase() == 'clothing') {
-      title = 'Clothing & Accessory Deals';
-    } else if (widget.categoryLabel.toLowerCase() == 'flash') {
-      title = 'Hot Deals';
     } else {
       title = '${widget.categoryLabel} Deals';
     }

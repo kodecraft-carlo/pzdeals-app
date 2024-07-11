@@ -213,7 +213,8 @@ class NotificationService {
             .add(notification.toMap());
 
         //update notification received info only when data['alert_type'] is 'front-page'
-        if (notification.data['alert_type'] == 'front-page') {
+        if (notification.data['alert_type'] == 'front-page' ||
+            notification.data['alert_type'] == 'front_page') {
           await updateFrontPageNotificationReceivedInfo(userUID);
         }
       } else if (_instanceID != null && _instanceID!.isNotEmpty) {
@@ -224,7 +225,8 @@ class NotificationService {
             .add(notification.toMap());
 
         //update notification received info only when data['alert_type'] is 'front-page'
-        if (notification.data['alert_type'] == 'front-page') {
+        if (notification.data['alert_type'] == 'front-page' ||
+            notification.data['alert_type'] == 'front_page') {
           await updateFrontPageNotificationReceivedInfo(_instanceID);
         }
         debugPrint(
@@ -260,10 +262,15 @@ class NotificationService {
         int frontpageNotificationAlertsLimit =
             notifInfoResponseData['alerts_count'] ?? 10;
 
+        debugPrint(
+            'updateFrontPageNotificationReceivedInfo notificationReceivedCount: $notificationReceivedCount ~ frontpageNotificationAlertsLimit: $frontpageNotificationAlertsLimit');
         notificationReceivedCount = notificationReceivedCount + 1;
         //unsubscribe user if notification received count is greater than frontpageNotificationAlertsLimit
         if (frontpageNotificationAlertsLimit < 30) {
+          debugPrint('has limit of $frontpageNotificationAlertsLimit');
           if (notificationReceivedCount >= frontpageNotificationAlertsLimit) {
+            debugPrint(
+                'LIMIT REACHED. unsubscribe user from front_page topic ~ $notificationReceivedCount');
             _firebaseMessaging.unsubscribeFromTopic('front_page');
           }
         }

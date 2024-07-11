@@ -24,7 +24,7 @@ class CollectionDisplayScreenWidget extends ConsumerStatefulWidget {
       {super.key,
       required this.collectionTitle,
       required this.collectionId,
-      this.keyword = ""});
+      required this.keyword});
 
   final String collectionTitle;
   final int collectionId;
@@ -55,8 +55,7 @@ class CollectionDisplayScreenWidgetState
     _scrollController.addListener(_onScroll);
     Future(() {
       if (widget.collectionTitle != '' && widget.collectionId > 0) {
-        ref.read(productCollectionProvider).setBoxCollectionName(
-            widget.collectionTitle,
+        ref.read(productCollectionProvider).setBoxCollectionName(widget.keyword,
             '${widget.collectionTitle.trim()}_${widget.collectionId}');
       }
     });
@@ -233,10 +232,6 @@ class CollectionDisplayScreenWidgetState
     String collectionTitle = '';
     if (widget.collectionTitle == 'Toys Deals') {
       collectionTitle = 'Toy Deals';
-    } else if (widget.collectionTitle == 'Clothing Deals') {
-      collectionTitle = 'Clothing & Accessory Deals';
-    } else if (widget.collectionTitle == 'Flash Deals') {
-      collectionTitle = 'Hot Deals';
     } else {
       collectionTitle = widget.collectionTitle;
     }

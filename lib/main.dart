@@ -184,6 +184,7 @@ class MainAppState extends ConsumerState<MainApp>
         '/deal-collections': (context) => const CollectionDisplayScreenWidget(
               collectionTitle: '',
               collectionId: 0,
+              keyword: '',
             ),
       },
       theme: ThemeData(
