@@ -276,6 +276,7 @@ String searchPercentageProductQuery(int pageNumber) {
 }
 
 String getSearchDiscoveryQuery() {
-  String query = '/items/search_discovery?fields[]=title&fields[]=image_src';
+  String query =
+      '/items/search_discovery?fields[]=title&fields[]=image_src&fields[]=keyword&fields[]=local_img';
   return query;
 }

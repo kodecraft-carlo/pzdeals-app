@@ -66,7 +66,7 @@ class LayoutScreenState extends ConsumerState<LayoutScreen> {
               "Toggle between grid and list view layout for the deals screen",
               style: TextStyle(fontSize: Sizes.bodyFontSize),
             ),
-            const SizedBox(height: Sizes.spaceBetweenSectionsXL),
+            const SizedBox(height: Sizes.spaceBetweenSections),
             const IconLayout(),
           ],
         ),
@@ -87,7 +87,9 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
   Widget build(BuildContext context) {
     final layoutType = ref.watch(layoutTypeProvider);
     double screenHeight = MediaQuery.of(context).size.height;
-    double itemHeight = screenHeight / 3;
+    double screenWidth = MediaQuery.of(context).size.width;
+    double itemHeight = screenHeight / 4;
+    double itemWidth = screenWidth / 3.5;
     return Column(
       children: [
         Row(
@@ -131,26 +133,41 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
             ),
           ],
         ),
-        const SizedBox(height: Sizes.spaceBetweenSectionsXL),
+        const SizedBox(height: Sizes.spaceBetweenSections),
         Center(
-          child: layoutType == 'Grid'
-              ? Image.asset(
-                  'assets/images/layout_grid_view.png',
-                  fit: BoxFit.fitHeight,
-                  height: itemHeight,
-                )
-              : layoutType == 'List'
-                  ? Image.asset(
-                      'assets/images/layout_list_view.png',
-                      fit: BoxFit.fitHeight,
-                      height: itemHeight,
-                    )
-                  : Image.asset(
-                      'assets/images/layout_grid_view.png',
-                      fit: BoxFit.fitHeight,
-                      height: itemHeight,
-                    ),
-        ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            child: layoutType == 'Grid'
+                ? Image.asset(
+                    'assets/images/layout_grid_view.png',
+                    key: const ValueKey('grid'),
+                    // fit: BoxFit.fitHeight,
+                    // height: itemHeight,
+                    fit: BoxFit.fitWidth,
+                    width: itemWidth,
+                  )
+                : layoutType == 'List'
+                    ? Image.asset(
+                        'assets/images/layout_list_view.png',
+                        key: const ValueKey('list'),
+                        // fit: BoxFit.fitHeight,
+                        // height: itemHeight,
+                        fit: BoxFit.fitWidth,
+                        width: itemWidth,
+                      )
+                    : Image.asset(
+                        'assets/images/layout_grid_view.png',
+                        key: const ValueKey('default'),
+                        // fit: BoxFit.fitHeight,
+                        // height: itemHeight,
+                        fit: BoxFit.fitWidth,
+                        width: itemWidth,
+                      ),
+          ),
+        )
       ],
     );
   }
@@ -164,7 +181,7 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
           children: [
             Icon(
               iconData,
-              size: Sizes.xlargeIconSize,
+              size: Sizes.largeIconSize,
               color: layoutType == label ? Colors.grey[800] : Colors.grey[600],
             ),
           ],

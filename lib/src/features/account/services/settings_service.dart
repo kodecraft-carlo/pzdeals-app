@@ -68,7 +68,7 @@ class UserSettingsService {
       throw Exception('Failed to update user settings');
     } catch (e, stackTrace) {
       debugPrint('Error updating user settings: $stackTrace');
-      throw Exception('Failed to update user settings');
+      throw Exception('Failed to update user settings $stackTrace');
     }
   }
 
@@ -177,12 +177,12 @@ class UserSettingsService {
         throw Exception(
             'Unable to delete user settings ${response.statusCode} ~ ${response.data}');
       }
-    } on DioException catch (e) {
+    } on DioException catch (e, stackTrace) {
       debugPrint("DioException: ${e.message}");
-      throw Exception('Failed to delete user settings');
-    } catch (e) {
+      throw Exception('Failed to delete user settings $stackTrace');
+    } catch (e, stackTrace) {
       debugPrint('Error deleting user settings: $e');
-      throw Exception('Failed to delete user settings');
+      throw Exception('Failed to delete user settings $stackTrace');
     }
   }
 

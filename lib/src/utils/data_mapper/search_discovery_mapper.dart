@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
+import 'package:pzdeals/src/utils/helpers/image_asset.dart';
 
 class SearchDiscoveryMapper {
   static List<SearchDiscoveryData> mapToSearchDiscoveryDataList(
@@ -8,7 +9,9 @@ class SearchDiscoveryMapper {
       return List<SearchDiscoveryData>.from(responseData.map((json) {
         return SearchDiscoveryData(
             title: json['title'],
-            imageAsset: json['image_src'],
+            imageAsset:
+                getCollectionImage(json['local_img'] ?? '', json['image_src']),
+            keyword: json['keyword'],
             assetSourceType: 'network');
       }));
     } catch (e) {

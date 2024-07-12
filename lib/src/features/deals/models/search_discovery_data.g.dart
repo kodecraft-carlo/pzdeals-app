@@ -20,19 +20,22 @@ class SearchDiscoveryDataAdapter extends TypeAdapter<SearchDiscoveryData> {
       title: fields[0] as String,
       imageAsset: fields[1] as String,
       assetSourceType: fields[2] as String,
+      keyword: fields[3] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, SearchDiscoveryData obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
       ..write(obj.imageAsset)
       ..writeByte(2)
-      ..write(obj.assetSourceType);
+      ..write(obj.assetSourceType)
+      ..writeByte(3)
+      ..write(obj.keyword);
   }
 
   @override

@@ -2,18 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pzdeals/src/utils/helpers/launch_external_app_check.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-List<String> urlsList = [
-  'https://www.amazon.com',
-  'https://www.walmart.com',
-  'https://goto.walmart.com'
-];
 Future<void> launchDealUrl(String url) async {
   debugPrint('launchDealUrl called with url: $url');
   final Uri uri;
 
-  if (isInUrlList(url)) {
+  if (isLaunchExternalApp(url)) {
     uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -47,7 +43,7 @@ Future<String> getUrl(String url) async {
 
     if (location != null) {
       uri = uri.resolve(location);
-      if (isInUrlList(location)) {
+      if (isLaunchExternalApp(location)) {
         debugPrint('getUrl called with location: $location');
         return location;
       }
@@ -61,8 +57,4 @@ Future<String> getUrl(String url) async {
     }
   }
   return url;
-}
-
-bool isInUrlList(String url) {
-  return urlsList.any((urlItem) => url.contains(urlItem));
 }

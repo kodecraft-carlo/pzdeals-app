@@ -110,7 +110,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     isPriceMistake = settingsState != null ? settingsState.priceMistake : true;
 
     return SingleChildScrollView(
-      // physics: const NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       child: Padding(
         padding: const EdgeInsets.all(Sizes.paddingAll),
         child: Column(

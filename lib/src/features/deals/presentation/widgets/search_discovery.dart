@@ -32,7 +32,7 @@ class SearchDiscoveryWidget extends ConsumerWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => SearchResultScreen(
-                      searchKey: searchDiscovery.title,
+                      searchKey: searchDiscovery.keyword,
                     ),
                   ));
             });

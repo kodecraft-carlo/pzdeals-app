@@ -13,9 +13,13 @@ class SearchDiscoveryData {
   @HiveField(2)
   final String assetSourceType;
 
+  @HiveField(3)
+  final String keyword;
+
   SearchDiscoveryData({
     required this.title,
     required this.imageAsset,
     required this.assetSourceType,
+    required this.keyword,
   });
 }

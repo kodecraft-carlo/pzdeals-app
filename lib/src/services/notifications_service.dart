@@ -194,9 +194,9 @@ class NotificationService {
       } else {
         debugPrint('markAllNotificationsAsRead: User is not logged in');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint("Error marking all notifications as read: $e");
-      throw Exception('Error marking all notifications as read');
+      throw Exception('Error marking all notifications as read $stackTrace');
     }
   }
 
@@ -236,7 +236,7 @@ class NotificationService {
       }
     } catch (e, stackTrace) {
       debugPrint("Error adding notification data: $stackTrace");
-      throw Exception('Error adding notification data');
+      throw Exception('Error adding notification data $stackTrace');
     }
   }
 

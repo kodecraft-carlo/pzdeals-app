@@ -83,12 +83,12 @@ class InstanceFcmService {
         throw Exception(
             'Unable to update instance fcm token ${response.statusCode} ~ ${response.data}');
       }
-    } on DioException catch (e) {
-      debugPrint("DioException: ${e.message}");
-      throw Exception('Failed to update instance fcm token');
+    } on DioException catch (e, stackTrace) {
+      debugPrint("DioException: $stackTrace");
+      throw Exception('Failed to update instance fcm token $stackTrace');
     } catch (e, stackTrace) {
       debugPrint('Error updating instance fcm tokens: $stackTrace');
-      throw Exception('Failed to instance fcm tokens');
+      throw Exception('Failed to instance fcm tokens $stackTrace');
     }
   }
 
