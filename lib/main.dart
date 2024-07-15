@@ -45,12 +45,14 @@ Future<void> _handleBackgroundMessage(RemoteMessage message) async {
   final notification = message.notification;
   if (notification == null) {
     if (message.data['alert_type'] == 'scheduled_reminder' &&
-        message.data['value'] == 'front_page') {
+        (message.data['value'] == 'front_page' ||
+            message.data['value'] == 'front-page')) {
       debugPrint('scheduled reminder received');
       notifService.resetNotificationReceivedInfo();
     }
   } else {
     debugPrint('add notif from main');
+
     notifService.addNotification(
         NotificationMapper.mapToNotificationData(message), 'notifications');
   }

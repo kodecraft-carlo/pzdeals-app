@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_installations/firebase_installations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -211,11 +212,11 @@ class NotificationService {
             .doc(userUID)
             .collection('notification')
             .add(notification.toMap());
-
+        FirebaseCrashlytics.instance.log("[$userUID] Notification added.");
         //update notification received info only when data['alert_type'] is 'front-page'
         if (notification.data['alert_type'] == 'front-page' ||
             notification.data['alert_type'] == 'front_page') {
-          await updateFrontPageNotificationReceivedInfo(userUID);
+          updateFrontPageNotificationReceivedInfo(userUID);
         }
       } else if (_instanceID != null && _instanceID!.isNotEmpty) {
         await _firestoreDb
@@ -224,10 +225,11 @@ class NotificationService {
             .collection('notification')
             .add(notification.toMap());
 
+        FirebaseCrashlytics.instance.log("[$userUID] Notification added.");
         //update notification received info only when data['alert_type'] is 'front-page'
         if (notification.data['alert_type'] == 'front-page' ||
             notification.data['alert_type'] == 'front_page') {
-          await updateFrontPageNotificationReceivedInfo(_instanceID);
+          updateFrontPageNotificationReceivedInfo(_instanceID);
         }
         debugPrint(
             'addNotification: User is not logged in instance ID used~ $_instanceID');
@@ -271,6 +273,9 @@ class NotificationService {
           if (notificationReceivedCount >= frontpageNotificationAlertsLimit) {
             debugPrint(
                 'LIMIT REACHED. unsubscribe user from front_page topic ~ $notificationReceivedCount');
+            FirebaseCrashlytics.instance
+                .log("[$userId ~ $id] LIMIT: unsubscribe from front_page.");
+
             _firebaseMessaging.unsubscribeFromTopic('front_page');
           }
         }
@@ -287,15 +292,17 @@ class NotificationService {
 
         if (response.statusCode != 200) {
           throw Exception(
-              'Unable to update user settings ${response.statusCode} ~ ${response.data}');
+              'Unable to update user notification received info ${response.statusCode} ~ ${response.data}');
         }
+        FirebaseCrashlytics.instance
+            .log("[$userId ~ $id] notification received info updated.");
       }
-    } on DioException catch (e) {
-      debugPrint("DioException: ${e.message}");
-      throw Exception('Failed to update user settings');
-    } catch (e) {
-      debugPrint('Error updating user settings: $e');
-      throw Exception('Failed to update user settings');
+    } on DioException catch (e, stackTrace) {
+      debugPrint("DioException: ${e.message} ~ $stackTrace");
+      throw Exception('Failed to update user notification received info');
+    } catch (e, stackTrace) {
+      debugPrint('Error updating user notification received info: $stackTrace');
+      throw Exception('Failed to update user notification received info');
     }
   }
 
