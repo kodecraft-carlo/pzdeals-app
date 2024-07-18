@@ -209,7 +209,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     fontSize: Sizes.fontSizeMedium,
                     fontWeight: FontWeight.bold)),
           ),
-          destinationScreen: LoginScreen())
+          destinationScreen: LoginRequiredScreen(message: '',))
     ]);
   }
 

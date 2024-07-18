@@ -14,7 +14,7 @@ import 'package:pzdeals/src/state/auth_provider.dart';
 class LoginRequiredScreen extends StatelessWidget {
   const LoginRequiredScreen(
       {super.key,
-      this.message = 'Login to unlock this feature!',
+      this.message = Wordings.loginToUnlockFeature,
       this.hasCloseButton = true});
 
   final String message;

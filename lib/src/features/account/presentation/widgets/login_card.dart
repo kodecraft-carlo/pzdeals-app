@@ -51,7 +51,7 @@ class LoginCard extends StatelessWidget {
               ),
             )),
         destinationScreen: const LoginRequiredScreen(
-          message: "Login to unlock amazing ${Wordings.appName} features!",
+          message: Wordings.loginToUnlockAmazingFeatures,
         ));
   }
 }

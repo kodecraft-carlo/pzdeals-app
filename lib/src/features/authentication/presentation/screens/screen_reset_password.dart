@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -41,9 +44,21 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
           iconSize: Sizes.screenCloseIconSize,
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const LoginScreen();
-            }));
+            // Navigator.push(
+            //   context,
+            //   Platform.isAndroid
+            //       ? MaterialPageRoute(
+            //           builder: (context) {
+            //             return const LoginScreen();
+            //           },
+            //         )
+            //       : CupertinoPageRoute(
+            //           builder: (context) {
+            //             return const LoginScreen();
+            //           },
+            //         ),
+            // );
+            Navigator.pop(context);
           },
         ),
       ),

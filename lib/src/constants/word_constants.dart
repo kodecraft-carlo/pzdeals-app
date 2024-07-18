@@ -18,4 +18,7 @@ class Wordings {
   static const String stayTuned = 'Stay tuned! This feature is coming soon.';
   static const String stayTunedNotified =
       'Thanks! You\'ll be the first to know.';
+  static const String loginToUnlockFeature = 'Login to unlock this feature!';
+  static const String loginToUnlockAmazingFeatures =
+      'Login to unlock amazing $appName features!';
 }

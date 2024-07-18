@@ -36,7 +36,7 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
   void gotoLoginScreen() {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return const LoginRequiredScreen(
-        message: "Login to unlock amazing ${Wordings.appName} features!",
+        message: Wordings.loginToUnlockAmazingFeatures,
       );
     }));
   }

@@ -178,7 +178,7 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
             ),
             scrollAction: scrollToTop)
         : const LoginRequiredScreen(
-            message: "Login to unlock amazing ${Wordings.appName} features!",
+            message: Wordings.loginToUnlockAmazingFeatures,
           );
   }
 }
