@@ -108,6 +108,7 @@ class CollectionSelectionWidgetState
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: PZColors.pzWhite,
+          surfaceTintColor: Colors.transparent,
           automaticallyImplyLeading: false,
           title: const FittedBox(
             fit: BoxFit.scaleDown,
@@ -152,7 +153,8 @@ class BottomSheetWidget extends ConsumerWidget {
       color: Colors.white,
       padding:
           EdgeInsets.only(bottom: Platform.isIOS ? 5 : 0), // Keyboard padding
-      margin: const EdgeInsets.all(Sizes.paddingAll),
+      margin: const EdgeInsets.symmetric(
+          vertical: Sizes.paddingAllSmall, horizontal: Sizes.paddingAll),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -59,7 +59,7 @@ class AccountWidget extends ConsumerWidget {
           child: Scaffold(
             backgroundColor: Colors.white,
             body: NestedScrollView(
-              physics: const NeverScrollableScrollPhysics(),
+              // physics: const NeverScrollableScrollPhysics(),
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
                   SliverAppBar(
@@ -97,20 +97,34 @@ class AccountWidget extends ConsumerWidget {
                       collapseMode: CollapseMode.pin,
                     ),
                   ),
-                  SliverToBoxAdapter(
-                    child: Padding(
+                  SliverAppBar(
+                    titleSpacing: 0,
+                    automaticallyImplyLeading: false,
+                    backgroundColor: PZColors.pzWhite,
+                    surfaceTintColor: PZColors.pzWhite,
+                    floating: false,
+                    pinned: true,
+                    forceElevated: innerBoxIsScrolled,
+                    collapsedHeight:
+                        authUserState.isAuthenticated == true ? 60 : 70,
+                    flexibleSpace: PreferredSize(
+                      preferredSize: const Size.fromHeight(kToolbarHeight),
+                      child: Padding(
                         padding: const EdgeInsets.only(
                             left: Sizes.paddingLeftSmall,
                             right: Sizes.paddingRightSmall),
-                        child: SizedBox(child:
-                            LayoutBuilder(builder: (context, constraints) {
-                          if (authUserState.isAuthenticated == true) {
-                            return AccountCard(
-                                accountData: authUserState.userData!);
-                          } else {
-                            return const LoginCard();
-                          }
-                        }))),
+                        child: SizedBox(
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            if (authUserState.isAuthenticated == true) {
+                              return AccountCard(
+                                  accountData: authUserState.userData!);
+                            } else {
+                              return const LoginCard();
+                            }
+                          }),
+                        ),
+                      ),
+                    ),
                   ),
                   SliverAppBar(
                     backgroundColor: PZColors.pzWhite,

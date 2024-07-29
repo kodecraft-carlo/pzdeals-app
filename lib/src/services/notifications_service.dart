@@ -225,7 +225,7 @@ class NotificationService {
             .collection('notification')
             .add(notification.toMap());
 
-        FirebaseCrashlytics.instance.log("[$userUID] Notification added.");
+        FirebaseCrashlytics.instance.log("[$_instanceID] Notification added.");
         //update notification received info only when data['alert_type'] is 'front-page'
         if (notification.data['alert_type'] == 'front-page' ||
             notification.data['alert_type'] == 'front_page') {

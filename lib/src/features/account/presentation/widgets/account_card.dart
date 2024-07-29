@@ -13,10 +13,16 @@ class AccountCard extends StatelessWidget {
         color: PZColors.pzLightGrey,
         elevation: 0,
         child: ListTile(
-            leading: const Icon(
-              Icons.account_circle,
-              size: Sizes.listIconSize,
-              color: Colors.amber,
+            isThreeLine: true,
+            leading: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.account_circle,
+                  size: Sizes.listIconSize,
+                  color: Colors.amber,
+                )
+              ],
             ),
             title: Text(
               'Welcome, ${accountData.firstName} ${accountData.lastName}!',

@@ -151,6 +151,7 @@ class _FilterByPriceWidgetState extends ConsumerState<FilterByPriceWidget> {
                         borderRadius: BorderRadius.circular(Sizes
                             .buttonBorderRadius), // Adjust the radius as needed
                       ),
+                      padding: EdgeInsets.zero,
                       backgroundColor: PZColors.pzLightGrey),
                   child: const Text(
                     '\$1 - 49',
@@ -172,6 +173,7 @@ class _FilterByPriceWidgetState extends ConsumerState<FilterByPriceWidget> {
                         borderRadius: BorderRadius.circular(Sizes
                             .buttonBorderRadius), // Adjust the radius as needed
                       ),
+                      padding: EdgeInsets.zero,
                       backgroundColor: PZColors.pzLightGrey),
                   child: const Text(
                     '\$50 - 99',
@@ -193,6 +195,7 @@ class _FilterByPriceWidgetState extends ConsumerState<FilterByPriceWidget> {
                         borderRadius: BorderRadius.circular(Sizes
                             .buttonBorderRadius), // Adjust the radius as needed
                       ),
+                      padding: EdgeInsets.zero,
                       backgroundColor: PZColors.pzLightGrey),
                   child: const Text(
                     '\$99 up',
