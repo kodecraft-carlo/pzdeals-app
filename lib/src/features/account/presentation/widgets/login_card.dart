@@ -13,7 +13,7 @@ class LoginCard extends StatelessWidget {
             color: PZColors.pzOrange,
             elevation: 0,
             child: Padding(
-              padding: const EdgeInsets.all(Sizes.paddingAll),
+              padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
               child: Row(
                 children: [
                   const Icon(Icons.account_circle_outlined,

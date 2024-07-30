@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/common_widgets/dropdown_widget.dart';
 import 'package:pzdeals/src/common_widgets/list_tile_switch.dart';
@@ -190,6 +191,9 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                     ],
                   )
                 : const SizedBox(),
+            const SizedBox(
+              height: 10,
+            ),
           ],
         ),
       ),

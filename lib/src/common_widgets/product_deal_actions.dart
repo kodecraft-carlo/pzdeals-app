@@ -23,6 +23,7 @@ class ProductDealActions extends ConsumerStatefulWidget {
   const ProductDealActions({super.key, required this.productData});
 
   final ProductDealcardData productData;
+  @override
   ProductDealActionsState createState() => ProductDealActionsState();
 }
 

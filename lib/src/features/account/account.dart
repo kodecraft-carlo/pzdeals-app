@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
@@ -10,10 +11,15 @@ import 'dart:io' show Platform;
 
 import 'package:pzdeals/src/state/media_query_provider.dart';
 
-class AccountWidget extends ConsumerWidget {
+class AccountWidget extends ConsumerStatefulWidget {
   const AccountWidget({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  AccountWidgetState createState() => AccountWidgetState();
+}
+
+class AccountWidgetState extends ConsumerState<AccountWidget> {
+  @override
+  Widget build(BuildContext context) {
     final authUserState = ref.watch(authUserDataProvider);
     final mediaQueryState = ref.watch(mediaqueryProvider);
     Widget tabBars;
@@ -59,7 +65,7 @@ class AccountWidget extends ConsumerWidget {
           child: Scaffold(
             backgroundColor: Colors.white,
             body: NestedScrollView(
-              // physics: const NeverScrollableScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(),
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
                   SliverAppBar(
@@ -97,35 +103,53 @@ class AccountWidget extends ConsumerWidget {
                       collapseMode: CollapseMode.pin,
                     ),
                   ),
-                  SliverAppBar(
-                    titleSpacing: 0,
-                    automaticallyImplyLeading: false,
-                    backgroundColor: PZColors.pzWhite,
-                    surfaceTintColor: PZColors.pzWhite,
-                    floating: false,
+                  SliverPersistentHeader(
                     pinned: true,
-                    forceElevated: innerBoxIsScrolled,
-                    collapsedHeight:
-                        authUserState.isAuthenticated == true ? 60 : 70,
-                    flexibleSpace: PreferredSize(
-                      preferredSize: const Size.fromHeight(kToolbarHeight),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: Sizes.paddingLeftSmall,
-                            right: Sizes.paddingRightSmall),
-                        child: SizedBox(
-                          child: LayoutBuilder(builder: (context, constraints) {
-                            if (authUserState.isAuthenticated == true) {
-                              return AccountCard(
-                                  accountData: authUserState.userData!);
-                            } else {
-                              return const LoginCard();
-                            }
-                          }),
-                        ),
+                    delegate: _SliverPinnedCardDelegate(
+                      child: Container(
+                        height: authUserState.isAuthenticated == true ? 80 : 90,
+                        color: Colors.white,
+                        child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: Sizes.paddingLeftSmall,
+                                right: Sizes.paddingRightSmall),
+                            child: authUserState.isAuthenticated == true
+                                ? AccountCard(
+                                    accountData: authUserState.userData!)
+                                : const LoginCard()),
                       ),
                     ),
                   ),
+
+                  // SliverAppBar(
+                  //   titleSpacing: 0,
+                  //   automaticallyImplyLeading: false,
+                  //   backgroundColor: PZColors.pzWhite,
+                  //   surfaceTintColor: PZColors.pzWhite,
+                  //   floating: false,
+                  //   pinned: true,
+                  //   forceElevated: innerBoxIsScrolled,
+                  //   collapsedHeight:
+                  //       authUserState.isAuthenticated == true ? 60 : 70,
+                  //   flexibleSpace: PreferredSize(
+                  //     preferredSize: const Size.fromHeight(kToolbarHeight),
+                  //     child: Padding(
+                  //       padding: const EdgeInsets.only(
+                  //           left: Sizes.paddingLeftSmall,
+                  //           right: Sizes.paddingRightSmall),
+                  //       child: SizedBox(
+                  //         child: LayoutBuilder(builder: (context, constraints) {
+                  //           if (authUserState.isAuthenticated == true) {
+                  //             return AccountCard(
+                  //                 accountData: authUserState.userData!);
+                  //           } else {
+                  //             return const LoginCard();
+                  //           }
+                  //         }),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   SliverAppBar(
                     backgroundColor: PZColors.pzWhite,
                     floating: false,
@@ -150,5 +174,28 @@ class AccountWidget extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+class _SliverPinnedCardDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _SliverPinnedCardDelegate({required this.child});
+
+  @override
+  double get minExtent => 80;
+
+  @override
+  double get maxExtent => 80;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }

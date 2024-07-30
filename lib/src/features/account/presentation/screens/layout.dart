@@ -24,7 +24,7 @@ class LayoutScreenState extends ConsumerState<LayoutScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
         padding: const EdgeInsets.all(Sizes.paddingAll),
         child: Column(

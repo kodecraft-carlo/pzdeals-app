@@ -12,41 +12,44 @@ class AccountCard extends StatelessWidget {
     return Card(
         color: PZColors.pzLightGrey,
         elevation: 0,
-        child: ListTile(
-            isThreeLine: true,
-            leading: const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+                dense: true,
+                isThreeLine: false,
+                leading: const Icon(
                   Icons.account_circle,
                   size: Sizes.listIconSize,
                   color: Colors.amber,
-                )
-              ],
-            ),
-            title: Text(
-              'Welcome, ${accountData.firstName} ${accountData.lastName}!',
-              style: const TextStyle(
-                  color: PZColors.pzOrange,
-                  fontWeight: FontWeight.w700,
-                  fontSize: Sizes.listTitleFontSize),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  accountData.emailAddress!,
-                  style: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: Sizes.bodySmallSize,
-                      fontWeight: FontWeight.w600),
                 ),
-                Text(
-                  'Registered: ${formatDateToDisplay(accountData.dateRegistered!, 'MMM dd, yyyy').toString()}',
+                title: Text(
+                  'Welcome, ${accountData.firstName} ${accountData.lastName}!',
                   style: const TextStyle(
-                      color: Colors.black54, fontSize: Sizes.bodySmallSize),
-                )
-              ],
-            )));
+                      color: PZColors.pzOrange,
+                      fontWeight: FontWeight.w700,
+                      fontSize: Sizes.listTitleFontSize),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      accountData.emailAddress!,
+                      style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: Sizes.bodySmallSize,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      'Registered: ${formatDateToDisplay(accountData.dateRegistered!, 'MMM dd, yyyy').toString()}',
+                      style: const TextStyle(
+                          color: Colors.black54, fontSize: Sizes.bodySmallSize),
+                    )
+                  ],
+                ))
+          ],
+        ));
   }
 }
