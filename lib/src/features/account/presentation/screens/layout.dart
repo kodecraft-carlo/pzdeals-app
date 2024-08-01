@@ -24,7 +24,7 @@ class LayoutScreenState extends ConsumerState<LayoutScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
         padding: const EdgeInsets.all(Sizes.paddingAll),
         child: Column(
@@ -88,7 +88,7 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
     final layoutType = ref.watch(layoutTypeProvider);
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-    double itemHeight = screenHeight / 4;
+    double itemHeight = screenHeight * .30;
     double itemWidth = screenWidth / 3.5;
     return Column(
       children: [

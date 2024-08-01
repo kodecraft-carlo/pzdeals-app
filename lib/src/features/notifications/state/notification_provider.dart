@@ -146,21 +146,25 @@ class NotificationListNotifier extends ChangeNotifier {
   }
 
   Future<void> setAsRead(String notifId) async {
-    final notif =
-        _notificationList.firstWhere((element) => element.id == notifId);
-    notif.isRead = true;
-    notifyListeners();
-    _firestoreDb
-        .collection('notifications')
-        .doc(_userUID)
-        .collection('notification')
-        .where('id', isEqualTo: notifId)
-        .get()
-        .then((snapshot) {
-      for (DocumentSnapshot ds in snapshot.docs) {
-        ds.reference.set({'isRead': true}, SetOptions(merge: true));
-      }
-    });
+    try {
+      final notif =
+          _notificationList.firstWhere((element) => element.id == notifId);
+      notif.isRead = true;
+      notifyListeners();
+      _firestoreDb
+          .collection('notifications')
+          .doc(_userUID)
+          .collection('notification')
+          .where('id', isEqualTo: notifId)
+          .get()
+          .then((snapshot) {
+        for (DocumentSnapshot ds in snapshot.docs) {
+          ds.reference.set({'isRead': true}, SetOptions(merge: true));
+        }
+      });
+    } catch (e) {
+      debugPrint('setAsRead error: $e');
+    }
   }
 
   Future<void> setAllAsRead() async {
