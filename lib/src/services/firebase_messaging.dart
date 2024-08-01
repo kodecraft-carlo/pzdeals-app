@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:firebase_core/firebase_core.dart';
@@ -173,11 +174,37 @@ class FirebaseMessagingApi {
     debugPrint('initFcmToken and refresh listener...');
     final instanceId = await FirebaseInstallations.id;
     String? fcmToken;
-    _firebaseMessaging.getToken().then((token) {
-      fcmTokenService.updateUserFcmToken(instanceId ?? '', token ?? '');
-      debugPrint("FCM Token: $token ~ $instanceId");
-      fcmToken = token;
-    });
+    // _firebaseMessaging.getToken().then((token) {
+    //   fcmTokenService.updateUserFcmToken(instanceId ?? '', token ?? '');
+    //   debugPrint("FCM Token: $token ~ $instanceId");
+    //   fcmToken = token;
+    // });
+
+    Future<void> fetchFcmToken() async {
+      if (Platform.isIOS) {
+        _firebaseMessaging.getAPNSToken().then((apnsToken) {
+          if (apnsToken != null) {
+            _firebaseMessaging.getToken().then((token) {
+              fcmTokenService.updateUserFcmToken(instanceId ?? '', token ?? '');
+              debugPrint("FCM Token: $token ~ $instanceId");
+              fcmToken = token;
+            });
+          } else {
+            debugPrint("APNS token is not set yet. Retrying...");
+            Timer(const Duration(seconds: 5),
+                fetchFcmToken); // Retry after 5 seconds
+          }
+        });
+      } else {
+        _firebaseMessaging.getToken().then((token) {
+          fcmTokenService.updateUserFcmToken(instanceId ?? '', token ?? '');
+          debugPrint("FCM Token: $token ~ $instanceId");
+          fcmToken = token;
+        });
+      }
+    }
+
+    fetchFcmToken();
 
     _firebaseMessaging.onTokenRefresh.listen((newToken) {
       debugPrint("FCM Token Refreshed: $newToken");

@@ -358,9 +358,9 @@ class NotificationService {
     } on DioException catch (e) {
       debugPrint("DioException: ${e.message}");
       throw Exception('Failed to update user settings');
-    } catch (e) {
-      debugPrint('Error updating user settings: $e');
-      throw Exception('Failed to update user settings');
+    } catch (e, stackTrace) {
+      debugPrint('Error updating user settings: $stackTrace');
+      throw Exception('Failed to update user settings $stackTrace');
     }
   }
 
