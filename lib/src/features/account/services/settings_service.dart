@@ -30,11 +30,8 @@ class UserSettingsService {
       } else {
         throw Exception('Failed to fetch user settings');
       }
-    } on DioException catch (e) {
-      debugPrint("DioExceptionw: ${e.message}");
-      throw Exception('Failed to fetch user settings');
-    } catch (e) {
-      debugPrint('Error fetching settings: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching settings: $stackTrace');
       throw Exception('Failed to fetch user settings');
     }
   }
@@ -42,33 +39,44 @@ class UserSettingsService {
   Future<void> updateUserSettings(
       String boxName, String? userId, SettingsData settings) async {
     ApiClient apiClient = ApiClient();
-    try {
-      if (userId == null || userId.isEmpty) return;
-      final int id = await getSettingsId(userId);
-      if (id == 0) {
-        await addUserSettings(boxName, userId, settings);
-        return;
-      }
+    const int maxRetryCount = 3;
+    int retryCount = 0;
+    while (retryCount < maxRetryCount) {
+      try {
+        if (userId == null || userId.isEmpty) return;
+        final int id = await getSettingsId(userId);
+        if (id == 0) {
+          await addUserSettings(boxName, userId, settings);
+          return;
+        }
 
-      Response response = await apiClient.dio.patch(
-          '/items/notification_settings/$id',
-          data: settings.toMapForUpdate(userId)
-          // options: Options(
-          //   headers: {'Authorization': 'Bearer $accessToken'},
-          // ),
-          );
-      if (response.statusCode != 200) {
-        throw Exception(
-            'Unable to update user settings ${response.statusCode} ~ ${response.data}');
+        Response response = await apiClient.dio.patch(
+            '/items/notification_settings/$id',
+            data: settings.toMapForUpdate(userId)
+            // options: Options(
+            //   headers: {'Authorization': 'Bearer $accessToken'},
+            // ),
+            );
+        if (response.statusCode != 200) {
+          throw Exception(
+              'Unable to update user settings ${response.statusCode} ~ ${response.data}');
+        }
+        await _cacheSettings(settings, boxName, userId);
+        await _cacheNumberOfAlerts(settings.numberOfAlerts);
+        return; //exit the loop if successful
+      } catch (e, stackTrace) {
+        debugPrint('Error updating user settings: $stackTrace');
+        retryCount++;
+        if (retryCount < maxRetryCount) {
+          Duration retryDelay =
+              Duration(seconds: 2 * (1 << retryCount)); // Exponential backoff
+          debugPrint('Retrying in ${retryDelay.inSeconds} seconds...');
+          await Future.delayed(retryDelay);
+        } else {
+          throw Exception(
+              'Failed to update user settings after $maxRetryCount attempts');
+        }
       }
-      await _cacheSettings(settings, boxName, userId);
-      await _cacheNumberOfAlerts(settings.numberOfAlerts);
-    } on DioException catch (e) {
-      debugPrint("DioException: ${e.message}");
-      throw Exception('Failed to update user settings');
-    } catch (e, stackTrace) {
-      debugPrint('Error updating user settings: $stackTrace');
-      throw Exception('Failed to update user settings $stackTrace');
     }
   }
 
@@ -161,28 +169,39 @@ class UserSettingsService {
   Future<void> deleteInstanceSetting(String instanceId) async {
     debugPrint('deleteInstanceSetting called for $instanceId');
     ApiClient apiClient = ApiClient();
-    try {
-      final int id = await getSettingsId(instanceId);
-      if (id == 0) {
-        return;
-      }
+    const int maxRetryCount = 3;
+    int retryCount = 0;
+    while (retryCount < maxRetryCount) {
+      try {
+        final int id = await getSettingsId(instanceId);
+        if (id == 0) {
+          return;
+        }
 
-      Response response =
-          await apiClient.dio.delete('/items/notification_settings/$id'
-              // options: Options(
-              //   headers: {'Authorization': 'Bearer $accessToken'},
-              // ),
-              );
-      if (response.statusCode != 204) {
-        throw Exception(
-            'Unable to delete user settings ${response.statusCode} ~ ${response.data}');
+        Response response =
+            await apiClient.dio.delete('/items/notification_settings/$id'
+                // options: Options(
+                //   headers: {'Authorization': 'Bearer $accessToken'},
+                // ),
+                );
+        if (response.statusCode != 204) {
+          throw Exception(
+              'Unable to delete user settings ${response.statusCode} ~ ${response.data}');
+        }
+        return; //exit the loop if successful
+      } catch (e, stackTrace) {
+        debugPrint('Error deleting user settings: $stackTrace');
+        retryCount++;
+        if (retryCount < maxRetryCount) {
+          Duration retryDelay =
+              Duration(seconds: 2 * (1 << retryCount)); // Exponential backoff
+          debugPrint('Retrying in ${retryDelay.inSeconds} seconds...');
+          await Future.delayed(retryDelay);
+        } else {
+          throw Exception(
+              'Failed to delete user settings after $maxRetryCount attempts');
+        }
       }
-    } on DioException catch (e, stackTrace) {
-      debugPrint("DioException: ${e.message}");
-      throw Exception('Failed to delete user settings $stackTrace');
-    } catch (e, stackTrace) {
-      debugPrint('Error deleting user settings: $e');
-      throw Exception('Failed to delete user settings $stackTrace');
     }
   }
 

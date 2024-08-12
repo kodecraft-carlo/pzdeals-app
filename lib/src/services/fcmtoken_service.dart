@@ -42,35 +42,44 @@ class FcmTokenService {
   }
 
   Future<void> updateUserFcmToken(String userUID, String fcmToken) async {
-    debugPrint(
-        'updateUserFcmToken called with $userUID and $fcmToken and $instanceId');
-    ApiClient apiClient = ApiClient();
-    try {
-      final int id = await getUserId(userUID);
-      debugPrint('updateUserFcmToken id: $id');
-      if (id == 0) {
-        await addUserFcmToken(userUID, fcmToken);
-        return;
+    const int maxRetryCount = 3;
+    int retryCount = 0;
+    Duration retryDelay = Duration(seconds: 2 * (1 << retryCount));
+
+    while (retryCount < maxRetryCount) {
+      try {
+        debugPrint(
+            'Attempt ${retryCount + 1}: updateUserFcmToken called with $userUID and $fcmToken');
+        ApiClient apiClient = ApiClient();
+        final int id = await getUserId(userUID);
+        debugPrint('updateUserFcmToken id: $id');
+        if (id == 0) {
+          await addUserFcmToken(userUID, fcmToken);
+          return;
+        }
+        Response response =
+            await apiClient.dio.patch('/items/users/$id', data: {
+          "user_id": userUID,
+          "fcm_token": fcmToken,
+          "instance_id": instanceId,
+        });
+        if (response.statusCode != 200) {
+          throw Exception(
+              'Unable to update user fcm token ${response.statusCode} ~ ${response.data}');
+        }
+        debugPrint('FCM token updated successfully');
+        return; // Exit the loop if successful
+      } catch (e, stackTrace) {
+        debugPrint('Error updating user FCM token: $stackTrace');
+        retryCount++;
+        if (retryCount < maxRetryCount) {
+          debugPrint('Retrying in ${retryDelay.inSeconds} seconds...');
+          await Future.delayed(retryDelay);
+        } else {
+          throw Exception(
+              'Failed to update user FCM token after $maxRetryCount attempts');
+        }
       }
-      Response response = await apiClient.dio.patch('/items/users/$id', data: {
-        "user_id": userUID,
-        "fcm_token": fcmToken,
-        "instance_id": instanceId,
-      }
-          // options: Options(
-          //   headers: {'Authorization': 'Bearer $accessToken'},
-          // ),
-          );
-      if (response.statusCode != 200) {
-        throw Exception(
-            'Unable to update user fcm token ${response.statusCode} ~ ${response.data}');
-      }
-    } on DioException catch (e) {
-      debugPrint("DioException: ${e.message}");
-      throw Exception('Failed to update user fcm token');
-    } catch (e, stackTrace) {
-      debugPrint('Error updating user fcm token: $stackTrace');
-      throw Exception('Failed to update user fcm token');
     }
   }
 

@@ -244,123 +244,145 @@ class NotificationService {
 
 //update notificationreceivedcount and lastnotificationreceivedtimestamp
   Future<void> updateFrontPageNotificationReceivedInfo(String? userId) async {
-    ApiClient apiClient = ApiClient();
-    try {
-      final int id = await getSettingsId(userId!);
-      if (id == 0) return;
+    const int maxRetryCount = 3;
+    int retryCount = 0;
 
-      //fetch notification count and notification received timestamp via userid
-      final Response notifInfoResponse = await apiClient.dio.get(
-        '/items/notification_settings/$id',
-        // options: Options(
-        //   headers: {'Authorization': 'Bearer $accessToken'},
-        // ),
-      );
+    // Exponential backoff retry mechanism
+    while (retryCount < maxRetryCount) {
+      try {
+        ApiClient apiClient = ApiClient();
+        final int id = await getSettingsId(userId!);
+        if (id == 0) return;
 
-      if (notifInfoResponse.statusCode == 200) {
-        final notifInfoResponseData = notifInfoResponse.data["data"];
-        int notificationReceivedCount =
-            notifInfoResponseData['deliveredNotificationCount'] ?? 0;
-        int frontpageNotificationAlertsLimit =
-            notifInfoResponseData['alerts_count'] ?? 10;
-
-        debugPrint(
-            'updateFrontPageNotificationReceivedInfo notificationReceivedCount: $notificationReceivedCount ~ frontpageNotificationAlertsLimit: $frontpageNotificationAlertsLimit');
-        notificationReceivedCount = notificationReceivedCount + 1;
-        //unsubscribe user if notification received count is greater than frontpageNotificationAlertsLimit
-        if (frontpageNotificationAlertsLimit < 30) {
-          debugPrint('has limit of $frontpageNotificationAlertsLimit');
-          if (notificationReceivedCount >= frontpageNotificationAlertsLimit) {
-            debugPrint(
-                'LIMIT REACHED. unsubscribe user from front_page topic ~ $notificationReceivedCount');
-            FirebaseCrashlytics.instance
-                .log("[$userId ~ $id] LIMIT: unsubscribe from front_page.");
-
-            _firebaseMessaging.unsubscribeFromTopic('front_page');
-          }
-        }
-        final Response response = await apiClient.dio.patch(
+        // Fetch notification count and timestamp via userId
+        final Response notifInfoResponse = await apiClient.dio.get(
           '/items/notification_settings/$id',
-          data: {
-            'deliveredNotificationCount': notificationReceivedCount,
-            'lastNotificationReceivedOn': DateTime.now().toIso8601String()
-          },
-          // options: Options(
-          //   headers: {'Authorization': 'Bearer $accessToken'},
-          // ),
         );
 
-        if (response.statusCode != 200) {
-          throw Exception(
-              'Unable to update user notification received info ${response.statusCode} ~ ${response.data}');
+        if (notifInfoResponse.statusCode == 200) {
+          final notifInfoResponseData = notifInfoResponse.data["data"];
+          int notificationReceivedCount =
+              notifInfoResponseData['deliveredNotificationCount'] ?? 0;
+          int frontpageNotificationAlertsLimit =
+              notifInfoResponseData['alerts_count'] ?? 10;
+
+          debugPrint(
+              'updateFrontPageNotificationReceivedInfo notificationReceivedCount: $notificationReceivedCount ~ frontpageNotificationAlertsLimit: $frontpageNotificationAlertsLimit');
+          notificationReceivedCount += 1;
+
+          // Unsubscribe user if notification count exceeds limit
+          if (frontpageNotificationAlertsLimit < 30) {
+            debugPrint('Has limit of $frontpageNotificationAlertsLimit');
+            if (notificationReceivedCount >= frontpageNotificationAlertsLimit) {
+              debugPrint(
+                  'LIMIT REACHED. Unsubscribe user from front_page topic ~ $notificationReceivedCount');
+              FirebaseCrashlytics.instance
+                  .log("[$userId ~ $id] LIMIT: Unsubscribe from front_page.");
+
+              _firebaseMessaging.unsubscribeFromTopic('front_page');
+            }
+          }
+
+          final Response response = await apiClient.dio.patch(
+            '/items/notification_settings/$id',
+            data: {
+              'deliveredNotificationCount': notificationReceivedCount,
+              'lastNotificationReceivedOn': DateTime.now().toIso8601String()
+            },
+          );
+
+          if (response.statusCode != 200) {
+            throw Exception(
+                'Unable to update user notification received info ${response.statusCode} ~ ${response.data}');
+          }
+
+          FirebaseCrashlytics.instance
+              .log("[$userId ~ $id] notification received info updated.");
+          return; // Exit loop if successful
         }
-        FirebaseCrashlytics.instance
-            .log("[$userId ~ $id] notification received info updated.");
+      } catch (e, stackTrace) {
+        debugPrint("Exception: ~ $stackTrace");
+        retryCount++;
+        if (retryCount < maxRetryCount) {
+          Duration retryDelay =
+              Duration(seconds: 2 * (1 << retryCount)); // Exponential backoff
+          debugPrint('Retrying in ${retryDelay.inSeconds} seconds...');
+          await Future.delayed(retryDelay);
+        } else {
+          throw Exception(
+              'Failed to update user notification received info after $maxRetryCount attempts');
+        }
       }
-    } on DioException catch (e, stackTrace) {
-      debugPrint("DioException: ${e.message} ~ $stackTrace");
-      throw Exception('Failed to update user notification received info');
-    } catch (e, stackTrace) {
-      debugPrint('Error updating user notification received info: $stackTrace');
-      throw Exception('Failed to update user notification received info');
     }
   }
 
   Future<void> resetNotificationReceivedInfo() async {
+    const int maxRetryCount = 3;
+    int retryCount = 0;
     ApiClient apiClient = ApiClient();
-    try {
-      if (user != null) {
-        final userId = user?.uid;
-        final int id = await getSettingsId(userId!);
-        if (id == 0) return;
+    while (retryCount < maxRetryCount) {
+      try {
+        if (user != null) {
+          final userId = user?.uid;
+          final int id = await getSettingsId(userId!);
+          if (id == 0) return;
 
-        final Response response = await apiClient.dio.patch(
-          '/items/notification_settings/$id',
-          data: {
-            'deliveredNotificationCount': 0,
-            'lastNotificationReceivedOn': DateTime.now().toIso8601String()
-          },
-          // options: Options(
-          //   headers: {'Authorization': 'Bearer $accessToken'},
-          // ),
-        );
-        _firebaseMessaging.subscribeToTopic('front_page');
+          final Response response = await apiClient.dio.patch(
+            '/items/notification_settings/$id',
+            data: {
+              'deliveredNotificationCount': 0,
+              'lastNotificationReceivedOn': DateTime.now().toIso8601String()
+            },
+            // options: Options(
+            //   headers: {'Authorization': 'Bearer $accessToken'},
+            // ),
+          );
+          _firebaseMessaging.subscribeToTopic('front_page');
 
-        if (response.statusCode != 200) {
-          throw Exception(
-              'Unable to update user settings ${response.statusCode} ~ ${response.data}');
+          if (response.statusCode != 200) {
+            throw Exception(
+                'Unable to update user settings ${response.statusCode} ~ ${response.data}');
+          }
+          return; // Exit loop if successful
+        } else if (_instanceID != null && _instanceID!.isNotEmpty) {
+          final userId = _instanceID;
+          final int id = await getSettingsId(userId!);
+          if (id == 0) return;
+
+          final Response response = await apiClient.dio.patch(
+            '/items/notification_settings/$id',
+            data: {
+              'deliveredNotificationCount': 0,
+              'lastNotificationReceivedOn': DateTime.now().toIso8601String()
+            },
+            // options: Options(
+            //   headers: {'Authorization': 'Bearer $accessToken'},
+            // ),
+          );
+          _firebaseMessaging.subscribeToTopic('front_page');
+
+          if (response.statusCode != 200) {
+            throw Exception(
+                'Unable to update user settings ${response.statusCode} ~ ${response.data}');
+          }
+          return; // Exit loop if successful
+        } else {
+          debugPrint(
+              'addNotification: User is not logged in. using instance ID instead ~ $_instanceID');
         }
-      } else if (_instanceID != null && _instanceID!.isNotEmpty) {
-        final userId = _instanceID;
-        final int id = await getSettingsId(userId!);
-        if (id == 0) return;
-
-        final Response response = await apiClient.dio.patch(
-          '/items/notification_settings/$id',
-          data: {
-            'deliveredNotificationCount': 0,
-            'lastNotificationReceivedOn': DateTime.now().toIso8601String()
-          },
-          // options: Options(
-          //   headers: {'Authorization': 'Bearer $accessToken'},
-          // ),
-        );
-        _firebaseMessaging.subscribeToTopic('front_page');
-
-        if (response.statusCode != 200) {
+      } catch (e, stackTrace) {
+        debugPrint('Error updating user settings: $stackTrace');
+        retryCount++;
+        if (retryCount < maxRetryCount) {
+          Duration retryDelay =
+              Duration(seconds: 2 * (1 << retryCount)); // Exponential backoff
+          debugPrint('Retrying in ${retryDelay.inSeconds} seconds...');
+          await Future.delayed(retryDelay);
+        } else {
           throw Exception(
-              'Unable to update user settings ${response.statusCode} ~ ${response.data}');
+              'Failed to update user settings after $maxRetryCount attempts');
         }
-      } else {
-        debugPrint(
-            'addNotification: User is not logged in. using instance ID instead ~ $_instanceID');
       }
-    } on DioException catch (e) {
-      debugPrint("DioException: ${e.message}");
-      throw Exception('Failed to update user settings');
-    } catch (e, stackTrace) {
-      debugPrint('Error updating user settings: $stackTrace');
-      throw Exception('Failed to update user settings $stackTrace');
     }
   }
 
