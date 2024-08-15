@@ -18,7 +18,7 @@ class FirebaseDynamicLinksApi {
       ),
       iosParameters: IOSParameters(
         bundleId: 'com.app.pzdeals',
-        minimumVersion: '1',
+        minimumVersion: '15',
         appStoreId: 'id284882215', // Your App Store ID
         fallbackUrl: Uri.parse(fallbackUrl),
       ),

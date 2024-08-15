@@ -47,10 +47,11 @@
               "client_type": 3
             },
             {
-              "client_id": "629344566477-7m6sds16skaa309s7v0qgm5dcdqbk0ur.apps.googleusercontent.com",
+              "client_id": "629344566477-6enk327o2hopegbhspmqv2o32t5u78mq.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.pzdeals"
+                "bundle_id": "com.kodecraft.pzdeals",
+                "app_store_id": "1"
               }
             }
           ]

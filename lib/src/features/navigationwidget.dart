@@ -96,7 +96,24 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
         //   }
         // }
       } else {
-        debugPrint('no arguments');
+        final urlArguments = ModalRoute.of(context)!.settings.arguments;
+        if (urlArguments != null && urlArguments is Map<String, dynamic>) {
+          id = urlArguments['product_id'] as String;
+          dealType = urlArguments['type'] as String;
+          if (dealType != '' && dealType == 'deeplink') {
+            debugPrint('from deeplink id: $id');
+            if (id != '') {
+              showProductDeal(int.parse(id));
+            }
+          } else {
+            debugPrint('from others id: $id');
+            if (id != '') {
+              showProductDeal(int.parse(id));
+            }
+          }
+        } else {
+          debugPrint('no arguments');
+        }
       }
     });
     // Future(() {
