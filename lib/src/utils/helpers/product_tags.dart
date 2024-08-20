@@ -61,12 +61,15 @@ String extractTagDealDescription(List<dynamic> tagIds) {
     if (tag == null || tag['tags_id'] == null) {
       continue;
     }
-    final tagDealKey = tag['tags_id']['tag_deal_key'];
-    if (tagDealKey != null) {
-      if (tagDealKey['deal_description'] != null) {
-        tagDealDescription += tagDealKey['deal_description'];
-      }
+    if (tag['tags_id']['deal_description'] != null) {
+      tagDealDescription += tag['tags_id']['deal_description'];
     }
+    // final tagDealKey = tag['tags_id']['tag_deal_key'];
+    // if (tagDealKey != null) {
+    //   if (tagDealKey['deal_description'] != null) {
+    //     tagDealDescription += tagDealKey['deal_description'];
+    //   }
+    // }
   }
   return tagDealDescription != '' ? tagDealDescription : '';
 }
