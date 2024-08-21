@@ -494,6 +494,37 @@ class NotificationService {
     }
   }
 
+  Future<NotificationData> getNotificationById(String notifId) async {
+    try {
+      if (user != null) {
+        final snapshot = await _firestoreDb
+            .collection('notifications')
+            .doc(user?.uid)
+            .collection('notification')
+            .where('id', isEqualTo: notifId)
+            .get();
+        if (snapshot.docs.isNotEmpty) {
+          final notification = NotificationData(
+            id: snapshot.docs[0]["id"],
+            title: snapshot.docs[0]["title"],
+            body: snapshot.docs[0]["body"],
+            timestamp: snapshot.docs[0]["timestamp"],
+            isRead: snapshot.docs[0]["isRead"] as bool,
+            imageUrl: snapshot.docs[0]["imageUrl"],
+          );
+          return notification;
+        }
+        throw Exception('Notification not found');
+      } else {
+        debugPrint('getNotificationById: User is not logged in');
+      }
+      throw Exception('Notification not found');
+    } catch (e, stackTrace) {
+      debugPrint("Error fetching notification data: $stackTrace");
+      throw Exception('Error fetching notification data');
+    }
+  }
+
   Future<List<DocumentSnapshot>> getCachedNotifications(String boxName) async {
     debugPrint("getCachedNotifications called for $boxName");
     final box = await Hive.openBox<DocumentSnapshot>(boxName);

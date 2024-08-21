@@ -277,13 +277,23 @@ class FirebaseMessagingApi {
 
       //not working yet
 
+      String imageSrc = '';
+      if (data["image_url"] != null) {
+        imageSrc = data["image_url"] ?? '';
+      } else if (message["notification"]["android"] != null) {
+        imageSrc = message["notification"]["android"]["imageUrl"] ?? '';
+      } else if (message["notification"]["apple"] != null) {
+        imageSrc = message["notification"]["apple"]["imageUrl"] ?? '';
+      }
+
       navigatorKey.currentState!.pushReplacement(
         MaterialPageRoute(
           builder: (context) =>
               NavigationWidget(initialPageIndex: 2, arguments: {
-            // 'title': message["notification"]["title"],
-            // 'type': data['alert_type'],
-            // 'value': data['value'],
+            'title': message["notification"]["title"] ?? 'Notification',
+            'body': message["notification"]["body"] ?? '',
+            'type': data['alert_type'],
+            'imageUrl': imageSrc,
             'product_id': data['item_id'] ?? '',
             'notification_id': data["messageId"]
           }),

@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:googleapis/photoslibrary/v1.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
@@ -11,10 +13,14 @@ import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/presentation/widgets/product_deal_description.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/more/more.dart';
+// import 'package:pzdeals/src/features/notifications/models/notification_data.dart';
 import 'package:pzdeals/src/features/notifications/notifications.dart';
+import 'package:pzdeals/src/features/notifications/presentation/widgets/notification_dialog.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/features/stores/state/stores_provider.dart';
 import 'package:pzdeals/src/features/stores/stores.dart';
+import 'package:pzdeals/src/models/notification_data.dart';
+import 'package:pzdeals/src/services/notifications_service.dart';
 import 'package:pzdeals/src/state/directus_auth_service.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:pzdeals/src/state/media_query_provider.dart';
@@ -37,6 +43,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   String dealType = '';
   String notifId = '';
   FetchProductDealService productDealService = FetchProductDealService();
+  NotificationService notificationService = NotificationService();
   final GlobalKey<DealsTabControllerWidgetState> dealsKey =
       GlobalKey<DealsTabControllerWidgetState>();
   final GlobalKey<StoresWidgetState> storesKey = GlobalKey<StoresWidgetState>();
@@ -91,9 +98,43 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
         //   }
         // } else {
         //   debugPrint('from others id: $id');
-        //   if (id != '') {
-        showProductDeal(int.parse(id));
-        //   }
+        if (id != '') {
+          showProductDeal(int.parse(id));
+        } else {
+          final notifData = NotificationData(
+              id: notifId,
+              title: widget.arguments['title'] as String,
+              body: widget.arguments['body'] as String,
+              imageUrl: widget.arguments['imageUrl'] as String,
+              data: widget.arguments['data'] ?? '',
+              timestamp: DateTime.now());
+          showNotificationInfo(notifData);
+          // showDialog(
+          //   context: context,
+          //   useRootNavigator: false,
+          //   barrierDismissible: true,
+          //   builder: (context) => ScaffoldMessenger(
+          //     child: Builder(
+          //       builder: (context) => Scaffold(
+          //         backgroundColor: Colors.transparent,
+          //         body: GestureDetector(
+          //           onTap: () => Navigator.of(context).pop(),
+          //           behavior: HitTestBehavior.opaque,
+          //           child: GestureDetector(
+          //             onTap: () {},
+          //             child: BackdropFilter(
+          //               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          //               child: NotificationDialog(
+          //                   notificationData: notificationData),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // );
+          // ref.read(notificationsProvider).setAsRead(notifId);
+        }
         // }
       } else {
         final urlArguments = ModalRoute.of(context)!.settings.arguments;
@@ -201,6 +242,39 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
         );
       }
     });
+  }
+
+  void showNotificationInfo(NotificationData notification) {
+    // ref.read(notificationsProvider).refreshNotification();
+    if (notification.id != '') {
+      // Future.delayed(const Duration(milliseconds: 1000), () {
+      // ref.read(notificationsProvider).markAsRead(notifId);
+      ref.read(notificationsProvider).setAsRead(notification.id);
+      // });
+    }
+    showDialog(
+      context: context,
+      useRootNavigator: false,
+      barrierDismissible: true,
+      builder: (context) => ScaffoldMessenger(
+        child: Builder(
+          builder: (context) => Scaffold(
+            backgroundColor: Colors.transparent,
+            body: GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              behavior: HitTestBehavior.opaque,
+              child: GestureDetector(
+                onTap: () {},
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  child: NotificationDialog(notificationData: notification),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   void scrollChildrenToTop() {

@@ -41,7 +41,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         automaticallyImplyLeading: false,
         surfaceTintColor: PZColors.pzWhite,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            semanticLabel: 'Back Button',
+          ),
           iconSize: Sizes.screenCloseIconSize,
           onPressed: () {
             // Navigator.push(
@@ -78,6 +81,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   'assets/images/forgot.svg',
                   width: width,
                   fit: BoxFit.fitHeight,
+                  semanticsLabel: 'Forgot Password',
                 ),
               ),
               // Center(

@@ -19,6 +19,15 @@ class ManageSavedKeywordScreenState
   bool isEditMode = false;
 
   @override
+  void initState() {
+    super.initState();
+    Future(() {
+      // ref.read(keywordsProvider).loadSavedKeywords();
+      ref.read(keywordsProvider).loadSavedKeywords();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final savedKeywordData =
         ref.watch(keywordsProvider.select((value) => value.savedkeywords));

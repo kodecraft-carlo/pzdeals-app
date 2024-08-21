@@ -20,6 +20,7 @@ class NotificationDialog extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
     double dialogHeight = screenHeight / 1.5;
     return Dialog(
+      alignment: Alignment.center,
       surfaceTintColor: PZColors.pzWhite,
       backgroundColor: PZColors.pzWhite,
       shadowColor: PZColors.pzBlack,
@@ -27,62 +28,74 @@ class NotificationDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Sizes.dialogBorderRadius),
       ),
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: Sizes.paddingTopSmall),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.close,
-                    size: Sizes.largeIconSize,
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                    shape: MaterialStateProperty.all<OutlinedBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(Sizes.buttonBorderRadius),
+      child: SizedBox(
+        // height: dialogHeight,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: Sizes.paddingTopSmall),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.close,
+                      size: Sizes.largeIconSize,
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                      shape: MaterialStateProperty.all<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(Sizes.buttonBorderRadius),
+                        ),
                       ),
                     ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
                 ),
-              ),
-              notificationData.imageUrl != ''
-                  ? CachedNetworkImage(
-                      imageUrl: notificationData.imageUrl,
-                      cacheManager: networkImageCacheManager,
-                      width: MediaQuery.of(context).size.width / 1.5,
-                      fit: BoxFit.fitWidth,
-                    )
-                  : const SizedBox.shrink(),
-              Text(notificationData.title,
-                  style: const TextStyle(
-                      color: PZColors.pzBlack,
-                      fontSize: Sizes.fontSizeLarge,
-                      fontWeight: FontWeight.w700)),
-              notificationData.body != ''
-                  ? Row(
-                      children: [
-                        Expanded(
-                            child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: Sizes.paddingAllSmall,
-                              vertical: Sizes.paddingAllSmall),
-                          child: HtmlContent(
-                            htmlContent: notificationData.body,
-                          ),
-                        ))
-                      ],
-                    )
-                  : const SizedBox.shrink()
-            ],
+                notificationData.imageUrl != ''
+                    ? CachedNetworkImage(
+                        imageUrl: notificationData.imageUrl,
+                        cacheManager: networkImageCacheManager,
+                        width: MediaQuery.of(context).size.width / 1.5,
+                        fit: BoxFit.fitWidth,
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(
+                  height: Sizes.spaceBetweenContent,
+                ),
+                Text(notificationData.title,
+                    style: const TextStyle(
+                        color: PZColors.pzBlack,
+                        fontSize: Sizes.fontSizeMedium,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(
+                    width: MediaQuery.of(context).size.width / 2.2,
+                    child: Divider(
+                      color: Colors.grey[300],
+                      thickness: .75,
+                    )),
+                notificationData.body != ''
+                    ? Row(
+                        children: [
+                          Expanded(
+                              child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: Sizes.paddingAll,
+                                vertical: Sizes.paddingAllSmall),
+                            child: HtmlContent(
+                              htmlContent: notificationData.body,
+                            ),
+                          ))
+                        ],
+                      )
+                    : const SizedBox.shrink()
+              ],
+            ),
           ),
         ),
       ),

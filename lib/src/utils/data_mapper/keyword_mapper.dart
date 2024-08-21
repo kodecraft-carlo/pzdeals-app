@@ -10,16 +10,16 @@ class KeywordDataMapper {
         return KeywordData(
           id: json['id'] ?? '',
           keyword: json['keyword'].toString().toLowerCase(),
-          imageUrl:
-              getCollectionImage(json['local_img'] ?? '', json['image_src']),
+          imageUrl: getCollectionImage(
+              json['local_img'] ?? '', json['image_src'] ?? ''),
           datecreated: keywordType == 'saved'
               ? json['date_subscribed'] ?? ''
               : json['date_created'] ?? '',
           type: json['type'] ?? '',
         );
       }));
-    } catch (e) {
-      debugPrint('Error in mapToKeywordList: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error in mapToKeywordList: $stackTrace');
       throw ('Error in mapToKeywordList $e');
     }
   }

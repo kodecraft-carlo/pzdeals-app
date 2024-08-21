@@ -148,6 +148,7 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
                     // height: itemHeight,
                     fit: BoxFit.fitWidth,
                     width: itemWidth,
+                    semanticLabel: 'Grid View',
                   )
                 : layoutType == 'List'
                     ? Image.asset(
@@ -157,6 +158,7 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
                         // height: itemHeight,
                         fit: BoxFit.fitWidth,
                         width: itemWidth,
+                        semanticLabel: 'List View',
                       )
                     : Image.asset(
                         'assets/images/layout_grid_view.png',
@@ -165,6 +167,7 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
                         // height: itemHeight,
                         fit: BoxFit.fitWidth,
                         width: itemWidth,
+                        semanticLabel: 'Default View',
                       ),
           ),
         )
@@ -183,6 +186,7 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
               iconData,
               size: Sizes.largeIconSize,
               color: layoutType == label ? Colors.grey[800] : Colors.grey[600],
+              semanticLabel: 'Layout Icon',
             ),
           ],
         ),
@@ -195,6 +199,7 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
           child: Icon(
             Icons.check_circle,
             color: layoutType == label ? Colors.green : Colors.transparent,
+            semanticLabel: 'Selected Layout Icon',
           ),
         ),
       ],
