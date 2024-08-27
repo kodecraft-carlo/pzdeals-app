@@ -7,12 +7,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/people/v1.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:pzdeals/src/services/account_delete_service.dart';
 import 'package:pzdeals/src/services/fcmtoken_service.dart';
 
 final authProvider = Provider<AuthService>((ref) => AuthService());
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AccountDeleteService accountDeleteService = AccountDeleteService();
   bool isUserAuthenticated = false;
   String _userUID = '';
   String _googleToken = '';
@@ -85,8 +87,8 @@ class AuthService {
     } on PlatformException catch (error) {
       debugPrint('PlatformException /Google sign-in error: $error');
       return null;
-    } catch (error) {
-      debugPrint('Google sign-in error: $error');
+    } catch (error, stackTrace) {
+      debugPrint('Google sign-in error: $stackTrace');
       return null;
     }
     return null;
@@ -102,6 +104,25 @@ class AuthService {
     } catch (error) {
       // Handle any errors that occur during sign-out
       debugPrint('Error signing out: $error');
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      debugPrint('Deleting account: $_userUID');
+
+      await accountDeleteService.deleteAccountFromFirestore(_userUID);
+      await accountDeleteService.deleteAccountFromDatabase(_userUID);
+      await accountDeleteService.deleteAccountSettingsFromDatabase(_userUID);
+      await accountDeleteService
+          .deleteAccountForYouConfigFromDatabase(_userUID);
+      await _auth.currentUser!.delete();
+      await googleSignIn.disconnect();
+      await googleSignIn.signOut();
+      setIsUserAuthenticated(false);
+      setUserUID('');
+    } catch (error, stackTrace) {
+      debugPrint('Error deleting account: $stackTrace');
     }
   }
 
@@ -174,7 +195,7 @@ class AuthService {
           .collection('users')
           .doc(userUID)
           .set(userInfo);
-      await fcmTokenService.addUserFcmToken(userUID, fcmToken!);
+      await fcmTokenService.updateUserFcmToken(userUID, fcmToken!);
       return {'code': 'success', 'message': 'success'};
     } on FirebaseException catch (e) {
       debugPrint('Registration failed: $e.message');

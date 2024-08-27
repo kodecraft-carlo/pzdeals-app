@@ -189,6 +189,7 @@ class MainAppState extends ConsumerState<MainApp>
               keyword: '',
             ),
       },
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Poppins',
         useMaterial3: true,

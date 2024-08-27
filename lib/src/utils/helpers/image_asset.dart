@@ -7,7 +7,8 @@ String getStoreImageUrlFromTags(List<dynamic> tagIds) {
       continue;
     }
     final storeImage = tag['tags_id']['image'];
-    if (tag['tags_id']['tag_name'] == 'ac') {
+    String tagName = tag['tags_id']['tag_name'];
+    if (tagName.toLowerCase().trim() == 'ac') {
       return '${AppConfig.directusAssetsUrl}53ec2659-d1a7-4b64-807e-634089893364';
     }
     if (storeImage != null) {

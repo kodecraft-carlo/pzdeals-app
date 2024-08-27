@@ -6,6 +6,8 @@ import 'package:pzdeals/src/features/alerts/presentation/screens/screen_manage_s
 import 'package:pzdeals/src/features/alerts/presentation/widgets/create_alert_field_button.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/grid_popularkeywords.dart';
 import 'package:pzdeals/src/features/alerts/state/keyword_provider.dart';
+import 'package:pzdeals/src/features/authentication/presentation/widgets/dialog_login_required.dart';
+import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class AlertsManagementScreen extends ConsumerStatefulWidget {
   const AlertsManagementScreen({super.key});
@@ -77,6 +79,30 @@ class AlertsManagementScreenState
                   ),
                   GestureDetector(
                     onTap: () {
+                      if (ref.read(authUserDataProvider).userData == null) {
+                        showDialog(
+                          context: context,
+                          useRootNavigator: false,
+                          barrierDismissible: true,
+                          builder: (context) => ScaffoldMessenger(
+                            child: Builder(
+                              builder: (context) => Scaffold(
+                                backgroundColor: Colors.transparent,
+                                body: GestureDetector(
+                                  onTap: () => Navigator.of(context).pop(),
+                                  behavior: HitTestBehavior.opaque,
+                                  child: GestureDetector(
+                                    onTap: () {},
+                                    child: const LoginRequiredDialog(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                        debugPrint('User not authenticated');
+                        return;
+                      }
                       showModalBottomSheet(
                           context: context,
                           constraints: BoxConstraints(

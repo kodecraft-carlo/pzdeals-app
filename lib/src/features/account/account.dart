@@ -10,6 +10,7 @@ import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'dart:io' show Platform;
 
 import 'package:pzdeals/src/state/media_query_provider.dart';
+import 'package:pzdeals/src/utils/helpers/check_screen_size.dart';
 
 class AccountWidget extends ConsumerStatefulWidget {
   const AccountWidget({super.key});
@@ -22,6 +23,7 @@ class AccountWidgetState extends ConsumerState<AccountWidget> {
   Widget build(BuildContext context) {
     final authUserState = ref.watch(authUserDataProvider);
     final mediaQueryState = ref.watch(mediaqueryProvider);
+    bool smallScreen = isSmallScreen(context);
     Widget tabBars;
     Widget tabBarView;
     tabBars = TabBar(
@@ -65,7 +67,9 @@ class AccountWidgetState extends ConsumerState<AccountWidget> {
           child: Scaffold(
             backgroundColor: Colors.white,
             body: NestedScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: smallScreen == true
+                  ? const AlwaysScrollableScrollPhysics()
+                  : const NeverScrollableScrollPhysics(),
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
                   SliverAppBar(

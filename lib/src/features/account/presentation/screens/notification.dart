@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:googleapis/servicecontrol/v2.dart';
 import 'package:pzdeals/src/common_widgets/dropdown_widget.dart';
 import 'package:pzdeals/src/common_widgets/list_tile_switch.dart';
 import 'package:pzdeals/src/constants/index.dart';
+import 'package:pzdeals/src/features/account/presentation/widgets/delete_account_button.dart';
 import 'package:pzdeals/src/features/account/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/account/state/settings_provider.dart';
+import 'package:pzdeals/src/features/authentication/presentation/widgets/dialog_login_required.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/utils/field_validation/index.dart';
 
@@ -45,6 +48,29 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   }
 
   void alertsOnChanged(double value) {
+    if (ref.watch(authUserDataProvider).isAuthenticated == false) {
+      showDialog(
+        context: context,
+        useRootNavigator: false,
+        barrierDismissible: true,
+        builder: (context) => ScaffoldMessenger(
+          child: Builder(
+            builder: (context) => Scaffold(
+              backgroundColor: Colors.transparent,
+              body: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                behavior: HitTestBehavior.opaque,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: const LoginRequiredDialog(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     setState(() {
       alertsCount = value;
     });
@@ -59,6 +85,29 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   }
 
   void onPercentOffChanged(bool value) {
+    if (ref.watch(authUserDataProvider).isAuthenticated == false) {
+      showDialog(
+        context: context,
+        useRootNavigator: false,
+        barrierDismissible: true,
+        builder: (context) => ScaffoldMessenger(
+          child: Builder(
+            builder: (context) => Scaffold(
+              backgroundColor: Colors.transparent,
+              body: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                behavior: HitTestBehavior.opaque,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: const LoginRequiredDialog(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     setState(() {
       isPercentOff = value;
     });
@@ -150,35 +199,44 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                               style: TextStyle(
                                   fontSize: Sizes.listTitleFontSize,
                                   fontWeight: FontWeight.w500)),
-                          SliderWidget(
-                            onChanged: alertsOnChanged,
-                            initialValue:
-                                alertsCount.round() == 0 ? 10 : alertsCount,
-                          ),
+                          allowedWhenAuthenticated(
+                              AbsorbPointer(
+                                absorbing:
+                                    authUserState.isAuthenticated == false,
+                                child: SliderWidget(
+                                  onChanged: alertsOnChanged,
+                                  initialValue: alertsCount.round() == 0
+                                      ? 10
+                                      : alertsCount,
+                                ),
+                              ),
+                              authUserState)
                         ],
                       )
                     : const SizedBox()),
-            ListTileWithSwitchWidget(
-              title: 'Percentage Off Notifications',
-              subtitle: 'Notify me on deals by percent off',
-              value: isPercentOff,
-              onChanged: onPercentOffChanged,
-            ),
+            allowedWhenAuthenticated(
+                ListTileWithSwitchWidget(
+                  title: 'Percentage Off Notifications',
+                  subtitle: 'Notify me on deals by percent off',
+                  value: isPercentOff,
+                  onChanged: onPercentOffChanged,
+                ),
+                authUserState),
             AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: isPercentOff
-                    ? DropdownWidget(
-                        onChanged: thresholdOnChanged,
-                        isDense: true,
-                        initialValue: _selectedThreshold == '0'
-                            ? '50'
-                            : _selectedThreshold,
-                        dropdownLabel: 'Percentage Off Threshold',
-                        dropdownItems: dropdownItems,
-                        validator: thresholdValidator,
-                        isPercentOff: true,
-                      )
-                    : const SizedBox()),
+              duration: const Duration(milliseconds: 300),
+              child: isPercentOff
+                  ? DropdownWidget(
+                      onChanged: thresholdOnChanged,
+                      isDense: true,
+                      initialValue:
+                          _selectedThreshold == '0' ? '50' : _selectedThreshold,
+                      dropdownLabel: 'Percentage Off Threshold',
+                      dropdownItems: dropdownItems,
+                      validator: thresholdValidator,
+                      isPercentOff: true,
+                    )
+                  : const SizedBox(),
+            ),
             const SizedBox(height: Sizes.spaceBetweenSectionsXL),
             authUserState.isAuthenticated == true
                 ? const Column(
@@ -187,7 +245,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                       SizedBox(
                         height: Sizes.spaceBetweenSections,
                       ),
-                      LogoutButton()
+                      LogoutButton(),
                     ],
                   )
                 : const SizedBox(),
@@ -197,6 +255,37 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget allowedWhenAuthenticated(
+      Widget childWidget, AuthUserData authUserState) {
+    return GestureDetector(
+      onTap: () {
+        authUserState.isAuthenticated == false
+            ? showDialog(
+                context: context,
+                useRootNavigator: false,
+                barrierDismissible: true,
+                builder: (context) => ScaffoldMessenger(
+                  child: Builder(
+                    builder: (context) => Scaffold(
+                      backgroundColor: Colors.transparent,
+                      body: GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        behavior: HitTestBehavior.opaque,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: const LoginRequiredDialog(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : null;
+      },
+      child: childWidget,
     );
   }
 }

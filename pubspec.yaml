@@ -83,6 +83,7 @@ dependencies:
   url_launcher: ^6.3.0
   http: ^1.2.1
   firebase_installations: ^16.3.6
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -101,6 +102,13 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/pzdeals_orange.png"
+  adaptive_icon_background: "#F15523" # Only for Android, use a color or image path
+  adaptive_icon_foreground: "assets/images/pzdeals_white.png" # Only for Android, use a different image path if needed
 
 # The following section is specific to Flutter packages.
 flutter:

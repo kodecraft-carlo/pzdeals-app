@@ -5,6 +5,7 @@ import 'package:pzdeals/src/constants/sizes.dart';
 import 'package:pzdeals/src/features/account/presentation/widgets/font_slider.dart';
 import 'package:pzdeals/src/state/layout_type_provider.dart';
 import 'package:pzdeals/src/state/media_query_provider.dart';
+import 'package:pzdeals/src/utils/helpers/check_screen_size.dart';
 
 class LayoutScreen extends ConsumerStatefulWidget {
   const LayoutScreen({super.key});
@@ -23,8 +24,11 @@ class LayoutScreenState extends ConsumerState<LayoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool smallScreen = isSmallScreen(context);
     return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: smallScreen == true
+          ? const AlwaysScrollableScrollPhysics()
+          : const NeverScrollableScrollPhysics(),
       child: Padding(
         padding: const EdgeInsets.all(Sizes.paddingAll),
         child: Column(

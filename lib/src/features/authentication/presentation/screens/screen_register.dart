@@ -209,7 +209,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     fontSize: Sizes.fontSizeMedium,
                     fontWeight: FontWeight.bold)),
           ),
-          destinationScreen: LoginRequiredScreen(message: '',))
+          destinationScreen: LoginRequiredScreen(
+            message: '',
+          ))
     ]);
   }
 
@@ -285,49 +287,55 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               child: SubmitButtonWidget(
                 onSubmit: () async {
                   if (_formKeyInfo.currentState?.validate() ?? false) {
-                    if (_selectedGender != null &&
+                    // if (_selectedGender != null &&
+                    //     formatDateToDisplay(_birthdate, 'MM/dd/yyyy') !=
+                    //         formatDateToDisplay(DateTime.now(), 'MM/dd/yyyy')) {
+                    bool isBirthdayValid =
                         formatDateToDisplay(_birthdate, 'MM/dd/yyyy') !=
-                            formatDateToDisplay(DateTime.now(), 'MM/dd/yyyy')) {
-                      setState(() {
-                        _isSubmitting = true;
-                      });
-                      final userInfo = <String, dynamic>{
-                        "firstName": firstNameController.text.trim(),
-                        "lastName": lastNameController.text.trim(),
-                        "birthDate": _birthdate.toIso8601String(),
-                        "gender": _selectedGender.toString().toUpperCase(),
-                        "phoneNumber": phoneController.text.trim(),
-                        "uID": userUID,
-                      };
-                      Map<String, String> result = await ref
-                          .read(authProvider)
-                          .registerAccountInfo(userInfo, userUID!);
+                            formatDateToDisplay(DateTime.now(), 'MM/dd/yyyy');
+                    setState(() {
+                      _isSubmitting = true;
+                    });
+                    final userInfo = <String, dynamic>{
+                      "firstName": firstNameController.text.trim(),
+                      "lastName": lastNameController.text.trim(),
+                      "birthDate":
+                          isBirthdayValid ? _birthdate.toIso8601String() : null,
+                      "gender": _selectedGender == null
+                          ? "Prefer not to say"
+                          : _selectedGender.toString().toUpperCase(),
+                      "phoneNumber": phoneController.text.trim(),
+                      "uID": userUID,
+                    };
+                    Map<String, String> result = await ref
+                        .read(authProvider)
+                        .registerAccountInfo(userInfo, userUID!);
 
-                      if (result['code'] == 'success') {
-                        if (mounted) {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return SuccessfulRegistrationScreen(
-                              firstName: firstNameController.text.trim(),
-                            );
-                          }));
-                        }
-                      } else {
-                        if (mounted) {
-                          showMessageDialog(context, 'Registration Failed',
-                              result['message'] ?? 'Registration failed', () {
-                            Navigator.of(context).pop();
-                          }, "OK");
-                        }
+                    if (result['code'] == 'success') {
+                      if (mounted) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return SuccessfulRegistrationScreen(
+                            firstName: firstNameController.text.trim(),
+                          );
+                        }));
                       }
                     } else {
                       if (mounted) {
-                        showMessageDialog(context, 'Incomplete Information',
-                            'Please fill in all the required fields', () {
+                        showMessageDialog(context, 'Registration Failed',
+                            result['message'] ?? 'Registration failed', () {
                           Navigator.of(context).pop();
                         }, "OK");
                       }
                     }
+                    // } else {
+                    //   if (mounted) {
+                    //     showMessageDialog(context, 'Incomplete Information',
+                    //         'Please fill in all the required fields', () {
+                    //       Navigator.of(context).pop();
+                    //     }, "OK");
+                    //   }
+                    // }
                   } else {
                     if (mounted) {
                       showMessageDialog(context, 'Incomplete Information',

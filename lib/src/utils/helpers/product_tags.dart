@@ -9,7 +9,8 @@ String getStoreNameFromTags(List<dynamic> tagIds) {
       continue;
     }
     final storeImage = tag['tags_id']['image'];
-    if (tag['tags_id']['tag_name'] == 'ac') {
+    String tagName = tag['tags_id']['tag_name'];
+    if (tagName.toLowerCase().trim() == 'ac') {
       return 'Amazon';
     }
     if (storeImage != null) {

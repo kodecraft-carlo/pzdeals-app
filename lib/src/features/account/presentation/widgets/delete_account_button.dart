@@ -3,99 +3,48 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
-import 'package:pzdeals/src/models/user_data.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
-import 'package:pzdeals/src/state/auth_user_data.dart';
-import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
+import 'package:pzdeals/src/utils/helpers/appbadge.dart';
 
-class AccountCard extends ConsumerWidget {
-  const AccountCard({super.key, required this.accountData});
+class DeleteAccountButton extends ConsumerWidget {
+  const DeleteAccountButton({super.key});
 
-  final UserData accountData;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-        color: PZColors.pzLightGrey,
-        elevation: 0,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              dense: true,
-              isThreeLine: false,
-              leading: const Icon(
-                Icons.account_circle,
-                size: Sizes.listIconSize,
-                color: Colors.amber,
-              ),
-              title: Text(
-                'Welcome, ${accountData.firstName} ${accountData.lastName}!',
-                style: const TextStyle(
-                    color: PZColors.pzOrange,
-                    fontWeight: FontWeight.w700,
-                    fontSize: Sizes.listTitleFontSize),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    accountData.emailAddress!,
-                    style: const TextStyle(
-                        color: Colors.black54,
-                        fontSize: Sizes.bodySmallSize,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    'Registered: ${formatDateToDisplay(accountData.dateRegistered!, 'MMM dd, yyyy').toString()}',
-                    style: const TextStyle(
-                        color: Colors.black54, fontSize: Sizes.bodySmallSize),
-                  )
-                ],
-              ),
-              trailing: ref.watch(authUserDataProvider).isAuthenticated == true
-                  ? PullDownButton(
-                      itemBuilder: (context) => [
-                        PullDownMenuItem(
-                          enabled: true,
-                          title: 'Delete Account',
-                          onTap: () {
-                            showDeleteAccountConfirmationDialog(context, ref);
-                          },
-                          itemTheme: PullDownMenuItemTheme(
-                            textStyle: TextStyle(
-                              color: Platform.isIOS
-                                  ? CupertinoColors.destructiveRed
-                                  : Colors.red,
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                          icon: Platform.isIOS
-                              ? CupertinoIcons.person_crop_circle_badge_xmark
-                              : Icons.person_remove,
-                        ),
-                      ],
-                      buttonBuilder: (context, showMenu) => GestureDetector(
-                        onTap: showMenu,
-                        child: Icon(
-                          Platform.isIOS
-                              ? CupertinoIcons.ellipsis_vertical
-                              : Icons.more_vert,
-                          color: PZColors.pzOrange,
-                        ),
-                      ),
-                    )
-                  : null,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: TextButton(
+            style: const ButtonStyle(
+              splashFactory: NoSplash.splashFactory,
             ),
-          ],
-        ));
+            onPressed: () {
+              _showDeleteAccountConfirmationDialog(context, ref);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Delete Account',
+                  style: TextStyle(
+                    color: Platform.isIOS
+                        ? CupertinoColors.destructiveRed
+                        : Colors.red.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  void showDeleteAccountConfirmationDialog(
+  void _showDeleteAccountConfirmationDialog(
       BuildContext context, WidgetRef ref) {
     Platform.isIOS
         ? showCupertinoDialog(
@@ -127,7 +76,9 @@ class AccountCard extends ConsumerWidget {
                   ),
                   CupertinoDialogAction(
                     onPressed: () async {
-                      await ref.read(authProvider).deleteAccount();
+                      await ref.read(authProvider).signOutFirebaseAuth();
+                      await ref.read(authProvider).signOutGoogle();
+                      clearBadgeCount();
                       debugPrint('User deleted account');
                       if (context.mounted) {
                         Navigator.pushReplacement(
@@ -141,9 +92,8 @@ class AccountCard extends ConsumerWidget {
                     child: const Text(
                       "Delete",
                       style: TextStyle(
-                        color: CupertinoColors.destructiveRed,
-                        fontWeight: FontWeight.w500,
-                      ),
+                          color: CupertinoColors.destructiveRed,
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
@@ -180,7 +130,8 @@ class AccountCard extends ConsumerWidget {
                   ),
                   TextButton(
                     onPressed: () async {
-                      await ref.read(authProvider).deleteAccount();
+                      await ref.read(authProvider).signOutFirebaseAuth();
+                      await ref.read(authProvider).signOutGoogle();
                       debugPrint('User deleted account');
                       if (context.mounted) {
                         Navigator.pushReplacement(
@@ -192,9 +143,7 @@ class AccountCard extends ConsumerWidget {
                     },
                     child: const Text(
                       'Delete Account',
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
+                      style: TextStyle(color: Colors.red),
                     ),
                   ),
                 ],
