@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:pzdeals/src/actions/show_dialog.dart';
+import 'package:pzdeals/src/common_widgets/loading_dialog.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/models/user_data.dart';
@@ -11,12 +13,17 @@ import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
 
-class AccountCard extends ConsumerWidget {
+class AccountCard extends ConsumerStatefulWidget {
   const AccountCard({super.key, required this.accountData});
-
   final UserData accountData;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  AccountCardState createState() => AccountCardState();
+}
+
+class AccountCardState extends ConsumerState<AccountCard> {
+  final TextEditingController _passwordController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
     return Card(
         color: PZColors.pzLightGrey,
         elevation: 0,
@@ -33,7 +40,7 @@ class AccountCard extends ConsumerWidget {
                 color: Colors.amber,
               ),
               title: Text(
-                'Welcome, ${accountData.firstName} ${accountData.lastName}!',
+                'Welcome, ${widget.accountData.firstName} ${widget.accountData.lastName}!',
                 style: const TextStyle(
                     color: PZColors.pzOrange,
                     fontWeight: FontWeight.w700,
@@ -44,14 +51,14 @@ class AccountCard extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    accountData.emailAddress!,
+                    widget.accountData.emailAddress!,
                     style: const TextStyle(
                         color: Colors.black54,
                         fontSize: Sizes.bodySmallSize,
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    'Registered: ${formatDateToDisplay(accountData.dateRegistered!, 'MMM dd, yyyy').toString()}',
+                    'Registered: ${formatDateToDisplay(widget.accountData.dateRegistered!, 'MMM dd, yyyy').toString()}',
                     style: const TextStyle(
                         color: Colors.black54, fontSize: Sizes.bodySmallSize),
                   )
@@ -111,11 +118,47 @@ class AccountCard extends ConsumerWidget {
                       fontWeight: FontWeight.w700,
                       color: CupertinoColors.destructiveRed),
                 ),
-                content: const Text(
-                    "Are you sure you want to delete your account? This action cannot be undone."),
+                content: Column(
+                  children: [
+                    const Text(
+                      Wordings.deleteAccountMessage,
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const Divider(color: CupertinoColors.systemGrey),
+                    ref.read(authProvider).signInMethod == 'email'
+                        ? const Text(
+                            "Please enter your password to confirm",
+                          )
+                        : const SizedBox(),
+                    ref.read(authProvider).signInMethod == 'google'
+                        ? const Text(
+                            "You may be asked to sign in with your Google account again to confirm",
+                          )
+                        : const SizedBox(),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    ref.read(authProvider).signInMethod == 'email'
+                        ? CupertinoTextField(
+                            controller: _passwordController,
+                            placeholder: 'Password',
+                            obscureText: true,
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: CupertinoColors.white,
+                              border:
+                                  Border.all(color: CupertinoColors.systemGrey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            onChanged: (value) {},
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
                 actions: [
                   CupertinoDialogAction(
                     onPressed: () {
+                      _passwordController.clear();
                       Navigator.of(context).pop();
                     },
                     child: const Text(
@@ -127,14 +170,48 @@ class AccountCard extends ConsumerWidget {
                   ),
                   CupertinoDialogAction(
                     onPressed: () async {
-                      await ref.read(authProvider).deleteAccount();
-                      debugPrint('User deleted account');
-                      if (context.mounted) {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const NavigationWidget()));
+                      if (ref.read(authProvider).signInMethod == 'email' &&
+                          _passwordController.text.trim().isEmpty) {
+                        return;
+                      }
+                      LoadingDialog.show(context,
+                          message: "Please wait this may take a while");
+                      if (await ref.read(authProvider).reauthenticateUser(
+                          _passwordController.text.trim())) {
+                        await ref.read(authProvider).deleteAccount();
+                        debugPrint('User deleted account');
+                        if (context.mounted) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const NavigationWidget()));
+                        }
+                      } else {
+                        _passwordController.clear();
+
+                        if (context.mounted) {
+                          LoadingDialog.hide(context);
+                          showCupertinoDialog(
+                              context: context,
+                              builder: (context) {
+                                return CupertinoAlertDialog(
+                                  title: const Text('Error'),
+                                  content: const Text('Invalid password'),
+                                  actions: [
+                                    CupertinoDialogAction(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('OK',
+                                          style: TextStyle(
+                                              color:
+                                                  CupertinoColors.activeBlue)),
+                                    )
+                                  ],
+                                );
+                              });
+                        }
                       }
                     },
                     isDestructiveAction: true,
@@ -166,8 +243,42 @@ class AccountCard extends ConsumerWidget {
                     color: Colors.red,
                   ),
                 ),
-                content: const Text(
-                    "Are you sure you want to delete your account? This action cannot be undone."),
+                content: Column(
+                  children: [
+                    const Text(
+                      Wordings.deleteAccountMessage,
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const Divider(color: CupertinoColors.systemGrey),
+                    ref.read(authProvider).signInMethod == 'email'
+                        ? const Text(
+                            "Please enter your password to confirm",
+                          )
+                        : const SizedBox(),
+                    ref.read(authProvider).signInMethod == 'google'
+                        ? const Text(
+                            "You may be asked to sign in with your Google account again to confirm",
+                          )
+                        : const SizedBox(),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    ref.read(authProvider).signInMethod == 'email'
+                        ? CupertinoTextField(
+                            controller: _passwordController,
+                            placeholder: 'Password',
+                            obscureText: true,
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: CupertinoColors.white,
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            onChanged: (value) {},
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
                 actions: [
                   TextButton(
                     onPressed: () {
@@ -180,15 +291,59 @@ class AccountCard extends ConsumerWidget {
                   ),
                   TextButton(
                     onPressed: () async {
-                      await ref.read(authProvider).deleteAccount();
-                      debugPrint('User deleted account');
-                      if (context.mounted) {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const NavigationWidget()));
+                      if (ref.read(authProvider).signInMethod == 'email' &&
+                          _passwordController.text.trim().isEmpty) {
+                        return;
                       }
+
+                      LoadingDialog.show(context,
+                          message: "Please wait this may take a while");
+                      if (await ref.read(authProvider).reauthenticateUser(
+                          _passwordController.text.trim())) {
+                        await ref.read(authProvider).deleteAccount();
+                        debugPrint('User deleted account');
+                        if (context.mounted) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const NavigationWidget()));
+                        }
+                      } else {
+                        _passwordController.clear();
+
+                        if (context.mounted) {
+                          LoadingDialog.hide(context);
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog.adaptive(
+                                  title: const Text('Error'),
+                                  content: const Text('Invalid password'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('OK',
+                                          style: TextStyle(
+                                              color: PZColors.pzOrange)),
+                                    )
+                                  ],
+                                );
+                              });
+                        }
+                      }
+
+                      // await ref.read(authProvider).deleteAccount();
+                      // debugPrint('User deleted account');
+                      // if (context.mounted) {
+                      //   Navigator.pushReplacement(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //           builder: (context) =>
+                      //               const NavigationWidget()));
+                      // }
                     },
                     child: const Text(
                       'Delete Account',

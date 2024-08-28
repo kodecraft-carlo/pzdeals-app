@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
@@ -10,6 +12,7 @@ import 'package:pzdeals/src/common_widgets/text_field.dart';
 import 'package:pzdeals/src/common_widgets/text_widget.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/screens/index.dart';
+import 'package:pzdeals/src/features/authentication/presentation/widgets/apple_signin.dart';
 import 'package:pzdeals/src/features/authentication/presentation/widgets/google_signin.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
@@ -146,11 +149,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               fontWeight: FontWeight.w500)),
                       destinationScreen: ResetPasswordScreen())),
               const DividerWidget(dividerName: "Or"),
-              Center(
-                  child: GoogleSignInButton(
-                clickableWidget: Image.asset('assets/images/logins/google.png',
-                    height: Sizes.mediumIconSize, fit: BoxFit.fitHeight),
-              )),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GoogleSignInButton(
+                    clickableWidget: Image.asset(
+                        'assets/images/logins/google.png',
+                        height: Sizes.mediumIconSize,
+                        fit: BoxFit.fitHeight),
+                  ),
+                  Platform.isIOS ? const SizedBox(width: 28) : const SizedBox(),
+                  Platform.isIOS
+                      ? AppleSignInButton(
+                          clickableWidget: Image.asset(
+                              'assets/images/logins/apple.png',
+                              height: 26,
+                              fit: BoxFit.fitHeight),
+                        )
+                      : const SizedBox(),
+                ],
+              ),
               const SizedBox(height: Sizes.spaceBetweenSectionsXL),
               const Center(
                   child: MaterialNavigateScreen(

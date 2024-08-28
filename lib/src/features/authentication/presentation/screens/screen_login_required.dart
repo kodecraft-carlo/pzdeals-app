@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +9,7 @@ import 'package:pzdeals/src/actions/show_dialog.dart';
 import 'package:pzdeals/src/common_widgets/button_login_with.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/screens/index.dart';
+import 'package:pzdeals/src/features/authentication/presentation/widgets/apple_signin.dart';
 import 'package:pzdeals/src/features/authentication/presentation/widgets/google_signin.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
@@ -106,8 +109,50 @@ class LoginRequiredScreen extends StatelessWidget {
                             }
                           }));
                 }),
-
                 const SizedBox(height: Sizes.spaceBetweenContentSmall),
+                Platform.isIOS
+                    ? Consumer(
+                        builder: (context, ref, child) {
+                          return AppleSignInButton(
+                            clickableWidget: ButtonLoginWith(
+                                buttonLabel: 'Login via Apple',
+                                imageAsset: 'assets/images/logins/apple.png',
+                                onButtonPressed: () async {
+                                  final User? user = await ref
+                                      .read(authProvider)
+                                      .signInWithApple();
+                                  if (user != null) {
+                                    debugPrint(
+                                        'Signed in with Apple: ${user.displayName}');
+                                    if (context.mounted) {
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const NavigationWidget(
+                                                    initialPageIndex: 0,
+                                                  )));
+                                    }
+                                  } else {
+                                    if (context.mounted) {
+                                      showMessageDialog(
+                                          context,
+                                          "Sign-in Failed",
+                                          "Sorry we can't sign you in at the moment.",
+                                          () {
+                                        Navigator.pop(context);
+                                      }, 'OK');
+                                    }
+                                    debugPrint('Apple sign-in failed.');
+                                  }
+                                }),
+                          );
+                        },
+                      )
+                    : const SizedBox(),
+                Platform.isIOS
+                    ? const SizedBox(height: Sizes.spaceBetweenContentSmall)
+                    : const SizedBox(),
                 ButtonLoginWith(
                     buttonLabel: 'Login via Email',
                     imageAsset: 'assets/images/logins/mail.png',
@@ -133,12 +178,6 @@ class LoginRequiredScreen extends StatelessWidget {
                 //       debugPrint("login via facebook");
                 //     }),
                 // const SizedBox(height: Sizes.spaceBetweenContentSmall),
-                // ButtonLoginWith(
-                //     buttonLabel: 'Login via Apple',
-                //     imageAsset: 'assets/images/logins/apple.png',
-                //     onButtonPressed: () {
-                //       debugPrint("login via apple");
-                //     }),
               ],
             ),
           ),

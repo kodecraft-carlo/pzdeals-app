@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +10,7 @@ import 'package:pzdeals/src/actions/show_dialog.dart';
 import 'package:pzdeals/src/common_widgets/button_login_with.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/screens/index.dart';
+import 'package:pzdeals/src/features/authentication/presentation/widgets/apple_signin.dart';
 import 'package:pzdeals/src/features/authentication/presentation/widgets/google_signin.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
@@ -99,7 +101,6 @@ class LoginRequiredDialog extends StatelessWidget {
                               }
                             }));
                   }),
-
                   const SizedBox(height: Sizes.spaceBetweenContentSmall),
                   ButtonLoginWith(
                       buttonLabel: 'Login via Email',
@@ -110,6 +111,7 @@ class LoginRequiredDialog extends StatelessWidget {
                             MaterialPageRoute(
                                 builder: (context) => const LoginScreen()));
                       }),
+
                   const SizedBox(height: Sizes.spaceBetweenSectionsXL),
                   const MaterialNavigateScreen(
                       childWidget: Text("No account yet? Sign Up",

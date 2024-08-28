@@ -9,6 +9,10 @@ import 'package:googleapis/people/v1.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pzdeals/src/services/account_delete_service.dart';
 import 'package:pzdeals/src/services/fcmtoken_service.dart';
+import 'package:pzdeals/src/utils/helpers/generate_nonce.dart'
+    as noncegenerator;
+import 'package:pzdeals/src/utils/helpers/hash_value.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 final authProvider = Provider<AuthService>((ref) => AuthService());
 
@@ -19,6 +23,7 @@ class AuthService {
   String _userUID = '';
   String _googleToken = '';
   String _email = '';
+  String _signInMethod = '';
   final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
     'email',
     'profile',
@@ -34,6 +39,7 @@ class AuthService {
   String get userUID => _userUID;
   String get googleToken => _googleToken;
   String get email => _email;
+  String get signInMethod => _signInMethod;
 
   //Google Sign-in
   Future<User?> signInWithGoogle() async {
@@ -82,6 +88,7 @@ class AuthService {
 
         setIsUserAuthenticated(true);
         setUserUID(user.uid);
+        _signInMethod = 'google';
         return user;
       }
     } on PlatformException catch (error) {
@@ -93,6 +100,62 @@ class AuthService {
     }
     return null;
   }
+
+  //Apple Sign-in
+  Future<User?> signInWithApple() async {
+    debugPrint('Apple sign-in initiated');
+    final rawNonce = noncegenerator.generateNonce();
+    final nonce = sha256ofString(rawNonce);
+
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+      //https://pzdeals-b9228.firebaseapp.com/__/auth/handler
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+      );
+
+      final UserCredential authResult =
+          await _auth.signInWithCredential(oauthCredential);
+
+      final User? user = authResult.user;
+      final AdditionalUserInfo? additionalUserInfo =
+          authResult.additionalUserInfo;
+
+      debugPrint('Apple sign-in successful - uid: ${user!.uid}');
+      debugPrint('Apple sign-in successful - email: ${user.email}');
+      debugPrint(
+          'Apple sign-in successful - profile: ${additionalUserInfo?.profile}');
+      debugPrint('Apple sign-in successful - user: $user');
+      _signInMethod = 'apple';
+
+      //sample response:
+      /**
+       * flutter: Apple sign-in successful - profile: {iat: 1724835686, c_hash: 38dTXHMNieMN0jei1n9Ahw, nonce: c512c3ca1fce964f87dc766029805d18e27a651ed78f710eecf0b0423fffdbd0, email_verified: true, sub: 000419.af69c4088fc2455498a2d8765b74ee0c.0819, aud: com.app.pzdeals, auth_time: 1724835686, exp: 1724922086, email: carlorabe@gmail.com, nonce_supported: true, iss: https://appleid.apple.com}
+       * flutter: Apple sign-in successful - user: User(displayName: null, email: carlorabe@gmail.com, isEmailVerified: true, isAnonymous: false, metadata: UserMetadata(creationTime: 2024-08-28 08:52:40.409Z, lastSignInTime: 2024-08-28 09:01:27.809Z), phoneNumber: null, photoURL: null, providerData, [UserInfo(displayName: null, email: carlorabe@gmail.com, phoneNumber: null, photoURL: null, providerId: apple.com, uid: 000419.af69c4088fc2455498a2d8765b74ee0c.0819)], refreshToken: AMf-vBz4pPOnr49v8nxUonjfE1BG8hD-iqxcAiw-rwJEgQctmJ9QsN_BrvhddyytU83Sd2WV9QNq_zZxykx-0jaujrjDbfnyWE4McyY5PI73pYHE03Mhm2kZT5EjikgjXCz3ZuRF7mdp0GSYvGa3NFNM1iy1-6A4oNcLrAlB75tRKyWls0KoWwIJQiEAgUScgR8PaOby76VqO01y_dZ1U9dROVQc1HwtUHFPIQ6EfeBVSVVCmiQL2_tE9A3PuLQJ1LfLQsTRIP6bBgZvwOXWz23XZcDNRTmUHw, tenantId: null, uid: 8cSBejs7ovbghmPIzONUnlI0yyI2) 
+       * */
+      return user;
+    } catch (e, stackTrace) {
+      debugPrint('Apple sign-in error: $stackTrace');
+      return null;
+    }
+  }
+
+  // Future<void> signOutApple() async {
+  //   try {
+  //     _auth.signOut();
+  //     setIsUserAuthenticated(false);
+  //     setUserUID('');
+  //   } catch (e, stackTrace) {
+  //     debugPrint('Error signing out: $stackTrace');
+  //   }
+  // }
 
   Future<void> signOutGoogle() async {
     try {
@@ -116,14 +179,84 @@ class AuthService {
       await accountDeleteService.deleteAccountSettingsFromDatabase(_userUID);
       await accountDeleteService
           .deleteAccountForYouConfigFromDatabase(_userUID);
-      await _auth.currentUser!.delete();
-      await googleSignIn.disconnect();
-      await googleSignIn.signOut();
-      setIsUserAuthenticated(false);
-      setUserUID('');
+      // Attempt to delete the Firebase user account
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.delete();
+        if (_signInMethod == 'google') {
+          await googleSignIn.disconnect();
+          await googleSignIn.signOut();
+        } else {
+          await _auth.signOut();
+        }
+        setIsUserAuthenticated(false);
+        setUserUID('');
+        debugPrint('Firebase user account deleted successfully.');
+      } else {
+        debugPrint('No authenticated user found.');
+      }
     } catch (error, stackTrace) {
       debugPrint('Error deleting account: $stackTrace');
     }
+  }
+
+  Future<bool> reauthenticateUser(String password) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        //reauthenticate via email and password
+        if (signInMethod == 'email' && password.isNotEmpty) {
+          AuthCredential credential = EmailAuthProvider.credential(
+            email: user.email!,
+            password: password,
+          );
+          await user.reauthenticateWithCredential(credential);
+          debugPrint('User reauthenticated with email');
+          return true;
+        } else if (signInMethod == 'google') {
+          //reauthenticate via google
+          final GoogleSignInAccount? googleSignInAccount =
+              await googleSignIn.signIn();
+          if (googleSignInAccount != null) {
+            final GoogleSignInAuthentication googleSignInAuthentication =
+                await googleSignInAccount.authentication;
+
+            final AuthCredential credential = GoogleAuthProvider.credential(
+              accessToken: googleSignInAuthentication.accessToken,
+              idToken: googleSignInAuthentication.idToken,
+            );
+            await user.reauthenticateWithCredential(credential);
+            debugPrint('User reauthenticated with Google');
+            return true;
+          }
+        } else if (signInMethod == 'apple') {
+          //reauthenticate via apple
+          final rawNonce = noncegenerator.generateNonce();
+          final nonce = sha256ofString(rawNonce);
+
+          final appleCredential = await SignInWithApple.getAppleIDCredential(
+            scopes: [
+              AppleIDAuthorizationScopes.email,
+              AppleIDAuthorizationScopes.fullName,
+            ],
+            nonce: nonce,
+          );
+          //https://pzdeals-b9228.firebaseapp.com/__/auth/handler
+          final oauthCredential = OAuthProvider("apple.com").credential(
+            idToken: appleCredential.identityToken,
+            rawNonce: rawNonce,
+          );
+
+          await user.reauthenticateWithCredential(oauthCredential);
+          debugPrint('User reauthenticated with Apple');
+          return true;
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Reauthentication failed: $e');
+      return false;
+    }
+    return false;
   }
 
   //Firebase Auth
@@ -141,6 +274,8 @@ class AuthService {
       // if (await isFcmTokenChanged(userCredential.user!.uid)) {
       updateFcmToken(userCredential.user!.uid);
       // }
+      _email = email.trim();
+      _signInMethod = 'email';
       return {'code': 'success', 'message': 'User logged in'};
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Login failed';

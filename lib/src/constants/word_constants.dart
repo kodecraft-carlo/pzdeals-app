@@ -21,4 +21,7 @@ class Wordings {
   static const String loginToUnlockFeature = 'Login to unlock this feature!';
   static const String loginToUnlockAmazingFeatures =
       'Login to unlock amazing $appName features!';
+
+  static const String deleteAccountMessage =
+      'Are you sure you want to delete your account? This will permanently remove your account and all associated data. This action cannot be undone.';
 }

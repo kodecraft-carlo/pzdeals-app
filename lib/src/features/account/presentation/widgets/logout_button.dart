@@ -84,6 +84,7 @@ class LogoutButton extends ConsumerWidget {
                     onPressed: () async {
                       await ref.read(authProvider).signOutFirebaseAuth();
                       await ref.read(authProvider).signOutGoogle();
+                      // await ref.read(authProvider).signOutApple();
                       clearBadgeCount();
                       debugPrint('User logged out');
                       if (context.mounted) {
@@ -135,6 +136,7 @@ class LogoutButton extends ConsumerWidget {
                     onPressed: () async {
                       await ref.read(authProvider).signOutFirebaseAuth();
                       await ref.read(authProvider).signOutGoogle();
+                      // await ref.read(authProvider).signOutApple();
                       debugPrint('User logged out');
                       if (context.mounted) {
                         Navigator.pushReplacement(
