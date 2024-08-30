@@ -164,7 +164,7 @@ class LoginRequiredScreen extends StatelessWidget {
                     }),
                 const SizedBox(height: Sizes.spaceBetweenSectionsXL),
                 const MaterialNavigateScreen(
-                    childWidget: Text("No account yet? Sign Up",
+                    childWidget: Text("Don't have an account yet? Sign Up",
                         style: TextStyle(
                             color: PZColors.pzOrange,
                             fontSize: Sizes.fontSizeMedium,

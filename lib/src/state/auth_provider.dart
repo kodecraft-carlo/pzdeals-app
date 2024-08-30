@@ -111,7 +111,7 @@ class AuthService {
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
+          AppleIDAuthorizationScopes.fullName
         ],
         nonce: nonce,
       );
@@ -130,16 +130,58 @@ class AuthService {
 
       debugPrint('Apple sign-in successful - uid: ${user!.uid}');
       debugPrint('Apple sign-in successful - email: ${user.email}');
+      debugPrint('Apple sign-in successful - displayName: ${user.displayName}');
       debugPrint(
           'Apple sign-in successful - profile: ${additionalUserInfo?.profile}');
       debugPrint('Apple sign-in successful - user: $user');
-      _signInMethod = 'apple';
 
-      //sample response:
-      /**
-       * flutter: Apple sign-in successful - profile: {iat: 1724835686, c_hash: 38dTXHMNieMN0jei1n9Ahw, nonce: c512c3ca1fce964f87dc766029805d18e27a651ed78f710eecf0b0423fffdbd0, email_verified: true, sub: 000419.af69c4088fc2455498a2d8765b74ee0c.0819, aud: com.app.pzdeals, auth_time: 1724835686, exp: 1724922086, email: carlorabe@gmail.com, nonce_supported: true, iss: https://appleid.apple.com}
-       * flutter: Apple sign-in successful - user: User(displayName: null, email: carlorabe@gmail.com, isEmailVerified: true, isAnonymous: false, metadata: UserMetadata(creationTime: 2024-08-28 08:52:40.409Z, lastSignInTime: 2024-08-28 09:01:27.809Z), phoneNumber: null, photoURL: null, providerData, [UserInfo(displayName: null, email: carlorabe@gmail.com, phoneNumber: null, photoURL: null, providerId: apple.com, uid: 000419.af69c4088fc2455498a2d8765b74ee0c.0819)], refreshToken: AMf-vBz4pPOnr49v8nxUonjfE1BG8hD-iqxcAiw-rwJEgQctmJ9QsN_BrvhddyytU83Sd2WV9QNq_zZxykx-0jaujrjDbfnyWE4McyY5PI73pYHE03Mhm2kZT5EjikgjXCz3ZuRF7mdp0GSYvGa3NFNM1iy1-6A4oNcLrAlB75tRKyWls0KoWwIJQiEAgUScgR8PaOby76VqO01y_dZ1U9dROVQc1HwtUHFPIQ6EfeBVSVVCmiQL2_tE9A3PuLQJ1LfLQsTRIP6bBgZvwOXWz23XZcDNRTmUHw, tenantId: null, uid: 8cSBejs7ovbghmPIzONUnlI0yyI2) 
-       * */
+      String firstName = '';
+      String lastName = '';
+      String email = '';
+      String phoneNumber = '';
+      String profilePicture = '';
+      String displayName = '';
+
+      email = user.email ?? '';
+      displayName = user.displayName ?? '';
+
+      //if displayName is not null, split the name into first and last name
+      final List<String> nameParts = displayName.split(' ');
+
+      if (nameParts.length > 1) {
+        firstName = nameParts[0];
+        lastName = nameParts[1];
+      } else {
+        firstName = nameParts[0];
+      }
+
+      //if firstName is empty, get the first name from email
+      if (firstName.isEmpty) {
+        firstName = email.split('@')[0];
+      }
+
+      phoneNumber = user.phoneNumber ?? '';
+      profilePicture = user.photoURL ?? '';
+
+      //retrieve additional user information from Apple
+      FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'profilePicture': profilePicture,
+        'gender': '',
+        'birthDate': null,
+        'phoneNumber': phoneNumber,
+        'uID': user.uid,
+      });
+
+      // if (await isFcmTokenChanged(user.uid)) {
+      updateFcmToken(user.uid);
+      // }
+
+      setIsUserAuthenticated(true);
+      setUserUID(user.uid);
+      _signInMethod = 'apple';
       return user;
     } catch (e, stackTrace) {
       debugPrint('Apple sign-in error: $stackTrace');
@@ -230,27 +272,33 @@ class AuthService {
             return true;
           }
         } else if (signInMethod == 'apple') {
-          //reauthenticate via apple
-          final rawNonce = noncegenerator.generateNonce();
-          final nonce = sha256ofString(rawNonce);
+          try {
+            //reauthenticate via apple
+            final rawNonce = noncegenerator.generateNonce();
+            final nonce = sha256ofString(rawNonce);
 
-          final appleCredential = await SignInWithApple.getAppleIDCredential(
-            scopes: [
-              AppleIDAuthorizationScopes.email,
-              AppleIDAuthorizationScopes.fullName,
-            ],
-            nonce: nonce,
-          );
-          //https://pzdeals-b9228.firebaseapp.com/__/auth/handler
-          final oauthCredential = OAuthProvider("apple.com").credential(
-            idToken: appleCredential.identityToken,
-            rawNonce: rawNonce,
-          );
+            final appleCredential = await SignInWithApple.getAppleIDCredential(
+              scopes: [
+                AppleIDAuthorizationScopes.email,
+                AppleIDAuthorizationScopes.fullName,
+              ],
+              nonce: nonce,
+            );
+            //https://pzdeals-b9228.firebaseapp.com/__/auth/handler
+            final oauthCredential = OAuthProvider("apple.com").credential(
+              idToken: appleCredential.identityToken,
+              rawNonce: rawNonce,
+            );
 
-          await user.reauthenticateWithCredential(oauthCredential);
-          debugPrint('User reauthenticated with Apple');
-          return true;
+            await user.reauthenticateWithCredential(oauthCredential);
+            debugPrint('User reauthenticated with Apple');
+            return true;
+          } catch (e, stackTrace) {
+            debugPrint('Reauthentication failed: $stackTrace');
+            return false;
+          }
         }
+        return false;
       }
     } on FirebaseAuthException catch (e) {
       debugPrint('Reauthentication failed: $e');

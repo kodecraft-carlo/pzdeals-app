@@ -250,14 +250,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ),
       const SizedBox(height: Sizes.spaceBetweenContent),
       DropdownWidget(
-          onChanged: (value) {
-            setState(() {
-              _selectedGender = value;
-            });
-          },
-          dropdownLabel: 'Gender',
-          dropdownItems: dropdownItems,
-          validator: genderValidator),
+        onChanged: (value) {
+          setState(() {
+            _selectedGender = value;
+          });
+        },
+        dropdownLabel: 'Gender',
+        dropdownItems: dropdownItems,
+      ),
       const SizedBox(height: Sizes.spaceBetweenContent),
       DatePickerFormField(
         label: 'Birthday',

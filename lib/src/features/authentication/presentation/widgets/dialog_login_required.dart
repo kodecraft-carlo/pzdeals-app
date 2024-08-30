@@ -102,6 +102,49 @@ class LoginRequiredDialog extends StatelessWidget {
                             }));
                   }),
                   const SizedBox(height: Sizes.spaceBetweenContentSmall),
+                  Platform.isIOS
+                      ? Consumer(
+                          builder: (context, ref, child) {
+                            return AppleSignInButton(
+                              clickableWidget: ButtonLoginWith(
+                                  buttonLabel: 'Login via Apple',
+                                  imageAsset: 'assets/images/logins/apple.png',
+                                  onButtonPressed: () async {
+                                    final User? user = await ref
+                                        .read(authProvider)
+                                        .signInWithApple();
+                                    if (user != null) {
+                                      debugPrint(
+                                          'Signed in with Apple: ${user.displayName}');
+                                      if (context.mounted) {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const NavigationWidget(
+                                                      initialPageIndex: 0,
+                                                    )));
+                                      }
+                                    } else {
+                                      if (context.mounted) {
+                                        showMessageDialog(
+                                            context,
+                                            "Sign-in Failed",
+                                            "Sorry we can't sign you in at the moment.",
+                                            () {
+                                          Navigator.pop(context);
+                                        }, 'OK');
+                                      }
+                                      debugPrint('Apple sign-in failed.');
+                                    }
+                                  }),
+                            );
+                          },
+                        )
+                      : const SizedBox(),
+                  Platform.isIOS
+                      ? const SizedBox(height: Sizes.spaceBetweenContentSmall)
+                      : const SizedBox(),
                   ButtonLoginWith(
                       buttonLabel: 'Login via Email',
                       imageAsset: 'assets/images/logins/mail.png',
@@ -114,7 +157,7 @@ class LoginRequiredDialog extends StatelessWidget {
 
                   const SizedBox(height: Sizes.spaceBetweenSectionsXL),
                   const MaterialNavigateScreen(
-                      childWidget: Text("No account yet? Sign Up",
+                      childWidget: Text("Don't have an account yet? Sign Up",
                           style: TextStyle(
                               color: PZColors.pzOrange,
                               fontSize: Sizes.fontSizeMedium,

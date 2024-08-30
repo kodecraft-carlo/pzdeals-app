@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pzdeals/src/actions/show_dialog.dart';
@@ -12,6 +13,7 @@ import 'package:pzdeals/src/models/user_data.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
+import 'package:pzdeals/src/utils/helpers/convert_string.dart';
 
 class AccountCard extends ConsumerStatefulWidget {
   const AccountCard({super.key, required this.accountData});
@@ -88,11 +90,15 @@ class AccountCardState extends ConsumerState<AccountCard> {
                       ],
                       buttonBuilder: (context, showMenu) => GestureDetector(
                         onTap: showMenu,
-                        child: Icon(
-                          Platform.isIOS
-                              ? CupertinoIcons.ellipsis_vertical
-                              : Icons.more_vert,
-                          color: PZColors.pzOrange,
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          color: PZColors.pzLightGrey,
+                          child: Icon(
+                            Platform.isIOS
+                                ? CupertinoIcons.ellipsis_vertical
+                                : Icons.more_vert,
+                            color: PZColors.pzOrange,
+                          ),
                         ),
                       ),
                     )
@@ -130,9 +136,10 @@ class AccountCardState extends ConsumerState<AccountCard> {
                             "Please enter your password to confirm",
                           )
                         : const SizedBox(),
-                    ref.read(authProvider).signInMethod == 'google'
-                        ? const Text(
-                            "You may be asked to sign in with your Google account again to confirm",
+                    ref.read(authProvider).signInMethod == 'google' ||
+                            ref.read(authProvider).signInMethod == 'apple'
+                        ? Text(
+                            "You may be asked to sign in with your ${capitalizeFirstLetter(ref.read(authProvider).signInMethod)} account again to confirm",
                           )
                         : const SizedBox(),
                     const SizedBox(
@@ -197,7 +204,13 @@ class AccountCardState extends ConsumerState<AccountCard> {
                               builder: (context) {
                                 return CupertinoAlertDialog(
                                   title: const Text('Error'),
-                                  content: const Text('Invalid password'),
+                                  content: ref
+                                              .read(authProvider)
+                                              .signInMethod ==
+                                          'email'
+                                      ? const Text('Invalid password')
+                                      : const Text(
+                                          'Unable to complete request. Please try again.'),
                                   actions: [
                                     CupertinoDialogAction(
                                       onPressed: () {
@@ -238,41 +251,53 @@ class AccountCardState extends ConsumerState<AccountCard> {
                 title: const Text(
                   "Delete Account",
                   style: TextStyle(
-                    fontSize: Sizes.fontSizeLarge,
                     fontWeight: FontWeight.w600,
                     color: Colors.red,
                   ),
                 ),
                 content: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
                       Wordings.deleteAccountMessage,
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const Divider(color: CupertinoColors.systemGrey),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     ref.read(authProvider).signInMethod == 'email'
                         ? const Text(
                             "Please enter your password to confirm",
                           )
                         : const SizedBox(),
-                    ref.read(authProvider).signInMethod == 'google'
-                        ? const Text(
-                            "You may be asked to sign in with your Google account again to confirm",
+                    ref.read(authProvider).signInMethod == 'google' ||
+                            ref.read(authProvider).signInMethod == 'apple'
+                        ? Text(
+                            "You may be asked to sign in with your ${capitalizeFirstLetter(ref.read(authProvider).signInMethod)} account again to confirm",
                           )
                         : const SizedBox(),
                     const SizedBox(
                       height: 5,
                     ),
                     ref.read(authProvider).signInMethod == 'email'
-                        ? CupertinoTextField(
+                        ? TextField(
                             controller: _passwordController,
-                            placeholder: 'Password',
                             obscureText: true,
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: CupertinoColors.white,
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(15),
+                            decoration: InputDecoration(
+                              hintText: 'Password',
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      color: PZColors.pzGrey, width: 1),
+                                  borderRadius: BorderRadius.circular(15),
+                                  gapPadding: 0),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      color: PZColors.pzOrange, width: 1),
+                                  borderRadius: BorderRadius.circular(15),
+                                  gapPadding: 0),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 10),
                             ),
                             onChanged: (value) {},
                           )
@@ -319,7 +344,13 @@ class AccountCardState extends ConsumerState<AccountCard> {
                               builder: (context) {
                                 return AlertDialog.adaptive(
                                   title: const Text('Error'),
-                                  content: const Text('Invalid password'),
+                                  content: ref
+                                              .read(authProvider)
+                                              .signInMethod ==
+                                          'email'
+                                      ? const Text('Invalid password')
+                                      : const Text(
+                                          'Unable to complete request. Please try again.'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {

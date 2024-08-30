@@ -173,7 +173,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: Sizes.spaceBetweenSectionsXL),
               const Center(
                   child: MaterialNavigateScreen(
-                      childWidget: Text("No account yet? Sign Up",
+                      childWidget: Text("Don't have an account yet? Sign Up",
                           style: TextStyle(
                               color: PZColors.pzOrange,
                               fontSize: Sizes.fontSizeMedium,
