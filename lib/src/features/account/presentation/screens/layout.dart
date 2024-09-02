@@ -106,7 +106,9 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
                   GestureDetector(
                     onTap: () {
                       if (mounted) {
-                        ref.read(layoutTypeProvider.notifier).state = 'Grid';
+                        ref
+                            .read(layoutTypeProvider.notifier)
+                            .setLayoutType('Grid');
                       }
                     },
                     child: buildIconWithLabel(
@@ -124,7 +126,9 @@ class _IconLayoutState extends ConsumerState<IconLayout> {
                   GestureDetector(
                     onTap: () {
                       if (mounted) {
-                        ref.read(layoutTypeProvider.notifier).state = 'List';
+                        ref
+                            .read(layoutTypeProvider.notifier)
+                            .setLayoutType('List');
                       }
                     },
                     child: buildIconWithLabel(
