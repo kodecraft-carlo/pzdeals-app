@@ -13,20 +13,25 @@ class FirebaseDynamicLinksApi {
           '${AppConfig.firebaseDynamicLinkBaseUrl}/deals?id=$productId'),
       androidParameters: AndroidParameters(
         packageName: 'com.kodecraft.pzdeals',
-        minimumVersion: 34,
-        fallbackUrl: Uri.parse(fallbackUrl), // placeholder value only
+        minimumVersion: 1,
+        fallbackUrl: Uri.parse(
+            fallbackUrl), //if provided, will open this instead of launching the appstore
       ),
       iosParameters: IOSParameters(
         bundleId: 'com.app.pzdeals',
-        minimumVersion: '15',
-        appStoreId: 'id284882215', // Your App Store ID
-        fallbackUrl: Uri.parse(fallbackUrl),
+        minimumVersion: '1',
+        appStoreId: '6502050921', // Your App Store ID
+        fallbackUrl: Uri.parse(
+            fallbackUrl), //if provided, will open this instead of launching the appstore
       ),
       socialMetaTagParameters: SocialMetaTagParameters(
         title: productName,
         description: 'Check this $productDescription from ${Wordings.appName}!',
         imageUrl: Uri.parse(imageUrl),
       ),
+      navigationInfoParameters: const NavigationInfoParameters(
+          // forcedRedirectEnabled: true,
+          ),
     );
 
     final dynamicLink = await _firebaseDynamicLinks.buildShortLink(
