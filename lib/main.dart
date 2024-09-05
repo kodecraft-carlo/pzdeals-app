@@ -131,14 +131,16 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: AnimatedSplashScreen(
-            duration: 1500,
-            centered: true,
-            splashIconSize: 500,
-            splash: const SplashScreenAnimation(),
-            nextScreen: const MainApp(),
-            splashTransition: SplashTransition.fadeTransition,
-            pageTransitionType: page_transition_type.PageTransitionType.fade,
-            backgroundColor: Colors.white));
+          duration: 1500,
+          centered: true,
+          splashIconSize: 500,
+          splash: const SplashScreenAnimation(),
+          nextScreen: const MainApp(),
+          splashTransition: SplashTransition.fadeTransition,
+          pageTransitionType: page_transition_type.PageTransitionType.fade,
+          backgroundColor: PZColors.pzOrange,
+        ),
+        debugShowCheckedModeBanner: false);
   }
 }
 

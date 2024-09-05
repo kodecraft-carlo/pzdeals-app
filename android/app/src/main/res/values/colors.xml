@@ -2,4 +2,5 @@
 <resources>
     <color name="ic_launcher_background">#F15523</color>
     <color name="pz_orange">#F15523</color>
+    <color name="white">#FFFFFF</color>
 </resources>
