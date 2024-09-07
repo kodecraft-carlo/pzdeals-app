@@ -17,21 +17,12 @@ class SplashScreenAnimation extends StatelessWidget {
           children: [
             Lottie.asset(
               key: const Key('splashAnimation'),
-              'assets/images/lottie/circle_white_expanding.json',
+              'assets/images/lottie/splash_screen.json',
               // 'assets/images/lottie/launch_animation_no_droplet.json',
-              height: height,
+              width: 300,
               fit: BoxFit.cover,
               frameRate: const FrameRate(72),
             ),
-            Container(
-              margin: const EdgeInsets.only(top: 0), // 75
-              child: Image.asset(
-                key: const Key('loginScreenLogo'),
-                'assets/images/pzdeals.png',
-                height: 70,
-                fit: BoxFit.fitWidth,
-              ),
-            )
           ],
         ),
       ),

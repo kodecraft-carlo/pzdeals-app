@@ -107,7 +107,7 @@ void main() async {
     await clearBadgeCount();
     await prefs.setBool('hasRunBefore', true);
   }
-  runApp(const ProviderScope(child: SplashScreen()));
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 final bookmarkedproductsProvider =
@@ -138,7 +138,7 @@ class SplashScreen extends StatelessWidget {
           nextScreen: const MainApp(),
           splashTransition: SplashTransition.fadeTransition,
           pageTransitionType: page_transition_type.PageTransitionType.fade,
-          backgroundColor: PZColors.pzOrange,
+          backgroundColor: PZColors.pzWhite,
         ),
         debugShowCheckedModeBanner: false);
   }

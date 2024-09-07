@@ -33,7 +33,10 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
+  pod 'lottie-ios' 
+
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  
   target 'RunnerTests' do
     inherit! :search_paths
   end
