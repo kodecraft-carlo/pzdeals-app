@@ -5,6 +5,7 @@ import 'package:pzdeals/src/common_widgets/textfield_button.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/services/email_service.dart';
 import 'package:pzdeals/src/services/google_sheet_service.dart';
+import 'package:pzdeals/src/services/user_requests_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class StoreInputDialog extends ConsumerStatefulWidget {
@@ -17,6 +18,7 @@ class StoreInputDialog extends ConsumerStatefulWidget {
 class StoreInputDialogState extends ConsumerState<StoreInputDialog> {
   EmailService emailSvc = EmailService();
   GoogleSheetService googletSheetSvc = GoogleSheetService();
+  UserRequestService userRequestService = UserRequestService();
   String storeName = '';
 
   TextEditingController dialogFieldController = TextEditingController();
@@ -76,18 +78,30 @@ class StoreInputDialogState extends ConsumerState<StoreInputDialog> {
                   storeName = dialogFieldController.text.trim();
                 });
                 // if (mounted) LoadingDialog.show(context);
-                googletSheetSvc
-                    .requestStore('?timestamp=${DateTime.now()}'
-                        '&store=${dialogFieldController.text}'
-                        '&email=${authUserDataState.userData?.emailAddress}'
-                        '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
-                    .then((value) {
-                  if (value == true) {
-                    emailSvc.sendEmailStoreSubmission(storeName);
-                    // if (mounted) LoadingDialog.hide(context);
-                  }
-                  // if (mounted) LoadingDialog.hide(context);
-                });
+                userRequestService
+                    .addStoreRequest(
+                        dialogFieldController.text,
+                        '${authUserDataState.userData!.firstName} ${authUserDataState.userData!.lastName}',
+                        authUserDataState.userData?.emailAddress ?? '')
+                    .then((value) => {
+                          if (value == true)
+                            {
+                              emailSvc.sendEmailStoreSubmission(storeName),
+                              // if (mounted) LoadingDialog.hide(context)
+                            }
+                        });
+                // googletSheetSvc
+                //     .requestStore('?timestamp=${DateTime.now()}'
+                //         '&store=${dialogFieldController.text}'
+                //         '&email=${authUserDataState.userData?.emailAddress}'
+                //         '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
+                //     .then((value) {
+                //   if (value == true) {
+                //     emailSvc.sendEmailStoreSubmission(storeName);
+                //     // if (mounted) LoadingDialog.hide(context);
+                //   }
+                //   // if (mounted) LoadingDialog.hide(context);
+                // });
                 showSnackbarWithMessage(context, 'Store submitted. Thank you!');
                 Navigator.of(context).pop();
               },

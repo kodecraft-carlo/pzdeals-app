@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ import 'package:pzdeals/src/features/deals/presentation/screens/screen_cc_deals.
 import 'package:pzdeals/src/features/more/presentation/screens/index.dart';
 import 'package:pzdeals/src/features/more/state/coming_soon_provider.dart';
 import 'package:pzdeals/src/services/google_sheet_service.dart';
+import 'package:pzdeals/src/services/user_requests_service.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
 class MoreShortcutsWidget extends ConsumerStatefulWidget {
@@ -24,16 +26,19 @@ class MoreShortcutsWidget extends ConsumerStatefulWidget {
 class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
   // EmailService emailSvc = EmailService();
   GoogleSheetService googletSheetSvc = GoogleSheetService();
+  UserRequestService userRequestService = UserRequestService();
   String storeName = '';
   TextEditingController dialogFieldController = TextEditingController();
 
   void submitRequest(String requestType, String? email) {
     if (requestType == 'wish_list') {
-      googletSheetSvc.notifyWishlisht('?timestamp=${DateTime.now()}'
-          '&email=${email ?? dialogFieldController.text}');
+      userRequestService.addUserRequest('wish_list', email!);
+      // googletSheetSvc.notifyWishlisht('?timestamp=${DateTime.now()}'
+      //     '&email=${email ?? dialogFieldController.text}');
     } else if (requestType == 'flights') {
-      googletSheetSvc.notifyFlights('?timestamp=${DateTime.now()}'
-          '&email=${email ?? dialogFieldController.text}');
+      userRequestService.addUserRequest('flights', email!);
+      // googletSheetSvc.notifyFlights('?timestamp=${DateTime.now()}'
+      //     '&email=${email ?? dialogFieldController.text}');
     }
     ref.read(comingSoonProvider).setNotifyStatus(true, requestType);
   }

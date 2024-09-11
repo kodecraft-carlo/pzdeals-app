@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:googleapis/admob/v1.dart';
 import 'package:hive/hive.dart';
+import 'package:pzdeals/config.dart';
+import 'package:pzdeals/src/utils/helpers/image_asset.dart';
 import 'package:pzdeals/src/utils/http/http_client.dart';
 
 class ProductService {
@@ -48,18 +51,34 @@ class ProductService {
   }
 
   Future<bool> addToReportedProducts(
-      int productId, String status, String deviceId) async {
+      int productId,
+      String status,
+      String userId,
+      String deviceId,
+      String productImage,
+      String productName) async {
     ApiClient apiClient = ApiClient();
     debugPrint('addToReportedProducts called with $productId and $status');
+
     try {
-      if (await isDeviceAlreadyReported(productId, deviceId) == false) {
-        Response response =
-            await apiClient.dio.post('/items/reported_products', data: {
+      if (await isUserAlreadyReported(productId, userId) == false) {
+        String imageUid = getImageUidFromUrl(productImage);
+        if (imageUid.isEmpty) {
+          imageUid = await getProductImageUid(productImage, productName);
+          await linkImageUidToProduct(productId, imageUid);
+        }
+        final request = {
           "product": productId,
           "status": "unchecked",
-          "is_soldout": true,
-          "device_id": deviceId
-        }
+          "is_soldout": status.toLowerCase() == 'sold-out' ? true : false,
+          "type": status,
+          "device_id": deviceId,
+          "product_image": imageUid,
+          "user_id": userId,
+        };
+        debugPrint('request: $request');
+        Response response =
+            await apiClient.dio.post('/items/reported_products', data: request
                 // options: Options(
                 //   headers: {'Authorization': 'Bearer $accessToken'},
                 // ),
@@ -105,6 +124,97 @@ class ProductService {
     } catch (e) {
       debugPrint('Error isDeviceAlreadyReported: $e');
       throw Exception('Failed to isDeviceAlreadyReported');
+    }
+  }
+
+  Future<bool> isUserAlreadyReported(int productId, String userId) async {
+    ApiClient apiClient = ApiClient();
+    debugPrint('isUserAlreadyReported called with $productId and $userId');
+    try {
+      debugPrint(
+          'query: /items/reported_products?filter[user_id][_eq]=$userId&filter[product][_eq]=$productId');
+      Response response = await apiClient.dio.get(
+          '/items/reported_products?filter[user_id][_eq]=$userId&filter[product][_eq]=$productId'
+          // options: Options(
+          //   headers: {'Authorization': 'Bearer $accessToken'},
+          // ),
+          );
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Unable to isUserAlreadyReported ${response.statusCode} ~ ${response.data}');
+      }
+      return response.data["data"].length > 0;
+    } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      throw Exception('Failed to isUserAlreadyReported');
+    } catch (e, stackTrace) {
+      debugPrint('Error isDeviceAlreadyReported: $stackTrace');
+      throw Exception('Failed to isUserAlreadyReported');
+    }
+  }
+
+  Future<String> getProductImageUid(
+    String productUrl,
+    String productName,
+  ) async {
+    ApiClient apiClient = ApiClient();
+    debugPrint('getProductImageUid called with $productUrl and $productName');
+    final request = {
+      "url": productUrl,
+      "data": {
+        "title": productName,
+        "storage": AppConfig.directusStorage,
+        "folder": AppConfig.directusProductImagesDirectory
+      }
+    };
+    debugPrint('request: $request');
+    try {
+      Response response =
+          await apiClient.dio.post('/files/import', data: request
+              // options: Options(
+              //   headers: {'Authorization': 'Bearer $accessToken'},
+              // ),
+              );
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Unable to getProductImageUid ${response.statusCode} ~ ${response.data}');
+      }
+      //get the image uid from the response
+      return response.data["data"]["id"];
+    } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      throw Exception('Failed to getProductImageUid');
+    } catch (e, stackTrace) {
+      debugPrint('Error getProductImageUid: $stackTrace');
+      throw Exception('Failed to getProductImageUid');
+    }
+  }
+
+  Future<void> linkImageUidToProduct(int productId, String imageUid) async {
+    ApiClient apiClient = ApiClient();
+    debugPrint('linkImageUidToProduct called with $productId and $imageUid');
+    final request = {
+      "product": productId,
+      "local_image": imageUid,
+    };
+    debugPrint('request: $request');
+    try {
+      Response response =
+          await apiClient.dio.patch('/items/products/$productId', data: request
+              // options: Options(
+              //   headers: {'Authorization': 'Bearer $accessToken'},
+              // ),
+              );
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Unable to linkImageUidToProduct ${response.statusCode} ~ ${response.data}');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      throw Exception('Failed to linkImageUidToProduct');
+    } catch (e, stackTrace) {
+      debugPrint('Error linkImageUidToProduct: $stackTrace');
+      throw Exception('Failed to linkImageUidToProduct');
     }
   }
 }

@@ -39,9 +39,11 @@ class ShopCategory extends StatelessWidget {
             collectionId: category.id,
           ),
           childWidget: SquareLabeledIcon(
-              iconTitle: iconTitle,
-              iconImage: category.imageAsset,
-              iconAssetType: category.assetSourceType),
+            iconTitle: iconTitle,
+            iconImage: category.imageAsset,
+            iconAssetType: category.assetSourceType,
+            borderColor: Colors.blueGrey.shade300,
+          ),
         );
       },
     );

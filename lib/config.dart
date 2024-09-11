@@ -9,7 +9,11 @@ class AppConfig {
   static const String firebaseDynamicLinkBaseUrl =
       'https://pzdealsapp.page.link';
 
+  //Directus
   static const String directusUrl = 'https://backend.pzdeals.com';
   static const String directusToken = '1acLfOFDMSdEvIkJ6yAa7Zf78CLNUp7H';
   static const String directusAssetsUrl = 'https://backend.pzdeals.com/assets/';
+  static const String directusProductImagesDirectory =
+      'bd9f1fba-c2ed-470e-8cce-bd2e70c337c8';
+  static const String directusStorage = 's3';
 }

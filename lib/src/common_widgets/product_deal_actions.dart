@@ -42,19 +42,31 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
     }));
   }
 
-  Future<bool> updateProductStatus(int productId, String status,
-      String productName, String productLink) async {
+  Future<void> updateProductStatus(
+      int productId,
+      String status,
+      String productName,
+      String userId,
+      String productImage,
+      String productUrl) async {
     //commented email sending: 04/15/2024
     // if (await productSvc.updateProductSoldoutStatus(productId, status) &&
     //     await emailSvc.sendEmailSoldOut(productName, productLink)) {
     //   return true;
     // }
     final deviceId = await getDeviceId();
-    if (await productSvc.updateProductSoldoutStatus(productId, status) &&
-        await productSvc.addToReportedProducts(productId, status, deviceId)) {
-      return true;
-    }
-    return false;
+    await productSvc
+        .addToReportedProducts(
+            productId, status, userId, deviceId, productImage, productName)
+        .then((value) => {
+              if (value == true)
+                {
+                  if (status == 'Sold-out')
+                    {emailSvc.sendEmailSoldOut(productName, productUrl)}
+                  else
+                    {emailSvc.sendEmailDealAlive(productName, productUrl)}
+                }
+            });
   }
 
   Future<String> getDeviceId() async {
@@ -177,20 +189,29 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                         reportingDealAlive = true;
                       });
                       // if (mounted) LoadingDialog.show(context);
-                      googletSheetSvc
-                          .reportDealAlive('?timestamp=${DateTime.now()}'
-                              '&product=${widget.productData.productName}'
-                              '&url=${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}'
-                              '&email=${authUserDataState.userData?.emailAddress}'
-                              '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
-                          .then((value) {
-                        if (value == true) {
-                          emailSvc.sendEmailDealAlive(
-                              widget.productData.productName,
-                              '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
-                        }
-                        // if (mounted) LoadingDialog.hide(context);
-                      });
+                      updateProductStatus(
+                          widget.productData.productId,
+                          'Deal Alive',
+                          widget.productData.productName,
+                          authUserDataState.userData!.uid,
+                          widget.productData.imageAsset,
+                          '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
+                      // googletSheetSvc
+                      //     .reportDealAlive('?timestamp=${DateTime.now()}'
+                      //         '&product=${widget.productData.productName}'
+                      //         '&url=${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}'
+                      //         '&email=${authUserDataState.userData?.emailAddress}'
+                      //         '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
+                      //     .then((value) {
+                      //   if (value == true) {
+
+                      // emailSvc.sendEmailDealAlive(
+                      //     widget.productData.productName,
+                      //     '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
+
+                      // }
+                      // if (mounted) LoadingDialog.hide(context);
+                      // });
                       showSnackbarWithMessage(
                           context, 'Thanks for letting us know!');
                       Future.delayed(const Duration(milliseconds: 3500), () {
@@ -221,20 +242,28 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
                         reportingSoldOut = true;
                       });
                       // if (mounted) LoadingDialog.show(context);
-                      googletSheetSvc
-                          .reportSoldout('?timestamp=${DateTime.now()}'
-                              '&product=${widget.productData.productName}'
-                              '&url=${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}'
-                              '&email=${authUserDataState.userData?.emailAddress}'
-                              '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
-                          .then((value) {
-                        if (value == true) {
-                          emailSvc.sendEmailSoldOut(
-                              widget.productData.productName,
-                              '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
-                        }
-                        // if (mounted) LoadingDialog.hide(context);
-                      });
+                      // googletSheetSvc
+                      //     .reportSoldout('?timestamp=${DateTime.now()}'
+                      //         '&product=${widget.productData.productName}'
+                      //         '&url=${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}'
+                      //         '&email=${authUserDataState.userData?.emailAddress}'
+                      //         '&name=${authUserDataState.userData?.firstName} ${authUserDataState.userData?.lastName}')
+                      //     .then((value) {
+                      //   if (value == true) {
+                      updateProductStatus(
+                          widget.productData.productId,
+                          'Sold-out',
+                          widget.productData.productName,
+                          authUserDataState.userData!.uid,
+                          widget.productData.imageAsset,
+                          '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
+
+                      // emailSvc.sendEmailSoldOut(widget.productData.productName,
+                      //     '${AppConfig.pzDealsStoreUrl}/${widget.productData.handle}');
+
+                      // }
+                      // if (mounted) LoadingDialog.hide(context);
+                      // });
                       showSnackbarWithMessage(
                           context, 'Thanks for letting us know!');
                       Future.delayed(const Duration(milliseconds: 3500), () {

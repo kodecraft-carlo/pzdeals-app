@@ -13,6 +13,7 @@ import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/services/fcmtoken_service.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
+import 'package:pzdeals/src/utils/helpers/convert_string.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -65,8 +66,8 @@ class FirebaseMessagingApi {
     //add fcmNotifId to payload
     payload = jsonEncode({'fcmNotifId': fcmNotifId, 'payload': payload});
 
-    await _localNotifications.show(
-        notificationId, title, body, notificationDetails,
+    await _localNotifications.show(notificationId, removeHtmlTags(title),
+        removeHtmlTags(body), notificationDetails,
         payload: payload);
   }
 

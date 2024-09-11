@@ -22,21 +22,23 @@ class SquareLabeledIcon extends StatelessWidget {
         AspectRatio(
           aspectRatio: 1,
           child: Container(
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
-              border: Border.all(color: borderColor),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 3,
-                  blurRadius: 9,
-                ),
-              ],
-            ),
-            child: storeIcon(),
-          ),
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
+                border: Border.all(color: borderColor),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 3,
+                    blurRadius: 9,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(Sizes.cardBorderRadius),
+                child: storeIcon(),
+              )),
         ),
         const SizedBox(height: Sizes.spaceBetweenContentSmall),
         Text(

@@ -11,6 +11,7 @@ import 'package:pzdeals/src/features/deals/services/fetch_deals.dart';
 import 'package:pzdeals/src/features/notifications/presentation/widgets/notification_dialog.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/models/notification_data.dart';
+import 'package:pzdeals/src/utils/helpers/convert_string.dart';
 import 'package:pzdeals/src/utils/storage/network_image_cache_manager.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -273,7 +274,7 @@ class NotificationCardWidgetState
                     ),
                   ),
             title: Text(
-              '${notificationData.title.toLowerCase() != "pzdeal alert" ? "" : "${notificationData.title}: "}${notificationData.body.toLowerCase() == "this deal matches front page alert!" ? "This deal matches your PzPicks alert!" : notificationData.body}',
+              '${notificationData.title.toLowerCase() != "pzdeal alert" ? "" : "${notificationData.title}: "}${removeHtmlTags(notificationData.body.toLowerCase()) == "this deal matches front page alert!" ? "This deal matches your PzPicks alert!" : removeHtmlTags(notificationData.body)}',
               style: TextStyle(
                   color: notificationData.isRead
                       ? PZColors.pzGrey

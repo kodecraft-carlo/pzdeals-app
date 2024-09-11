@@ -43,3 +43,12 @@ String getCollectionImage(String localImage, String imageUrl) {
   }
   return '${AppConfig.directusAssetsUrl}$localImage';
 }
+
+String getImageUidFromUrl(String imageUrl) {
+  //check first if image url starts with https://backend.pzdeals.com/assets
+  if (imageUrl.startsWith('https://backend.pzdeals.com/assets')) {
+    //return the last part of the url: https://backend.pzdeals.com/assets/456c24f8-1a42-4c76-aaa7-f8d527cdbbe5
+    return imageUrl.split('/').last;
+  }
+  return '';
+}
