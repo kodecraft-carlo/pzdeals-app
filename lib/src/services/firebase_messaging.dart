@@ -66,8 +66,8 @@ class FirebaseMessagingApi {
     //add fcmNotifId to payload
     payload = jsonEncode({'fcmNotifId': fcmNotifId, 'payload': payload});
 
-    await _localNotifications.show(notificationId, removeHtmlTags(title),
-        removeHtmlTags(body), notificationDetails,
+    await _localNotifications.show(
+        notificationId, title, body, notificationDetails,
         payload: payload);
   }
 

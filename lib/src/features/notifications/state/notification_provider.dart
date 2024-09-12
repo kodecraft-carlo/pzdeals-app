@@ -219,7 +219,7 @@ class NotificationListNotifier extends ChangeNotifier {
   }
 
   void getNotificationsFromStream(String userId) {
-    debugPrint('getNotificationsFromStream called');
+    debugPrint('getNotificationsFromStream called with $userId');
     FirebaseFirestore.instance
         .collection('notifications')
         .doc(userId)

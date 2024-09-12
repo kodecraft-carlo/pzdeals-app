@@ -24,4 +24,19 @@ class Wordings {
 
   static const String deleteAccountMessage =
       'Are you sure you want to delete your account? This will permanently remove your account and all associated data. This action cannot be undone.';
+
+//Settings screen
+  static const String priceMistakeTitle =
+      'Price Mistake & Glitch Notifications';
+  static const String priceMistakeSubtitle =
+      'Notify me on all price mistakes and glitches.';
+
+  static const String pzpicksTitle = 'PzPicks Notifications';
+  static const String pzpicksSubtitle = 'Notify me on the hottest PzPicks.';
+
+  static const String alertsToReceive =
+      'Select how many PzPicks you’d like to receive daily';
+
+  static const String percentoffTitle = 'Percentage Off Notifications';
+  static const String percentoffSubtitle = 'Notify me on deals by percent off.';
 }

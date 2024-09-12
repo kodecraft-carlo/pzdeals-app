@@ -176,14 +176,14 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             const SizedBox(height: Sizes.spaceBetweenContent),
             // 04/04/2024 demo: Price mistake alert (turned on by default and remove on settings)
             ListTileWithSwitchWidget(
-              title: 'Price Mistake & Glitch Notifications',
-              subtitle: 'Notify me on all price mistakes and glitches',
+              title: Wordings.priceMistakeTitle,
+              subtitle: Wordings.priceMistakeSubtitle,
               value: isPriceMistake,
               onChanged: onPriceMistakeChanged,
             ),
             ListTileWithSwitchWidget(
-              title: 'PzPicks Notifications',
-              subtitle: 'Notify me on all PzPicks',
+              title: Wordings.pzpicksTitle,
+              subtitle: Wordings.pzpicksSubtitle,
               value: isFrontPage,
               onChanged: onFrontPageChanged,
             ),
@@ -194,8 +194,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: Sizes.spaceBetweenSections),
-                          const Text(
-                              "Select how many PzPicks you’d like to receive daily",
+                          const Text(Wordings.alertsToReceive,
                               style: TextStyle(
                                   fontSize: Sizes.listTitleFontSize,
                                   fontWeight: FontWeight.w500)),
@@ -216,8 +215,8 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                     : const SizedBox()),
             allowedWhenAuthenticated(
                 ListTileWithSwitchWidget(
-                  title: 'Percentage Off Notifications',
-                  subtitle: 'Notify me on deals by percent off',
+                  title: Wordings.percentoffTitle,
+                  subtitle: Wordings.percentoffSubtitle,
                   value: isPercentOff,
                   onChanged: onPercentOffChanged,
                 ),

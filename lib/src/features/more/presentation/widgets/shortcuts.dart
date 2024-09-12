@@ -32,11 +32,13 @@ class MoreShortcutsWidgetState extends ConsumerState<MoreShortcutsWidget> {
 
   void submitRequest(String requestType, String? email) {
     if (requestType == 'wish_list') {
-      userRequestService.addUserRequest('wish_list', email!);
+      userRequestService.addUserRequest(
+          'wish_list', email ?? dialogFieldController.text);
       // googletSheetSvc.notifyWishlisht('?timestamp=${DateTime.now()}'
       //     '&email=${email ?? dialogFieldController.text}');
     } else if (requestType == 'flights') {
-      userRequestService.addUserRequest('flights', email!);
+      userRequestService.addUserRequest(
+          'flights', email ?? dialogFieldController.text);
       // googletSheetSvc.notifyFlights('?timestamp=${DateTime.now()}'
       //     '&email=${email ?? dialogFieldController.text}');
     }
