@@ -12,8 +12,8 @@ import Lottie
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     FirebaseApp.configure()
-      flutterEngine.run()
-      GeneratedPluginRegistrant.register(with: self.flutterEngine)
+    flutterEngine.run()
+    GeneratedPluginRegistrant.register(with: self.flutterEngine)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
