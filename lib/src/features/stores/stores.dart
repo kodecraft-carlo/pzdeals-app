@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/common_widgets/gradient_progress_bar.dart';
 import 'package:pzdeals/src/common_widgets/sliver_appbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/navigationwidget.dart';
@@ -64,6 +65,7 @@ class StoresWidgetState extends ConsumerState<StoresWidget> {
   @override
   Widget build(BuildContext context) {
     debugPrint('store screen build');
+    final storeState = ref.watch(storescreenProvider);
     return PopScope(
         canPop: false,
         onPopInvoked: (didPop) {
@@ -90,6 +92,15 @@ class StoresWidgetState extends ConsumerState<StoresWidget> {
                           .select((value) => value.storeNames)),
                       searchController: searchController,
                     )),
+                SliverToBoxAdapter(
+                  child: AnimatedOpacity(
+                    opacity: storeState.isLoading && storeState.stores.isEmpty
+                        ? 1
+                        : 0,
+                    duration: const Duration(milliseconds: 300),
+                    child: const AnimatedGradientProgressBar(),
+                  ),
+                ),
                 const SliverToBoxAdapter(
                   child: Align(
                     alignment: Alignment.center,
@@ -97,7 +108,7 @@ class StoresWidgetState extends ConsumerState<StoresWidget> {
                       padding: EdgeInsets.only(
                           left: Sizes.paddingAll,
                           right: Sizes.paddingAll,
-                          top: Sizes.paddingAllSmall),
+                          top: 6),
                       child: Text(
                         Wordings.descStoreScreen,
                         textAlign: TextAlign.center,

@@ -4,6 +4,7 @@ import 'package:googleapis/keep/v1.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/bottomnavigationbar.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
+import 'package:pzdeals/src/common_widgets/gradient_progress_bar.dart';
 import 'package:pzdeals/src/common_widgets/scrollbar.dart';
 import 'package:pzdeals/src/common_widgets/text_widget.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
@@ -113,6 +114,14 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
                         ? MainAxisAlignment.center
                         : MainAxisAlignment.start,
                     children: [
+                      AnimatedOpacity(
+                        opacity: creditcardState.isLoading &&
+                                creditcardState.creditcards.isEmpty
+                            ? 1
+                            : 1,
+                        duration: const Duration(milliseconds: 300),
+                        child: const AnimatedGradientProgressBar(),
+                      ),
                       if (creditcardState.isLoading &&
                           creditcardState.creditcards.isEmpty)
                         const Center(

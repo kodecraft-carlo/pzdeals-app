@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/bottomnavigationbar.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
+import 'package:pzdeals/src/common_widgets/gradient_progress_bar.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/constants/index.dart';
@@ -173,10 +174,13 @@ class CollectionDisplayScreenWidgetState
     final mediaQueryState = ref.watch(mediaqueryProvider);
 
     Widget body;
-    if (productCollectionState.isLoading &&
-        productCollectionState.products.isEmpty) {
-      body = const Center(child: CircularProgressIndicator.adaptive());
-    } else if (productCollectionState.products.isEmpty) {
+    // if (productCollectionState.isLoading &&
+    //     productCollectionState.products.isEmpty) {
+    //   body = const Center(child: CircularProgressIndicator.adaptive());
+    // } else
+
+    if (productCollectionState.products.isEmpty &&
+        !productCollectionState.isLoading) {
       body = Padding(
           padding: const EdgeInsets.all(Sizes.paddingAll),
           child: Column(
@@ -206,25 +210,24 @@ class CollectionDisplayScreenWidgetState
           ));
     } else {
       final productData = productCollectionState.products;
-      body = Stack(
+      body = Column(
         children: [
-          Positioned.fill(
-              child: ProductsDisplay(
-            scrollController: _scrollController,
-            productData: productData,
-            layoutType: layoutType,
-            onRefresh: () async {
-              HapticFeedback.mediumImpact();
-              productCollectionState.refreshDeals();
-            },
-          )),
-          if (productCollectionState.isLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Align(
-                  alignment: Alignment.topCenter,
-                  child: CircularProgressIndicator.adaptive()),
+          AnimatedOpacity(
+            opacity: productCollectionState.isLoading ? 1 : 0,
+            duration: const Duration(milliseconds: 300),
+            child: const AnimatedGradientProgressBar(),
+          ),
+          Expanded(
+            child: ProductsDisplay(
+              scrollController: _scrollController,
+              productData: productData,
+              layoutType: layoutType,
+              onRefresh: () async {
+                HapticFeedback.mediumImpact();
+                productCollectionState.refreshDeals();
+              },
             ),
+          )
         ],
       );
     }

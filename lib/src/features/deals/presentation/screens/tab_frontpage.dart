@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pzdeals/src/common_widgets/gradient_progress_bar.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/deals/deals.dart';
@@ -93,13 +94,12 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
               ],
             ),
           ),
-          if (frontpageState.isLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Align(
-                  alignment: Alignment.topCenter,
-                  child: CircularProgressIndicator.adaptive()),
-            ),
+          AnimatedOpacity(
+            opacity: frontpageState.isLoading ? 1 : 0,
+            duration: const Duration(milliseconds: 300),
+            child: const AnimatedGradientProgressBar(),
+          ),
+          // if (frontpageState.isLoading) const AnimatedGradientProgressBar(),
         ],
       );
     }
