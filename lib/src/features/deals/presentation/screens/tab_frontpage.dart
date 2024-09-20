@@ -33,36 +33,35 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
   @override
   Widget build(BuildContext context) {
     final frontpageState = ref.watch(tabFrontPageProvider);
-    if (frontpageState.isLoading && frontpageState.products.isEmpty) {
-      return const Center(child: CircularProgressIndicator.adaptive());
-    } else if (frontpageState.products.isEmpty) {
+    if (frontpageState.products.isEmpty && frontpageState.isLoading == false) {
       return Padding(
-          padding: const EdgeInsets.all(Sizes.paddingAll),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Lottie.asset(
-                'assets/images/lottie/empty.json',
-                height: 200,
-                fit: BoxFit.fitHeight,
-                frameRate: FrameRate.max,
-                controller: _animationController,
-                onLoaded: (composition) {
-                  _animationController
-                    ..duration = composition.duration
-                    ..forward();
-                },
-              ),
-              const SizedBox(height: Sizes.spaceBetweenSections),
-              const Text(
-                'There are no deals available at the moment. Please check back later.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
-              ),
-            ],
-          ));
+        padding: const EdgeInsets.all(Sizes.paddingAll),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Lottie.asset(
+              'assets/images/lottie/empty.json',
+              height: 200,
+              fit: BoxFit.fitHeight,
+              frameRate: FrameRate.max,
+              controller: _animationController,
+              onLoaded: (composition) {
+                _animationController
+                  ..duration = composition.duration
+                  ..forward();
+              },
+            ),
+            const SizedBox(height: Sizes.spaceBetweenSections),
+            const Text(
+              'There are no deals available at the moment. Please check back later.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: Sizes.fontSizeMedium, color: PZColors.pzGrey),
+            ),
+          ],
+        ),
+      );
     } else {
       final productData = frontpageState.products;
       final layoutType = ref.watch(layoutTypeProvider);
@@ -82,6 +81,9 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
                           color: Colors.black54, fontSize: Sizes.bodyFontSize),
                       textAlign: TextAlign.center,
                     )),
+                const SizedBox(
+                  height: Sizes.paddingAllSmall,
+                ),
                 Expanded(
                     child: ProductsDisplay(
                   productData: productData,
@@ -95,7 +97,11 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
             ),
           ),
           AnimatedOpacity(
-            opacity: frontpageState.isLoading ? 1 : 0,
+            opacity: (frontpageState.isLoading == true &&
+                        frontpageState.products.isEmpty) ||
+                    frontpageState.isRefreshing == true
+                ? 1
+                : 0,
             duration: const Duration(milliseconds: 300),
             child: const AnimatedGradientProgressBar(),
           ),

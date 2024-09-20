@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:pzdeals/main.dart';
 import 'package:pzdeals/src/common_widgets/bottomnavigationbar.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
+import 'package:pzdeals/src/common_widgets/gradient_progress_bar.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/authentication/presentation/screens/screen_login_required.dart';
@@ -64,10 +65,9 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
 
     Widget body;
 
-    if (bookmarkState.isProductLoading && bookmarkState.products.isEmpty) {
-      body = const Center(child: CircularProgressIndicator.adaptive());
-    } else if (bookmarkState.booksmarks.isEmpty &&
-        bookmarkState.products.isEmpty) {
+    if (bookmarkState.booksmarks.isEmpty &&
+        bookmarkState.products.isEmpty &&
+        !bookmarkState.isProductLoading) {
       body = Padding(
           padding: const EdgeInsets.all(Sizes.paddingAll),
           child: Center(
@@ -121,21 +121,23 @@ class BookmarkedScreenWidgetState extends ConsumerState<BookmarkedScreenWidget>
           ));
     } else {
       final productData = bookmarkState.products;
-      body = Stack(
+      body = Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned.fill(
-              child: ProductsDisplay(
-            scrollController: _scrollController,
-            productData: productData,
-            layoutType: layoutType,
-          )),
-          if (bookmarkState.isProductLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-              child: Align(
-                  alignment: Alignment.topCenter,
-                  child: CircularProgressIndicator.adaptive()),
+          AnimatedOpacity(
+            opacity: bookmarkState.isProductLoading ? 1 : 0,
+            duration: const Duration(milliseconds: 300),
+            child: const AnimatedGradientProgressBar(),
+          ),
+          Expanded(
+            child: ProductsDisplay(
+              scrollController: _scrollController,
+              productData: productData,
+              layoutType: layoutType,
             ),
+          ),
         ],
       );
     }

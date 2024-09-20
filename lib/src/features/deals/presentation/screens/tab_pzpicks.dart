@@ -33,9 +33,7 @@ class PZPicksScreenWidgetState extends ConsumerState<PZPicksScreenWidget>
   @override
   Widget build(BuildContext context) {
     final pzpicksState = ref.watch(tabPzPicksProvider);
-    if (pzpicksState.isLoading && pzpicksState.products.isEmpty) {
-      return const Center(child: CircularProgressIndicator.adaptive());
-    } else if (pzpicksState.products.isEmpty) {
+    if (pzpicksState.products.isEmpty && pzpicksState.isLoading == false) {
       return Padding(
           padding: const EdgeInsets.all(Sizes.paddingAll),
           child: Column(
@@ -79,6 +77,9 @@ class PZPicksScreenWidgetState extends ConsumerState<PZPicksScreenWidget>
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.black54, fontSize: Sizes.bodyFontSize),
+              ),
+              const SizedBox(
+                height: Sizes.paddingAllSmall,
               ),
               Expanded(
                 child: ProductsDisplay(

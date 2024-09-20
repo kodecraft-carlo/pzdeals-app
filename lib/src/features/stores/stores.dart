@@ -94,9 +94,7 @@ class StoresWidgetState extends ConsumerState<StoresWidget> {
                     )),
                 SliverToBoxAdapter(
                   child: AnimatedOpacity(
-                    opacity: storeState.isLoading && storeState.stores.isEmpty
-                        ? 1
-                        : 0,
+                    opacity: storeState.isLoading ? 1 : 0,
                     duration: const Duration(milliseconds: 300),
                     child: const AnimatedGradientProgressBar(),
                   ),

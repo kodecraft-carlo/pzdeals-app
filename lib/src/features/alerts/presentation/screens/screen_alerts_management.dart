@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pzdeals/src/common_widgets/gradient_progress_bar.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/alerts/presentation/screens/screen_manage_saved_keywords.dart';
 import 'package:pzdeals/src/features/alerts/presentation/widgets/create_alert_field_button.dart';
@@ -51,93 +52,104 @@ class AlertsManagementScreenState
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.only(
-            top: Sizes.paddingTopSmall,
-            left: Sizes.paddingLeft,
-            right: Sizes.paddingRight),
+          top: Sizes.paddingTopSmall,
+        ),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: GestureDetector(
-                          onTap: () {
-                            scrollToTop();
-                          },
-                          child: const Text(
-                            "Create Deal Alerts",
-                            style: TextStyle(
-                                fontSize: Sizes.headerFontSize,
-                                fontWeight: FontWeight.w600,
-                                color: PZColors.pzBlack),
-                          ),
-                        )),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if (ref.read(authUserDataProvider).userData == null) {
-                        showDialog(
-                          context: context,
-                          useRootNavigator: false,
-                          barrierDismissible: true,
-                          builder: (context) => ScaffoldMessenger(
-                            child: Builder(
-                              builder: (context) => Scaffold(
-                                backgroundColor: Colors.transparent,
-                                body: GestureDetector(
-                                  onTap: () => Navigator.of(context).pop(),
-                                  behavior: HitTestBehavior.opaque,
-                                  child: GestureDetector(
-                                    onTap: () {},
-                                    child: const LoginRequiredDialog(),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: Sizes.paddingLeft, right: Sizes.paddingRight),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: () {
+                              scrollToTop();
+                            },
+                            child: const Text(
+                              "Create Deal Alerts",
+                              style: TextStyle(
+                                  fontSize: Sizes.headerFontSize,
+                                  fontWeight: FontWeight.w600,
+                                  color: PZColors.pzBlack),
+                            ),
+                          )),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        if (ref.read(authUserDataProvider).userData == null) {
+                          showDialog(
+                            context: context,
+                            useRootNavigator: false,
+                            barrierDismissible: true,
+                            builder: (context) => ScaffoldMessenger(
+                              child: Builder(
+                                builder: (context) => Scaffold(
+                                  backgroundColor: Colors.transparent,
+                                  body: GestureDetector(
+                                    onTap: () => Navigator.of(context).pop(),
+                                    behavior: HitTestBehavior.opaque,
+                                    child: GestureDetector(
+                                      onTap: () {},
+                                      child: const LoginRequiredDialog(),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                        debugPrint('User not authenticated');
-                        return;
-                      }
-                      showModalBottomSheet(
-                          context: context,
-                          constraints: BoxConstraints(
-                              maxHeight:
-                                  MediaQuery.of(context).size.height / 1.8),
-                          isScrollControlled: true,
-                          enableDrag: true,
-                          showDragHandle: true,
-                          useSafeArea: true,
-                          builder: (context) => buildSheet(context));
-                    },
-                    child: const Text("Manage keywords",
-                        style: TextStyle(
-                            fontSize: Sizes.fontSizeMedium,
-                            fontWeight: FontWeight.w600,
-                            color: PZColors.pzOrange)),
-                  )
-                ],
+                          );
+                          debugPrint('User not authenticated');
+                          return;
+                        }
+                        showModalBottomSheet(
+                            context: context,
+                            constraints: BoxConstraints(
+                                maxHeight:
+                                    MediaQuery.of(context).size.height / 1.8),
+                            isScrollControlled: true,
+                            enableDrag: true,
+                            showDragHandle: true,
+                            useSafeArea: true,
+                            builder: (context) => buildSheet(context));
+                      },
+                      child: const Text("Manage keywords",
+                          style: TextStyle(
+                              fontSize: Sizes.fontSizeMedium,
+                              fontWeight: FontWeight.w600,
+                              color: PZColors.pzOrange)),
+                    )
+                  ],
+                ),
               ),
               const SizedBox(
-                height: Sizes.spaceBetweenSections,
+                height: Sizes.spaceBetweenContent,
               ),
-              const Text(
-                Wordings.descDealAlerts,
-                style: TextStyle(
-                    fontSize: Sizes.bodyFontSize,
-                    fontWeight: FontWeight.w400,
-                    color: PZColors.pzBlack),
+              const Padding(
+                padding: EdgeInsets.only(
+                    left: Sizes.paddingLeft, right: Sizes.paddingRight),
+                child: Text(
+                  Wordings.descDealAlerts,
+                  style: TextStyle(
+                      fontSize: Sizes.bodyFontSize,
+                      fontWeight: FontWeight.w400,
+                      color: PZColors.pzBlack),
+                ),
               ),
               const SizedBox(height: Sizes.spaceBetweenSectionsXL),
-              CreateAlertFieldButton(
-                textController: textController,
-                buttonLabel: 'Create',
-                textFieldHint: 'Add keyword, store or category',
-                textfieldIcon: Icons.search,
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+                child: CreateAlertFieldButton(
+                  textController: textController,
+                  buttonLabel: 'Create',
+                  textFieldHint: 'Add keyword, store or category',
+                  textfieldIcon: Icons.search,
+                ),
               ),
               const SizedBox(height: Sizes.spaceBetweenSections),
               const Center(
@@ -156,6 +168,11 @@ class AlertsManagementScreenState
                 color: PZColors.pzOrange,
                 height: 1,
               ),
+              AnimatedOpacity(
+                opacity: ref.watch(keywordsProvider).isLoading ? 1 : 0,
+                duration: const Duration(milliseconds: 300),
+                child: const AnimatedGradientProgressBar(),
+              ),
               Expanded(
                 child: RefreshIndicator.adaptive(
                     color: PZColors.pzOrange,
@@ -164,7 +181,11 @@ class AlertsManagementScreenState
                       child: const Column(
                         children: [
                           SizedBox(height: Sizes.spaceBetweenContent),
-                          PopularKeywordsGrid()
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: Sizes.paddingAll),
+                            child: PopularKeywordsGrid(),
+                          ),
                         ],
                       ),
                     ),
@@ -172,7 +193,7 @@ class AlertsManagementScreenState
                       HapticFeedback.mediumImpact();
                       ref.read(keywordsProvider).loadPopularKeywords();
                     }),
-              )
+              ),
             ]),
       ),
     );

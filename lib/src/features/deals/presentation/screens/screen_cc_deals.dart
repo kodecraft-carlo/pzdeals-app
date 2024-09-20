@@ -105,28 +105,26 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
                         kBottomNavigationBarHeight,
                   ),
                   padding: const EdgeInsets.only(
-                    left: Sizes.paddingLeft,
-                    right: Sizes.paddingRight,
+                    // left: Sizes.paddingLeft,
+                    // right: Sizes.paddingRight,
                     bottom: Sizes.paddingBottom,
                   ),
                   child: Column(
-                    mainAxisAlignment: creditcardState.creditcards.isEmpty
+                    mainAxisAlignment: creditcardState.creditcards.isEmpty &&
+                            !creditcardState.isLoading
                         ? MainAxisAlignment.center
                         : MainAxisAlignment.start,
                     children: [
                       AnimatedOpacity(
-                        opacity: creditcardState.isLoading &&
-                                creditcardState.creditcards.isEmpty
-                            ? 1
-                            : 1,
+                        opacity: creditcardState.isLoading ? 1 : 0,
                         duration: const Duration(milliseconds: 300),
                         child: const AnimatedGradientProgressBar(),
                       ),
-                      if (creditcardState.isLoading &&
-                          creditcardState.creditcards.isEmpty)
-                        const Center(
-                            child: CircularProgressIndicator.adaptive())
-                      else if (creditcardState.creditcards.isEmpty)
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      if (creditcardState.creditcards.isEmpty &&
+                          !creditcardState.isLoading)
                         Container(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -164,19 +162,24 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
                         for (int i = 0;
                             i < creditcardState.creditcards.length;
                             i++)
-                          CreditCardItem(
-                            displayType: 'scrollView',
-                            creditCardDealData: creditcardState.creditcards[i],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: Sizes.paddingAll),
+                            child: CreditCardItem(
+                              displayType: 'scrollView',
+                              creditCardDealData:
+                                  creditcardState.creditcards[i],
+                            ),
                           ),
                       const SizedBox(height: Sizes.spaceBetweenContent),
-                      if (creditcardState.isLoading &&
-                          creditcardState.creditcards.isNotEmpty)
-                        const Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                          child: Center(
-                              child: CircularProgressIndicator.adaptive()),
-                        )
+                      // if (creditcardState.isLoading &&
+                      //     creditcardState.creditcards.isNotEmpty)
+                      //   const Padding(
+                      //     padding:
+                      //         EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+                      //     child: Center(
+                      //         child: CircularProgressIndicator.adaptive()),
+                      //   )
                     ],
                   ),
                 ),

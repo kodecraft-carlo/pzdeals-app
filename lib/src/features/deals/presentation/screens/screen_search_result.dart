@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/bottomnavigationbar.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
+import 'package:pzdeals/src/common_widgets/gradient_progress_bar.dart';
 import 'package:pzdeals/src/common_widgets/products_display.dart';
 import 'package:pzdeals/src/common_widgets/search_field.dart';
 import 'package:pzdeals/src/constants/index.dart';
@@ -87,10 +88,7 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
     final searchValue =
         searchState.searchKey != '' ? searchState.searchKey : widget.searchKey;
 
-    if (searchState.isLoading && searchState.products.isEmpty) {
-      searchResultWidget =
-          const Center(child: CircularProgressIndicator.adaptive());
-    } else if (searchState.products.isEmpty) {
+    if (searchState.products.isEmpty && !searchState.isLoading) {
       searchResultWidget = Expanded(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
@@ -128,19 +126,13 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
         child: Stack(
           children: [
             Positioned.fill(
-                child: ProductsDisplay(
-              productData: productData,
-              layoutType: layoutType,
-              scrollKey: 'searchResult',
-              scrollController: _scrollController,
-            )),
-            if (searchState.isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                child: Align(
-                    alignment: Alignment.topCenter,
-                    child: CircularProgressIndicator.adaptive()),
+              child: ProductsDisplay(
+                productData: productData,
+                layoutType: layoutType,
+                scrollKey: 'searchResult',
+                scrollController: _scrollController,
               ),
+            ),
           ],
         ),
       );
@@ -238,9 +230,16 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    AnimatedOpacity(
+                      opacity: searchState.isLoading ? 1 : 0,
+                      duration: const Duration(milliseconds: 300),
+                      child: const AnimatedGradientProgressBar(),
+                    ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: Sizes.paddingAll),
+                      padding: const EdgeInsets.only(
+                          left: Sizes.paddingLeft,
+                          right: Sizes.paddingRight,
+                          top: 4),
                       child: Text.rich(
                         TextSpan(
                           text: "Search result for '",
@@ -265,7 +264,7 @@ class SearchResultScreenState extends ConsumerState<SearchResultScreen>
                         ),
                       ),
                     ),
-                    const SizedBox(height: Sizes.spaceBetweenContent),
+                    const SizedBox(height: Sizes.spaceBetweenContentSmall),
                     if (searchFilterState.isFilterApplied)
                       Padding(
                         padding: const EdgeInsets.symmetric(

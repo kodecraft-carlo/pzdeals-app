@@ -118,7 +118,7 @@ class HtmlContent extends StatelessWidget {
                   'padding-block-start': '0',
                   'padding-block-end': '0',
                   'margin-block-start': '0',
-                  'margin-block-end': '0',
+                  'margin-block-end': '10px',
                   'margin-inline-start': '0',
                   'margin-inline-end': '0',
                 };

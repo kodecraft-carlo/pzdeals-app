@@ -213,7 +213,10 @@ class CollectionDisplayScreenWidgetState
       body = Column(
         children: [
           AnimatedOpacity(
-            opacity: productCollectionState.isLoading ? 1 : 0,
+            opacity: productCollectionState.isLoading ||
+                    productCollectionState.isRefreshing
+                ? 1
+                : 0,
             duration: const Duration(milliseconds: 300),
             child: const AnimatedGradientProgressBar(),
           ),

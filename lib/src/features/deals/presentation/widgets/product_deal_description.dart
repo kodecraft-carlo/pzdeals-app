@@ -13,6 +13,7 @@ import 'package:pzdeals/src/common_widgets/store_image.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
+import 'package:pzdeals/src/utils/helpers/coupon_codes.dart';
 import 'package:pzdeals/src/utils/helpers/launch_external_app_check.dart';
 
 class ProductDealDescription extends ConsumerStatefulWidget {
@@ -358,44 +359,7 @@ class ProductDealDescriptionState
             : const SizedBox.shrink(),
         //Added 05/08/2024 Tag Description
         widget.productData.sku != null && widget.productData.sku!.isNotEmpty
-            ? Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 5,
-                    bottom: 15,
-                    // left: Sizes.paddingAllSmall,
-                  ),
-                  child: RichText(
-                    textAlign: TextAlign.start,
-                    text: TextSpan(children: [
-                      // const TextSpan(
-                      //   text: '•  ',
-                      //   style: TextStyle(
-                      //     color: Colors.black,
-                      //     fontWeight: FontWeight.w600,
-                      //     fontFamily: 'Poppins',
-                      //   ),
-                      // ),
-                      const TextSpan(
-                        text: 'Coupon code ',
-                        style: TextStyle(
-                          color: Colors.black,
-                          // fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      WidgetSpan(
-                          alignment: PlaceholderAlignment.middle,
-                          child: CouponCodeWidget(
-                            text: widget.productData.sku ?? '',
-                            url: widget.productData.barcodeLink ?? '',
-                            couponType: 'deal',
-                          )),
-                    ]),
-                  ),
-                ),
-              )
+            ? displayCouponCode(widget.productData.sku!)
             : const SizedBox.shrink(),
 
         widget.productData.productDealDescription != null &&
@@ -444,5 +408,93 @@ class ProductDealDescriptionState
         const SizedBox(height: Sizes.spaceBetweenSections),
       ],
     );
+  }
+
+  Widget displayCouponCode(String sku) {
+    final couponCodes = getCouponCodesFromString(sku);
+
+    return couponCodes.length > 1
+        ? Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text(
+                  'Coupon codes: ',
+                  style: TextStyle(
+                    color: Colors.black,
+                    // fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                for (int i = 0; i < couponCodes.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: RichText(
+                      textAlign: TextAlign.start,
+                      text: TextSpan(children: [
+                        const TextSpan(
+                          text: '•  ',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                        WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: CouponCodeWidget(
+                              text: couponCodes[i],
+                              url: widget.productData.barcodeLink ?? '',
+                              couponType: 'deal',
+                            )),
+                      ]),
+                    ),
+                  ),
+              ],
+            ),
+          )
+        : Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 5,
+                bottom: 15,
+                // left: Sizes.paddingAllSmall,
+              ),
+              child: RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(children: [
+                  // const TextSpan(
+                  //   text: '•  ',
+                  //   style: TextStyle(
+                  //     color: Colors.black,
+                  //     fontWeight: FontWeight.w600,
+                  //     fontFamily: 'Poppins',
+                  //   ),
+                  // ),
+                  const TextSpan(
+                    text: 'Coupon code ',
+                    style: TextStyle(
+                      color: Colors.black,
+                      // fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: CouponCodeWidget(
+                        text: widget.productData.sku ?? '',
+                        url: widget.productData.barcodeLink ?? '',
+                        couponType: 'deal',
+                      )),
+                ]),
+              ),
+            ),
+          );
   }
 }

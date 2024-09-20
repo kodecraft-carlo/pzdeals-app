@@ -27,13 +27,17 @@ class TabFrontPageNotifier extends ChangeNotifier {
 
   Future<void> refresh() async {
     pageNumber = 1;
-    _isrefreshing = true;
+    // _isrefreshing = true;
     notifyListeners();
-    refreshDeals();
+    // refreshDeals();
+    loadProducts();
   }
 
   Future<void> refreshDeals() async {
+    _isrefreshing = true;
     pageNumber = 1;
+    notifyListeners();
+
     try {
       final serverProducts = await _productService.fetchProductDeals(
           _collectionName, _boxName, pageNumber);
@@ -63,6 +67,7 @@ class TabFrontPageNotifier extends ChangeNotifier {
       // final serverProducts =
       //     await _productService.fetchProductDealsAll(_boxName, pageNumber);
       _products = serverProducts;
+      _isLoading = false;
       notifyListeners();
     } catch (e) {
       debugPrint("error loading products: $e");
@@ -76,11 +81,12 @@ class TabFrontPageNotifier extends ChangeNotifier {
     pageNumber++;
     _isLoading = true;
     notifyListeners();
-
+    debugPrint('Front page: loading more products');
     try {
       final serverProducts = await _productService.fetchMoreProductDeals(
           _collectionName, _boxName, pageNumber);
       _products.addAll(serverProducts);
+      _isLoading = false;
       notifyListeners();
     } catch (e) {
       pageNumber--;

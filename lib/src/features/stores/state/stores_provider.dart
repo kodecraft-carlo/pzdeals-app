@@ -29,6 +29,8 @@ class StoreScreenProvider extends ChangeNotifier {
   }
 
   Future<void> refreshStores() async {
+    // _isLoading = true;
+    // notifyListeners();
     pageNumber = 1;
     try {
       _stores.clear();
@@ -38,6 +40,7 @@ class StoreScreenProvider extends ChangeNotifier {
       final serverStores =
           await _storeSvc.fetchStoreCollection(_boxName, pageNumber);
       _stores = serverStores;
+      _isLoading = false;
       setStoreNames();
       notifyListeners();
     } catch (e) {

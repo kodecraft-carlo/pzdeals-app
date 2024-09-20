@@ -13,10 +13,12 @@ class ProductCollectionNotifier extends ChangeNotifier {
   String _boxName = '';
   int pageNumber = 1;
   bool _isLoading = false;
+  bool _isrefreshing = false;
 
   List<ProductDealcardData> _products = [];
 
   bool get isLoading => _isLoading;
+  bool get isRefreshing => _isrefreshing;
   List<ProductDealcardData> get products => _products;
 
   void setBoxCollectionName(String collectionName, String boxName) {
@@ -27,16 +29,20 @@ class ProductCollectionNotifier extends ChangeNotifier {
   }
 
   Future<void> refreshDeals() async {
+    _isrefreshing = true;
+    notifyListeners();
     pageNumber = 1;
 
     try {
       final serverProducts = await _productService.fetchProductDeals(
           _collectionName, _boxName, pageNumber);
       _products = serverProducts;
+      _isrefreshing = false;
       notifyListeners();
     } catch (e) {
       debugPrint("error loading products: $e");
     } finally {
+      _isrefreshing = false;
       _isLoading = false;
       notifyListeners();
     }

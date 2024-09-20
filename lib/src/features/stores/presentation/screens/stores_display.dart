@@ -76,9 +76,9 @@ class _DisplayStoresState extends ConsumerState<DisplayStores>
     debugPrint('stores display build');
     if (storeState.isLoading && storeState.stores.isEmpty) {
       body = const Center(
-        child: CircularProgressIndicator.adaptive(),
+        child: SizedBox(),
       );
-    } else if (storeState.stores.isEmpty && storeState.isLoading == false) {
+    } else if (storeState.stores.isEmpty && !storeState.isLoading) {
       body = RefreshIndicator.adaptive(
           color: PZColors.pzOrange,
           child: Padding(

@@ -7,27 +7,30 @@ class BlogsNotifier extends ChangeNotifier {
   final String _collectionName = 'PzBlog';
   final String _boxName = 'pzblog';
   bool _isLoading = false;
+  bool _isrefreshing = false;
   int pageNumber = 1;
   List<BlogData> _blogs = [];
   List<BlogData> _filteredBlogs = [];
 
   bool get isLoading => _isLoading;
+  bool get isRefreshing => _isrefreshing;
   List<BlogData> get blogs => _blogs;
   List<BlogData> get filteredBlogs => _filteredBlogs;
 
   Future<void> refreshBlogs() async {
-    _isLoading = true;
+    _isrefreshing = true;
     notifyListeners();
     pageNumber = 1;
     try {
       final serverBlogs =
           await _blogService.fetchBlogs(_collectionName, _boxName, pageNumber);
       _blogs = serverBlogs;
+      _isrefreshing = false;
       notifyListeners();
     } catch (e) {
       debugPrint("error loading blogs: $e");
     } finally {
-      _isLoading = false;
+      _isrefreshing = false;
       notifyListeners();
     }
   }
@@ -43,6 +46,7 @@ class BlogsNotifier extends ChangeNotifier {
       final serverBlogs =
           await _blogService.fetchBlogs(_collectionName, _boxName, pageNumber);
       _blogs = serverBlogs;
+      _isLoading = false;
       notifyListeners();
     } catch (e) {
       debugPrint("error loading blogs: $e");

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pzdeals/src/common_widgets/bottomnavigationbar.dart';
 import 'package:pzdeals/src/common_widgets/custom_scaffold.dart';
+import 'package:pzdeals/src/common_widgets/gradient_progress_bar.dart';
 import 'package:pzdeals/src/common_widgets/scrollbar.dart';
 import 'package:pzdeals/src/constants/index.dart';
 import 'package:pzdeals/src/features/more/presentation/widgets/blogs_search_field.dart';
@@ -82,9 +83,7 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
   Widget build(BuildContext context) {
     final blogState = ref.watch(blogsProvider);
     Widget body;
-    if (blogState.isLoading && blogState.blogs.isEmpty) {
-      body = const Center(child: CircularProgressIndicator.adaptive());
-    } else if (blogState.blogs.isEmpty) {
+    if (blogState.blogs.isEmpty && blogState.isLoading == false) {
       body = Padding(
           padding: const EdgeInsets.all(Sizes.paddingAll),
           child: Column(
@@ -116,40 +115,39 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
       final blogData = blogState.filteredBlogs.isNotEmpty
           ? blogState.filteredBlogs
           : blogState.blogs;
-      body = Padding(
-        padding: const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
-        child: Column(
-          children: [
-            Expanded(
-              child: RefreshIndicator.adaptive(
-                  color: PZColors.pzOrange,
-                  child: ListView.builder(
-                    // controller: _scrollController,
-                    shrinkWrap: true,
-                    itemCount: blogData.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final blog = blogData[index];
-                      return BlogpostCardWidget(
-                        blogTitle: blog.blogTitle,
-                        blogImage: blog.blogImage,
-                        blogId: blog.id,
-                      );
-                    },
-                  ),
-                  onRefresh: () async {
-                    HapticFeedback.mediumImpact();
-                    blogState.refreshBlogs();
-                  }),
-            ),
-            // if (blogState.isLoading && blogState.blogs.isNotEmpty)
-            //   const Padding(
-            //     padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-            //     child: Center(
-            //       child: CircularProgressIndicator.adaptive(),
-            //     ),
-            //   ),
-          ],
-        ),
+      body = Column(
+        children: [
+          Expanded(
+            child: RefreshIndicator.adaptive(
+                color: PZColors.pzOrange,
+                child: ListView.builder(
+                  // controller: _scrollController,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Sizes.paddingAll, vertical: Sizes.paddingAll),
+                  shrinkWrap: true,
+                  itemCount: blogData.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final blog = blogData[index];
+                    return BlogpostCardWidget(
+                      blogTitle: blog.blogTitle,
+                      blogImage: blog.blogImage,
+                      blogId: blog.id,
+                    );
+                  },
+                ),
+                onRefresh: () async {
+                  HapticFeedback.mediumImpact();
+                  blogState.refreshBlogs();
+                }),
+          ),
+          // if (blogState.isLoading && blogState.blogs.isNotEmpty)
+          //   const Padding(
+          //     padding: EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+          //     child: Center(
+          //       child: CircularProgressIndicator.adaptive(),
+          //     ),
+          //   ),
+        ],
       );
     }
     return CustomScaffoldWidget(
@@ -187,13 +185,27 @@ class BlogScreenWidgetState extends ConsumerState<BlogScreenWidget>
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: Sizes.paddingAll),
-                      child: BlogSearchFieldWidget(
-                          hintText: 'Search blog',
-                          searchController: searchController,
-                          filterData: _onTextChanged),
+                    child: Container(
+                      child: Column(children: [
+                        AnimatedOpacity(
+                          opacity: blogState.isLoading || blogState.isRefreshing
+                              ? 1
+                              : 0,
+                          duration: const Duration(milliseconds: 300),
+                          child: const AnimatedGradientProgressBar(),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: Sizes.paddingAll),
+                          child: BlogSearchFieldWidget(
+                              hintText: 'Search blog',
+                              searchController: searchController,
+                              filterData: _onTextChanged),
+                        ),
+                      ]),
                     ),
                   ),
                 ];

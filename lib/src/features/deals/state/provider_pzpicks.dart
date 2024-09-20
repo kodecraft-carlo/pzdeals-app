@@ -11,10 +11,12 @@ class TabPzPicksNotifier extends ChangeNotifier {
   final String _collectionName = 'flash';
   final String _boxName = 'flashdeals';
   bool _isLoading = false;
+  bool _isrefreshing = false;
   int pageNumber = 1;
   List<ProductDealcardData> _products = [];
 
   bool get isLoading => _isLoading;
+  bool get isRefreshing => _isrefreshing;
   List<ProductDealcardData> get products => _products;
 
   TabPzPicksNotifier() {
@@ -22,16 +24,22 @@ class TabPzPicksNotifier extends ChangeNotifier {
   }
 
   Future<void> refreshDeals() async {
+    _isLoading = true;
+    _isrefreshing = true;
+    notifyListeners();
     pageNumber = 1;
     try {
       final serverProducts = await _productService.fetchProductDeals(
           _collectionName, _boxName, pageNumber);
       _products = serverProducts;
+      _isLoading = false;
+      _isrefreshing = false;
       notifyListeners();
     } catch (e) {
       debugPrint("error loading products: $e");
     } finally {
       _isLoading = false;
+      _isrefreshing = false;
       notifyListeners();
     }
   }

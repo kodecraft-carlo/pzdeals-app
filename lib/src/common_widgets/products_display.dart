@@ -59,7 +59,7 @@ class ProductsDisplay extends StatelessWidget {
       color: PZColors.pzOrange,
       child: Padding(
         padding: const EdgeInsets.only(
-            top: Sizes.paddingAllSmall,
+            // top: Sizes.paddingAllSmall,
             left: Sizes.paddingAllSmall,
             right: Sizes.paddingAllSmall),
         child: StaggeredGridView.countBuilder(
