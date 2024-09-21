@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pzdeals/src/actions/show_dialog.dart';
+import 'package:pzdeals/src/common_widgets/gradient_progress_bar.dart';
 import 'package:pzdeals/src/common_widgets/product_dialog.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
@@ -119,41 +120,54 @@ class NotificationScreenState extends ConsumerState<NotificationScreen> {
         child: Scaffold(
           body: Padding(
             padding: const EdgeInsets.only(
-                top: Sizes.paddingTopSmall,
-                left: Sizes.paddingLeft,
-                right: Sizes.paddingRight),
+              top: Sizes.paddingTopSmall,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: GestureDetector(
-                            onTap: () {
-                              notificationDisplayKey.currentState!
-                                  .scrollToTop();
-                            },
-                            child: const Text(
-                              "Notifications",
-                              style: TextStyle(
-                                  fontSize: Sizes.headerFontSize,
-                                  fontWeight: FontWeight.w600,
-                                  color: PZColors.pzBlack),
-                            ),
-                          )),
-                    ),
-                    ref.read(notificationsProvider).unreadCount > 0 ||
-                            ref.watch(notificationsProvider).hasNotification ==
-                                true
-                        ? pullDownButtonWidget()
-                        : const SizedBox.shrink(),
-                  ],
+                const SizedBox(
+                  height: Sizes.paddingTopSmall,
                 ),
-                const SizedBox(height: Sizes.spaceBetweenSections),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: Sizes.paddingAll),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: GestureDetector(
+                              onTap: () {
+                                notificationDisplayKey.currentState!
+                                    .scrollToTop();
+                              },
+                              child: const Text(
+                                "Notifications",
+                                style: TextStyle(
+                                    fontSize: Sizes.headerFontSize,
+                                    fontWeight: FontWeight.w600,
+                                    color: PZColors.pzBlack),
+                              ),
+                            )),
+                      ),
+                      ref.read(notificationsProvider).unreadCount > 0 ||
+                              ref
+                                      .watch(notificationsProvider)
+                                      .hasNotification ==
+                                  true
+                          ? pullDownButtonWidget()
+                          : const SizedBox.shrink(),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: Sizes.spaceBetweenContent),
+                AnimatedOpacity(
+                  opacity: ref.watch(notificationsProvider).isLoading ? 1 : 0,
+                  duration: const Duration(milliseconds: 300),
+                  child: const AnimatedGradientProgressBar(),
+                ),
                 NotificationsDisplay(key: notificationDisplayKey),
                 const SizedBox(height: Sizes.paddingBottomSmall)
               ],

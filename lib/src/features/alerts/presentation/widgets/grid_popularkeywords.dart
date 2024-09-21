@@ -56,12 +56,12 @@ class PopularKeywordsGrid extends ConsumerWidget {
         ),
       );
     }
-    if (ref.watch(keywordsProvider).isLoading && popularKeywords.isEmpty) {
-      return const SizedBox(
-        height: 200,
-        child: Center(child: CircularProgressIndicator.adaptive()),
-      );
-    }
+    // if (ref.watch(keywordsProvider).isLoading && popularKeywords.isEmpty) {
+    //   return const SizedBox(
+    //     height: 200,
+    //     child: Center(child: CircularProgressIndicator.adaptive()),
+    //   );
+    // }
     return GridView.builder(
       padding: const EdgeInsets.symmetric(vertical: Sizes.paddingAllSmall),
       shrinkWrap: true,

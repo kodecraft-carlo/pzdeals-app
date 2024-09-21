@@ -41,9 +41,11 @@ class NotificationListNotifier extends ChangeNotifier {
   bool _undoDismissAll = false;
   bool _isRemoveAllOngoing = false;
   String? _instanceID = '';
+  bool _isLoading = false;
 
   int get unreadCount => _unreadCount;
   bool get hasNotification => _hasNotification;
+  bool get isLoading => _isLoading;
   List<NotificationData> get notificationList => _notificationList;
 
   void setUserUID(String uid) {
@@ -219,6 +221,8 @@ class NotificationListNotifier extends ChangeNotifier {
   }
 
   void getNotificationsFromStream(String userId) {
+    _isLoading = true;
+    notifyListeners();
     debugPrint('getNotificationsFromStream called with $userId');
     FirebaseFirestore.instance
         .collection('notifications')
@@ -260,6 +264,7 @@ class NotificationListNotifier extends ChangeNotifier {
       updateBadgeCount(_unreadCount);
 
       debugPrint('unread count: $_unreadCount');
+      _isLoading = false;
       notifyListeners();
     });
   }

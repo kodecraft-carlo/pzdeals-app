@@ -4,7 +4,7 @@ import Firebase
 import FirebaseMessaging
 import Lottie
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
     lazy var flutterEngine = FlutterEngine(name: "PzDeals")
   override func application(

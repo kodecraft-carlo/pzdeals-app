@@ -89,103 +89,109 @@ class CreditCardDealsScreenState extends ConsumerState<CreditCardDealsScreen>
                   ),
                 )),
           ),
-          body: RefreshIndicator.adaptive(
-            color: PZColors.pzOrange,
-            child: ScrollbarWidget(
-              scrollController: _scrollController,
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                physics: creditcardState.creditcards.isEmpty
-                    ? const NeverScrollableScrollPhysics()
-                    : const AlwaysScrollableScrollPhysics(),
-                child: Container(
-                  constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height -
-                        kToolbarHeight -
-                        kBottomNavigationBarHeight,
-                  ),
-                  padding: const EdgeInsets.only(
-                    // left: Sizes.paddingLeft,
-                    // right: Sizes.paddingRight,
-                    bottom: Sizes.paddingBottom,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: creditcardState.creditcards.isEmpty &&
-                            !creditcardState.isLoading
-                        ? MainAxisAlignment.center
-                        : MainAxisAlignment.start,
-                    children: [
-                      AnimatedOpacity(
-                        opacity: creditcardState.isLoading ? 1 : 0,
-                        duration: const Duration(milliseconds: 300),
-                        child: const AnimatedGradientProgressBar(),
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      if (creditcardState.creditcards.isEmpty &&
-                          !creditcardState.isLoading)
-                        Container(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: Sizes.paddingAll),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Lottie.asset(
-                                  'assets/images/lottie/empty.json',
-                                  height: 200,
-                                  fit: BoxFit.fitHeight,
-                                  frameRate: FrameRate.max,
-                                  controller: _animationController,
-                                  onLoaded: (composition) {
-                                    _animationController
-                                      ..duration = composition.duration
-                                      ..forward();
-                                  },
+          body: Column(
+            children: [
+              AnimatedOpacity(
+                opacity: creditcardState.isLoading ? 1 : 0,
+                duration: const Duration(milliseconds: 300),
+                child: const AnimatedGradientProgressBar(),
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+              Expanded(
+                child: RefreshIndicator.adaptive(
+                  color: PZColors.pzOrange,
+                  child: ScrollbarWidget(
+                    scrollController: _scrollController,
+                    isAlwaysShown: creditcardState.creditcards.isNotEmpty,
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      child: Container(
+                        constraints: BoxConstraints(
+                          minHeight: MediaQuery.of(context).size.height -
+                              kToolbarHeight -
+                              kBottomNavigationBarHeight,
+                        ),
+                        padding: const EdgeInsets.only(
+                          // left: Sizes.paddingLeft,
+                          // right: Sizes.paddingRight,
+                          bottom: Sizes.paddingBottom,
+                        ),
+                        child: Column(
+                          mainAxisAlignment:
+                              creditcardState.creditcards.isEmpty &&
+                                      !creditcardState.isLoading
+                                  ? MainAxisAlignment.center
+                                  : MainAxisAlignment.start,
+                          children: [
+                            if (creditcardState.creditcards.isEmpty &&
+                                !creditcardState.isLoading)
+                              Container(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: Sizes.paddingAll),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Lottie.asset(
+                                        'assets/images/lottie/empty.json',
+                                        height: 200,
+                                        fit: BoxFit.fitHeight,
+                                        frameRate: FrameRate.max,
+                                        controller: _animationController,
+                                        onLoaded: (composition) {
+                                          _animationController
+                                            ..duration = composition.duration
+                                            ..forward();
+                                        },
+                                      ),
+                                      const SizedBox(
+                                          height: Sizes.spaceBetweenSections),
+                                      const Text(
+                                        'There are no credit card deals available at the moment. Please check back later.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: Sizes.fontSizeMedium,
+                                            color: PZColors.pzGrey),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                const SizedBox(
-                                    height: Sizes.spaceBetweenSections),
-                                const Text(
-                                  'There are no credit card deals available at the moment. Please check back later.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: Sizes.fontSizeMedium,
-                                      color: PZColors.pzGrey),
+                              )
+                            else
+                              for (int i = 0;
+                                  i < creditcardState.creditcards.length;
+                                  i++)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: Sizes.paddingAll),
+                                  child: CreditCardItem(
+                                    displayType: 'scrollView',
+                                    creditCardDealData:
+                                        creditcardState.creditcards[i],
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        )
-                      else
-                        for (int i = 0;
-                            i < creditcardState.creditcards.length;
-                            i++)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: Sizes.paddingAll),
-                            child: CreditCardItem(
-                              displayType: 'scrollView',
-                              creditCardDealData:
-                                  creditcardState.creditcards[i],
-                            ),
-                          ),
-                      const SizedBox(height: Sizes.spaceBetweenContent),
-                      // if (creditcardState.isLoading &&
-                      //     creditcardState.creditcards.isNotEmpty)
-                      //   const Padding(
-                      //     padding:
-                      //         EdgeInsets.symmetric(vertical: Sizes.paddingAll),
-                      //     child: Center(
-                      //         child: CircularProgressIndicator.adaptive()),
-                      //   )
-                    ],
+                            const SizedBox(height: Sizes.spaceBetweenContent),
+                            // if (creditcardState.isLoading &&
+                            //     creditcardState.creditcards.isNotEmpty)
+                            //   const Padding(
+                            //     padding:
+                            //         EdgeInsets.symmetric(vertical: Sizes.paddingAll),
+                            //     child: Center(
+                            //         child: CircularProgressIndicator.adaptive()),
+                            //   )
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
+                  onRefresh: () => creditcardState.refreshCreditCards(),
                 ),
               ),
-            ),
-            onRefresh: () => creditcardState.refreshCreditCards(),
+            ],
           ),
           bottomNavigationBar: const BottomNavigationBarWidget(
             currentPageIndex: 4,

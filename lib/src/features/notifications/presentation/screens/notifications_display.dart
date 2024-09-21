@@ -105,6 +105,10 @@ class NotificationsDisplayState extends ConsumerState<NotificationsDisplay>
                   // physics: const BouncingScrollPhysics(),
                   // shrinkWrap: true,
                   itemCount: notificationStream.length,
+                  padding: const EdgeInsets.only(
+                      left: Sizes.paddingLeft,
+                      right: Sizes.paddingRight,
+                      top: Sizes.paddingTopSmall),
                   itemBuilder: (BuildContext context, int index) {
                     return NotificationCardWidget(
                       notificationData: notificationStream[index],
