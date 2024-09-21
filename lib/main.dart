@@ -1,19 +1,14 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:firebase_installations/firebase_installations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
-import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pzdeals/firebase_options.dart';
-import 'package:pzdeals/splash_screen.dart';
 import 'package:pzdeals/src/common_widgets/screen_collections_display.dart';
 import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/features/account/models/settings_data.dart';
@@ -35,7 +30,6 @@ import 'package:pzdeals/src/state/bookmarks_provider.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
 import 'package:pzdeals/src/utils/helpers/appbadge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:page_transition/page_transition.dart' as page_transition_type;
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -123,26 +117,6 @@ final bookmarkedproductsProvider =
   }
   return bookmarksNotifier;
 });
-
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        home: AnimatedSplashScreen(
-          duration: 1500,
-          centered: true,
-          splashIconSize: 500,
-          splash: const SplashScreenAnimation(),
-          nextScreen: const MainApp(),
-          splashTransition: SplashTransition.fadeTransition,
-          pageTransitionType: page_transition_type.PageTransitionType.fade,
-          backgroundColor: PZColors.pzWhite,
-        ),
-        debugShowCheckedModeBanner: false);
-  }
-}
 
 class MainApp extends ConsumerStatefulWidget {
   const MainApp({super.key});
