@@ -433,17 +433,18 @@ class ProductDealDescriptionState
                 ),
                 for (int i = 0; i < couponCodes.length; i++)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 5),
+                    padding: const EdgeInsets.only(bottom: 5, left: 1),
                     child: RichText(
                       textAlign: TextAlign.start,
                       text: TextSpan(children: [
                         const TextSpan(
-                          text: '•  ',
+                          text: '• ',
                           style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Poppins',
-                          ),
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Poppins',
+                              fontSize: 19,
+                              height: 1.3),
                         ),
                         WidgetSpan(
                             alignment: PlaceholderAlignment.middle,
@@ -455,6 +456,9 @@ class ProductDealDescriptionState
                       ]),
                     ),
                   ),
+                const SizedBox(
+                  height: 10,
+                )
               ],
             ),
           )

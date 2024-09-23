@@ -78,10 +78,16 @@ class FirebaseMessagingApi {
     _firebaseMessaging.subscribeToTopic('manual_alerts');
     //on by default as per Ben 07/03/2024
     _firebaseMessaging.subscribeToTopic('price_mistake');
-    _firebaseMessaging.subscribeToTopic('front_page');
     //end
-    _firebaseMessaging.subscribeToTopic(
-        'scheduled_reminder'); //for resetting notification received info
+
+    //hide and not receive as per Phil 09/23/2024
+    // _firebaseMessaging.subscribeToTopic('front_page');
+    //end
+
+    //for resetting notification received info (front_page) -- affected by the above change
+    // _firebaseMessaging.subscribeToTopic('scheduled_reminder');
+    //end
+
     _firebaseMessaging.getInitialMessage().then(handleMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
     FirebaseMessaging.onMessage.listen((message) {

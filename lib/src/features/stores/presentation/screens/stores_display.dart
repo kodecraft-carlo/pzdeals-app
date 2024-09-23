@@ -74,11 +74,7 @@ class _DisplayStoresState extends ConsumerState<DisplayStores>
     Widget body;
 
     debugPrint('stores display build');
-    if (storeState.isLoading && storeState.stores.isEmpty) {
-      body = const Center(
-        child: SizedBox(),
-      );
-    } else if (storeState.stores.isEmpty && !storeState.isLoading) {
+    if (storeState.stores.isEmpty && !storeState.isLoading) {
       body = RefreshIndicator.adaptive(
           color: PZColors.pzOrange,
           child: Padding(
@@ -113,7 +109,8 @@ class _DisplayStoresState extends ConsumerState<DisplayStores>
             HapticFeedback.mediumImpact();
             ref.read(storescreenProvider).refreshStores();
           });
-    } else {
+    } else if (storeState.stores.isNotEmpty ||
+        storeState.filteredStores.isNotEmpty) {
       final displayStores = storeState.filteredStores.isNotEmpty
           ? storeState.filteredStores
           : storeState.stores;
@@ -150,6 +147,8 @@ class _DisplayStoresState extends ConsumerState<DisplayStores>
             HapticFeedback.mediumImpact();
             ref.read(storescreenProvider).refreshStores();
           });
+    } else {
+      body = const SizedBox();
     }
 
     return body;

@@ -39,4 +39,10 @@ class Wordings {
 
   static const String percentoffTitle = 'Percentage Off Notifications';
   static const String percentoffSubtitle = 'Notify me on deals by percent off.';
+
+  static const String hottestDealsTitle = 'Hottest Deals Notification';
+  static const String hottestDealsSubtitle = 'Notify me on the hottest deals.';
+
+  static const String whatsappTitle = 'WhatsApp Deals Notification';
+  static const String whatsappSubtitle = 'Notify me on WhatsApp deals.';
 }

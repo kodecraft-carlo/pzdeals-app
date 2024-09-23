@@ -42,13 +42,13 @@ class AnimatedGradientProgressBarState
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.orange.shade300,
-                  Colors.orange.shade300,
-                  Colors.orange.shade700,
+                  Colors.orange.shade100,
+                  Colors.orange.shade200,
+                  Colors.orange.shade600,
                   PZColors.pzOrange,
-                  Colors.orange.shade700,
-                  Colors.orange.shade300,
-                  Colors.orange.shade300,
+                  Colors.orange.shade600,
+                  Colors.orange.shade200,
+                  Colors.orange.shade100,
                 ],
                 begin: Alignment(-1.0 + _controller.value * 2, 0.0),
                 end: Alignment(1.0 + _controller.value * 2, 0.0),

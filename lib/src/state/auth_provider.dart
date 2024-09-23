@@ -12,6 +12,7 @@ import 'package:pzdeals/src/services/fcmtoken_service.dart';
 import 'package:pzdeals/src/utils/helpers/generate_nonce.dart'
     as noncegenerator;
 import 'package:pzdeals/src/utils/helpers/hash_value.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 final authProvider = Provider<AuthService>((ref) => AuthService());
@@ -27,9 +28,9 @@ class AuthService {
   final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
     'email',
     'profile',
-    PeopleServiceApi.userGenderReadScope,
-    PeopleServiceApi.userPhonenumbersReadScope,
-    PeopleServiceApi.userBirthdayReadScope
+    // PeopleServiceApi.userGenderReadScope,
+    // PeopleServiceApi.userPhonenumbersReadScope,
+    // PeopleServiceApi.userBirthdayReadScope
   ]);
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -61,7 +62,7 @@ class AuthService {
             authResult.additionalUserInfo;
 
         //retrieve additional user information from Google People API
-        Map<String, dynamic> personInfo = await getGooglePersonInfo();
+        // Map<String, dynamic> personInfo = await getGooglePersonInfo();
 
         // Retrieve additional user information from the GoogleSignInAccount object
         final googleUser = googleSignIn.currentUser;
@@ -76,9 +77,12 @@ class AuthService {
           'lastName': additionalUserInfo?.profile!['family_name'],
           'email': email,
           'profilePicture': additionalUserInfo?.profile!['picture'],
-          'gender': personInfo['gender'],
-          'birthDate': personInfo['birthday'],
-          'phoneNumber': personInfo['phoneNumber'],
+          // 'gender': personInfo['gender'],
+          // 'birthDate': personInfo['birthday'],
+          // 'phoneNumber': personInfo['phoneNumber'],
+          'gender': null,
+          'birthDate': null,
+          'phoneNumber': null,
           'uID': user.uid,
         });
 
@@ -89,6 +93,8 @@ class AuthService {
         setIsUserAuthenticated(true);
         setUserUID(user.uid);
         _signInMethod = 'google';
+        saveSignInMethodToPrefs(_signInMethod);
+        saveUserIdToPrefs(user.uid);
         return user;
       }
     } on PlatformException catch (error) {
@@ -182,6 +188,8 @@ class AuthService {
       setIsUserAuthenticated(true);
       setUserUID(user.uid);
       _signInMethod = 'apple';
+      saveSignInMethodToPrefs(_signInMethod);
+      saveUserIdToPrefs(user.uid);
       return user;
     } catch (e, stackTrace) {
       debugPrint('Apple sign-in error: $stackTrace');
@@ -216,6 +224,10 @@ class AuthService {
     try {
       debugPrint('Deleting account: $_userUID');
 
+      if (_userUID.isEmpty) {
+        _userUID = await getUserIdFromPrefs();
+      }
+
       await accountDeleteService.deleteAccountFromFirestore(_userUID);
       await accountDeleteService.deleteAccountFromDatabase(_userUID);
       await accountDeleteService.deleteAccountSettingsFromDatabase(_userUID);
@@ -234,6 +246,8 @@ class AuthService {
         setIsUserAuthenticated(false);
         setUserUID('');
         debugPrint('Firebase user account deleted successfully.');
+        removeSignInMethodFromPrefs();
+        removeUserIdFromPrefs();
       } else {
         debugPrint('No authenticated user found.');
       }
@@ -247,6 +261,9 @@ class AuthService {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         //reauthenticate via email and password
+        if (signInMethod == '') {
+          _signInMethod = await getSignInMethodFromPrefs();
+        }
         if (signInMethod == 'email' && password.isNotEmpty) {
           AuthCredential credential = EmailAuthProvider.credential(
             email: user.email!,
@@ -324,6 +341,8 @@ class AuthService {
       // }
       _email = email.trim();
       _signInMethod = 'email';
+      saveSignInMethodToPrefs(_signInMethod);
+      saveUserIdToPrefs(userCredential.user!.uid);
       return {'code': 'success', 'message': 'User logged in'};
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Login failed';
@@ -466,5 +485,37 @@ class AuthService {
         .update({'fcmToken': fcmToken});
     debugPrint('authProvider: calling updateUserFcmToken');
     await fcmTokenService.updateUserFcmToken(userUID, fcmToken!);
+  }
+
+  Future<void> saveSignInMethodToPrefs(String method) async {
+    //save the sign-in method to shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('signInMethod', method);
+  }
+
+  Future<String> getSignInMethodFromPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('signInMethod') ?? '';
+  }
+
+  Future<void> removeSignInMethodFromPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('signInMethod');
+  }
+
+  Future<void> saveUserIdToPrefs(String userId) async {
+    //save the user id to shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+  }
+
+  Future<String> getUserIdFromPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId') ?? '';
+  }
+
+  Future<void> removeUserIdFromPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('userId');
   }
 }

@@ -14,6 +14,7 @@ import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
 import 'package:pzdeals/src/utils/helpers/convert_string.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountCard extends ConsumerStatefulWidget {
   const AccountCard({super.key, required this.accountData});
@@ -24,6 +25,20 @@ class AccountCard extends ConsumerStatefulWidget {
 
 class AccountCardState extends ConsumerState<AccountCard> {
   final TextEditingController _passwordController = TextEditingController();
+
+  late String signInMethod;
+
+  @override
+  void initState() {
+    super.initState();
+    initSignInMethod();
+  }
+
+  Future<void> initSignInMethod() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    signInMethod = prefs.getString('signInMethod') ?? signInMethod;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -42,7 +57,7 @@ class AccountCardState extends ConsumerState<AccountCard> {
                 color: Colors.amber,
               ),
               title: Text(
-                'Welcome, ${widget.accountData.firstName} ${widget.accountData.lastName}!',
+                'Welcome, ${widget.accountData.firstName}!',
                 style: const TextStyle(
                     color: PZColors.pzOrange,
                     fontWeight: FontWeight.w700,
@@ -131,21 +146,20 @@ class AccountCardState extends ConsumerState<AccountCard> {
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const Divider(color: CupertinoColors.systemGrey),
-                    ref.read(authProvider).signInMethod == 'email'
+                    signInMethod == 'email'
                         ? const Text(
                             "Please enter your password to confirm",
                           )
                         : const SizedBox(),
-                    ref.read(authProvider).signInMethod == 'google' ||
-                            ref.read(authProvider).signInMethod == 'apple'
+                    signInMethod == 'google' || signInMethod == 'apple'
                         ? Text(
-                            "You may be asked to sign in with your ${capitalizeFirstLetter(ref.read(authProvider).signInMethod)} account again to confirm",
+                            "You may be asked to sign in with your ${capitalizeFirstLetter(signInMethod)} account again to confirm",
                           )
                         : const SizedBox(),
                     const SizedBox(
                       height: 5,
                     ),
-                    ref.read(authProvider).signInMethod == 'email'
+                    signInMethod == 'email'
                         ? CupertinoTextField(
                             controller: _passwordController,
                             placeholder: 'Password',
@@ -177,7 +191,7 @@ class AccountCardState extends ConsumerState<AccountCard> {
                   ),
                   CupertinoDialogAction(
                     onPressed: () async {
-                      if (ref.read(authProvider).signInMethod == 'email' &&
+                      if (signInMethod == 'email' &&
                           _passwordController.text.trim().isEmpty) {
                         return;
                       }
@@ -204,10 +218,7 @@ class AccountCardState extends ConsumerState<AccountCard> {
                               builder: (context) {
                                 return CupertinoAlertDialog(
                                   title: const Text('Error'),
-                                  content: ref
-                                              .read(authProvider)
-                                              .signInMethod ==
-                                          'email'
+                                  content: signInMethod == 'email'
                                       ? const Text('Invalid password')
                                       : const Text(
                                           'Unable to complete request. Please try again.'),
@@ -266,21 +277,20 @@ class AccountCardState extends ConsumerState<AccountCard> {
                     const SizedBox(
                       height: 5,
                     ),
-                    ref.read(authProvider).signInMethod == 'email'
+                    signInMethod == 'email'
                         ? const Text(
                             "Please enter your password to confirm",
                           )
                         : const SizedBox(),
-                    ref.read(authProvider).signInMethod == 'google' ||
-                            ref.read(authProvider).signInMethod == 'apple'
+                    signInMethod == 'google' || signInMethod == 'apple'
                         ? Text(
-                            "You may be asked to sign in with your ${capitalizeFirstLetter(ref.read(authProvider).signInMethod)} account again to confirm",
+                            "You may be asked to sign in with your ${capitalizeFirstLetter(signInMethod)} account again to confirm",
                           )
                         : const SizedBox(),
                     const SizedBox(
                       height: 5,
                     ),
-                    ref.read(authProvider).signInMethod == 'email'
+                    signInMethod == 'email'
                         ? TextField(
                             controller: _passwordController,
                             obscureText: true,
@@ -316,7 +326,7 @@ class AccountCardState extends ConsumerState<AccountCard> {
                   ),
                   TextButton(
                     onPressed: () async {
-                      if (ref.read(authProvider).signInMethod == 'email' &&
+                      if (signInMethod == 'email' &&
                           _passwordController.text.trim().isEmpty) {
                         return;
                       }

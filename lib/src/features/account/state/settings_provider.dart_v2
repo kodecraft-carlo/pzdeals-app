@@ -1,3 +1,5 @@
+//v2 archived September 23, 2024
+//related to new toggles added as requested by Phil
 import 'dart:async';
 import 'package:firebase_installations/firebase_installations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -92,9 +94,7 @@ class SettingsNotifier extends ChangeNotifier {
         frontpageNotification: true,
         percentageNotification: false,
         percentageThreshold: 0,
-        numberOfAlerts: 10,
-        hottesdealsNotification: false,
-        whatsappNotification: false);
+        numberOfAlerts: 10);
     try {
       _settingsService.updateUserSettings(
           _boxName, _instanceID, defaultSettings);
@@ -190,9 +190,7 @@ class SettingsNotifier extends ChangeNotifier {
         frontpageNotification: false,
         percentageNotification: false,
         percentageThreshold: 0,
-        numberOfAlerts: 0,
-        hottesdealsNotification: false,
-        whatsappNotification: false);
+        numberOfAlerts: 0);
     try {
       switch (settingType) {
         case 'priceMistake':
@@ -228,22 +226,6 @@ class SettingsNotifier extends ChangeNotifier {
           }
           _settingsData?.setPercentageNotification = setting['percentOff'];
           break;
-        case 'hottestDeals':
-          _settingsData?.setHottestDealsNotification = setting;
-          if (setting == true) {
-            _firebaseMessaging.subscribeToTopic('hottest_deals');
-          } else {
-            _firebaseMessaging.unsubscribeFromTopic('hottest_deals');
-          }
-          break;
-        case 'whatsappDeals':
-          _settingsData?.setWhatsappNotification = setting;
-          if (setting == true) {
-            _firebaseMessaging.subscribeToTopic('whatsapp_deals');
-          } else {
-            _firebaseMessaging.unsubscribeFromTopic('whatsapp_deals');
-          }
-          break;
       }
       notifyListeners();
       _settingsService.updateUserSettings(_boxName, _userUID, _settingsData!);
@@ -262,9 +244,8 @@ class SettingsNotifier extends ChangeNotifier {
 
   void resetTopics() {
     _firebaseMessaging.unsubscribeFromTopic('price_mistake');
+    _firebaseMessaging.unsubscribeFromTopic('front_page');
     _firebaseMessaging.unsubscribeFromTopic('percent_off');
-    _firebaseMessaging.unsubscribeFromTopic('hottest_deals');
-    _firebaseMessaging.unsubscribeFromTopic('whatsapp_deals');
   }
 
   void updateTopicSubscriptions() {
@@ -272,17 +253,11 @@ class SettingsNotifier extends ChangeNotifier {
     if (_settingsData?.priceMistake == true) {
       _firebaseMessaging.subscribeToTopic('price_mistake');
     }
-
+    if (_settingsData?.frontpageNotification == true) {
+      _firebaseMessaging.subscribeToTopic('front_page');
+    }
     if (_settingsData?.percentageNotification == true) {
       _firebaseMessaging.subscribeToTopic('percent_off');
-    }
-
-    if (_settingsData?.hottesdealsNotification == true) {
-      _firebaseMessaging.subscribeToTopic('hottest_deals');
-    }
-
-    if (_settingsData?.whatsappNotification == true) {
-      _firebaseMessaging.subscribeToTopic('whatsapp_deals');
     }
   }
 
@@ -303,10 +278,6 @@ class SettingsNotifier extends ChangeNotifier {
             serverSettings.percentageNotification &&
         cachedSettings.percentageThreshold ==
             serverSettings.percentageThreshold &&
-        cachedSettings.numberOfAlerts == serverSettings.numberOfAlerts &&
-        cachedSettings.hottesdealsNotification ==
-            serverSettings.hottesdealsNotification &&
-        cachedSettings.whatsappNotification ==
-            serverSettings.whatsappNotification;
+        cachedSettings.numberOfAlerts == serverSettings.numberOfAlerts;
   }
 }

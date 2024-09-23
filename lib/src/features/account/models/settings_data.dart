@@ -19,12 +19,20 @@ class SettingsData extends HiveObject {
   @HiveField(4)
   int numberOfAlerts;
 
+  @HiveField(5)
+  bool hottesdealsNotification;
+
+  @HiveField(6)
+  bool whatsappNotification;
+
   SettingsData({
     required this.priceMistake,
     required this.frontpageNotification,
     required this.percentageNotification,
     required this.percentageThreshold,
     this.numberOfAlerts = 10,
+    this.hottesdealsNotification = false,
+    this.whatsappNotification = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,6 +42,8 @@ class SettingsData extends HiveObject {
       'percentageNotification': percentageNotification,
       'percentageThreshold': percentageThreshold,
       'numberOfAlerts': numberOfAlerts,
+      'hottesdealsNotification': hottesdealsNotification,
+      'whatsappNotification': whatsappNotification,
     };
   }
 
@@ -45,6 +55,8 @@ class SettingsData extends HiveObject {
       'percentage_notification': percentageNotification,
       'percentage_threshold': percentageThreshold,
       'alerts_count': numberOfAlerts,
+      'hottest_deals': hottesdealsNotification,
+      'whatsapp_deals': whatsappNotification,
     };
   }
 
@@ -56,6 +68,8 @@ class SettingsData extends HiveObject {
       'percentage_notification': percentageNotification,
       'percentage_threshold': percentageThreshold,
       'alerts_count': numberOfAlerts,
+      'hottest_deals': hottesdealsNotification,
+      'whatsapp_deals': whatsappNotification,
     };
   }
 
@@ -77,5 +91,13 @@ class SettingsData extends HiveObject {
 
   set setNumberOfAlerts(int value) {
     numberOfAlerts = value;
+  }
+
+  set setHottestDealsNotification(bool status) {
+    hottesdealsNotification = status;
+  }
+
+  set setWhatsappNotification(bool status) {
+    whatsappNotification = status;
   }
 }

@@ -41,7 +41,7 @@ class NotificationListNotifier extends ChangeNotifier {
   bool _undoDismissAll = false;
   bool _isRemoveAllOngoing = false;
   String? _instanceID = '';
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   int get unreadCount => _unreadCount;
   bool get hasNotification => _hasNotification;
@@ -222,7 +222,7 @@ class NotificationListNotifier extends ChangeNotifier {
 
   void getNotificationsFromStream(String userId) {
     _isLoading = true;
-    notifyListeners();
+    // notifyListeners();
     debugPrint('getNotificationsFromStream called with $userId');
     FirebaseFirestore.instance
         .collection('notifications')

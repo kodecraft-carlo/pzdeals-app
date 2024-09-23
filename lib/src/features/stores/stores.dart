@@ -44,6 +44,7 @@ class StoresWidgetState extends ConsumerState<StoresWidget> {
   @override
   void dispose() {
     searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 

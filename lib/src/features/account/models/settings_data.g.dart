@@ -22,13 +22,15 @@ class SettingsDataAdapter extends TypeAdapter<SettingsData> {
       percentageNotification: fields[2] as bool,
       percentageThreshold: fields[3] as int,
       numberOfAlerts: fields[4] as int,
+      hottesdealsNotification: fields[5] as bool,
+      whatsappNotification: fields[6] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, SettingsData obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.priceMistake)
       ..writeByte(1)
@@ -38,7 +40,11 @@ class SettingsDataAdapter extends TypeAdapter<SettingsData> {
       ..writeByte(3)
       ..write(obj.percentageThreshold)
       ..writeByte(4)
-      ..write(obj.numberOfAlerts);
+      ..write(obj.numberOfAlerts)
+      ..writeByte(5)
+      ..write(obj.hottesdealsNotification)
+      ..writeByte(6)
+      ..write(obj.whatsappNotification);
   }
 
   @override

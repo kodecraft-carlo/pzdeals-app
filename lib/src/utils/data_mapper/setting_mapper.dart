@@ -11,6 +11,8 @@ class UserSettingsMapper {
         percentageNotification: json['percentage_notification'] ?? false,
         percentageThreshold: json['percentage_threshold'] ?? 10,
         numberOfAlerts: json['alerts_count'] ?? 10,
+        hottesdealsNotification: json['hottest_deals'] ?? false,
+        whatsappNotification: json['whatsapp_deals'] ?? false,
       );
     } catch (e) {
       debugPrint('Error in mapToKeywordData: $e');
