@@ -213,6 +213,8 @@ class AuthService {
       await googleSignIn.signOut();
       setIsUserAuthenticated(false);
       setUserUID('');
+      removeSignInMethodFromPrefs();
+      removeUserIdFromPrefs();
       // Perform any additional sign-out related tasks
     } catch (error) {
       // Handle any errors that occur during sign-out
@@ -369,6 +371,8 @@ class AuthService {
   Future<void> signOutFirebaseAuth() async {
     setIsUserAuthenticated(false);
     setUserUID('');
+    removeSignInMethodFromPrefs();
+    removeUserIdFromPrefs();
     FirebaseAuth.instance.signOut();
   }
 

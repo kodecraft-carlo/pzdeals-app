@@ -124,6 +124,22 @@ class HtmlContent extends StatelessWidget {
                 };
               }
 
+              if (element.localName == 'span' &&
+                  (element.id == 'copyText' ||
+                      RegExp(r'^copyText\d+$').hasMatch(element.id))) {
+                debugPrint('has span and copyText');
+                return {
+                  'border-radius': '4px',
+                  'border': '2px dashed black',
+                  'padding': '.1em .1em',
+                  'display': 'inline',
+                  'vertical-align': 'baseline',
+                  'color': '#ff2a00',
+                  'line-height': '2.25',
+                  'font-weight': 'bold',
+                };
+              }
+
               return null;
             },
             onLoadingBuilder: (context, element, loadingProgress) =>
@@ -131,7 +147,7 @@ class HtmlContent extends StatelessWidget {
               child: CircularProgressIndicator.adaptive(),
             ),
             renderMode: RenderMode.column,
-            enableCaching: true,
+            enableCaching: false,
             onTapUrl: (url) {
               if (isLaunchApp) {
                 LoadingDialog.show(context);

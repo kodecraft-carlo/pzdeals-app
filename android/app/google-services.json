@@ -22,6 +22,22 @@
           }
         },
         {
+          "client_id": "629344566477-aosnsm1ojfn0c18a911btd77ni4nuf6j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kodecraft.pzdeals",
+            "certificate_hash": "98f5e8266a9e455b0f1994391d7c4526e6a08249"
+          }
+        },
+        {
+          "client_id": "629344566477-c4pn8nvh7nstd2rbg96mhjv86eldv3dj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kodecraft.pzdeals",
+            "certificate_hash": "e77fb2263a1f16669a291b194aefe5c830915d13"
+          }
+        },
+        {
           "client_id": "629344566477-rouhr9f3jmanbrkkejlktnrufve5nk79.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

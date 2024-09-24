@@ -8,6 +8,7 @@ import 'package:pzdeals/src/features/account/services/instance_fcm_service.dart'
 import 'package:pzdeals/src/features/account/services/settings_service.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
 import 'package:pzdeals/src/services/fcmtoken_service.dart';
+import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
 final settingsProvider =
@@ -26,11 +27,20 @@ class SettingsNotifier extends ChangeNotifier {
         // Attempt to link settings from Firebase Instance ID to UID
         await linkSettingsToUID(authUserData.userData!.uid);
       } else {
-        debugPrint('User not logged in');
-        // User not logged in, use Firebase Instance ID
-        setUserUID("");
-        resetTopics();
-        setFirebaseInstanceIdAsIdentifier();
+        final userId = await ref.read(authProvider).getUserIdFromPrefs();
+        if (userId.isNotEmpty) {
+          debugPrint('User logged in');
+          // User logged in, use UID as unique identifier
+          setUserUID(userId);
+          // Attempt to link settings from Firebase Instance ID to UID
+          await linkSettingsToUID(userId);
+        } else {
+          debugPrint('User not logged in');
+          // User not logged in, use Firebase Instance ID
+          setUserUID("");
+          resetTopics();
+          setFirebaseInstanceIdAsIdentifier();
+        }
       }
     });
   }

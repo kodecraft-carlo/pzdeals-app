@@ -36,7 +36,8 @@ class AccountCardState extends ConsumerState<AccountCard> {
 
   Future<void> initSignInMethod() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    signInMethod = prefs.getString('signInMethod') ?? signInMethod;
+    signInMethod =
+        prefs.getString('signInMethod') ?? ref.read(authProvider).signInMethod;
   }
 
   @override
