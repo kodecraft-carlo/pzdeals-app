@@ -3,34 +3,37 @@ import Flutter
 import Firebase
 import FirebaseMessaging
 import Lottie
-import app_links
+import app_links  // Import the app_links package
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
    lazy var flutterEngine = FlutterEngine(name: "PzDeals")
- override func application(
-   _ application: UIApplication,
-   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
- ) -> Bool {
-   FirebaseApp.configure()
-   flutterEngine.run()
-   GeneratedPluginRegistrant.register(with: self.flutterEngine)
+   
+   override func application(
+     _ application: UIApplication,
+     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+   ) -> Bool {
+     // Firebase setup
+     FirebaseApp.configure()
+     flutterEngine.run()
+     GeneratedPluginRegistrant.register(with: self.flutterEngine)
+     
+     // Retrieve the link from launch options (App Links integration)
+     if let url = AppLinks.shared.getLink(launchOptions: launchOptions) {
+       // Handle the app link
+       AppLinks.shared.handleLink(url: url)
+       return true  // Stops propagation to other packages
+     }
 
-    // Retrieve the link from parameters
-    if let url = AppLinks.shared.getLink(launchOptions: launchOptions) {
-      // We have a link, propagate it to your Flutter app or not
-      AppLinks.shared.handleLink(url: url)
-      return true // Returning true will stop the propagation to other packages
-    }
+     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+   }
 
-   return super.application(application, didFinishLaunchingWithOptions: launchOptions)
- }
-
- override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-   Messaging.messaging().apnsToken = deviceToken
-   super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
- }
+   override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+     Messaging.messaging().apnsToken = deviceToken
+     super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+   }
 }
+
 // import UIKit
 // import Flutter
 // import Firebase

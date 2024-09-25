@@ -12,6 +12,7 @@
 	<array>
 		<string>applinks:pzdealsapp.page.link</string>
 		<string>applinks:pzdeals.com</string>
+		<string>applinks:www.pzdeals.com</string>
 	</array>
 </dict>
 </plist>
