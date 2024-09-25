@@ -148,6 +148,30 @@ String getProductSpecificDetailsQuery(int productId) {
   return query;
 }
 
+String getProductSpecificDetailsUsingHandleQuery(String productHandle) {
+  String query = '/items/products'
+      '?filter={"handle":{"_eq":"$productHandle"}}'
+      '&fields[]=id'
+      '&fields[]=title'
+      '&fields[]=body_html'
+      '&fields[]=image_src'
+      '&fields[]=variants.price'
+      '&fields[]=variants.barcode'
+      '&fields[]=variants.sku'
+      '&fields[]=variants.compare_at_price'
+      '&fields[]=tag_ids.tags_id'
+      '&fields[]=tag_ids.tags_id.tag_name'
+      '&fields[]=tag_ids.tags_id.deal_description'
+      '&fields[]=tag_ids.tags_id.image'
+      '&fields[]=handle'
+      '&fields[]=store.image_src'
+      '&fields[]=store.title'
+      '&fields[]=local_image'
+      '&sort=-created_at,-id';
+  debugPrint('getProductSpecificDetailsQuery: $query');
+  return query;
+}
+
 String getCreditCardsCollectionQuery(int pageNumber, int limit) {
   String query = '/items/products'
       '?fields[]=id'

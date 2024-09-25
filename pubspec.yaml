@@ -88,6 +88,7 @@ dependencies:
   sign_in_with_apple: ^4.0.0
   crypto: ^3.0.1
   frontend_server_client: ^4.0.0
+  app_links: ^6.3.2
 
 dependency_overrides:
   flutter_inappwebview_ios:

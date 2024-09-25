@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -32,6 +34,7 @@ import 'package:pzdeals/src/utils/helpers/appbadge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
+final appLinks = AppLinks();
 
 NotificationService notifService = NotificationService();
 FirebaseMessagingApi firebaseMessagingApi = FirebaseMessagingApi();
@@ -132,9 +135,43 @@ class MainAppState extends ConsumerState<MainApp>
   void initState() {
     super.initState();
     handleDynamicLinks();
+    handleAppLinks();
     debugPrint('first launch.. loading user Settings');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(settingsProvider.notifier).saveDefaultSettings();
+    });
+  }
+
+  //Android App Links
+  Future<void> handleAppLinks() async {
+    // // Handle the incoming deep link and navigate accordingly
+    // const platform = MethodChannel('app.channel.shared.data');
+    // final deepLink = await platform.invokeMethod('getDeepLink');
+    // if (deepLink != null) {
+    //   debugPrint('android deeplink: $deepLink');
+    //   // Navigate to the specific page based on the URL like this: https://www.pzdeals.com/products/2-eddie-bauer-pillows
+    //   if (deepLink.contains('products')) {
+    //     final productHandle = deepLink.split('/').last;
+    //     debugPrint('android deeplink product handle: $productHandle');
+    //     navigatorKey.currentState!.pushReplacementNamed('/deals',
+    //         arguments: {'product_handle': productHandle, 'type': 'deeplink'});
+    //   }
+    // }
+    appLinks.uriLinkStream.listen((uri) {
+      debugPrint('appLinks uri: $uri');
+      if (uri.toString().isNotEmpty) {
+        final deepLink = uri.toString();
+        // Navigate to the specific page based on the URL like this: https://www.pzdeals.com/products/2-eddie-bauer-pillows
+        if (deepLink.contains('products')) {
+          final productHandle = deepLink.split('/').last;
+          debugPrint('android/ios deeplink product handle: $productHandle');
+          navigatorKey.currentState!.pushReplacementNamed('/deals', arguments: {
+            'product_id': '',
+            'product_handle': productHandle,
+            'type': 'deeplink'
+          });
+        }
+      }
     });
   }
 
@@ -163,6 +200,15 @@ class MainAppState extends ConsumerState<MainApp>
         debugPrint('deeplink product id: $id');
         navigatorKey.currentState!.pushReplacementNamed('/deals',
             arguments: {'product_id': id ?? '', 'type': 'deeplink'});
+      } else if (deepLink.path == '/products') {
+        //handler for iOS universal links like: https://www.pzdeals.com/products/2-eddie-bauer-pillows
+        final String productHandle = deepLink.pathSegments.last;
+        debugPrint('deeplink product handle: $productHandle');
+        navigatorKey.currentState!.pushReplacementNamed('/deals', arguments: {
+          'product_id': '',
+          'product_handle': productHandle,
+          'type': 'deeplink'
+        });
       }
     }
   }

@@ -42,6 +42,7 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
   String id = '';
   String dealType = '';
   String notifId = '';
+  String productHandle = '';
   FetchProductDealService productDealService = FetchProductDealService();
   NotificationService notificationService = NotificationService();
   final GlobalKey<DealsTabControllerWidgetState> dealsKey =
@@ -145,6 +146,11 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
             debugPrint('from deeplink id: $id');
             if (id != '') {
               showProductDeal(int.parse(id));
+            } else {
+              productHandle = urlArguments['product_handle'] as String;
+              if (productHandle != '') {
+                showProductDealUsingHandle(productHandle.toLowerCase().trim());
+              }
             }
           } else {
             debugPrint('from others id: $id');
@@ -244,6 +250,47 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
     });
   }
 
+  void showProductDealUsingHandle(String productHandle) {
+    // ref.read(notificationsProvider).refreshNotification();
+    loadProductUsingHandle(productHandle).then((product) {
+      debugPrint('notifiId: $notifId');
+      if (notifId != '') {
+        // Future.delayed(const Duration(milliseconds: 1000), () {
+        // ref.read(notificationsProvider).markAsRead(notifId);
+        ref.read(notificationsProvider).setAsRead(notifId);
+        // });
+      }
+      if (product != null) {
+        showDialog(
+          context: context,
+          useRootNavigator: false,
+          barrierDismissible: true,
+          builder: (context) => ScaffoldMessenger(
+            child: Builder(
+              builder: (context) => Scaffold(
+                backgroundColor: Colors.transparent,
+                body: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  behavior: HitTestBehavior.opaque,
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: ProductContentDialog(
+                      productData: product,
+                      content: ProductDealDescription(
+                        snackbarContext: context,
+                        productData: product,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    });
+  }
+
   void showNotificationInfo(NotificationData notification) {
     // ref.read(notificationsProvider).refreshNotification();
     if (notification.id != '') {
@@ -294,6 +341,13 @@ class _NavigationWidgetState extends ConsumerState<NavigationWidget> {
 
   Future<ProductDealcardData?> loadProduct(int productId) async {
     final product = await productDealService.fetchProductInfo(productId);
+    return product;
+  }
+
+  Future<ProductDealcardData?> loadProductUsingHandle(
+      String productHandle) async {
+    final product =
+        await productDealService.fetchProductInfoUsingHandle(productHandle);
     return product;
   }
 

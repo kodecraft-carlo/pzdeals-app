@@ -195,6 +195,42 @@ class FetchProductDealService {
     }
   }
 
+  Future<ProductDealcardData?> fetchProductInfoUsingHandle(
+      String productHandle) async {
+    ApiClient apiClient = ApiClient();
+    // final authService = ref.watch(directusAuthServiceProvider);
+    debugPrint("fetchProductInfoUsingHandle Deals called for $productHandle");
+
+    try {
+      Response response = await apiClient.dio
+          .get(getProductSpecificDetailsUsingHandleQuery(productHandle)
+              // options: Options(
+              //   headers: {'Authorization': 'Bearer $accessToken'},
+              // ),
+              );
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        if (responseData == null ||
+            responseData.isEmpty ||
+            responseData["data"].isEmpty) {
+          return null;
+        }
+
+        final products =
+            ProductMapper.mapToProductDealcardData(responseData['data']);
+        return products;
+      } else {
+        throw Exception('Failed to fetch directus product info using handle');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioExceptionw: ${e.message}");
+      throw Exception('Failed to fetch directus product info using handle');
+    } catch (e) {
+      debugPrint('Error fetching fetchProductInfoUsingHandle deals: $e');
+      throw Exception('Failed to fetch directus product info using handle');
+    }
+  }
+
   Future<void> _cacheProductInfo(
       ProductDealcardData product, String boxName) async {
     debugPrint("Caching product info for $boxName");
