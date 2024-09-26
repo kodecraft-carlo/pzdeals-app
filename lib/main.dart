@@ -31,6 +31,7 @@ import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/state/bookmarks_provider.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
 import 'package:pzdeals/src/utils/helpers/appbadge.dart';
+import 'package:pzdeals/src/utils/helpers/url_resolver.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -144,27 +145,22 @@ class MainAppState extends ConsumerState<MainApp>
 
   //Android App Links
   Future<void> handleAppLinks() async {
-    // // Handle the incoming deep link and navigate accordingly
-    // const platform = MethodChannel('app.channel.shared.data');
-    // final deepLink = await platform.invokeMethod('getDeepLink');
-    // if (deepLink != null) {
-    //   debugPrint('android deeplink: $deepLink');
-    //   // Navigate to the specific page based on the URL like this: https://www.pzdeals.com/products/2-eddie-bauer-pillows
-    //   if (deepLink.contains('products')) {
-    //     final productHandle = deepLink.split('/').last;
-    //     debugPrint('android deeplink product handle: $productHandle');
-    //     navigatorKey.currentState!.pushReplacementNamed('/deals',
-    //         arguments: {'product_handle': productHandle, 'type': 'deeplink'});
-    //   }
-    // }
-    appLinks.uriLinkStream.listen((uri) {
+    appLinks.uriLinkStream.listen((uri) async {
       debugPrint('appLinks uri: $uri');
+
       if (uri.toString().isNotEmpty) {
-        final deepLink = uri.toString();
-        // Navigate to the specific page based on the URL like this: https://www.pzdeals.com/products/2-eddie-bauer-pillows
-        if (deepLink.contains('products')) {
+        String deepLink = uri.toString();
+
+        // If it's a shortened URL, resolve it first
+        if (deepLink.startsWith('https://pzdls.co')) {
+          debugPrint('Resolving shortened URL: $deepLink');
+          deepLink = await resolveShortenedURL(deepLink);
+        }
+
+        // Proceed to handle the full URL
+        if (deepLink.contains('https://www.pzdeals.com/products/')) {
           final productHandle = deepLink.split('/').last;
-          debugPrint('android/ios deeplink product handle: $productHandle');
+          debugPrint('Resolved product handle: $productHandle');
           navigatorKey.currentState!.pushReplacementNamed('/deals', arguments: {
             'product_id': '',
             'product_handle': productHandle,
