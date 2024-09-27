@@ -14,6 +14,7 @@ import 'package:pzdeals/src/services/fcmtoken_service.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
 import 'package:pzdeals/src/utils/helpers/convert_string.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -213,10 +214,17 @@ class FirebaseMessagingApi {
 
     fetchFcmToken();
 
-    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+    _firebaseMessaging.onTokenRefresh.listen((newToken) async {
       debugPrint("FCM Token Refreshed: $newToken");
       if (fcmToken != newToken) {
-        fcmTokenService.updateUserFcmToken(instanceId ?? '', newToken);
+        //check if user id is present in shared preferences then use it instead of instance ID
+        final prefs = await SharedPreferences.getInstance();
+        final userId = prefs.getString('userId');
+        if (userId != null) {
+          fcmTokenService.updateUserFcmToken(userId, newToken);
+        } else {
+          fcmTokenService.updateUserFcmToken(instanceId ?? '', newToken);
+        }
       }
     });
   }
