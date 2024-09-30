@@ -6,7 +6,6 @@ import 'package:pzdeals/src/constants/color_constants.dart';
 import 'package:pzdeals/src/constants/sizes.dart';
 import 'package:pzdeals/src/features/notifications/presentation/widgets/index.dart';
 import 'package:pzdeals/src/features/notifications/state/notification_provider.dart';
-import 'package:pzdeals/src/features/notifications/state/notifications_stream_provider.dart';
 
 class NotificationsDisplay extends ConsumerStatefulWidget {
   const NotificationsDisplay({super.key});

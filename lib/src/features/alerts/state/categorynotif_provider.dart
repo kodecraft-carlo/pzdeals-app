@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/features/alerts/services/categorynotif_service.dart';
 import 'package:pzdeals/src/features/deals/models/index.dart';
 import 'package:pzdeals/src/features/deals/services/fetch_collections.dart';
+import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 
 final categorySettingsProvider =
@@ -85,7 +86,10 @@ class CategorySettingsNotifier extends ChangeNotifier {
       return;
     }
 
-    final userId = authUserDataState.userData!.uid;
+    String userId = authUserDataState.userData!.uid;
+    if (userId.isEmpty) {
+      userId = await ref.read(authProvider).getUserIdFromPrefs();
+    }
     _boxName = '${userId}_user_category_settings';
     try {
       _settingsData =
@@ -114,7 +118,10 @@ class CategorySettingsNotifier extends ChangeNotifier {
   void updateSettingsLocally(
       bool value, String collectionTitle, String topicName) async {
     final authUserDataState = ref.watch(authUserDataProvider);
-    final userId = authUserDataState.userData!.uid;
+    String userId = authUserDataState.userData!.uid;
+    if (userId.isEmpty) {
+      userId = await ref.read(authProvider).getUserIdFromPrefs();
+    }
     _boxName = '${userId}_user_category_settings';
     _isLoading = true;
     notifyListeners();

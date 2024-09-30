@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/features/alerts/models/index.dart';
 import 'package:pzdeals/src/features/alerts/services/keyword_service.dart';
+import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/utils/helpers/convert_string.dart';
 
@@ -37,11 +38,14 @@ class KeywordsNotifier extends ChangeNotifier {
   List<KeywordData> get savedkeywords => _savedkeywords;
   List<KeywordData> get popularKeywords => _popularKeywords;
 
-  void setUserUID() {
+  void setUserUID() async {
     final authDataState = ref.watch(authUserDataProvider);
     if (authDataState.userData == null) return;
     debugPrint('setUserUID called with ${authDataState.userData!.uid}');
     _userUID = authDataState.userData!.uid;
+    if (_userUID.isEmpty) {
+      _userUID = await ref.read(authProvider).getUserIdFromPrefs();
+    }
     _boxName = '${_userUID}_keywords';
   }
 

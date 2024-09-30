@@ -28,6 +28,7 @@ class NotificationCardWidgetState
     extends ConsumerState<NotificationCardWidget> {
   FetchProductDealService productDealService = FetchProductDealService();
   void showProductDeal(int productId, String notificationId) {
+    debugPrint('notification card showProductDeal notifid: $notificationId');
     if (mounted) {
       // LoadingDialog.show(context);
       loadProduct(productId).then((product) {
