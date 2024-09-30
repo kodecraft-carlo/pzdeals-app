@@ -4,7 +4,6 @@ import 'package:firebase_installations/firebase_installations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pzdeals/src/models/notification_data.dart';
-import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
 import 'package:pzdeals/src/utils/formatter/date_formatter.dart';
 import 'package:pzdeals/src/utils/helpers/appbadge.dart';
@@ -12,10 +11,8 @@ import 'package:pzdeals/src/utils/helpers/appbadge.dart';
 final notificationsProvider =
     ChangeNotifierProvider<NotificationListNotifier>((ref) {
   final authState = ref.watch(authUserDataProvider);
-  final userIdFromPrefs = ref.read(authProvider).getUserIdFromPrefs();
   if (authState.isAuthenticated) {
-    return NotificationListNotifier(
-        userUID: authState.userData?.uid ?? userIdFromPrefs.toString());
+    return NotificationListNotifier(userUID: authState.userData?.uid ?? '');
   } else {
     return NotificationListNotifier();
   }

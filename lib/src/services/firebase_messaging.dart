@@ -230,11 +230,10 @@ class FirebaseMessagingApi {
   }
 
   Future<void> storeNotification(dynamic message) async {
-    // await Firebase.initializeApp();
+    await Firebase.initializeApp();
     notifService.addNotification(
         NotificationMapper.mapToNotificationData(message), 'notifications');
-    debugPrint(
-        'storeNotification: Notification added _ notificationId: ${message.messageId}');
+    debugPrint('Notification added');
   }
 
   void navigateToScreens(dynamic message, {bool isForeground = false}) {

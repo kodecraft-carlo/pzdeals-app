@@ -20,18 +20,23 @@ class SettingsNotifier extends ChangeNotifier {
     debugPrint('SettingsNotifier initialized');
     // Listen to changes in authUserDataProvider
     ref.listen<AuthUserData?>(authUserDataProvider, (_, authUserData) async {
-      if (authUserData != null && authUserData.userData != null) {
+      if (authUserData?.userData?.uid != null) {
         debugPrint('User logged in');
-        setUserUID(authUserData.userData!.uid);
+        // User logged in, use UID as unique identifier
+        setUserUID(authUserData!.userData!.uid);
+        // Attempt to link settings from Firebase Instance ID to UID
         await linkSettingsToUID(authUserData.userData!.uid);
       } else {
         final userId = await ref.read(authProvider).getUserIdFromPrefs();
         if (userId.isNotEmpty) {
           debugPrint('User logged in');
+          // User logged in, use UID as unique identifier
           setUserUID(userId);
+          // Attempt to link settings from Firebase Instance ID to UID
           await linkSettingsToUID(userId);
         } else {
           debugPrint('User not logged in');
+          // User not logged in, use Firebase Instance ID
           setUserUID("");
           resetTopics();
           setFirebaseInstanceIdAsIdentifier();
@@ -94,7 +99,7 @@ class SettingsNotifier extends ChangeNotifier {
     debugPrint('saveDefaultSettings boxName: $_boxName');
     final defaultSettings = SettingsData(
         priceMistake: true,
-        frontpageNotification: false,
+        frontpageNotification: true,
         percentageNotification: false,
         percentageThreshold: 0,
         numberOfAlerts: 10,
@@ -104,7 +109,7 @@ class SettingsNotifier extends ChangeNotifier {
       _settingsService.updateUserSettings(
           _boxName, _instanceID, defaultSettings);
       _firebaseMessaging.subscribeToTopic('price_mistake');
-      // _firebaseMessaging.subscribeToTopic('front_page');
+      _firebaseMessaging.subscribeToTopic('front_page');
       // if (!isUserLoggedIn && _userUID.isNotEmpty) {
       //   _fcmToken = await _firebaseMessaging.getToken();
       //   _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
@@ -125,26 +130,20 @@ class SettingsNotifier extends ChangeNotifier {
     // Fetch settings by Firebase Instance ID
     final instanceIdSettings = await _settingsService.getCachedSettings(
         instanceIdBoxName, _instanceID!);
-    final serverUserSettings =
-        await _settingsService.fetchUserSettings(uidBoxName, uid);
-
-    //if serverUserSettings is not empty
-    if (serverUserSettings != null) {
-      //link only the price mistake instance setting to the user server settings
-      final priceMistakeSetting = serverUserSettings.priceMistake;
-      if (instanceIdSettings != null) {
-        if (priceMistakeSetting != instanceIdSettings.priceMistake) {
-          serverUserSettings.priceMistake = instanceIdSettings.priceMistake;
-        }
-        await _settingsService.updateUserSettings(
-            uidBoxName, uid, serverUserSettings);
-        await _settingsService.clearCachedSettings(instanceIdBoxName);
-        await _settingsService.deleteInstanceSetting(_instanceID!);
-        _boxName = uidBoxName;
-        loadUserSettings();
-      }
-      mergeNotificationsOnce(uid, _instanceID!);
+    if (instanceIdSettings != null) {
+      // Update settings with UID and clear cached settings associated with Firebase Instance ID
+      await _settingsService.updateUserSettings(
+          uidBoxName, uid, instanceIdSettings);
+      await _settingsService.clearCachedSettings(instanceIdBoxName);
+      await _settingsService.deleteInstanceSetting(_instanceID!);
+      // await _instanceFcmService.deleteFcmToken(_instanceID!);
+      // _fcmToken = await _firebaseMessaging.getToken();
+      // await _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!);
+      // Load the newly linked settings
+      _boxName = uidBoxName;
+      loadUserSettings();
     }
+    mergeNotificationsOnce(uid, _instanceID!);
   }
 
   Future<void> loadUserSettings() async {
