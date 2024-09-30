@@ -13,6 +13,8 @@ class TabPzPicksNotifier extends ChangeNotifier {
   bool _isLoading = false;
   bool _isrefreshing = false;
   int pageNumber = 1;
+  int initialLimit = 80;
+  int moreLimit = 26;
   List<ProductDealcardData> _products = [];
 
   bool get isLoading => _isLoading;
@@ -30,7 +32,7 @@ class TabPzPicksNotifier extends ChangeNotifier {
     pageNumber = 1;
     try {
       final serverProducts = await _productService.fetchProductDeals(
-          _collectionName, _boxName, pageNumber);
+          _collectionName, _boxName, pageNumber, initialLimit);
       _products = serverProducts;
       _isLoading = false;
       _isrefreshing = false;
@@ -55,7 +57,7 @@ class TabPzPicksNotifier extends ChangeNotifier {
       // if (_products.isNotEmpty) return;
 
       final serverProducts = await _productService.fetchProductDeals(
-          _collectionName, _boxName, pageNumber);
+          _collectionName, _boxName, pageNumber, initialLimit);
       _products = serverProducts;
       notifyListeners();
     } catch (e) {
@@ -73,7 +75,7 @@ class TabPzPicksNotifier extends ChangeNotifier {
 
     try {
       final serverProducts = await _productService.fetchMoreProductDeals(
-          _collectionName, _boxName, pageNumber);
+          _collectionName, _boxName, pageNumber, moreLimit);
       _products.addAll(serverProducts);
       notifyListeners();
     } catch (e) {

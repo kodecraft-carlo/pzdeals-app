@@ -14,6 +14,8 @@ class TabFrontPageNotifier extends ChangeNotifier {
   int pageNumber = 1;
   bool _isLoading = false;
   bool _isrefreshing = false;
+  int initialLimit = 80;
+  int moreLimit = 26;
 
   List<ProductDealcardData> _products = [];
 
@@ -40,7 +42,7 @@ class TabFrontPageNotifier extends ChangeNotifier {
 
     try {
       final serverProducts = await _productService.fetchProductDeals(
-          _collectionName, _boxName, pageNumber);
+          _collectionName, _boxName, pageNumber, initialLimit);
       _products = serverProducts;
       _isrefreshing = false;
       notifyListeners();
@@ -63,7 +65,10 @@ class TabFrontPageNotifier extends ChangeNotifier {
       // if (_products.isNotEmpty) return;
 
       final serverProducts = await _productService.fetchProductDeals(
-          _collectionName, _boxName, pageNumber); // collection: front page
+          _collectionName,
+          _boxName,
+          pageNumber,
+          initialLimit); // collection: front page
       // final serverProducts =
       //     await _productService.fetchProductDealsAll(_boxName, pageNumber);
       _products = serverProducts;
@@ -84,7 +89,7 @@ class TabFrontPageNotifier extends ChangeNotifier {
     debugPrint('Front page: loading more products');
     try {
       final serverProducts = await _productService.fetchMoreProductDeals(
-          _collectionName, _boxName, pageNumber);
+          _collectionName, _boxName, pageNumber, moreLimit);
       _products.addAll(serverProducts);
       _isLoading = false;
       notifyListeners();

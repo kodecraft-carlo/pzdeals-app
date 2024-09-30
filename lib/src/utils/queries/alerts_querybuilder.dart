@@ -18,6 +18,7 @@ String getPopularKeywordsQuery(
       '&page=$pageNumber'
       '&filter={"keyword":{"_nin":["${excludeKeywords.join('","')}"]}}'
       '&sort[]=-id';
+  // '&sort[]=display_order';
   debugPrint('getPopularKeywordsQuery: $query ');
   return query;
 }

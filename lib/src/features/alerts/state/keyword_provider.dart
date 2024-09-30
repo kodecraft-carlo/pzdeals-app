@@ -246,6 +246,7 @@ class KeywordsNotifier extends ChangeNotifier {
   }
 
   List<KeywordData> sortKeywordsDescending(List<KeywordData> keywords) {
+    // return keywords;
     return keywords
       ..sort((a, b) {
         // Compare by type first, 'category' keywords come first

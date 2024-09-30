@@ -54,14 +54,14 @@ class FetchProductDealService {
   }
 
   Future<List<ProductDealcardData>> fetchProductDeals(
-      String pageName, String boxName, int pageNumber) async {
+      String pageName, String boxName, int pageNumber, int limit) async {
     ApiClient apiClient = ApiClient();
     // final authService = ref.watch(directusAuthServiceProvider);
     debugPrint("fetchProduct Deals called for $pageName");
 
     try {
       Response response = await apiClient.dio
-          .get(getProductsByCollectionQuery(pageName, pageNumber)
+          .get(getProductsByCollectionQuery(pageName, pageNumber, limit)
               // options: Options(
               //   headers: {'Authorization': 'Bearer $accessToken'},
               // ),
@@ -91,14 +91,14 @@ class FetchProductDealService {
   }
 
   Future<List<ProductDealcardData>> fetchMoreProductDeals(
-      String pageName, String boxName, int pageNumber) async {
+      String pageName, String boxName, int pageNumber, int limit) async {
     ApiClient apiClient = ApiClient();
     // final authService = ref.watch(directusAuthServiceProvider);
     debugPrint("fetchProduct Deals called for $pageName");
 
     try {
       Response response = await apiClient.dio
-          .get(getProductsByCollectionQuery(pageName, pageNumber)
+          .get(getProductsByCollectionQuery(pageName, pageNumber, limit)
               // options: Options(
               //   headers: {'Authorization': 'Bearer $accessToken'},
               // ),

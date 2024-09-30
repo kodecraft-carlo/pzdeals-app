@@ -11,6 +11,7 @@ String getStoreCollectionQuery(int pageNumber) {
       '&fields[]=store_img'
       '&fields[]=local_app_store_img'
       '&sort[]=title'
+      // '&sort[]=display_order'
       '&limit=200'
       '&page=$pageNumber';
   debugPrint('getStoreCollectionQuery: $query');

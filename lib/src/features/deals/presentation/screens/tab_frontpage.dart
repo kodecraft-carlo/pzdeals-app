@@ -96,15 +96,15 @@ class FrontPageDealsWidgetState extends ConsumerState<FrontPageDealsWidget>
               ],
             ),
           ),
-          AnimatedOpacity(
-            opacity: (frontpageState.isLoading == true &&
-                        frontpageState.products.isEmpty) ||
-                    frontpageState.isRefreshing == true
-                ? 1
-                : 0,
-            duration: const Duration(milliseconds: 300),
-            child: const AnimatedGradientProgressBar(),
-          ),
+          // AnimatedOpacity(
+          //   opacity: (frontpageState.isLoading == true &&
+          //               frontpageState.products.isEmpty) ||
+          //           frontpageState.isRefreshing == true
+          //       ? 1
+          //       : 0,
+          //   duration: const Duration(milliseconds: 300),
+          //   child: const AnimatedGradientProgressBar(),
+          // ),
           // if (frontpageState.isLoading) const AnimatedGradientProgressBar(),
         ],
       );

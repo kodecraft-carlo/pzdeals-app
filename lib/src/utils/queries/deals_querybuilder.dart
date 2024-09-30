@@ -29,7 +29,8 @@ String getProductsAll(int pageNumber) {
   return query;
 }
 
-String getProductsByCollectionQuery(String pageName, int pageNumber) {
+String getProductsByCollectionQuery(
+    String pageName, int pageNumber, int limit) {
   String filterCondition = '_icontains';
   if (pageName.toLowerCase() == 'home') {
     pageName = 'home';
@@ -56,7 +57,8 @@ String getProductsByCollectionQuery(String pageName, int pageNumber) {
       '&fields[]=store.title'
       '&fields[]=local_image'
       '&sort=-created_at,-id'
-      '&limit=30'
+      // '&sort=display_order'
+      '&limit=$limit'
       '&page=$pageNumber'
       // '&filter[id][_eq]=2231'
       '&filter={"_and":[{"collection_ids":{"collection_id":{"keywords":{"$filterCondition":"$pageName"}}}},'
@@ -87,7 +89,7 @@ String getProductsByProductIdsQuery(List<int> productIds, int pageNumber) {
       '&fields[]=store.title'
       '&fields[]=local_image'
       '&sort=-created_at,-id'
-      '&limit=30'
+      '&limit=20'
       '&page=$pageNumber'
       '&filter={"id":{"_in":["${productIds.join('","')}"]}}';
   debugPrint('getProductsByProductIdsQuery: $query');
@@ -116,6 +118,7 @@ String getProductsByCollectionIdQuery(int collectionId, int limit) {
       '&fields[]=store.title'
       '&fields[]=local_image'
       '&sort=-created_at,-id'
+      // '&sort=display_order'
       '&limit=$limit'
       '&filter={"_and":[{"collection_ids":{"collection_id":{"_eq":$collectionId}}},'
       '{"tag_ids":{"tags_id":{"tag_name":{"_nin":["credit-cards","price-mistake"]}}}}]}';
@@ -217,7 +220,7 @@ String getProductsByTagQuery(String tagName, int pageNumber) {
       '&fields[]=store.title'
       '&fields[]=local_image'
       '&sort=-created_at,-id'
-      '&limit=30'
+      '&limit=20'
       '&page=$pageNumber'
       '&filter={"_and":[{"tag_ids":{"tag_id":{"tag_name":{"_in":"$tagName"}}}},'
       '{"collection_ids":{"collection_id":{"keywords":{"_ncontains":"credit_cards"}}}}]}';
@@ -263,7 +266,7 @@ String searchProductQuery(String keyword, int pageNumber, String filters) {
       '&fields[]=store.title'
       '&fields[]=local_image'
       '&sort=-created_at,-id'
-      '&limit=30'
+      '&limit=20'
       '&page=$pageNumber'
       '&filter={"_and":[{"title": { "_icontains": "${keyword.trim()}" }},'
       '{"tag_ids":{"tags_id":{"tag_name":{"_neq":"price-mistake"}}}}$filters]}';
@@ -292,7 +295,7 @@ String searchPercentageProductQuery(int pageNumber) {
       '&fields[]=store.title'
       '&fields[]=local_image'
       '&sort=-created_at,-id'
-      '&limit=30'
+      '&limit=20'
       '&page=$pageNumber'
       '&filter={"_and":[{"collection_ids":{"collection_id":{"keywords":{"_nin":"credit_cards,pz_blog,pz_styles,no_price,unknown"}}}},'
       '{"tag_ids":{"tags_id":{"tag_name":{"_neq":"price-mistake"}}}}]}';

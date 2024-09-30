@@ -94,11 +94,11 @@ class PZPicksScreenWidgetState extends ConsumerState<PZPicksScreenWidget>
               ),
             ],
           )),
-          AnimatedOpacity(
-            opacity: pzpicksState.isLoading ? 1 : 0,
-            duration: const Duration(milliseconds: 300),
-            child: const AnimatedGradientProgressBar(),
-          ),
+          // AnimatedOpacity(
+          //   opacity: pzpicksState.isLoading ? 1 : 0,
+          //   duration: const Duration(milliseconds: 300),
+          //   child: const AnimatedGradientProgressBar(),
+          // ),
           // if (pzpicksState.isLoading) const AnimatedGradientProgressBar()
         ],
       );

@@ -14,6 +14,8 @@ class ProductCollectionNotifier extends ChangeNotifier {
   int pageNumber = 1;
   bool _isLoading = false;
   bool _isrefreshing = false;
+  int initialLimit = 80;
+  int moreLimit = 26;
 
   List<ProductDealcardData> _products = [];
 
@@ -35,7 +37,7 @@ class ProductCollectionNotifier extends ChangeNotifier {
 
     try {
       final serverProducts = await _productService.fetchProductDeals(
-          _collectionName, _boxName, pageNumber);
+          _collectionName, _boxName, pageNumber, initialLimit);
       _products = serverProducts;
       _isrefreshing = false;
       notifyListeners();
@@ -58,7 +60,7 @@ class ProductCollectionNotifier extends ChangeNotifier {
       notifyListeners();
 
       final serverProducts = await _productService.fetchProductDeals(
-          _collectionName, _boxName, pageNumber);
+          _collectionName, _boxName, pageNumber, initialLimit);
 
       _products = serverProducts;
 
@@ -78,7 +80,7 @@ class ProductCollectionNotifier extends ChangeNotifier {
 
     try {
       final serverProducts = await _productService.fetchMoreProductDeals(
-          _collectionName, _boxName, pageNumber);
+          _collectionName, _boxName, pageNumber, moreLimit);
       _products.addAll(serverProducts);
       notifyListeners();
     } catch (e) {
