@@ -19,7 +19,7 @@ String getDirectusUserIdWithInstanceId(String userUID, String instanceID) {
 
 String getUserIdFromInstanceId(String instanceID) {
   String query = '/items/users'
-      '?filter[instance_id][_eq]=$instanceID'
+      '?filter[user_id][_eq]=$instanceID'
       '&fields[]=id';
   debugPrint('getUserIdFromInstanceId: $query');
   return query;

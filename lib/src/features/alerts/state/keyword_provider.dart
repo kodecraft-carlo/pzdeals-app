@@ -41,7 +41,8 @@ class KeywordsNotifier extends ChangeNotifier {
   void setUserUID() async {
     final authDataState = ref.watch(authUserDataProvider);
     if (authDataState.userData == null) return;
-    debugPrint('setUserUID called with ${authDataState.userData!.uid}');
+    debugPrint(
+        'KeywordsNotifier: setUserUID called with ${authDataState.userData!.uid}');
     _userUID = authDataState.userData!.uid;
     if (_userUID.isEmpty) {
       _userUID = await ref.read(authProvider).getUserIdFromPrefs();

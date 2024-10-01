@@ -401,7 +401,7 @@ class AuthService {
           .collection('users')
           .doc(userUID)
           .set(userInfo);
-      await fcmTokenService.updateUserFcmToken(userUID, fcmToken!);
+      await fcmTokenService.updateUserFcmToken(userUID, fcmToken!, 'userId');
       return {'code': 'success', 'message': 'success'};
     } on FirebaseException catch (e) {
       debugPrint('Registration failed: $e.message');
@@ -488,7 +488,8 @@ class AuthService {
         .doc(userUID)
         .update({'fcmToken': fcmToken});
     debugPrint('authProvider: calling updateUserFcmToken');
-    await fcmTokenService.updateUserFcmToken(userUID, fcmToken!);
+    await fcmTokenService.updateUserFcmToken(userUID, fcmToken!, 'userId');
+    await fcmTokenService.deleteInstanceIdFcmToken();
   }
 
   Future<void> saveSignInMethodToPrefs(String method) async {

@@ -52,7 +52,7 @@ class NotificationListNotifier extends ChangeNotifier {
   List<NotificationData> get notificationList => _notificationList;
 
   void setUserUID(String uid) {
-    debugPrint('setUserUID called with $uid');
+    debugPrint('NotificationListNotifier: setUserUID called with $uid');
     _userUID = uid;
   }
 

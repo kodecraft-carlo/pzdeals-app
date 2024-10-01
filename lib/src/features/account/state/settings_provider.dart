@@ -10,6 +10,7 @@ import 'package:pzdeals/src/features/notifications/state/notification_provider.d
 import 'package:pzdeals/src/services/fcmtoken_service.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final settingsProvider =
     ChangeNotifierProvider<SettingsNotifier>((ref) => SettingsNotifier(ref));
@@ -21,13 +22,13 @@ class SettingsNotifier extends ChangeNotifier {
     // Listen to changes in authUserDataProvider
     ref.listen<AuthUserData?>(authUserDataProvider, (_, authUserData) async {
       if (authUserData != null && authUserData.userData != null) {
-        debugPrint('User logged in');
+        debugPrint('authUserDataProvider: User logged in');
         setUserUID(authUserData.userData!.uid);
         await linkSettingsToUID(authUserData.userData!.uid);
       } else {
         final userId = await ref.read(authProvider).getUserIdFromPrefs();
         if (userId.isNotEmpty) {
-          debugPrint('User logged in');
+          debugPrint('getUserIdFromPrefs: User logged in');
           setUserUID(userId);
           await linkSettingsToUID(userId);
         } else {
@@ -78,7 +79,7 @@ class SettingsNotifier extends ChangeNotifier {
     debugPrint('instanceID: $_instanceID');
     _boxName = '${_instanceID}_user_settings';
     await saveDefaultSettings();
-    _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!);
+    _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!, 'instaceId');
     loadUserSettings();
   }
 
@@ -88,31 +89,38 @@ class SettingsNotifier extends ChangeNotifier {
   }
 
   Future<void> saveDefaultSettings() async {
-    _instanceID = await FirebaseInstallations.id;
-    debugPrint('saveDefaultSettings called ~ instanceID: $_instanceID');
-    _boxName = '${_instanceID}_user_settings';
-    debugPrint('saveDefaultSettings boxName: $_boxName');
-    final defaultSettings = SettingsData(
-        priceMistake: true,
-        frontpageNotification: false,
-        percentageNotification: false,
-        percentageThreshold: 0,
-        numberOfAlerts: 10,
-        hottesdealsNotification: false,
-        whatsappNotification: false);
-    try {
-      _settingsService.updateUserSettings(
-          _boxName, _instanceID, defaultSettings);
-      _firebaseMessaging.subscribeToTopic('price_mistake');
-      // _firebaseMessaging.subscribeToTopic('front_page');
-      // if (!isUserLoggedIn && _userUID.isNotEmpty) {
-      //   _fcmToken = await _firebaseMessaging.getToken();
-      //   _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
-      // }
-      _settingsData = defaultSettings;
-      notifyListeners();
-    } catch (e) {
-      debugPrint('error updating settings: $e');
+    final prefs = await SharedPreferences.getInstance();
+    final userIdFromPrefs = prefs.getString('userId') ?? '';
+
+    if (userIdFromPrefs.isNotEmpty) {
+      _userUID = prefs.getString('userId')!;
+    } else {
+      _instanceID = await FirebaseInstallations.id;
+      debugPrint('saveDefaultSettings called ~ instanceID: $_instanceID');
+      _boxName = '${_instanceID}_user_settings';
+      debugPrint('saveDefaultSettings boxName: $_boxName');
+      final defaultSettings = SettingsData(
+          priceMistake: true,
+          frontpageNotification: false,
+          percentageNotification: false,
+          percentageThreshold: 0,
+          numberOfAlerts: 10,
+          hottesdealsNotification: false,
+          whatsappNotification: false);
+      try {
+        _settingsService.updateUserSettings(
+            _boxName, _instanceID, defaultSettings);
+        _firebaseMessaging.subscribeToTopic('price_mistake');
+        // _firebaseMessaging.subscribeToTopic('front_page');
+        // if (!isUserLoggedIn && _userUID.isNotEmpty) {
+        //   _fcmToken = await _firebaseMessaging.getToken();
+        //   _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
+        // }
+        _settingsData = defaultSettings;
+        notifyListeners();
+      } catch (e) {
+        debugPrint('error updating settings: $e');
+      }
     }
   }
 

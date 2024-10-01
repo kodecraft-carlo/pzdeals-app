@@ -22,7 +22,7 @@ class BookmarkedProductsNotifier extends ChangeNotifier {
   List<ProductDealcardData> get products => _products;
 
   void setUserUID(String uid) {
-    debugPrint('setUserUID called with $uid');
+    debugPrint('BookmarkedProductsNotifier: setUserUID called with $uid');
     _userUID = uid;
     _boxName = '${_userUID}_bookmarks';
     _bookmarkedProductsBox = '${_userUID}_bookmarked_products';

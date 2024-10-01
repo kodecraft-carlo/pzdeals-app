@@ -41,7 +41,8 @@ class FcmTokenService {
     }
   }
 
-  Future<void> updateUserFcmToken(String userUID, String fcmToken) async {
+  Future<void> updateUserFcmToken(
+      String userUID, String fcmToken, String idType) async {
     const int maxRetryCount = 3;
     int retryCount = 0;
     Duration retryDelay = Duration(seconds: 2 * (1 << retryCount));
@@ -51,7 +52,7 @@ class FcmTokenService {
         debugPrint(
             'Attempt ${retryCount + 1}: updateUserFcmToken called with $userUID and $fcmToken');
         ApiClient apiClient = ApiClient();
-        final int id = await getUserId(userUID);
+        final int id = await getUserId(userUID, idType);
         debugPrint('updateUserFcmToken id: $id');
         if (id == 0) {
           await addUserFcmToken(userUID, fcmToken);
@@ -148,19 +149,54 @@ class FcmTokenService {
     }
   }
 
-  Future<int> getUserId(String userUID) async {
-    final int id1 = await getIdWithInstanceId(instanceId ?? '');
-    if (id1 != 0) {
-      debugPrint('has instance id');
-      return id1;
+  Future<int> getUserId(String userUID, String idType) async {
+    if (idType == 'userId') {
+      final int id = await getId(userUID);
+      if (id != 0) {
+        return id;
+      }
+    } else {
+      final int id = await getIdWithInstanceId(instanceId ?? '');
+      if (id != 0) {
+        return id;
+      }
     }
-
-    final int id2 = await getId(userUID);
-    if (id2 != 0) {
-      debugPrint('has user ID');
-      return id2;
-    }
-
     return 0;
+
+    // final int id1 = await getIdWithInstanceId(instanceId ?? '');
+    // if (id1 != 0) {
+    //   debugPrint('has instance id');
+    //   return id1;
+    // }
+
+    // final int id2 = await getId(userUID);
+    // if (id2 != 0) {
+    //   debugPrint('has user ID');
+    //   return id2;
+    // }
+
+    // return 0;
+  }
+
+  Future<void> deleteInstanceIdFcmToken() async {
+    debugPrint('deleteInstanceIdFcmToken called with $instanceId');
+    ApiClient apiClient = ApiClient();
+    try {
+      final int id = await getIdWithInstanceId(instanceId ?? '');
+      if (id == 0) {
+        return;
+      }
+      Response response = await apiClient.dio.delete('/items/users/$id');
+      if (response.statusCode != 204) {
+        throw Exception(
+            'Unable to delete instance fcm token ${response.statusCode} ~ ${response.data}');
+      }
+    } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      throw Exception('Failed to delete instance fcm token');
+    } catch (e) {
+      debugPrint('Error deleting instance fcm token: $e');
+      throw Exception('Failed to delete instance fcm token');
+    }
   }
 }

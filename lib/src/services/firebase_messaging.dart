@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_installations/firebase_installations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,6 @@ import 'package:pzdeals/src/features/navigationwidget.dart';
 import 'package:pzdeals/src/services/fcmtoken_service.dart';
 import 'package:pzdeals/src/services/notifications_service.dart';
 import 'package:pzdeals/src/utils/data_mapper/index.dart';
-import 'package:pzdeals/src/utils/helpers/convert_string.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -51,28 +49,33 @@ class FirebaseMessagingApi {
       required String body,
       required String payload,
       required String fcmNotifId}) async {
-    NotificationDetails notificationDetails = NotificationDetails(
-      android: AndroidNotificationDetails(
-          _androidChannel.id, _androidChannel.name,
-          channelDescription: _androidChannel.description,
-          icon: '@drawable/ic_launcher',
-          importance: _androidChannel.importance),
-      iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentSound: true,
-          presentBanner: true,
-          attachments: [DarwinNotificationAttachment('')]),
-    );
+    try {
+      NotificationDetails notificationDetails = NotificationDetails(
+        android: AndroidNotificationDetails(
+            _androidChannel.id, _androidChannel.name,
+            channelDescription: _androidChannel.description,
+            icon: '@drawable/ic_launcher',
+            importance: _androidChannel.importance),
+        iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentSound: true,
+            presentBanner: true,
+            attachments: [DarwinNotificationAttachment('')]),
+      );
 
-    //add fcmNotifId to payload
-    payload = jsonEncode({'fcmNotifId': fcmNotifId, 'payload': payload});
+      //add fcmNotifId to payload
+      payload = jsonEncode({'fcmNotifId': fcmNotifId, 'payload': payload});
 
-    await _localNotifications.show(
-        notificationId, title, body, notificationDetails,
-        payload: payload);
+      await _localNotifications.show(
+          notificationId, title, body, notificationDetails,
+          payload: payload);
+    } catch (e, stackTrace) {
+      debugPrint('error showing notification: $stackTrace');
+    }
   }
 
   Future initPushNotifications() async {
+    debugPrint('initPushNotifications called');
     bool isBadgeAllowed = await FlutterAppBadger.isAppBadgeSupported();
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
         alert: true, badge: true, sound: true);
@@ -93,9 +96,10 @@ class FirebaseMessagingApi {
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
-      debugPrint('message: ${message.toMap()}');
+      debugPrint(
+          'FirebaseMessaging.onMessage.listen: message: ${message.toMap()}');
       if (notification == null) {
-        debugPrint('message: ${message.toMap()}');
+        debugPrint('notification == null: message: ${message.toMap()}');
         if (message.data['alert_type'] == 'scheduled_reminder' &&
             message.data['value'] == 'front_page') {
           debugPrint('scheduled reminder received');
@@ -116,21 +120,22 @@ class FirebaseMessagingApi {
             fcmNotifId: message.messageId ?? '',
           );
         } else {
-          if (_appLifecycleState != AppLifecycleState.resumed) {
-            debugPrint('foreground notification received on ios');
-            showNotification(
-              notificationId: message.hashCode,
-              title: newTitle,
-              body: message.notification!.body ?? '',
-              payload: jsonEncode(message.data),
-              fcmNotifId: message.messageId ?? '',
-            );
-          }
+          debugPrint('foreground notification received on ios');
+          // if (_appLifecycleState != AppLifecycleState.resumed) {
+          showNotification(
+            notificationId: message.hashCode,
+            title: newTitle,
+            body: message.notification!.body ?? '',
+            payload: jsonEncode(message.data),
+            fcmNotifId: message.messageId ?? '',
+          );
+          // }
         }
-        storeNotification(message);
+
         if (isBadgeAllowed) {
           FlutterAppBadger.updateBadgeCount(1);
         }
+        storeNotification(message);
       }
     });
   }
@@ -172,15 +177,16 @@ class FirebaseMessagingApi {
   }
 
   Future<void> initNotifications() async {
+    debugPrint('initNotifications called');
     await _firebaseMessaging.requestPermission();
-    initPushNotifications();
-    initLocalNotifications();
-    initFcmToken();
+    await initPushNotifications();
+    await initLocalNotifications();
+    await initFcmToken();
   }
 
   Future<void> initFcmToken() async {
     debugPrint('initFcmToken and refresh listener...');
-    final instanceId = await FirebaseInstallations.id;
+    final instanceId = await FirebaseInstallations.id ?? '';
     String? fcmToken;
     // _firebaseMessaging.getToken().then((token) {
     //   fcmTokenService.updateUserFcmToken(instanceId ?? '', token ?? '');
@@ -189,12 +195,23 @@ class FirebaseMessagingApi {
     // });
 
     Future<void> fetchFcmToken() async {
+      final prefs = await SharedPreferences.getInstance();
+      final userId =
+          prefs.containsKey('userId') ? prefs.getString('userId') ?? '' : '';
       if (Platform.isIOS) {
         _firebaseMessaging.getAPNSToken().then((apnsToken) {
           if (apnsToken != null) {
             _firebaseMessaging.getToken().then((token) {
-              fcmTokenService.updateUserFcmToken(instanceId ?? '', token ?? '');
-              debugPrint("FCM Token: $token ~ $instanceId");
+              if (userId.isNotEmpty) {
+                fcmTokenService.updateUserFcmToken(
+                    userId, token ?? '', 'userId');
+              } else {
+                fcmTokenService.updateUserFcmToken(
+                    instanceId, token ?? '', 'instanceId');
+              }
+
+              debugPrint(
+                  "FCM Token: $token ~ ${userId.isNotEmpty ? userId : instanceId}");
               fcmToken = token;
             });
           } else {
@@ -205,8 +222,15 @@ class FirebaseMessagingApi {
         });
       } else {
         _firebaseMessaging.getToken().then((token) {
-          fcmTokenService.updateUserFcmToken(instanceId ?? '', token ?? '');
-          debugPrint("FCM Token: $token ~ $instanceId");
+          if (userId.isNotEmpty) {
+            fcmTokenService.updateUserFcmToken(userId, token ?? '', 'userId');
+          } else {
+            fcmTokenService.updateUserFcmToken(
+                instanceId, token ?? '', 'instanceId');
+          }
+
+          debugPrint(
+              "FCM Token: $token ~ ${userId.isNotEmpty ? userId : instanceId}");
           fcmToken = token;
         });
       }
@@ -219,11 +243,13 @@ class FirebaseMessagingApi {
       if (fcmToken != newToken) {
         //check if user id is present in shared preferences then use it instead of instance ID
         final prefs = await SharedPreferences.getInstance();
-        final userId = prefs.getString('userId');
-        if (userId != null) {
-          fcmTokenService.updateUserFcmToken(userId, newToken);
+        final userId =
+            prefs.containsKey('userId') ? prefs.getString('userId') ?? '' : '';
+        if (userId.isNotEmpty) {
+          fcmTokenService.updateUserFcmToken(userId, newToken, 'userId');
         } else {
-          fcmTokenService.updateUserFcmToken(instanceId ?? '', newToken);
+          fcmTokenService.updateUserFcmToken(
+              instanceId, newToken, 'instanceId');
         }
       }
     });

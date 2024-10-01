@@ -95,14 +95,19 @@ class ProductDealActionsState extends ConsumerState<ProductDealActions> {
         productDescription,
         widget.productData.imageAsset,
         widget.productData.handle ?? '');
-    final result = await Share.shareWithResult(
+    await Share.share(
       'Check this \'${widget.productData.productName}\' for only \$${widget.productData.price} from ${Wordings.appName}! $dynamicLink',
       subject: 'Product Deal from ${Wordings.appName}',
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
-    if (result.status == ShareResultStatus.success) {
-      // showSnackbarWithMessage(context, 'Product deal shared!');
-    }
+    // final result = await Share.shareWithResult(
+    //   'Check this \'${widget.productData.productName}\' for only \$${widget.productData.price} from ${Wordings.appName}! $dynamicLink',
+    //   subject: 'Product Deal from ${Wordings.appName}',
+    //   sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    // );
+    // if (result.status == ShareResultStatus.success) {
+    //   // showSnackbarWithMessage(context, 'Product deal shared!');
+    // }
   }
 
   @override
