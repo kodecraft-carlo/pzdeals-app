@@ -256,7 +256,7 @@ class FirebaseMessagingApi {
   }
 
   Future<void> storeNotification(dynamic message) async {
-    await Firebase.initializeApp();
+    // await Firebase.initializeApp();
     notifService.addNotification(
         NotificationMapper.mapToNotificationData(message), 'notifications');
     debugPrint('Notification added');
