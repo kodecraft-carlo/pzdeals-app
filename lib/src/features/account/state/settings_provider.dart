@@ -20,7 +20,7 @@ class SettingsNotifier extends ChangeNotifier {
     debugPrint('SettingsNotifier initialized');
     // Listen to changes in authUserDataProvider
     ref.listen<AuthUserData?>(authUserDataProvider, (_, authUserData) async {
-      if (authUserData?.userData?.uid != null) {
+      if (authUserData != null && authUserData.userData != null) {
         debugPrint('User logged in');
         // User logged in, use UID as unique identifier
         setUserUID(authUserData!.userData!.uid);
