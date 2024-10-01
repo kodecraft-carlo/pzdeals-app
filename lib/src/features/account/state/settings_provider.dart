@@ -10,6 +10,7 @@ import 'package:pzdeals/src/features/notifications/state/notification_provider.d
 import 'package:pzdeals/src/services/fcmtoken_service.dart';
 import 'package:pzdeals/src/state/auth_provider.dart';
 import 'package:pzdeals/src/state/auth_user_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final settingsProvider =
     ChangeNotifierProvider<SettingsNotifier>((ref) => SettingsNotifier(ref));
@@ -21,22 +22,17 @@ class SettingsNotifier extends ChangeNotifier {
     // Listen to changes in authUserDataProvider
     ref.listen<AuthUserData?>(authUserDataProvider, (_, authUserData) async {
       if (authUserData != null && authUserData.userData != null) {
-        debugPrint('User logged in');
-        // User logged in, use UID as unique identifier
-        setUserUID(authUserData!.userData!.uid);
-        // Attempt to link settings from Firebase Instance ID to UID
+        debugPrint('authUserDataProvider: User logged in');
+        setUserUID(authUserData.userData!.uid);
         await linkSettingsToUID(authUserData.userData!.uid);
       } else {
         final userId = await ref.read(authProvider).getUserIdFromPrefs();
         if (userId.isNotEmpty) {
-          debugPrint('User logged in');
-          // User logged in, use UID as unique identifier
+          debugPrint('getUserIdFromPrefs: User logged in');
           setUserUID(userId);
-          // Attempt to link settings from Firebase Instance ID to UID
           await linkSettingsToUID(userId);
         } else {
           debugPrint('User not logged in');
-          // User not logged in, use Firebase Instance ID
           setUserUID("");
           resetTopics();
           setFirebaseInstanceIdAsIdentifier();
@@ -83,7 +79,7 @@ class SettingsNotifier extends ChangeNotifier {
     debugPrint('instanceID: $_instanceID');
     _boxName = '${_instanceID}_user_settings';
     await saveDefaultSettings();
-    _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!);
+    _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!, 'instaceId');
     loadUserSettings();
   }
 
@@ -93,31 +89,38 @@ class SettingsNotifier extends ChangeNotifier {
   }
 
   Future<void> saveDefaultSettings() async {
-    _instanceID = await FirebaseInstallations.id;
-    debugPrint('saveDefaultSettings called ~ instanceID: $_instanceID');
-    _boxName = '${_instanceID}_user_settings';
-    debugPrint('saveDefaultSettings boxName: $_boxName');
-    final defaultSettings = SettingsData(
-        priceMistake: true,
-        frontpageNotification: true,
-        percentageNotification: false,
-        percentageThreshold: 0,
-        numberOfAlerts: 10,
-        hottesdealsNotification: false,
-        whatsappNotification: false);
-    try {
-      _settingsService.updateUserSettings(
-          _boxName, _instanceID, defaultSettings);
-      _firebaseMessaging.subscribeToTopic('price_mistake');
-      _firebaseMessaging.subscribeToTopic('front_page');
-      // if (!isUserLoggedIn && _userUID.isNotEmpty) {
-      //   _fcmToken = await _firebaseMessaging.getToken();
-      //   _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
-      // }
-      _settingsData = defaultSettings;
-      notifyListeners();
-    } catch (e) {
-      debugPrint('error updating settings: $e');
+    final prefs = await SharedPreferences.getInstance();
+    final userIdFromPrefs = prefs.getString('userId') ?? '';
+
+    if (userIdFromPrefs.isNotEmpty) {
+      _userUID = prefs.getString('userId')!;
+    } else {
+      _instanceID = await FirebaseInstallations.id;
+      debugPrint('saveDefaultSettings called ~ instanceID: $_instanceID');
+      _boxName = '${_instanceID}_user_settings';
+      debugPrint('saveDefaultSettings boxName: $_boxName');
+      final defaultSettings = SettingsData(
+          priceMistake: true,
+          frontpageNotification: false,
+          percentageNotification: false,
+          percentageThreshold: 0,
+          numberOfAlerts: 10,
+          hottesdealsNotification: false,
+          whatsappNotification: false);
+      try {
+        _settingsService.updateUserSettings(
+            _boxName, _instanceID, defaultSettings);
+        _firebaseMessaging.subscribeToTopic('price_mistake');
+        // _firebaseMessaging.subscribeToTopic('front_page');
+        // if (!isUserLoggedIn && _userUID.isNotEmpty) {
+        //   _fcmToken = await _firebaseMessaging.getToken();
+        //   _instanceFcmService.updateInstanceFcmToken(_fcmToken!, _userUID);
+        // }
+        _settingsData = defaultSettings;
+        notifyListeners();
+      } catch (e) {
+        debugPrint('error updating settings: $e');
+      }
     }
   }
 
@@ -130,20 +133,26 @@ class SettingsNotifier extends ChangeNotifier {
     // Fetch settings by Firebase Instance ID
     final instanceIdSettings = await _settingsService.getCachedSettings(
         instanceIdBoxName, _instanceID!);
-    if (instanceIdSettings != null) {
-      // Update settings with UID and clear cached settings associated with Firebase Instance ID
-      await _settingsService.updateUserSettings(
-          uidBoxName, uid, instanceIdSettings);
-      await _settingsService.clearCachedSettings(instanceIdBoxName);
-      await _settingsService.deleteInstanceSetting(_instanceID!);
-      // await _instanceFcmService.deleteFcmToken(_instanceID!);
-      // _fcmToken = await _firebaseMessaging.getToken();
-      // await _fcmTokenService.updateUserFcmToken(_instanceID!, _fcmToken!);
-      // Load the newly linked settings
-      _boxName = uidBoxName;
-      loadUserSettings();
+    final serverUserSettings =
+        await _settingsService.fetchUserSettings(uidBoxName, uid);
+
+    //if serverUserSettings is not empty
+    if (serverUserSettings != null) {
+      //link only the price mistake instance setting to the user server settings
+      final priceMistakeSetting = serverUserSettings.priceMistake;
+      if (instanceIdSettings != null) {
+        if (priceMistakeSetting != instanceIdSettings.priceMistake) {
+          serverUserSettings.priceMistake = instanceIdSettings.priceMistake;
+        }
+        await _settingsService.updateUserSettings(
+            uidBoxName, uid, serverUserSettings);
+        await _settingsService.clearCachedSettings(instanceIdBoxName);
+        await _settingsService.deleteInstanceSetting(_instanceID!);
+        _boxName = uidBoxName;
+        loadUserSettings();
+      }
+      mergeNotificationsOnce(uid, _instanceID!);
     }
-    mergeNotificationsOnce(uid, _instanceID!);
   }
 
   Future<void> loadUserSettings() async {

@@ -17,50 +17,33 @@ class NotificationService {
   final _firebaseMessaging = FirebaseMessaging.instance;
   final _firebaseAuth = FirebaseAuth.instance.currentUser;
   String? _instanceID = '';
-  SharedPreferences? prefs;
+  String userIdFromPrefs = '';
 
   DocumentSnapshot? lastDoc;
   NotificationService() {
     debugPrint('NotificationService: Constructor called');
-    initSharedPrefs();
     setInstanceId();
-
+    getUserIdFromPrefs();
     FirebaseAuth.instance.authStateChanges().listen((User? currentUser) async {
-      debugPrint(
-          'NotificationService: User is logged in ~ ${currentUser?.uid}');
-      user = currentUser;
-      if (prefs == null) {
-        await initSharedPrefs();
+      if (currentUser != null && currentUser.uid != '') {
+        debugPrint(
+            'NotificationService: User is logged in ~ ${currentUser.uid}');
+        user = currentUser;
+        setUserIdFromPrefs(user?.uid ?? '');
       }
-      setUserUIDPrefs(currentUser?.uid ?? '');
     });
   }
 
-  Future<void> initSharedPrefs() async {
-    debugPrint('NotificationService: initSharedPrefs called');
-    prefs = await SharedPreferences.getInstance();
+  Future<void> setUserIdFromPrefs(String userId) async {
+    debugPrint('NotificationService: setUserIdFromPrefs called ~ $userId');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+    userIdFromPrefs = userId;
   }
 
-  void setUserUIDPrefs(String uid) {
-    debugPrint('set user uid prefs: $uid');
-    prefs!.setString('uid', uid);
-  }
-
-  String getUserUIDPrefs() {
-    try {
-      if (user != null) {
-        debugPrint('user uid from user: ${user!.uid}');
-        return user!.uid;
-      } else if (prefs!.getString('uid') != null &&
-          prefs!.getString('uid')!.isNotEmpty) {
-        return prefs!.getString('uid')!;
-      }
-      return '';
-    } catch (e, stackTrace) {
-      debugPrint('Error getting user uid from prefs: $stackTrace');
-
-      return _firebaseAuth?.uid ?? '';
-    }
+  Future<void> getUserIdFromPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userIdFromPrefs = prefs.getString('userId') ?? '';
   }
 
   void setInstanceId() async {
@@ -68,90 +51,10 @@ class NotificationService {
     debugPrint('Instance ID: $_instanceID');
   }
 
-  Future<List<NotificationData>> getInitialNotifications(String boxName) async {
-    try {
-      if (user != null) {
-        debugPrint('getInitialNotifications: User is logged in ~ ${user?.uid}');
-        final snapshot = await _firestoreDb
-            .collection('notifications')
-            .doc(user?.uid)
-            .collection('notification')
-            .orderBy('timestamp', descending: true)
-            .limit(30)
-            .get();
-        if (snapshot.docs.isNotEmpty) {
-          debugPrint(
-              'getInitialNotifications: ${snapshot.docs.length} notifications');
-          _cacheNotifications(snapshot.docs, boxName);
-          lastDoc = snapshot.docs.last;
-          return snapshot.docs
-              .map((doc) => NotificationData(
-                    id: doc["id"],
-                    title: doc["title"],
-                    body: doc["body"],
-                    timestamp: timestampToDateTime(doc["timestamp"]),
-                    isRead: doc["isRead"] as bool,
-                    data: doc["data"],
-                    imageUrl: doc["imageUrl"],
-                  ))
-              .toList();
-        } else {
-          debugPrint('getInitialNotifications: No notifications found');
-        }
-        return [];
-      } else {
-        debugPrint('getInitialNotifications: User is not logged in');
-      }
-      return [];
-    } catch (e) {
-      debugPrint("Error fetching notifications data: $e");
-    }
-    throw Exception('getInitialNotifications error');
-  }
-
-  Future<List<NotificationData>> getMoreNotifications(String boxName) async {
-    debugPrint('getMoreNotifications called for $boxName');
-    try {
-      if (user != null) {
-        final snapshot = await _firestoreDb
-            .collection('notifications')
-            .doc(user?.uid)
-            .collection('notification')
-            .orderBy('timestamp', descending: true)
-            .startAfterDocument(lastDoc as DocumentSnapshot)
-            .limit(30)
-            .get();
-        if (snapshot.docs.isNotEmpty) {
-          // _cacheNotifications(snapshot.docs, boxName);
-          lastDoc = snapshot.docs.last;
-          return snapshot.docs
-              .map((doc) => NotificationData(
-                    id: doc["id"],
-                    title: doc["title"],
-                    body: doc["body"],
-                    timestamp: timestampToDateTime(doc["timestamp"]),
-                    isRead: doc["isRead"] as bool,
-                    data: doc["data"],
-                    imageUrl: doc["imageUrl"],
-                  ))
-              .toList();
-        }
-        debugPrint('list is empty');
-        return [];
-      } else {
-        debugPrint('getMoreNotifications: User is not logged in');
-      }
-      return [];
-    } catch (e, stackTrace) {
-      debugPrint("Error fetching getMoreNotifications data: $stackTrace");
-    }
-    throw Exception('getMoreNotifications error');
-  }
-
   Future<void> updateNotifications(
       NotificationData notif, String notifId, String boxName) async {
     try {
-      if (user != null) {
+      if (userIdFromPrefs.isNotEmpty) {
         // await _firestoreDb
         //     .collection('notifications')
         //     .doc(user?.uid)
@@ -161,7 +64,7 @@ class NotificationService {
 
         await _firestoreDb
             .collection('notifications')
-            .doc(user?.uid)
+            .doc(userIdFromPrefs)
             .collection('notification')
             .where('id', isEqualTo: notifId)
             .get()
@@ -181,10 +84,10 @@ class NotificationService {
 
   Future<void> markAllNotificationsAsRead(String boxName) async {
     try {
-      if (user != null) {
+      if (userIdFromPrefs.isNotEmpty) {
         await _firestoreDb
             .collection('notifications')
-            .doc(user?.uid)
+            .doc(userIdFromPrefs)
             .collection('notification')
             .get()
             .then((snapshot) {
@@ -203,20 +106,23 @@ class NotificationService {
 
   Future addNotification(NotificationData notification, String boxName) async {
     try {
-      debugPrint('user uid prefs: ${getUserUIDPrefs()}');
-      final userUID = getUserUIDPrefs();
-      if (userUID.isNotEmpty) {
-        debugPrint('addNotification: User is logged in ~ $userUID');
+      if (userIdFromPrefs.isEmpty) {
+        await getUserIdFromPrefs();
+      }
+      if (userIdFromPrefs.isNotEmpty) {
+        debugPrint(
+            'addNotification: User is logged in ~ $userIdFromPrefs _ notificationId: ${notification.id}');
         await _firestoreDb
             .collection('notifications')
-            .doc(userUID)
+            .doc(userIdFromPrefs)
             .collection('notification')
             .add(notification.toMap());
-        FirebaseCrashlytics.instance.log("[$userUID] Notification added.");
+        FirebaseCrashlytics.instance
+            .log("[$userIdFromPrefs] Notification added.");
         //update notification received info only when data['alert_type'] is 'front-page'
         if (notification.data['alert_type'] == 'front-page' ||
             notification.data['alert_type'] == 'front_page') {
-          updateFrontPageNotificationReceivedInfo(userUID);
+          updateFrontPageNotificationReceivedInfo(userIdFromPrefs);
         }
       } else if (_instanceID != null && _instanceID!.isNotEmpty) {
         await _firestoreDb
@@ -322,9 +228,8 @@ class NotificationService {
     ApiClient apiClient = ApiClient();
     while (retryCount < maxRetryCount) {
       try {
-        if (user != null) {
-          final userId = user?.uid;
-          final int id = await getSettingsId(userId!);
+        if (userIdFromPrefs.isNotEmpty) {
+          final int id = await getSettingsId(userIdFromPrefs);
           if (id == 0) return;
 
           final Response response = await apiClient.dio.patch(
@@ -419,10 +324,10 @@ class NotificationService {
 
   Future deleteNotification(String notifId, String boxName) async {
     try {
-      if (user != null) {
+      if (userIdFromPrefs.isNotEmpty) {
         await _firestoreDb
             .collection('notifications')
-            .doc(user?.uid)
+            .doc(userIdFromPrefs)
             .collection('notification')
             .where('id', isEqualTo: notifId)
             .get()
@@ -442,10 +347,10 @@ class NotificationService {
 
   Future deleteAllNotifications(String boxName) async {
     try {
-      if (user != null) {
+      if (userIdFromPrefs.isNotEmpty) {
         await _firestoreDb
             .collection('notifications')
-            .doc(user?.uid)
+            .doc(userIdFromPrefs)
             .collection('notification')
             .get()
             .then((snapshot) {
@@ -465,10 +370,10 @@ class NotificationService {
   Future<NotificationData> getNotification(
       String notifId, String boxName) async {
     try {
-      if (user != null) {
+      if (userIdFromPrefs.isNotEmpty) {
         final snapshot = await _firestoreDb
             .collection('notifications')
-            .doc(user?.uid)
+            .doc(userIdFromPrefs)
             .collection('notification')
             .doc(notifId)
             .get();
@@ -496,10 +401,10 @@ class NotificationService {
 
   Future<NotificationData> getNotificationById(String notifId) async {
     try {
-      if (user != null) {
+      if (userIdFromPrefs.isNotEmpty) {
         final snapshot = await _firestoreDb
             .collection('notifications')
-            .doc(user?.uid)
+            .doc(userIdFromPrefs)
             .collection('notification')
             .where('id', isEqualTo: notifId)
             .get();

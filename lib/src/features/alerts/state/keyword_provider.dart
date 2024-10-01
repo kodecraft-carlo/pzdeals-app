@@ -40,7 +40,8 @@ class KeywordsNotifier extends ChangeNotifier {
   void setUserUID() {
     final authDataState = ref.watch(authUserDataProvider);
     if (authDataState.userData == null) return;
-    debugPrint('setUserUID called with ${authDataState.userData!.uid}');
+    debugPrint(
+        'KeywordsNotifier: setUserUID called with ${authDataState.userData!.uid}');
     _userUID = authDataState.userData!.uid;
     _boxName = '${_userUID}_keywords';
   }
