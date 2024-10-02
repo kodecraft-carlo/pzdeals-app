@@ -45,4 +45,9 @@ class Wordings {
 
   static const String whatsappTitle = 'WhatsApp Deals Notification';
   static const String whatsappSubtitle = 'Notify me on WhatsApp deals.';
+
+  //For You Tab
+  static const String bannerTitle = 'Your Deals';
+  static const String bannerDesc =
+      'Pick your favorite categories and see top deals curated by us for you.';
 }

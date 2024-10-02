@@ -28,9 +28,9 @@ class AuthService {
   final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
     'email',
     'profile',
-    // PeopleServiceApi.userGenderReadScope,
-    // PeopleServiceApi.userPhonenumbersReadScope,
-    // PeopleServiceApi.userBirthdayReadScope
+    PeopleServiceApi.userGenderReadScope,
+    PeopleServiceApi.userPhonenumbersReadScope,
+    PeopleServiceApi.userBirthdayReadScope
   ]);
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -62,7 +62,7 @@ class AuthService {
             authResult.additionalUserInfo;
 
         //retrieve additional user information from Google People API
-        // Map<String, dynamic> personInfo = await getGooglePersonInfo();
+        Map<String, dynamic> personInfo = await getGooglePersonInfo();
 
         // Retrieve additional user information from the GoogleSignInAccount object
         final googleUser = googleSignIn.currentUser;
@@ -77,22 +77,23 @@ class AuthService {
           'lastName': additionalUserInfo?.profile!['family_name'],
           'email': email,
           'profilePicture': additionalUserInfo?.profile!['picture'],
-          // 'gender': personInfo['gender'],
-          // 'birthDate': personInfo['birthday'],
-          // 'phoneNumber': personInfo['phoneNumber'],
-          'gender': null,
-          'birthDate': null,
-          'phoneNumber': null,
+          'gender': personInfo['gender'],
+          'birthDate': personInfo['birthday'],
+          'phoneNumber': personInfo['phoneNumber'],
+          // 'gender': null,
+          // 'birthDate': null,
+          // 'phoneNumber': null,
           'uID': user.uid,
         });
 
         // if (await isFcmTokenChanged(user.uid)) {
-        updateFcmToken(user.uid);
+
         // }
 
         setIsUserAuthenticated(true);
         setUserUID(user.uid);
         _signInMethod = 'google';
+        await updateFcmToken(user.uid);
         saveSignInMethodToPrefs(_signInMethod);
         saveUserIdToPrefs(user.uid);
         return user;
@@ -182,12 +183,13 @@ class AuthService {
       });
 
       // if (await isFcmTokenChanged(user.uid)) {
-      updateFcmToken(user.uid);
+
       // }
 
       setIsUserAuthenticated(true);
       setUserUID(user.uid);
       _signInMethod = 'apple';
+      await updateFcmToken(user.uid);
       saveSignInMethodToPrefs(_signInMethod);
       saveUserIdToPrefs(user.uid);
       return user;
@@ -249,7 +251,7 @@ class AuthService {
         setUserUID('');
         debugPrint('Firebase user account deleted successfully.');
         removeSignInMethodFromPrefs();
-        removeUserIdFromPrefs();
+        await removeUserIdFromPrefs();
       } else {
         debugPrint('No authenticated user found.');
       }
@@ -339,7 +341,7 @@ class AuthService {
       setIsUserAuthenticated(true);
       setUserUID(userCredential.user!.uid);
       // if (await isFcmTokenChanged(userCredential.user!.uid)) {
-      updateFcmToken(userCredential.user!.uid);
+      await updateFcmToken(userCredential.user!.uid);
       // }
       _email = email.trim();
       _signInMethod = 'email';
