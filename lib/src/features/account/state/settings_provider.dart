@@ -152,6 +152,16 @@ class SettingsNotifier extends ChangeNotifier {
         loadUserSettings();
       }
       mergeNotificationsOnce(uid, _instanceID!);
+    } else {
+      //if serverUserSettings is empty
+      if (instanceIdSettings != null) {
+        await _settingsService.updateUserSettings(
+            uidBoxName, uid, instanceIdSettings);
+        await _settingsService.clearCachedSettings(instanceIdBoxName);
+        await _settingsService.deleteInstanceSetting(_instanceID!);
+        _boxName = uidBoxName;
+        loadUserSettings();
+      }
     }
   }
 

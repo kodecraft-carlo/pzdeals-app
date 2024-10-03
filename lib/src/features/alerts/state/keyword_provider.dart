@@ -32,10 +32,12 @@ class KeywordsNotifier extends ChangeNotifier {
   List<KeywordData> _savedkeywords = [];
   List<KeywordData> _popularKeywords = [];
   List<String> categoryKeywords = [];
+  List<KeywordData> _savedPopularKeywords = [];
 
   bool get isLoading => _isLoading;
   List<KeywordData> get savedkeywords => _savedkeywords;
   List<KeywordData> get popularKeywords => _popularKeywords;
+  List<KeywordData> get savedPopularKeywords => _savedPopularKeywords;
 
   void setUserUID() {
     final authDataState = ref.watch(authUserDataProvider);
@@ -207,6 +209,8 @@ class KeywordsNotifier extends ChangeNotifier {
     Future.delayed(const Duration(seconds: 1), () {
       if (_popularKeywords.any((data) =>
           data.keyword.toLowerCase() == keyword.keyword.toLowerCase())) {
+        _savedPopularKeywords
+            .add(keyword); // add to the list of saved popular keywords
         _popularKeywords.removeWhere((data) =>
             data.keyword.toLowerCase() == keyword.keyword.toLowerCase());
         _popularKeywords = _popularKeywords.toSet().toList();
@@ -234,6 +238,16 @@ class KeywordsNotifier extends ChangeNotifier {
       String topicName = formatToValidTopic(keyword.keyword);
       _firebaseMessaging.unsubscribeFromTopic(topicName);
     }
+
+    //check if the keyword is present in saved popular keywords list and put it back to popular keywords list
+    _popularKeywords.add(_savedPopularKeywords
+        .firstWhere((element) => element.keyword == keyword.keyword));
+    _popularKeywords = _popularKeywords.toSet().toList();
+    _savedPopularKeywords
+        .removeWhere((element) => element.keyword == keyword.keyword);
+    sortKeywordsDescending(_popularKeywords);
+    //end
+
     notifyListeners();
   }
 

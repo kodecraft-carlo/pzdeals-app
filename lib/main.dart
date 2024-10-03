@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:app_links/app_links.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:firebase_installations/firebase_installations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -42,22 +44,49 @@ FirebaseMessagingApi firebaseMessagingApi = FirebaseMessagingApi();
 @pragma('vm:entry-point')
 Future<void> _handleBackgroundMessage(RemoteMessage message) async {
   debugPrint('background message received');
+  debugPrint('background notification data: ${message.toMap()}');
   await Firebase.initializeApp();
-  debugPrint('notification data: ${message.toMap()}');
-  final notification = message.notification;
-  if (notification == null) {
-    if (message.data['alert_type'] == 'scheduled_reminder' &&
-        (message.data['value'] == 'front_page' ||
-            message.data['value'] == 'front-page')) {
-      debugPrint('scheduled reminder received');
-      notifService.resetNotificationReceivedInfo();
+  final prefs = await SharedPreferences.getInstance();
+  String userId = prefs.getString('userId') ?? '';
+  if (userId.isEmpty) {
+    FirebaseCrashlytics.instance.log(
+        "User ID from SharedPreferences is empty, using Firebase Installations ID.");
+    userId = await FirebaseInstallations.id ?? '';
+  }
+
+  final notification = NotificationMapper.mapToNotificationData(message);
+
+  if (userId.isNotEmpty) {
+    try {
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(userId)
+          .collection('notification')
+          .add(notification.toMap());
+      FirebaseCrashlytics.instance.log("[$userId] Notification added.");
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace);
+      FirebaseCrashlytics.instance.log("[$userId] Failed to add notification.");
     }
   } else {
-    debugPrint('add notif from main');
-
-    notifService.addNotification(
-        NotificationMapper.mapToNotificationData(message), 'notifications');
+    FirebaseCrashlytics.instance
+        .log("Failed to retrieve Firebase Installations ID.");
   }
+
+  // final notification = message.notification;
+  // if (notification == null) {
+  //   if (message.data['alert_type'] == 'scheduled_reminder' &&
+  //       (message.data['value'] == 'front_page' ||
+  //           message.data['value'] == 'front-page')) {
+  //     debugPrint('scheduled reminder received');
+  //     notifService.resetNotificationReceivedInfo();
+  //   }
+  // } else {
+  //   debugPrint('add notif from main');
+
+  //   notifService.addNotification(
+  //       NotificationMapper.mapToNotificationData(message), 'notifications');
+  // }
 }
 
 const secureStorage = FlutterSecureStorage();
