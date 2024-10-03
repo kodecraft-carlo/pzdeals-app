@@ -63,6 +63,8 @@ class AccountCardState extends ConsumerState<AccountCard> {
                     color: PZColors.pzOrange,
                     fontWeight: FontWeight.w700,
                     fontSize: Sizes.listTitleFontSize),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,6 +76,8 @@ class AccountCardState extends ConsumerState<AccountCard> {
                         color: Colors.black54,
                         fontSize: Sizes.bodySmallSize,
                         fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     'Registered: ${formatDateToDisplay(widget.accountData.dateRegistered!, 'MMM dd, yyyy').toString()}',
