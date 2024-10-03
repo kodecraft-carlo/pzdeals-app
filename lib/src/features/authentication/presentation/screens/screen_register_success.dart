@@ -76,6 +76,7 @@ class _SuccessfulRegistrationScreenState
             TextWidget(
               text: "Welcome to ${Wordings.appName}, ${widget.firstName}!",
               textDisplayType: TextDisplayType.xLargeText,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: Sizes.spaceBetweenSections),
             const TextWidget(

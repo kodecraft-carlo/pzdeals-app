@@ -43,85 +43,88 @@ class AccountCardState extends ConsumerState<AccountCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-        color: PZColors.pzLightGrey,
-        elevation: 0,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              dense: true,
-              isThreeLine: false,
-              leading: const Icon(
-                Icons.account_circle,
-                size: Sizes.listIconSize,
-                color: Colors.amber,
-              ),
-              title: Text(
-                'Welcome, ${widget.accountData.firstName}!',
-                style: const TextStyle(
-                    color: PZColors.pzOrange,
-                    fontWeight: FontWeight.w700,
-                    fontSize: Sizes.listTitleFontSize),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    widget.accountData.emailAddress!,
-                    style: const TextStyle(
-                        color: Colors.black54,
-                        fontSize: Sizes.bodySmallSize,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    'Registered: ${formatDateToDisplay(widget.accountData.dateRegistered!, 'MMM dd, yyyy').toString()}',
-                    style: const TextStyle(
-                        color: Colors.black54, fontSize: Sizes.bodySmallSize),
-                  )
-                ],
-              ),
-              trailing: ref.watch(authUserDataProvider).isAuthenticated == true
-                  ? PullDownButton(
-                      itemBuilder: (context) => [
-                        PullDownMenuItem(
-                          enabled: true,
-                          title: 'Delete Account',
-                          onTap: () {
-                            showDeleteAccountConfirmationDialog(context, ref);
-                          },
-                          itemTheme: PullDownMenuItemTheme(
-                            textStyle: TextStyle(
-                              color: Platform.isIOS
-                                  ? CupertinoColors.destructiveRed
-                                  : Colors.red,
-                              fontFamily: 'Poppins',
-                            ),
+      color: PZColors.pzLightGrey,
+      elevation: 0,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            dense: true,
+            isThreeLine: false,
+            leading: const Icon(
+              Icons.account_circle,
+              size: Sizes.listIconSize,
+              color: Colors.amber,
+            ),
+            title: Text(
+              'Welcome, ${widget.accountData.firstName}!',
+              style: const TextStyle(
+                  color: PZColors.pzOrange,
+                  fontWeight: FontWeight.w700,
+                  fontSize: Sizes.listTitleFontSize),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  widget.accountData.emailAddress!,
+                  style: const TextStyle(
+                      color: Colors.black54,
+                      fontSize: Sizes.bodySmallSize,
+                      fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  'Registered: ${formatDateToDisplay(widget.accountData.dateRegistered!, 'MMM dd, yyyy').toString()}',
+                  style: const TextStyle(
+                      color: Colors.black54, fontSize: Sizes.bodySmallSize),
+                )
+              ],
+            ),
+            trailing: ref.watch(authUserDataProvider).isAuthenticated == true
+                ? PullDownButton(
+                    itemBuilder: (context) => [
+                      PullDownMenuItem(
+                        enabled: true,
+                        title: 'Delete Account',
+                        onTap: () {
+                          showDeleteAccountConfirmationDialog(context, ref);
+                        },
+                        itemTheme: PullDownMenuItemTheme(
+                          textStyle: TextStyle(
+                            color: Platform.isIOS
+                                ? CupertinoColors.destructiveRed
+                                : Colors.red,
+                            fontFamily: 'Poppins',
                           ),
-                          icon: Platform.isIOS
-                              ? CupertinoIcons.person_crop_circle_badge_xmark
-                              : Icons.person_remove,
                         ),
-                      ],
-                      buttonBuilder: (context, showMenu) => GestureDetector(
-                        onTap: showMenu,
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          color: PZColors.pzLightGrey,
-                          child: Icon(
-                            Platform.isIOS
-                                ? CupertinoIcons.ellipsis_vertical
-                                : Icons.more_vert,
-                            color: PZColors.pzOrange,
-                          ),
+                        icon: Platform.isIOS
+                            ? CupertinoIcons.person_crop_circle_badge_xmark
+                            : Icons.person_remove,
+                      ),
+                    ],
+                    buttonBuilder: (context, showMenu) => GestureDetector(
+                      onTap: showMenu,
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        color: PZColors.pzLightGrey,
+                        child: Icon(
+                          Platform.isIOS
+                              ? CupertinoIcons.ellipsis_vertical
+                              : Icons.more_vert,
+                          color: PZColors.pzOrange,
                         ),
                       ),
-                    )
-                  : null,
-            ),
-          ],
-        ));
+                    ),
+                  )
+                : null,
+          ),
+        ],
+      ),
+    );
   }
 
   void showDeleteAccountConfirmationDialog(
